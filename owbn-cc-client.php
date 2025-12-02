@@ -6,7 +6,7 @@
  * Embeddable client module for fetching and displaying chronicle/coordinator
  * data from remote or local OWBN Chronicle Plugin instances.
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  * @author greghacke
  */
