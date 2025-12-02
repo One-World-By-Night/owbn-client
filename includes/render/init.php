@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client Render Init
+ * OWBN-CC-Client Render Init
  * 
  * @package CC-Client
  * @version 1.0.0

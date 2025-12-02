@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client Prefix Configuration
+ * OWBN-CC-Client Prefix Configuration
  * 
  * Edit these values to match your site/plugin instance.
  * 

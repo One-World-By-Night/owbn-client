@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client Master Loader
+ * OWBN-CC-Client Master Loader
  * 
  * Loads all module init.php files in dependency order.
  * 

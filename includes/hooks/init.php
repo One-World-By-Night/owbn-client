@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client Hooks Init
+ * OWBN-CC-Client Hooks Init
  * 
  * @package CC-Client
  * @version 1.0.0

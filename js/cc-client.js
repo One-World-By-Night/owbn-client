@@ -1,6 +1,6 @@
 /**
- * CC-Client Scripts
- * 
+ * OWBN-CC-Client Scripts
+ *
  * @package CC-Client
  * @version 1.0.0
  */

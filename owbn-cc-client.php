@@ -18,15 +18,15 @@ defined('ABSPATH') || exit;
  * LOAD INSTANCE-SPECIFIC PREFIX
  * File must define: define('CCC_PREFIX', 'YOURSITE');
  * File must define: define('CCC_LABEL', 'Your Site Label');
- * Location: cc-client/prefix.php
+ * Location: owbn-cc-client/prefix.php
  * -----------------------------------------------------------------------------
  */
 $prefix_file = __DIR__ . '/prefix.php';
 
 if (!file_exists($prefix_file)) {
     wp_die(
-        esc_html__('cc-client requires a prefix.php file that defines CCC_PREFIX.', 'cc-client'),
-        esc_html__('Missing File: prefix.php', 'cc-client'),
+        esc_html__('owbn-cc-client requires a prefix.php file that defines CCC_PREFIX.', 'owbn-cc-client'),
+        esc_html__('Missing File: prefix.php', 'owbn-cc-client'),
         ['response' => 500]
     );
 }
@@ -35,16 +35,16 @@ require_once $prefix_file;
 
 if (!defined('CCC_PREFIX')) {
     wp_die(
-        esc_html__('cc-client requires CCC_PREFIX to be defined in prefix.php.', 'cc-client'),
-        esc_html__('Missing Constant: CCC_PREFIX', 'cc-client'),
+        esc_html__('owbn-cc-client requires CCC_PREFIX to be defined in prefix.php.', 'owbn-cc-client'),
+        esc_html__('Missing Constant: CCC_PREFIX', 'owbn-cc-client'),
         ['response' => 500]
     );
 }
 
 if (!defined('CCC_LABEL')) {
     wp_die(
-        esc_html__('cc-client requires CCC_LABEL to be defined in prefix.php.', 'cc-client'),
-        esc_html__('Missing Constant: CCC_LABEL', 'cc-client'),
+        esc_html__('owbn-cc-client requires CCC_LABEL to be defined in prefix.php.', 'owbn-cc-client'),
+        esc_html__('Missing Constant: CCC_LABEL', 'owbn-cc-client'),
         ['response' => 500]
     );
 }
@@ -66,7 +66,7 @@ if (!defined($prefix . 'VERSION')) {
     define($prefix . 'VERSION', '1.0.0');
 }
 if (!defined($prefix . 'TEXTDOMAIN')) {
-    define($prefix . 'TEXTDOMAIN', 'cc-client');
+    define($prefix . 'TEXTDOMAIN', 'owbn-cc-client');
 }
 if (!defined($prefix . 'ASSETS_URL')) {
     define($prefix . 'ASSETS_URL', constant($prefix . 'URL') . 'includes/assets/');

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client Registration
+ * OWBN-CC-Client Registration
  * 
  * Registers client instance and connection modes.
  * 

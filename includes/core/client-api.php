@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CC-Client API Functions
+ * OWBN-CC-Client API Functions
  * 
  * Handles remote and local API calls to fetch chronicle/coordinator data.
  * 
@@ -75,7 +75,7 @@ function ccc_remote_request(string $endpoint, array $args = [])
     if ($code !== 200) {
         return new WP_Error(
             'ccc_api_error',
-            $data['message'] ?? __('API request failed', 'cc-client'),
+            $data['message'] ?? __('API request failed', 'owbn-cc-client'),
             ['status' => $code]
         );
     }
