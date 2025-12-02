@@ -10,7 +10,7 @@
 defined('ABSPATH') || exit;
 
 // Shortcode files will be loaded here
-require_once __DIR__ . '/chronicle-detail.php';
-require_once __DIR__ . '/chronicles-list.php';
-require_once __DIR__ . '/coordinator-detail.php';
-require_once __DIR__ . '/coordinators-list.php';
+// require_once __DIR__ . '/chronicle-detail.php';
+// require_once __DIR__ . '/chronicles-list.php';
+// require_once __DIR__ . '/coordinator-detail.php';
+// require_once __DIR__ . '/coordinators-list.php';
