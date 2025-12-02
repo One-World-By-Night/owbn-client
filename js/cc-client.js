@@ -1,0 +1,8 @@
+/**
+ * CC-Client Scripts
+ * 
+ * @package CC-Client
+ * @version 1.0.0
+ */
+
+// Client-side functionality will go here
