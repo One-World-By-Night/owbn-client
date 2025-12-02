@@ -5,7 +5,7 @@
  * 
  * Handles remote and local API calls to fetch chronicle/coordinator data.
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  */
 

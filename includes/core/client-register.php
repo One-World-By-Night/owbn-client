@@ -5,7 +5,7 @@
  * 
  * Registers client instance and connection modes.
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  */
 

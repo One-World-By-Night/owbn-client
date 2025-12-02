@@ -5,7 +5,7 @@
  * 
  * Loads all module init.php files in dependency order.
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  */
 

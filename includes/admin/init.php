@@ -3,7 +3,7 @@
 /**
  * OWBN-CC-Client Admin Init
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  */
 

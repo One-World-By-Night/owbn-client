@@ -5,7 +5,7 @@
  * 
  * Edit these values to match your site/plugin instance.
  * 
- * @package CC-Client
+ * @package OWBN-CC-Client
  * @version 1.0.0
  */
 
