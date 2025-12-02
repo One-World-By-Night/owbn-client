@@ -12,3 +12,5 @@ defined('ABSPATH') || exit;
 // Render files will be loaded here
 // require_once __DIR__ . '/render-chronicle-box.php';
 require_once __DIR__ . '/template-loader.php';
+require_once __DIR__ . '/render-chronicles-list.php';
+require_once __DIR__ . '/render-coordinators-list.php';

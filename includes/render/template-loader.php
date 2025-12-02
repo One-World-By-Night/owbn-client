@@ -25,25 +25,152 @@ function ccc_template_redirect()
         return;
     }
 
-    // Check if feature is enabled
     $option = $route === 'chronicles' ? 'enable_chronicles' : 'enable_coordinators';
     if (!get_option(ccc_option_name($option), false)) {
         return;
     }
 
-    // Fetch data
+    // Fetch and render
     if ($action === 'list') {
         $data = ccc_fetch_list($route);
+        ccc_render_page($route, 'list', $data);
     } elseif ($action === 'detail' && !empty($slug)) {
         $data = ccc_fetch_detail($route, sanitize_title($slug));
-    } else {
-        return;
+        ccc_render_page($route, 'detail', $data, $slug);
     }
 
-    // Output JSON for debugging
-    header('Content-Type: application/json');
-    echo wp_json_encode($data, JSON_PRETTY_PRINT);
     exit;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RENDER PAGE
+// ══════════════════════════════════════════════════════════════════════════════
+
+function ccc_render_page(string $route, string $action, $data, string $slug = '')
+{
+    // Check for errors
+    if (isset($data['error'])) {
+        wp_die(esc_html($data['error']), esc_html__('Error', 'owbn-cc-client'), ['response' => 500]);
+    }
+
+    // Page title
+    if ($action === 'list') {
+        $title = $route === 'chronicles'
+            ? __('Chronicles', 'owbn-cc-client')
+            : __('Coordinators', 'owbn-cc-client');
+    } else {
+        $title = $data['title'] ?? ucfirst($slug);
+    }
+
+    // Render content
+    if ($action === 'list') {
+        $content = $route === 'chronicles'
+            ? ccc_render_chronicles_list($data)
+            : ccc_render_coordinators_list($data);
+    } else {
+        // Detail - JSON for now, will add render functions later
+        $content = '<pre>' . esc_html(wp_json_encode($data, JSON_PRETTY_PRINT)) . '</pre>';
+    }
+
+    // Output with theme wrapper
+    ccc_output_page($title, $content);
+}
+
+function ccc_output_page(string $title, string $content)
+{
+    // Minimal HTML wrapper - uses theme styles
+?>
+    <!DOCTYPE html>
+    <html <?php language_attributes(); ?>>
+
+    <head>
+        <meta charset="<?php bloginfo('charset'); ?>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><?php echo esc_html($title . ' - ' . get_bloginfo('name')); ?></title>
+        <?php wp_head(); ?>
+        <style>
+            .ccc-chronicles-list,
+            .ccc-coordinators-list {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .ccc-list-header {
+                display: none;
+            }
+
+            .ccc-list-row {
+                display: grid;
+                gap: 10px;
+                padding: 15px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .ccc-list-row:hover {
+                background: #f9f9f9;
+            }
+
+            .ccc-col-title a,
+            .ccc-col-office a {
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .ccc-col-title a:hover,
+            .ccc-col-office a:hover {
+                text-decoration: underline;
+            }
+
+            [data-label]:before {
+                content: attr(data-label) ": ";
+                font-weight: 600;
+            }
+
+            /* Desktop: grid layout */
+            @media (min-width: 768px) {
+                .ccc-list-header {
+                    display: grid;
+                    gap: 10px;
+                    padding: 10px 15px;
+                    background: #f5f5f5;
+                    font-weight: 600;
+                    border-bottom: 2px solid #ddd;
+                }
+
+                .ccc-chronicles-list .ccc-list-header,
+                .ccc-chronicles-list .ccc-list-row {
+                    grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
+                }
+
+                .ccc-coordinators-list .ccc-list-header,
+                .ccc-coordinators-list .ccc-list-row {
+                    grid-template-columns: 2fr 1.5fr 2fr;
+                }
+
+                [data-label]:before {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+
+    <body <?php body_class(); ?>>
+        <?php wp_body_open(); ?>
+
+        <div class="ccc-page-wrapper">
+            <main class="ccc-main">
+                <h1><?php echo esc_html($title); ?></h1>
+                <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
+                ?>
+            </main>
+        </div>
+
+        <?php wp_footer(); ?>
+    </body>
+
+    </html>
+<?php
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
