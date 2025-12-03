@@ -95,6 +95,13 @@ function ccc_enqueue_assets_forced()
         '1.0.0'
     );
 
+    wp_enqueue_style(
+        'ccc-client',
+        CCC_PLUGIN_URL . 'css/ccc-client.css',
+        ['ccc-tables'],
+        '1.0.0'
+    );
+
     wp_enqueue_script(
         'ccc-tables',
         CCC_PLUGIN_URL . 'js/ccc-tables.js',

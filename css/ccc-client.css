@@ -6,3 +6,125 @@
  */
 
 /* Chronicle and Coordinator card styles will go here */
+
+/* Info Box (In Brief, Game Sessions) */
+.ccc-info-box {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 1em;
+    margin: 1em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ccc-info-box h3 {
+    margin: 0 0 0.75em;
+    font-size: 1.1em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5em;
+}
+
+.ccc-brief-item {
+    margin-bottom: 0.5em;
+    line-height: 1.4;
+}
+
+/* Layout: In Brief floated right */
+.ccc-main-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.ccc-in-brief {
+    flex: 0 0 280px;
+    order: 2;
+}
+
+.ccc-chronicle-about {
+    flex: 1 1 400px;
+    order: 1;
+    min-width: 0;
+}
+
+/* Staff + Sessions layout */
+.ccc-staff-sessions-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    margin-top: 1.5em;
+}
+
+.ccc-chronicle-staff {
+    flex: 1 1 400px;
+    min-width: 0;
+}
+
+.ccc-game-sessions-box {
+    flex: 0 0 280px;
+}
+
+.ccc-staff-list {
+    margin-top: 0.5em;
+}
+
+.ccc-staff-line {
+    margin-bottom: 0.4em;
+}
+
+.ccc-staff-role {
+    font-weight: 600;
+    margin-right: 0.5em;
+}
+
+.ccc-staff-email {
+    margin-left: 0.5em;
+    color: #2980b9;
+}
+
+/* Session items in box */
+.ccc-game-sessions-box .ccc-session-item {
+    margin-bottom: 1em;
+    padding-bottom: 0.75em;
+    border-bottom: 1px solid #eee;
+}
+
+.ccc-game-sessions-box .ccc-session-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.ccc-session-when {
+    font-weight: 600;
+}
+
+/* Narrative sections */
+.ccc-narrative-section {
+    margin-bottom: 1.5em;
+}
+
+.ccc-narrative-section h3 {
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+/* Clear float helper */
+.ccc-clear {
+    clear: both;
+}
+
+/* Responsive: stack on narrow screens */
+@media (max-width: 700px) {
+    .ccc-main-content-wrapper,
+    .ccc-staff-sessions-wrapper {
+        flex-direction: column;
+    }
+
+    .ccc-in-brief,
+    .ccc-game-sessions-box {
+        order: 0;
+        flex: 1 1 100%;
+    }
+}

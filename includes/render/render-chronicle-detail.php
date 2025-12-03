@@ -4,16 +4,13 @@
  * OWBN-CC-Client Chronicle Detail Render
  * 
  * @package OWBN-CC-Client
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 defined('ABSPATH') || exit;
 
 /**
  * Render chronicle detail.
- *
- * @param array $chronicle Chronicle data
- * @return string HTML output
  */
 function ccc_render_chronicle_detail(array $chronicle): string
 {
@@ -32,14 +29,25 @@ function ccc_render_chronicle_detail(array $chronicle): string
         </div>
 
         <?php echo ccc_render_chronicle_header($chronicle); ?>
-        <?php echo ccc_render_chronicle_quick_info($chronicle); ?>
-        <?php echo ccc_render_chronicle_description($chronicle); ?>
-        <?php echo ccc_render_chronicle_game_info($chronicle); ?>
-        <?php echo ccc_render_chronicle_traveler_info($chronicle); ?>
-        <?php echo ccc_render_chronicle_staff($chronicle); ?>
-        <?php echo ccc_render_chronicle_sessions($chronicle); ?>
+
+        <div class="ccc-main-content-wrapper">
+            <?php echo ccc_render_in_brief($chronicle); ?>
+            <?php echo ccc_render_chronicle_about($chronicle); ?>
+        </div>
+
+        <div class="ccc-clear"></div>
+
+        <?php echo ccc_render_chronicle_narrative($chronicle); ?>
+
+        <div class="ccc-staff-sessions-wrapper">
+            <?php echo ccc_render_chronicle_staff($chronicle); ?>
+            <?php echo ccc_render_game_sessions_box($chronicle); ?>
+        </div>
+
+        <div class="ccc-clear"></div>
+
         <?php echo ccc_render_chronicle_links($chronicle); ?>
-        <?php echo ccc_render_chronicle_locations($chronicle); ?>
+        <?php echo ccc_render_chronicle_documents($chronicle); ?>
 
     </div>
 <?php
@@ -47,13 +55,11 @@ function ccc_render_chronicle_detail(array $chronicle): string
 }
 
 /**
- * Render chronicle header.
+ * Render chronicle header (title + badges only).
  */
 function ccc_render_chronicle_header(array $chronicle): string
 {
     $title = $chronicle['title'] ?? '';
-    $ooc = $chronicle['ooc_locations'] ?? [];
-    $location = ccc_format_location($ooc);
 
     $badges = [];
     if (!empty($chronicle['chronicle_probationary']) && $chronicle['chronicle_probationary'] !== '0') {
@@ -70,11 +76,6 @@ function ccc_render_chronicle_header(array $chronicle): string
 ?>
     <div id="ccc-chronicle-header" class="ccc-chronicle-header">
         <h1 id="ccc-chronicle-title" class="ccc-chronicle-title"><?php echo esc_html($title); ?></h1>
-
-        <?php if ($location) : ?>
-            <div id="ccc-chronicle-location" class="ccc-chronicle-location"><?php echo esc_html($location); ?></div>
-        <?php endif; ?>
-
         <?php if (!empty($badges)) : ?>
             <div id="ccc-chronicle-badges" class="ccc-chronicle-badges"><?php echo implode(' ', $badges); ?></div>
         <?php endif; ?>
@@ -84,30 +85,43 @@ function ccc_render_chronicle_header(array $chronicle): string
 }
 
 /**
- * Render quick info section.
+ * Render "In Brief" sidebar box.
  */
-function ccc_render_chronicle_quick_info(array $chronicle): string
+function ccc_render_in_brief(array $chronicle): string
 {
+    $ooc = $chronicle['ooc_locations'] ?? [];
+    $location = ccc_format_location($ooc);
     $genres = $chronicle['genres'] ?? [];
     $genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-quick-info" class="ccc-chronicle-quick-info">
-        <?php echo ccc_render_info_item(__('Genre(s)', 'owbn-cc-client'), $genres_display, 'ccc-info-genres'); ?>
-        <?php echo ccc_render_info_item(__('Game Type', 'owbn-cc-client'), $chronicle['game_type'] ?? '', 'ccc-info-game-type'); ?>
-        <?php echo ccc_render_info_item(__('Number of Players', 'owbn-cc-client'), $chronicle['active_player_count'] ?? '', 'ccc-info-player-count'); ?>
-        <?php echo ccc_render_info_item(__('OWBN Region', 'owbn-cc-client'), $chronicle['chronicle_region'] ?? '', 'ccc-info-region'); ?>
-        <?php echo ccc_render_info_item(__('Chronicle Start Date', 'owbn-cc-client'), $chronicle['chronicle_start_date'] ?? '', 'ccc-info-start-date'); ?>
+    <div id="ccc-in-brief" class="ccc-info-box ccc-in-brief">
+        <h3><?php esc_html_e('In Brief', 'owbn-cc-client'); ?></h3>
+        <?php if ($location) : ?>
+            <div class="ccc-brief-item"><?php echo esc_html($location); ?></div>
+        <?php endif; ?>
+        <?php if ($genres_display) : ?>
+            <div class="ccc-brief-item"><strong><?php esc_html_e('Genre(s):', 'owbn-cc-client'); ?></strong> <?php echo esc_html($genres_display); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($chronicle['game_type'])) : ?>
+            <div class="ccc-brief-item"><strong><?php esc_html_e('Game Type:', 'owbn-cc-client'); ?></strong> <?php echo esc_html($chronicle['game_type']); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($chronicle['active_player_count'])) : ?>
+            <div class="ccc-brief-item"><strong><?php esc_html_e('Number of Players:', 'owbn-cc-client'); ?></strong> <?php echo esc_html($chronicle['active_player_count']); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($chronicle['chronicle_region'])) : ?>
+            <div class="ccc-brief-item"><strong><?php esc_html_e('OWBN Region:', 'owbn-cc-client'); ?></strong> <?php echo esc_html($chronicle['chronicle_region']); ?></div>
+        <?php endif; ?>
     </div>
 <?php
     return ob_get_clean();
 }
 
 /**
- * Render description/content section.
+ * Render About section (content field).
  */
-function ccc_render_chronicle_description(array $chronicle): string
+function ccc_render_chronicle_about(array $chronicle): string
 {
     $content = $chronicle['content'] ?? '';
     if (empty(trim($content))) {
@@ -116,7 +130,7 @@ function ccc_render_chronicle_description(array $chronicle): string
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-description" class="ccc-chronicle-description">
+    <div id="ccc-chronicle-about" class="ccc-chronicle-about">
         <h2><?php esc_html_e('About', 'owbn-cc-client'); ?></h2>
         <div class="ccc-content"><?php echo wp_kses_post($content); ?></div>
     </div>
@@ -125,45 +139,45 @@ function ccc_render_chronicle_description(array $chronicle): string
 }
 
 /**
- * Render game info (premise, theme, mood).
+ * Render narrative sections (Premise, Theme, Mood, Traveler Info) - no wrapper heading.
  */
-function ccc_render_chronicle_game_info(array $chronicle): string
+function ccc_render_chronicle_narrative(array $chronicle): string
 {
     $premise = $chronicle['premise'] ?? '';
     $theme = $chronicle['game_theme'] ?? '';
     $mood = $chronicle['game_mood'] ?? '';
+    $traveler = $chronicle['traveler_info'] ?? '';
 
-    if (empty($premise) && empty($theme) && empty($mood)) {
+    if (empty(trim($premise)) && empty(trim($theme)) && empty(trim($mood)) && empty(trim($traveler))) {
         return '';
     }
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-game-info" class="ccc-chronicle-game-info">
-        <h2><?php esc_html_e('Game Information', 'owbn-cc-client'); ?></h2>
-        <?php echo ccc_render_content_section(__('Premise', 'owbn-cc-client'), $premise, 'ccc-premise'); ?>
-        <?php echo ccc_render_content_section(__('Theme', 'owbn-cc-client'), $theme, 'ccc-theme'); ?>
-        <?php echo ccc_render_content_section(__('Mood', 'owbn-cc-client'), $mood, 'ccc-mood'); ?>
+    <div id="ccc-chronicle-narrative" class="ccc-chronicle-narrative">
+        <?php echo ccc_render_narrative_section(__('Premise', 'owbn-cc-client'), $premise); ?>
+        <?php echo ccc_render_narrative_section(__('Theme', 'owbn-cc-client'), $theme); ?>
+        <?php echo ccc_render_narrative_section(__('Mood', 'owbn-cc-client'), $mood); ?>
+        <?php echo ccc_render_narrative_section(__('Information for Travelers', 'owbn-cc-client'), $traveler); ?>
     </div>
 <?php
     return ob_get_clean();
 }
 
 /**
- * Render traveler info.
+ * Render single narrative section (only if content exists).
  */
-function ccc_render_chronicle_traveler_info(array $chronicle): string
+function ccc_render_narrative_section(string $title, string $content): string
 {
-    $info = $chronicle['traveler_info'] ?? '';
-    if (empty(trim($info))) {
+    if (empty(trim($content))) {
         return '';
     }
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-traveler-info" class="ccc-chronicle-traveler-info">
-        <h2><?php esc_html_e('Information for Travelers', 'owbn-cc-client'); ?></h2>
-        <div class="ccc-content"><?php echo wp_kses_post($info); ?></div>
+    <div class="ccc-narrative-section">
+        <h3><?php echo esc_html($title); ?></h3>
+        <div class="ccc-content"><?php echo wp_kses_post($content); ?></div>
     </div>
 <?php
     return ob_get_clean();
@@ -190,23 +204,45 @@ function ccc_render_chronicle_staff(array $chronicle): string
 ?>
     <div id="ccc-chronicle-staff" class="ccc-chronicle-staff">
         <h2><?php esc_html_e('Staff', 'owbn-cc-client'); ?></h2>
-
-        <div class="ccc-staff-grid">
-            <?php echo ccc_render_staff_block($hst, __('Head Storyteller', 'owbn-cc-client'), 'ccc-staff-hst'); ?>
-            <?php echo ccc_render_staff_block($cm, __('Council Member', 'owbn-cc-client'), 'ccc-staff-cm'); ?>
-            <?php echo ccc_render_staff_block($admin, __('Admin Contact', 'owbn-cc-client'), 'ccc-staff-admin'); ?>
+        <div class="ccc-staff-list">
+            <?php echo ccc_render_staff_line(__('Head Storyteller', 'owbn-cc-client'), $hst); ?>
+            <?php echo ccc_render_staff_line(__('Council Member', 'owbn-cc-client'), $cm); ?>
+            <?php echo ccc_render_staff_line(__('Admin Contact', 'owbn-cc-client'), $admin); ?>
+            <?php foreach ($ast_list as $ast) : ?>
+                <?php echo ccc_render_staff_line($ast['role'] ?? __('AST', 'owbn-cc-client'), $ast); ?>
+            <?php endforeach; ?>
         </div>
-
-        <?php echo ccc_render_ast_list($ast_list); ?>
     </div>
 <?php
     return ob_get_clean();
 }
 
 /**
- * Render game sessions.
+ * Render single staff line.
  */
-function ccc_render_chronicle_sessions(array $chronicle): string
+function ccc_render_staff_line(string $role, array $info): string
+{
+    if (empty($info['display_name'])) {
+        return '';
+    }
+
+    ob_start();
+?>
+    <div class="ccc-staff-line">
+        <span class="ccc-staff-role"><?php echo esc_html($role); ?>:</span>
+        <span class="ccc-staff-name"><?php echo esc_html($info['display_name']); ?></span>
+        <?php if (!empty($info['display_email'])) : ?>
+            <a class="ccc-staff-email" href="mailto:<?php echo esc_attr($info['display_email']); ?>"><?php echo esc_html($info['display_email']); ?></a>
+        <?php endif; ?>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Render Game Sessions box (floated, same style as In Brief).
+ */
+function ccc_render_game_sessions_box(array $chronicle): string
 {
     $sessions = $chronicle['session_list'] ?? [];
     $sessions = array_filter($sessions, fn($s) => !empty($s['day']) || !empty($s['session_type']));
@@ -217,25 +253,44 @@ function ccc_render_chronicle_sessions(array $chronicle): string
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-sessions" class="ccc-chronicle-sessions">
-        <h2><?php esc_html_e('Game Sessions', 'owbn-cc-client'); ?></h2>
-        <?php echo ccc_render_session_list($sessions); ?>
+    <div id="ccc-game-sessions-box" class="ccc-info-box ccc-game-sessions-box">
+        <h3><?php esc_html_e('Game Sessions', 'owbn-cc-client'); ?></h3>
+        <?php foreach ($sessions as $session) : ?>
+            <div class="ccc-session-item">
+                <?php
+                $parts = array_filter([
+                    $session['frequency'] ?? '',
+                    $session['day'] ?? '',
+                ]);
+                if ($parts) : ?>
+                    <div class="ccc-session-when"><?php echo esc_html(implode(' ', $parts)); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($session['session_type'])) : ?>
+                    <div class="ccc-session-type"><?php echo esc_html($session['session_type']); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($session['checkin_time'])) : ?>
+                    <div class="ccc-session-time"><?php esc_html_e('Check-in:', 'owbn-cc-client'); ?> <?php echo esc_html($session['checkin_time']); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($session['start_time'])) : ?>
+                    <div class="ccc-session-time"><?php esc_html_e('Start:', 'owbn-cc-client'); ?> <?php echo esc_html($session['start_time']); ?></div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
     </div>
 <?php
     return ob_get_clean();
 }
 
 /**
- * Render links and resources.
+ * Render Links & Resources.
  */
 function ccc_render_chronicle_links(array $chronicle): string
 {
     $web_url = $chronicle['web_url'] ?? '';
     $social_urls = array_filter($chronicle['social_urls'] ?? [], fn($s) => !empty($s['url']));
-    $document_links = array_filter($chronicle['document_links'] ?? [], fn($d) => !empty($d['link']));
     $email_lists = array_filter($chronicle['email_lists'] ?? [], fn($e) => !empty($e['list_name']) || !empty($e['list_email']));
 
-    if (empty($web_url) && empty($social_urls) && empty($document_links) && empty($email_lists)) {
+    if (empty($web_url) && empty($social_urls) && empty($email_lists)) {
         return '';
     }
 
@@ -243,33 +298,14 @@ function ccc_render_chronicle_links(array $chronicle): string
 ?>
     <div id="ccc-chronicle-links" class="ccc-chronicle-links">
         <h2><?php esc_html_e('Links & Resources', 'owbn-cc-client'); ?></h2>
-
         <?php if ($web_url) : ?>
-            <div class="ccc-link-item" id="ccc-website">
-                <span class="ccc-link-label"><?php esc_html_e('Website', 'owbn-cc-client'); ?></span>
-                <a href="<?php echo esc_url($web_url); ?>" target="_blank" rel="noopener"><?php echo esc_html($web_url); ?></a>
-            </div>
+            <div class="ccc-link-item"><a href="<?php echo esc_url($web_url); ?>" target="_blank" rel="noopener"><?php echo esc_html($web_url); ?></a></div>
         <?php endif; ?>
-
         <?php if (!empty($social_urls)) : ?>
-            <div class="ccc-social-links" id="ccc-social-urls">
-                <h3><?php esc_html_e('Social Media', 'owbn-cc-client'); ?></h3>
-                <?php echo ccc_render_social_links($social_urls); ?>
-            </div>
+            <?php echo ccc_render_social_links($social_urls); ?>
         <?php endif; ?>
-
-        <?php if (!empty($document_links)) : ?>
-            <div class="ccc-document-links" id="ccc-document-links">
-                <h3><?php esc_html_e('Documents', 'owbn-cc-client'); ?></h3>
-                <?php echo ccc_render_document_links($document_links); ?>
-            </div>
-        <?php endif; ?>
-
         <?php if (!empty($email_lists)) : ?>
-            <div class="ccc-email-lists" id="ccc-email-lists">
-                <h3><?php esc_html_e('Email Lists', 'owbn-cc-client'); ?></h3>
-                <?php echo ccc_render_email_lists($email_lists); ?>
-            </div>
+            <?php echo ccc_render_email_lists($email_lists); ?>
         <?php endif; ?>
     </div>
 <?php
@@ -277,35 +313,21 @@ function ccc_render_chronicle_links(array $chronicle): string
 }
 
 /**
- * Render locations (IC and game sites).
+ * Render Documents section.
  */
-function ccc_render_chronicle_locations(array $chronicle): string
+function ccc_render_chronicle_documents(array $chronicle): string
 {
-    $game_sites = array_filter($chronicle['game_site_list'] ?? [], fn($l) => !empty($l['name']) || !empty($l['url']) || !empty($l['city']));
-    $ic_locations = array_filter($chronicle['ic_location_list'] ?? [], fn($l) => !empty($l['name']) || !empty($l['city']));
+    $docs = array_filter($chronicle['document_links'] ?? [], fn($d) => !empty($d['link']));
 
-    if (empty($game_sites) && empty($ic_locations)) {
+    if (empty($docs)) {
         return '';
     }
 
     ob_start();
 ?>
-    <div id="ccc-chronicle-locations" class="ccc-chronicle-locations">
-        <h2><?php esc_html_e('Locations', 'owbn-cc-client'); ?></h2>
-
-        <?php if (!empty($game_sites)) : ?>
-            <div class="ccc-game-sites" id="ccc-game-sites">
-                <h3><?php esc_html_e('Game Sites', 'owbn-cc-client'); ?></h3>
-                <?php echo ccc_render_location_list($game_sites, 'game_site'); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($ic_locations)) : ?>
-            <div class="ccc-ic-locations" id="ccc-ic-locations">
-                <h3><?php esc_html_e('IC Locations', 'owbn-cc-client'); ?></h3>
-                <?php echo ccc_render_location_list($ic_locations, 'ic_location'); ?>
-            </div>
-        <?php endif; ?>
+    <div id="ccc-chronicle-documents" class="ccc-chronicle-documents">
+        <h2><?php esc_html_e('Documents', 'owbn-cc-client'); ?></h2>
+        <?php echo ccc_render_document_links($docs); ?>
     </div>
 <?php
     return ob_get_clean();
