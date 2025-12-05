@@ -49,6 +49,7 @@ function ccc_render_chronicle_detail(array $chronicle): string
         <?php echo ccc_render_chronicle_links($chronicle); ?>
         <?php echo ccc_render_chronicle_documents($chronicle); ?>
         <?php echo ccc_render_chronicle_player_lists($chronicle); ?>
+        <?php echo ccc_render_satellite_parent($chronicle); ?>
 
     </div>
 <?php
@@ -68,9 +69,6 @@ function ccc_render_chronicle_header(array $chronicle): string
     }
     if (!empty($chronicle['chronicle_satellite']) && $chronicle['chronicle_satellite'] !== '0') {
         $badges[] = '<span class="ccc-badge ccc-badge-satellite">' . esc_html__('Satellite', 'owbn-cc-client') . '</span>';
-        if (!empty($chronicle['chronicle_parent'])) {
-            $badges[] = '<span class="ccc-badge ccc-badge-parent">' . esc_html__('Parent: ', 'owbn-cc-client') . esc_html($chronicle['chronicle_parent']) . '</span>';
-        }
     }
 
     ob_start();
@@ -351,6 +349,36 @@ function ccc_render_chronicle_player_lists(array $chronicle): string
     <div id="ccc-chronicle-player-lists" class="ccc-chronicle-player-lists">
         <h2><?php esc_html_e('Player Lists', 'owbn-cc-client'); ?></h2>
         <?php echo ccc_render_player_lists($lists); ?>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Render satellite parent link.
+ */
+function ccc_render_satellite_parent(array $chronicle): string
+{
+    if (empty($chronicle['chronicle_satellite']) || $chronicle['chronicle_satellite'] === '0') {
+        return '';
+    }
+
+    $parent_slug = $chronicle['chronicle_parent'] ?? '';
+    $parent_title = $chronicle['chronicle_parent_title'] ?? '';
+
+    if (empty($parent_slug) || empty($parent_title)) {
+        return '';
+    }
+
+    $detail_page_id = get_option(ccc_option_name('chronicles_detail_page'), 0);
+    $base_url = $detail_page_id ? get_permalink($detail_page_id) : home_url('/chronicle-detail/');
+    $parent_url = add_query_arg('slug', $parent_slug, $base_url);
+
+    ob_start();
+?>
+    <div id="ccc-satellite-parent" class="ccc-satellite-parent">
+        <strong><?php esc_html_e('Satellite Parent:', 'owbn-cc-client'); ?></strong>
+        <a href="<?php echo esc_url($parent_url); ?>"><?php echo esc_html($parent_title); ?></a>
     </div>
 <?php
     return ob_get_clean();
