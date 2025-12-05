@@ -7,7 +7,8 @@
     });
 
     function initSortableTables() {
-        const lists = document.querySelectorAll('.ccc-chronicles-list, .ccc-coordinators-list');
+        // Only enable sorting for chronicles list, not coordinators
+        const lists = document.querySelectorAll('.ccc-chronicles-list');
         
         lists.forEach(function(list) {
             const header = list.querySelector('.ccc-list-header');

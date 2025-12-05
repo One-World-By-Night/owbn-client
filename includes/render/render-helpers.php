@@ -254,7 +254,7 @@ function ccc_render_location_list(array $locations, string $type = 'game_site'):
  */
 function ccc_render_document_links(array $links): string
 {
-    $links = array_filter($links, fn($l) => !empty($l['link']));
+    $links = array_filter($links, fn($l) => !empty($l['url']) || !empty($l['link']));
 
     if (empty($links)) {
         return '';
@@ -265,8 +265,9 @@ function ccc_render_document_links(array $links): string
     <ul class="ccc-document-list">
         <?php foreach ($links as $doc) : ?>
             <li>
-                <a href="<?php echo esc_url($doc['link']); ?>" target="_blank" rel="noopener">
-                    <?php echo esc_html($doc['title'] ?: $doc['link']); ?>
+                <?php $url = $doc['url'] ?? $doc['link'] ?? ''; ?>
+                <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
+                    <?php echo esc_html($doc['title'] ?: $url); ?>
                 </a>
             </li>
         <?php endforeach; ?>
