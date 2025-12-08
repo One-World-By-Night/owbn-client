@@ -85,16 +85,3 @@ if (!defined($prefix . 'JS_URL')) {
 
 // Bootstrap the client module
 require_once constant($prefix . 'DIR') . 'includes/init.php';
-
-// Enqueue frontend assets when shortcode is present
-add_action('wp_enqueue_scripts', function () {
-    global $post;
-
-    if (!is_a($post, 'WP_Post') || !has_shortcode($post->post_content, 'owbn-client')) {
-        return;
-    }
-
-    wp_enqueue_style('owc-tables', OWC_PLUGIN_URL . 'css/owc-tables.css', [], '2.0.0');
-    wp_enqueue_style('owc-client', OWC_PLUGIN_URL . 'css/owc-client.css', ['owc-tables'], '2.0.0');
-    wp_enqueue_script('owc-tables', OWC_PLUGIN_URL . 'js/owc-tables.js', [], '2.0.0', true);
-});

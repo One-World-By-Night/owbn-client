@@ -17,15 +17,19 @@ defined('ABSPATH') || exit;
  *
  * @param array  $territories Array of territory data
  * @param string $context     'chronicle'|'coordinator' for slug linking
+ * @param string $current_slug Current page's slug to exclude from links
  * @return string HTML
  */
-function owc_render_territory_box(array $territories, string $context = ''): string
+function owc_render_territory_box(array $territories, string $context = '', string $current_slug = ''): string
 {
     if (empty($territories)) {
         return '';
     }
 
     $container_id = 'owc-terr-' . wp_unique_id();
+
+    // Build slug type map for JS
+    $slug_types = owc_get_all_slug_types();
 
     ob_start();
 ?>
@@ -60,6 +64,10 @@ function owc_render_territory_box(array $territories, string $context = ''): str
         (function() {
             const container = document.getElementById('<?php echo esc_js($container_id); ?>');
             const data = <?php echo wp_json_encode(owc_prepare_territory_data($territories)); ?>;
+            const slugTypes = <?php echo wp_json_encode($slug_types); ?>;
+            const currentSlug = <?php echo wp_json_encode($current_slug); ?>;
+            const chroniclesBase = '<?php echo esc_js(owc_get_chronicles_slug()); ?>';
+            const coordinatorsBase = '<?php echo esc_js(owc_get_coordinators_slug()); ?>';
             const perPage = 10;
             let page = 1;
             let sortKey = 'title';
@@ -105,8 +113,18 @@ function owc_render_territory_box(array $territories, string $context = ''): str
 
             function escHtml(str) {
                 const div = document.createElement('div');
-                div.textContent = str;
+                div.textContent = str || '';
                 return div.innerHTML;
+            }
+
+            function buildSlugLink(slug) {
+                const type = slugTypes[slug] || '';
+                if (type === 'chronicle') {
+                    return `<a href="/${chroniclesBase}/${slug}/">${escHtml(slug)}</a>`;
+                } else if (type === 'coordinator') {
+                    return `<a href="/${coordinatorsBase}/${slug}/">${escHtml(slug)}</a>`;
+                }
+                return escHtml(slug);
             }
 
             function showDetail(id) {
@@ -114,8 +132,9 @@ function owc_render_territory_box(array $territories, string $context = ''): str
                 if (!item) return;
 
                 let html = `<h3>${escHtml(item.title)}</h3>`;
+
                 if (item.countries && item.countries.length) {
-                    html += `<p><strong><?php esc_html_e('Country:', 'owbn-client'); ?></strong> ${escHtml(item.country_names)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Countries:', 'owbn-client'); ?></strong> ${escHtml(item.country_names)}</p>`;
                 }
                 if (item.region) {
                     html += `<p><strong><?php esc_html_e('Region:', 'owbn-client'); ?></strong> ${escHtml(item.region)}</p>`;
@@ -129,8 +148,18 @@ function owc_render_territory_box(array $territories, string $context = ''): str
                 if (item.owner) {
                     html += `<p><strong><?php esc_html_e('Owner:', 'owbn-client'); ?></strong> ${escHtml(item.owner)}</p>`;
                 }
+
+                // Slugs with links (exclude current)
+                if (item.slugs && item.slugs.length) {
+                    const otherSlugs = item.slugs.filter(s => s !== currentSlug);
+                    if (otherSlugs.length) {
+                        const slugLinks = otherSlugs.map(buildSlugLink).join(', ');
+                        html += `<p><strong><?php esc_html_e('Also claimed by:', 'owbn-client'); ?></strong> ${slugLinks}</p>`;
+                    }
+                }
+
                 if (item.description) {
-                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-client'); ?></strong><br>${item.description}</div>`;
+                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-client'); ?></strong><div>${item.description}</div></div>`;
                 }
 
                 modalContent.innerHTML = html;
@@ -173,6 +202,36 @@ function owc_render_territory_box(array $territories, string $context = ''): str
 }
 
 /**
+ * Get all slug types for JS.
+ *
+ * @return array ['slug' => 'chronicle'|'coordinator']
+ */
+function owc_get_all_slug_types(): array
+{
+    $types = [];
+
+    $chronicles = owc_fetch_list('chronicles');
+    if (!isset($chronicles['error']) && is_array($chronicles)) {
+        foreach ($chronicles as $c) {
+            if (!empty($c['slug'])) {
+                $types[$c['slug']] = 'chronicle';
+            }
+        }
+    }
+
+    $coordinators = owc_fetch_list('coordinators');
+    if (!isset($coordinators['error']) && is_array($coordinators)) {
+        foreach ($coordinators as $c) {
+            if (!empty($c['slug'])) {
+                $types[$c['slug']] = 'coordinator';
+            }
+        }
+    }
+
+    return $types;
+}
+
+/**
  * Prepare territory data for JSON output.
  *
  * @param array $territories
@@ -184,7 +243,7 @@ function owc_prepare_territory_data(array $territories): array
         $countries = $t['countries'] ?? [];
         return [
             'id'            => $t['id'] ?? 0,
-            'title'         => $t['title'] ?? '',
+            'title'         => html_entity_decode($t['title'] ?? ''),
             'countries'     => $countries,
             'country_names' => owc_render_territory_countries($countries),
             'region'        => $t['region'] ?? '',

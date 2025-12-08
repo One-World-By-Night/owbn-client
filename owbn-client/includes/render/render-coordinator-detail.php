@@ -302,7 +302,7 @@ function owc_render_coordinator_territories(array $coordinator): string
 ?>
     <div id="owc-coordinator-territories" class="owc-coordinator-territories">
         <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
-        <?php echo owc_render_territory_box($territories, 'coordinator'); ?>
+        <?php echo owc_render_territory_box($territories, 'coordinator', $coordinator['slug'] ?? ''); ?>
     </div>
 <?php
     return ob_get_clean();

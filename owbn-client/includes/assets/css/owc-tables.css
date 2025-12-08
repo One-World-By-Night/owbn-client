@@ -1,6 +1,6 @@
 /* Chronicle & Coordinator List Tables */
-.ccc-chronicles-list,
-.ccc-coordinators-list {
+.owc-chronicles-list,
+.owc-coordinators-list {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
@@ -8,7 +8,7 @@
 }
 
 /* Header row */
-.ccc-list-header {
+.owc-list-header {
     display: flex;
     background: #2c3e50;
     color: #fff;
@@ -16,31 +16,31 @@
     font-weight: 600;
 }
 
-.ccc-list-header > div {
+.owc-list-header > div {
     padding: 10px 12px;
     cursor: pointer;
     user-select: none;
     position: relative;
 }
 
-.ccc-list-header > div:hover {
+.owc-list-header > div:hover {
     background: #34495e;
 }
 
 /* Sort indicators */
-.ccc-list-header > div::after {
+.owc-list-header > div::after {
     content: '⇅';
     margin-left: 6px;
     opacity: 0.4;
     font-size: 11px;
 }
 
-.ccc-list-header > div.sort-asc::after {
+.owc-list-header > div.sort-asc::after {
     content: '↑';
     opacity: 1;
 }
 
-.ccc-list-header > div.sort-desc::after {
+.owc-list-header > div.sort-desc::after {
     content: '↓';
     opacity: 1;
 }
@@ -51,54 +51,54 @@
     border-bottom: 1px solid #e0e0e0;
 }
 
-.ccc-list-row:nth-child(odd) {
+.owc-list-row:nth-child(odd) {
     background: #f9f9f9;
 }
 
-.ccc-list-row:nth-child(even) {
+.owc-list-row:nth-child(even) {
     background: #fff;
 }
 
-.ccc-list-row:hover {
+.owc-list-row:hover {
     background: #f0f4f8;
 }
 
-.ccc-list-row > div {
+.owc-list-row > div {
     padding: 8px 12px;
     font-size: 13px;
 }
 
 /* Column widths - Chronicles */
-.ccc-chronicles-list .ccc-col-title { flex: 2; min-width: 150px; }
-.ccc-chronicles-list .ccc-col-genres { flex: 1.5; min-width: 100px; }
-.ccc-chronicles-list .ccc-col-region { flex: 1; min-width: 80px; }
-.ccc-chronicles-list .ccc-col-state { flex: 1; min-width: 100px; }
-.ccc-chronicles-list .ccc-col-city { flex: 1; min-width: 100px; }
-.ccc-chronicles-list .ccc-col-type { flex: 0.8; min-width: 70px; }
-.ccc-chronicles-list .ccc-col-status { flex: 1; min-width: 90px; }
+.owc-chronicles-list .owc-col-title { flex: 2; min-width: 150px; }
+.owc-chronicles-list .owc-col-genres { flex: 1.5; min-width: 100px; }
+.owc-chronicles-list .owc-col-region { flex: 1; min-width: 80px; }
+.owc-chronicles-list .owc-col-state { flex: 1; min-width: 100px; }
+.owc-chronicles-list .owc-col-city { flex: 1; min-width: 100px; }
+.owc-chronicles-list .owc-col-type { flex: 0.8; min-width: 70px; }
+.owc-chronicles-list .owc-col-status { flex: 1; min-width: 90px; }
 
 /* Column widths - Coordinators */
-.ccc-coordinators-list .ccc-col-office { flex: 2; min-width: 150px; }
-.ccc-coordinators-list .ccc-col-coordinator { flex: 1.5; min-width: 120px; }
-.ccc-coordinators-list .ccc-col-email { flex: 1.5; min-width: 150px; }
+.owc-coordinators-list .owc-col-office { flex: 2; min-width: 150px; }
+.owc-coordinators-list .owc-col-coordinator { flex: 1.5; min-width: 120px; }
+.owc-coordinators-list .owc-col-email { flex: 1.5; min-width: 150px; }
 
 /* Links */
-.ccc-list-row a {
+.owc-list-row a {
     color: #2980b9;
     text-decoration: none;
 }
 
-.ccc-list-row a:hover {
+.owc-list-row a:hover {
     text-decoration: underline;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .ccc-list-header {
+    .owc-list-header {
         display: none;
     }
     
-    .ccc-list-row {
+    .owc-list-row {
         flex-direction: column;
         padding: 10px;
         margin-bottom: 10px;
@@ -106,21 +106,21 @@
         border-radius: 4px;
     }
     
-    .ccc-list-row > div {
+    .owc-list-row > div {
         padding: 4px 0;
     }
     
-    .ccc-list-row > div::before {
+    .owc-list-row > div::before {
         content: attr(data-label) ': ';
         font-weight: 600;
         color: #555;
     }
     
-    .ccc-list-row .ccc-col-title::before {
+    .owc-list-row .owc-col-title::before {
         content: '';
     }
     
-    .ccc-list-row .ccc-col-title {
+    .owc-list-row .owc-col-title {
         font-weight: 600;
         font-size: 15px;
         margin-bottom: 6px;
@@ -128,7 +128,7 @@
 }
 
 /* Filter inputs */
-.ccc-chronicles-filters {
+.owc-chronicles-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -138,7 +138,7 @@
     border-radius: 4px;
 }
 
-.ccc-filter-input {
+.owc-filter-input {
     flex: 1;
     min-width: 120px;
     padding: 8px 12px;
@@ -148,13 +148,13 @@
     -webkit-appearance: none; /* Better iOS styling */
 }
 
-.ccc-filter-input:focus {
+.owc-filter-input:focus {
     outline: none;
     border-color: #2980b9;
     box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
 }
 
-.ccc-clear-filters {
+.owc-clear-filters {
     padding: 8px 16px;
     background: #e74c3c;
     color: #fff;
@@ -165,25 +165,25 @@
     -webkit-appearance: none;
 }
 
-.ccc-clear-filters:hover,
-.ccc-clear-filters:active {
+.owc-clear-filters:hover,
+.owc-clear-filters:active {
     background: #c0392b;
 }
 
 @media (max-width: 768px) {
-    .ccc-chronicles-filters {
+    .owc-chronicles-filters {
         flex-direction: column;
         gap: 8px;
     }
     
-    .ccc-filter-input {
+    .owc-filter-input {
         width: 100%;
         min-width: unset;
         padding: 12px; /* Larger touch target */
         font-size: 16px; /* Prevents iOS zoom on focus */
     }
     
-    .ccc-clear-filters {
+    .owc-clear-filters {
         width: 100%;
         padding: 12px;
         font-size: 16px;
@@ -191,15 +191,15 @@
 }
 
 /* Coordinator group styling */
-.ccc-coord-group {
+.owc-coord-group {
     margin-bottom: 30px;
 }
 
-.ccc-coord-group:last-child {
+.owc-coord-group:last-child {
     margin-bottom: 0;
 }
 
-.ccc-coord-group-header {
+.owc-coord-group-header {
     background: #34495e;
     color: #fff;
     font-size: 18px;
@@ -209,24 +209,24 @@
     margin-bottom: 0;
 }
 
-.ccc-coord-group .ccc-list-header {
+.owc-coord-group .owc-list-header {
     border-radius: 0;
 }
 
-.ccc-coord-group .ccc-list-header > div {
+.owc-coord-group .owc-list-header > div {
     cursor: default; /* No sorting */
 }
 
-.ccc-coord-group .ccc-list-header > div::after {
+.owc-coord-group .owc-list-header > div::after {
     content: ''; /* Remove sort indicator */
 }
 
-.ccc-coord-group .ccc-list-header > div:hover {
+.owc-coord-group .owc-list-header > div:hover {
     background: #2c3e50; /* No hover effect */
 }
 
 @media (max-width: 768px) {
-    .ccc-coord-group-header {
+    .owc-coord-group-header {
         font-size: 16px;
         padding: 10px 12px;
     }

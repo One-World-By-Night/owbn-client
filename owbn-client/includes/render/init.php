@@ -20,3 +20,6 @@ require_once __DIR__ . '/render-territory-list.php';
 require_once __DIR__ . '/render-chronicle-detail.php';
 require_once __DIR__ . '/render-coordinator-detail.php';
 require_once __DIR__ . '/render-territory-detail.php';
+
+// Boxes
+require_once __DIR__ . '/render-territory-box.php';

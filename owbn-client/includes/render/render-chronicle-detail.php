@@ -18,7 +18,9 @@ function owc_render_chronicle_detail(array $chronicle): string
         return '<p class="owc-error">' . esc_html($chronicle['error'] ?? __('Chronicle not found.', 'owbn-client')) . '</p>';
     }
 
-    $back_url = home_url('/' . owc_get_chronicles_slug() . '/');
+    // Use list page if configured, otherwise fall back to slug-based URL
+    $list_page_id = get_option(owc_option_name('chronicles_list_page'), 0);
+    $back_url = $list_page_id ? get_permalink($list_page_id) : home_url('/' . owc_get_chronicles_slug() . 's/');
 
     ob_start();
 ?>
@@ -404,7 +406,7 @@ function owc_render_chronicle_territories(array $chronicle): string
 ?>
     <div id="owc-chronicle-territories" class="owc-chronicle-territories">
         <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
-        <?php echo owc_render_territory_box($territories, 'chronicle'); ?>
+        <?php echo owc_render_territory_box($territories, 'chronicle', $chronicle['slug'] ?? ''); ?>
     </div>
 <?php
     return ob_get_clean();

@@ -37,7 +37,7 @@ function owc_fetch_list(string $route): array
 }
 
 /**
- * Fetch detail data (not cached).
+ * Fetch detail data (cached).
  *
  * @param string     $route      'chronicles'|'coordinators'|'territories'
  * @param string|int $identifier Slug or ID
@@ -67,26 +67,18 @@ function owc_fetch_detail(string $route, $identifier): array
 }
 
 /**
- * Fetch territories by slug (filters from cached list).
+ * Fetch territories by slug.
  *
  * @param string $slug Chronicle or coordinator slug
  * @return array
  */
 function owc_fetch_territories_by_slug(string $slug): array
 {
-    // Filter from cached territories list for better performance
-    $all = owc_get_territories();
+    $data = owc_get_territories_by_slug($slug);
 
-    if (is_wp_error($all)) {
-        return ['error' => $all->get_error_message()];
+    if (is_wp_error($data)) {
+        return ['error' => $data->get_error_message()];
     }
 
-    if (empty($all)) {
-        return [];
-    }
-
-    return array_values(array_filter($all, function ($t) use ($slug) {
-        $slugs = $t['slugs'] ?? [];
-        return is_array($slugs) && in_array($slug, $slugs, true);
-    }));
+    return $data ?: [];
 }

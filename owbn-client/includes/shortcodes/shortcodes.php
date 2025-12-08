@@ -124,17 +124,36 @@ function owc_enqueue_assets()
     $js_url  = defined($prefix . 'JS_URL') ? constant($prefix . 'JS_URL') : OWC_PLUGIN_URL . 'includes/assets/js/';
     $version = defined($prefix . 'VERSION') ? constant($prefix . 'VERSION') : '2.0.0';
 
+    // Tables CSS (base styles)
     wp_register_style(
-        'owc-client',
-        $css_url . 'owc-client.css',
+        'owc-tables',
+        $css_url . 'owc-tables.css',
         [],
         $version
     );
 
+    // Client CSS (depends on tables)
+    wp_register_style(
+        'owc-client',
+        $css_url . 'owc-client.css',
+        ['owc-tables'],
+        $version
+    );
+
+    // Tables JS (sorting/filtering)
+    wp_register_script(
+        'owc-tables',
+        $js_url . 'owc-tables.js',
+        [],
+        $version,
+        true
+    );
+
+    // Client JS (depends on tables)
     wp_register_script(
         'owc-client',
         $js_url . 'owc-client.js',
-        [],
+        ['owc-tables'],
         $version,
         true
     );
@@ -144,7 +163,7 @@ function owc_enqueue_assets()
 
     // Force print if headers already sent (shortcode runs late)
     if (did_action('wp_head')) {
-        wp_print_styles(['owc-client']);
+        wp_print_styles(['owc-tables', 'owc-client']);
     }
 
     $enqueued = true;
