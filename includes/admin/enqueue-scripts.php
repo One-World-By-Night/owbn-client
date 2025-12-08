@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Coordinators enqueue scripts
- * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * OWBN-Client enqueue scripts
+ * location: includes/admin/enqueue-scripts.php
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * OWBN-CC-Client Master Loader
+ * OWBN-Client Master Loader
  * 
  * Loads all module init.php files in dependency order.
  * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;
@@ -30,4 +30,4 @@ require_once __DIR__ . '/render/init.php';
 require_once __DIR__ . '/shortcodes/init.php';
 
 // Fire loaded action
-do_action('cc_client_loaded', CCC_PREFIX);
+do_action('owc_client_loaded', OWC_PREFIX);

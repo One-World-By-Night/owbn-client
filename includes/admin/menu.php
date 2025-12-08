@@ -1,60 +1,72 @@
 <?php
 
 /**
- * OWBN-CC-Client Admin Menu
- * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * OWBN-Client Admin Menu
+ * locaiton: includes/admin/menu.php
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;
 
 add_action('admin_menu', function () {
-    $client_id = ccc_get_client_id();
-    $menu_slug = $client_id . '-ccc-settings';
+    $client_id = owc_get_client_id();
+    $menu_slug = $client_id . '-owc-settings';
 
     // Top-level menu
     add_menu_page(
-        __('OWBN CC Client', 'owbn-cc-client'),
-        __('OWBN CC Client', 'owbn-cc-client'),
+        __('OWBN Client', 'owbn-client'),
+        __('OWBN Client', 'owbn-client'),
         'manage_options',
         $menu_slug,
-        'ccc_render_settings_page',
+        'owc_render_settings_page',
         'dashicons-networking',
         30
     );
 
     // Chronicles submenu (only if enabled)
-    if (get_option(ccc_option_name('enable_chronicles'), false)) {
+    if (get_option(owc_option_name('enable_chronicles'), false)) {
         add_submenu_page(
             $menu_slug,
-            __('Chronicles', 'owbn-cc-client'),
-            __('Chronicles', 'owbn-cc-client'),
+            __('Chronicles', 'owbn-client'),
+            __('Chronicles', 'owbn-client'),
             'manage_options',
-            $client_id . '-ccc-chronicles',
-            'ccc_render_chronicles_page'
+            $client_id . '-owc-chronicles',
+            'owc_render_chronicles_page'
         );
     }
 
     // Coordinators submenu (only if enabled)
-    if (get_option(ccc_option_name('enable_coordinators'), false)) {
+    if (get_option(owc_option_name('enable_coordinators'), false)) {
         add_submenu_page(
             $menu_slug,
-            __('Coordinators', 'owbn-cc-client'),
-            __('Coordinators', 'owbn-cc-client'),
+            __('Coordinators', 'owbn-client'),
+            __('Coordinators', 'owbn-client'),
             'manage_options',
-            $client_id . '-ccc-coordinators',
-            'ccc_render_coordinators_page'
+            $client_id . '-owc-coordinators',
+            'owc_render_coordinators_page'
+        );
+    }
+
+    // Territories submenu (only if enabled)
+    if (get_option(owc_option_name('enable_territories'), false)) {
+        add_submenu_page(
+            $menu_slug,
+            __('Territories', 'owbn-client'),
+            __('Territories', 'owbn-client'),
+            'manage_options',
+            $client_id . '-owc-territories',
+            'owc_render_territories_page'
         );
     }
 
     // Settings submenu (rename the default)
     add_submenu_page(
         $menu_slug,
-        __('Settings', 'owbn-cc-client'),
-        __('Settings', 'owbn-cc-client'),
+        __('Settings', 'owbn-client'),
+        __('Settings', 'owbn-client'),
         'manage_options',
         $menu_slug,
-        'ccc_render_settings_page'
+        'owc_render_settings_page'
     );
 });

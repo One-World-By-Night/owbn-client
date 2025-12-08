@@ -12,7 +12,7 @@
 defined('ABSPATH') || exit;
 
 // Unique constant prefix for this instance (alphanumeric, no spaces)
-define('CCC_PREFIX', 'OWBN');
+define('OWC_PREFIX', 'OWBN');
 
 // Human-readable label for admin UI
-define('CCC_LABEL', 'OWBN CC Client');
+define('OWC_LABEL', 'OWBN Client');

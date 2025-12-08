@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Activation
+ * OWBN-Client Activation
  * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;
@@ -12,30 +12,38 @@ defined('ABSPATH') || exit;
 /**
  * Plugin activation - create default pages.
  */
-function ccc_create_default_pages()
+function owc_create_default_pages()
 {
     $pages = [
         'chronicles_list_page' => [
-            'title'   => __('Chronicles', 'owbn-cc-client'),
-            'content' => '[cc-client type="chronicle-list"]',
+            'title'   => __('Chronicles', 'owbn-client'),
+            'content' => '[owbn-client type="chronicle-list"]',
         ],
         'chronicles_detail_page' => [
-            'title'   => __('Chronicle Detail', 'owbn-cc-client'),
-            'content' => '[cc-client type="chronicle-detail"]',
+            'title'   => __('Chronicle Detail', 'owbn-client'),
+            'content' => '[owbn-client type="chronicle-detail"]',
         ],
         'coordinators_list_page' => [
-            'title'   => __('Coordinators', 'owbn-cc-client'),
-            'content' => '[cc-client type="coordinator-list"]',
+            'title'   => __('Coordinators', 'owbn-client'),
+            'content' => '[owbn-client type="coordinator-list"]',
         ],
         'coordinators_detail_page' => [
-            'title'   => __('Coordinator Detail', 'owbn-cc-client'),
-            'content' => '[cc-client type="coordinator-detail"]',
+            'title'   => __('Coordinator Detail', 'owbn-client'),
+            'content' => '[owbn-client type="coordinator-detail"]',
+        ],
+        'territories_list_page' => [
+            'title'   => __('Territories', 'owbn-client'),
+            'content' => '[owbn-client type="territory-list"]',
+        ],
+        'territories_detail_page' => [
+            'title'   => __('Territory Detail', 'owbn-client'),
+            'content' => '[owbn-client type="territory-detail"]',
         ],
     ];
 
     foreach ($pages as $option_key => $page_data) {
         // Skip if page already set
-        $existing_id = get_option(ccc_option_name($option_key), 0);
+        $existing_id = get_option(owc_option_name($option_key), 0);
         if ($existing_id && get_post_status($existing_id)) {
             continue;
         }
@@ -49,7 +57,7 @@ function ccc_create_default_pages()
         ]);
 
         if ($page_id && !is_wp_error($page_id)) {
-            update_option(ccc_option_name($option_key), $page_id);
+            update_option(owc_option_name($option_key), $page_id);
         }
     }
 }

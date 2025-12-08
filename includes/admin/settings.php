@@ -2,7 +2,7 @@
 
 /**
  * OWBN-CC-Client Settings Page
- * 
+ * location : includes/admin/settings.php
  * @package OWBN-CC-Client
  * @version 1.1.0
  */
