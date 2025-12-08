@@ -15,7 +15,7 @@ require_once __DIR__ . '/render-helpers.php';
 // Lists
 require_once __DIR__ . '/render-chronicles-list.php';
 require_once __DIR__ . '/render-coordinators-list.php';
-require_once __DIR__ . '/render-territories-list.php';
+require_once __DIR__ . '/render-territory-list.php';
 // Details
 require_once __DIR__ . '/render-chronicle-detail.php';
 require_once __DIR__ . '/render-coordinator-detail.php';

@@ -1,13 +1,15 @@
 <?php
 
 /**
- * OWBN-CC-Client Helpers Init
- * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * OWBN-Client Helpers Init
+ * location: includes/helpers/init.php
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;
 
-// Helper files will be loaded here
-require_once __DIR__ . 'countries.php';
+// Only load countries if territory-manager isn't providing them
+if (!function_exists('owc_tm_get_country_list')) {
+    require_once __DIR__ . '/countries.php';
+}

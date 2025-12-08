@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 /**
  * Get country list with special territory codes.
  */
-function owbn_tm_get_country_list(): array
+function owc_tm_get_country_list(): array
 {
     // Special codes first
     $special = [
@@ -235,7 +235,7 @@ function owbn_tm_get_country_list(): array
  */
 function owbn_tm_get_country_name(string $code): string
 {
-    $countries = owbn_tm_get_country_list();
+    $countries = owc_tm_get_country_list();
     return $countries[$code] ?? $code;
 }
 
