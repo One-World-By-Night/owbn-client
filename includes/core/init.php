@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Core Init
- * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * OWBN-Client Core Init
+ * location: includes/core/init.php
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;

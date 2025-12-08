@@ -1,12 +1,12 @@
 <?php
 
 /**
- * OWBN-CC-Client Registration
- * 
+ * OWBN-Client Registration
+ * location: includes/core/client-register.php
  * Registers client instance and connection modes.
  * 
- * @package OWBN-CC-Client
- * @version 1.1.0
+ * @package OWBN-Client
+ * @version 2.0.0
  */
 
 defined('ABSPATH') || exit;
@@ -16,9 +16,9 @@ defined('ABSPATH') || exit;
  *
  * @return string Lowercase hyphenated client ID
  */
-function ccc_get_client_id(): string
+function owc_get_client_id(): string
 {
-    return strtolower(str_replace('_', '-', CCC_PREFIX));
+    return strtolower(str_replace('_', '-', OWC_PREFIX));
 }
 
 /**
@@ -27,19 +27,20 @@ function ccc_get_client_id(): string
  * @param string $key Option key suffix
  * @return string Full option name
  */
-function ccc_option_name(string $key): string
+function owc_option_name(string $key): string
 {
-    return ccc_get_client_id() . '_ccc_' . $key;
+    return owc_get_client_id() . '_owc_' . $key;
 }
 
 /**
- * Get connection mode.
+ * Get connection mode for a specific type.
  *
- * @return string 'remote', 'local', or 'none'
+ * @param string $type 'chronicles', 'coordinators', or 'territories'
+ * @return string 'remote' or 'local'
  */
-function ccc_get_mode(): string
+function owc_get_mode(string $type): string
 {
-    return get_option(ccc_option_name('mode'), 'none');
+    return get_option(owc_option_name($type . '_mode'), 'local');
 }
 
 /**
@@ -47,9 +48,9 @@ function ccc_get_mode(): string
  *
  * @return bool
  */
-function ccc_chronicles_enabled(): bool
+function owc_chronicles_enabled(): bool
 {
-    return (bool) get_option(ccc_option_name('enable_chronicles'), true);
+    return (bool) get_option(owc_option_name('enable_chronicles'), false);
 }
 
 /**
@@ -57,14 +58,24 @@ function ccc_chronicles_enabled(): bool
  *
  * @return bool
  */
-function ccc_coordinators_enabled(): bool
+function owc_coordinators_enabled(): bool
 {
-    return (bool) get_option(ccc_option_name('enable_coordinators'), true);
+    return (bool) get_option(owc_option_name('enable_coordinators'), false);
+}
+
+/**
+ * Check if territories feature is enabled.
+ *
+ * @return bool
+ */
+function owc_territories_enabled(): bool
+{
+    return (bool) get_option(owc_option_name('enable_territories'), false);
 }
 
 /**
  * Register client on init.
  */
 add_action('init', function () {
-    do_action('ccc_client_registered', ccc_get_client_id(), CCC_LABEL);
+    do_action('owc_client_registered', owc_get_client_id(), OWC_LABEL);
 });
