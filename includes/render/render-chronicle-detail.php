@@ -50,7 +50,7 @@ function owc_render_chronicle_detail(array $chronicle): string
         <?php echo owc_render_chronicle_documents($chronicle); ?>
         <?php echo owc_render_chronicle_player_lists($chronicle); ?>
         <?php echo owc_render_satellite_parent($chronicle); ?>
-
+        <?php echo owc_render_chronicle_territories($chronicle); ?>
     </div>
 <?php
     return ob_get_clean();
@@ -379,6 +379,32 @@ function owc_render_satellite_parent(array $chronicle): string
     <div id="owc-satellite-parent" class="owc-satellite-parent">
         <strong><?php esc_html_e('Satellite Parent:', 'owbn-client'); ?></strong>
         <a href="<?php echo esc_url($parent_url); ?>"><?php echo esc_html($parent_title); ?></a>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Render chronicle territories section.
+ */
+function owc_render_chronicle_territories(array $chronicle): string
+{
+    $slug = $chronicle['slug'] ?? '';
+    if (empty($slug)) {
+        return '';
+    }
+
+    $territories = owc_fetch_territories_by_slug($slug);
+
+    if (empty($territories) || isset($territories['error'])) {
+        return '';
+    }
+
+    ob_start();
+?>
+    <div id="owc-chronicle-territories" class="owc-chronicle-territories">
+        <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
+        <?php echo owc_render_territory_box($territories, 'chronicle'); ?>
     </div>
 <?php
     return ob_get_clean();

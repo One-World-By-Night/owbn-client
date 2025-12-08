@@ -53,6 +53,8 @@ function owc_render_coordinator_detail(array $coordinator): string
             </div>
         </div>
 
+        <?php echo owc_render_coordinator_territories($coordinator); ?>
+
     </div>
 <?php
     return ob_get_clean();
@@ -162,6 +164,9 @@ function owc_render_coordinator_subcoords(array $coordinator): string
     return ob_get_clean();
 }
 
+/**
+ * Render genre documents sidebar.
+ */
 function owc_render_coordinator_documents(array $coordinator): string
 {
     $documents = $coordinator['document_links'] ?? [];
@@ -272,6 +277,32 @@ function owc_render_coordinator_contact_lists(array $coordinator): string
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Render coordinator territories section.
+ */
+function owc_render_coordinator_territories(array $coordinator): string
+{
+    $slug = $coordinator['slug'] ?? '';
+    if (empty($slug)) {
+        return '';
+    }
+
+    $territories = owc_fetch_territories_by_slug($slug);
+
+    if (empty($territories) || isset($territories['error'])) {
+        return '';
+    }
+
+    ob_start();
+?>
+    <div id="owc-coordinator-territories" class="owc-coordinator-territories">
+        <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
+        <?php echo owc_render_territory_box($territories, 'coordinator'); ?>
     </div>
 <?php
     return ob_get_clean();

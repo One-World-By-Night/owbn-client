@@ -874,3 +874,103 @@ function owc_render_player_lists(array $lists): string
 <?php
     return ob_get_clean();
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TERRITORY DISPLAY
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Determine slug type from cached CC data.
+ *
+ * @param string $slug
+ * @return string 'chronicle'|'coordinator'|''
+ */
+function owc_get_slug_type(string $slug): string
+{
+    static $cache = null;
+    
+    if ($cache === null) {
+        $cache = ['chronicles' => [], 'coordinators' => []];
+        
+        $chronicles = owc_fetch_list('chronicles');
+        if (!isset($chronicles['error']) && is_array($chronicles)) {
+            foreach ($chronicles as $c) {
+                if (!empty($c['slug'])) {
+                    $cache['chronicles'][$c['slug']] = true;
+                }
+            }
+        }
+        
+        $coordinators = owc_fetch_list('coordinators');
+        if (!isset($coordinators['error']) && is_array($coordinators)) {
+            foreach ($coordinators as $c) {
+                if (!empty($c['slug'])) {
+                    $cache['coordinators'][$c['slug']] = true;
+                }
+            }
+        }
+    }
+    
+    if (isset($cache['chronicles'][$slug])) return 'chronicle';
+    if (isset($cache['coordinators'][$slug])) return 'coordinator';
+    return '';
+}
+
+/**
+ * Render single slug as link.
+ *
+ * @param string $slug
+ * @param string $context Force type: 'chronicle'|'coordinator'|'' (auto-detect)
+ * @return string HTML
+ */
+function owc_render_territory_slug_link(string $slug, string $context = ''): string
+{
+    if (empty($slug)) return '';
+    
+    $type = $context ?: owc_get_slug_type($slug);
+    
+    if ($type === 'chronicle') {
+        $base = owc_get_chronicles_slug();
+        return sprintf('<a href="/%s/%s/">%s</a>', esc_attr($base), esc_attr($slug), esc_html($slug));
+    }
+    
+    if ($type === 'coordinator') {
+        $base = owc_get_coordinators_slug();
+        return sprintf('<a href="/%s/%s/">%s</a>', esc_attr($base), esc_attr($slug), esc_html($slug));
+    }
+    
+    return esc_html($slug);
+}
+
+/**
+ * Render multiple slugs as linked list.
+ *
+ * @param array  $slugs
+ * @param string $context Force type for all slugs
+ * @return string HTML
+ */
+function owc_render_territory_slugs(array $slugs, string $context = ''): string
+{
+    if (empty($slugs)) return '';
+    
+    $links = array_map(fn($s) => owc_render_territory_slug_link($s, $context), $slugs);
+    return implode(', ', $links);
+}
+
+/**
+ * Render country codes as names.
+ *
+ * @param array $codes ISO country codes
+ * @return string Comma-separated names
+ */
+function owc_render_territory_countries(array $codes): string
+{
+    if (empty($codes)) return '';
+    
+    if (function_exists('owbn_tm_format_countries')) {
+        return owbn_tm_format_countries($codes);
+    }
+    
+    // Fallback if territory-manager not active
+    return implode(', ', $codes);
+}
