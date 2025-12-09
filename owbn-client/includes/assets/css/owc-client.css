@@ -2,7 +2,7 @@
  * OWBN-Client Styles
  * 
  * @package OWBN-Client
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 /* Chronicle and Coordinator card styles will go here */
@@ -20,7 +20,7 @@
 
 .owc-info-box h3 {
     margin: 0 0 0.75em;
-    font-size: 1.1em;
+    font-size: 1.3em;
     border-bottom: 1px solid #ddd;
     padding-bottom: 0.5em;
 }

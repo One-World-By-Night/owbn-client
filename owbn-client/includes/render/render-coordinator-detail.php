@@ -4,7 +4,7 @@
  * OWBN-Client Coordinator Detail Render
  * location : includes/render/render-coordinator-detail.php
  * @package OWBN-Client
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 defined('ABSPATH') || exit;
@@ -19,7 +19,12 @@ function owc_render_coordinator_detail(array $coordinator): string
     }
 
     $back_url = home_url('/' . owc_get_coordinators_slug() . '/');
+
+    // Check if sidebar has any content
+    $has_hosting = !empty($coordinator['hosting_chronicle']);
     $has_documents = !empty(array_filter($coordinator['document_links'] ?? [], fn($d) => !empty($d['url'])));
+    $has_contacts = !empty(array_filter($coordinator['email_lists'] ?? [], fn($l) => !empty($l['list_name']) || !empty($l['email_address'])));
+    $has_sidebar = $has_hosting || $has_documents || $has_contacts;
 
     ob_start();
 ?>
@@ -32,25 +37,19 @@ function owc_render_coordinator_detail(array $coordinator): string
         <?php echo owc_render_coordinator_header($coordinator); ?>
         <?php echo owc_render_coordinator_description($coordinator); ?>
 
-        <div class="owc-coord-row <?php echo $has_documents ? '' : 'owc-no-sidebar'; ?>">
+        <div class="owc-coord-row <?php echo $has_sidebar ? '' : 'owc-no-sidebar'; ?>">
             <div class="owc-coord-main">
                 <?php echo owc_render_coordinator_info($coordinator); ?>
                 <?php echo owc_render_coordinator_subcoords($coordinator); ?>
-            </div>
-            <?php if ($has_documents) : ?>
-                <div class="owc-coord-sidebar">
-                    <?php echo owc_render_coordinator_documents($coordinator); ?>
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <div class="owc-coord-row">
-            <div class="owc-coord-main">
                 <?php echo owc_render_coordinator_player_lists($coordinator); ?>
             </div>
-            <div class="owc-coord-sidebar">
-                <?php echo owc_render_coordinator_contact_lists($coordinator); ?>
-            </div>
+            <?php if ($has_sidebar) : ?>
+                <div class="owc-coord-sidebar">
+                    <?php echo owc_render_coordinator_hosting_chronicle($coordinator); ?>
+                    <?php echo owc_render_coordinator_documents($coordinator); ?>
+                    <?php echo owc_render_coordinator_contact_lists($coordinator); ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <?php echo owc_render_coordinator_territories($coordinator); ?>
@@ -277,6 +276,37 @@ function owc_render_coordinator_contact_lists(array $coordinator): string
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+    </div>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Render hosting chronicle link.
+ */
+function owc_render_coordinator_hosting_chronicle(array $coordinator): string
+{
+    $slug = $coordinator['hosting_chronicle'] ?? '';
+    if (empty($slug)) {
+        return '';
+    }
+
+    // Try to get chronicle title
+    $chronicle = owc_get_chronicle_detail($slug);
+    $title = is_array($chronicle) && !empty($chronicle['title']) ? $chronicle['title'] : strtoupper($slug);
+
+    // Build URL using detail page setting
+    $detail_page_id = get_option(owc_option_name('chronicles_detail_page'), 0);
+    $base_url = $detail_page_id ? get_permalink($detail_page_id) : '';
+    $url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
+
+    ob_start();
+?>
+    <div class="owc-coordinator-hosting-chronicle owc-info-box">
+        <h3><?php esc_html_e('Hosting Chronicle', 'owbn-client'); ?></h3>
+        <div class="owc-hosting-link">
+            <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
+        </div>
     </div>
 <?php
     return ob_get_clean();

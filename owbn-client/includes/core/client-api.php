@@ -248,19 +248,20 @@ function owc_get_local_coordinator_detail(string $slug)
     $id = $post->ID;
 
     return [
-        'id'               => $id,
-        'title'            => $post->post_title,
-        'slug'             => get_post_meta($id, 'coordinator_slug', true),
-        'description'      => $post->post_content,
-        'coordinator_title' => get_post_meta($id, 'coordinator_title', true),
-        'coordinator_type' => get_post_meta($id, 'coordinator_type', true),
-        'coord_info'       => get_post_meta($id, 'coord_info', true) ?: [],
-        'subcoord_list'    => get_post_meta($id, 'subcoord_list', true) ?: [],
-        'email_lists'      => get_post_meta($id, 'email_lists', true) ?: [],
-        'player_lists'     => get_post_meta($id, 'player_lists', true) ?: [],
-        'social_links'     => get_post_meta($id, 'social_links', true) ?: [],
-        'document_links'   => get_post_meta($id, 'document_links', true) ?: [],
-        'web_url'          => get_post_meta($id, 'web_url', true),
+        'id'                 => $id,
+        'title'              => $post->post_title,
+        'slug'               => get_post_meta($id, 'coordinator_slug', true),
+        'description'        => $post->post_content,
+        'coordinator_title'  => get_post_meta($id, 'coordinator_title', true),
+        'coordinator_type'   => get_post_meta($id, 'coordinator_type', true),
+        'hosting_chronicle'  => get_post_meta($id, 'hosting_chronicle', true),
+        'coord_info'         => get_post_meta($id, 'coord_info', true) ?: [],
+        'subcoord_list'      => get_post_meta($id, 'subcoord_list', true) ?: [],
+        'email_lists'        => get_post_meta($id, 'email_lists', true) ?: [],
+        'player_lists'       => get_post_meta($id, 'player_lists', true) ?: [],
+        'social_links'       => get_post_meta($id, 'social_links', true) ?: [],
+        'document_links'     => get_post_meta($id, 'document_links', true) ?: [],
+        'web_url'            => get_post_meta($id, 'web_url', true),
     ];
 }
 
