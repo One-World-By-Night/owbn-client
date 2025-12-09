@@ -9,7 +9,7 @@
  *   [owc-chronicle-field field="session_list" label="false"]
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 /**

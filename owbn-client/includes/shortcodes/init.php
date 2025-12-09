@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Shortcodes Init
+ * OWBNClient Shortcodes Init
  * 
- * @package OWBN-CC-Client
- * @version 2.1.2
+ * @package OWBNClient
+
  */
 
 defined('ABSPATH') || exit;

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Render Init
+ * OWBNClient Render Init
  * location: includes/render/init.php
- * @package OWBN-CC-Client
- * @version 2.1.2
+ * @package OWBNClient
+
  */
 
 defined('ABSPATH') || exit;

@@ -6,7 +6,7 @@
  * Registers client instance and connection modes.
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

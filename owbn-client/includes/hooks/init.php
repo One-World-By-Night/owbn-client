@@ -1,10 +1,10 @@
 <?php
 
 /**
- * OWBN-CC-Client Hooks Init
+ * OWBNClient Hooks Init
  * 
- * @package OWBN-CC-Client
- * @version 2.1.2
+ * @package OWBNClient
+
  */
 
 defined('ABSPATH') || exit;

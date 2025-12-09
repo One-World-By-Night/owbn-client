@@ -4,7 +4,7 @@
  * OWBN-Client AJAX Handlers
  * location : includes/admin/ajax.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

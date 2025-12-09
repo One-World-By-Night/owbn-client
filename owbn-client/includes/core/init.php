@@ -4,7 +4,7 @@
  * OWBN-Client Core Init
  * location: includes/core/init.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

@@ -4,7 +4,7 @@
  * OWBN-Client Rewrite Rules
  * location: includes/core/rewrites.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

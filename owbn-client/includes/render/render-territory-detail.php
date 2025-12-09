@@ -6,7 +6,7 @@
  * Full detail view for single territory.
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

@@ -6,7 +6,7 @@
  * Client-side paginated, sortable, searchable territory listing with modal detail.
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

@@ -4,7 +4,7 @@
  * OWBN-Client Coordinators Admin Page
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

@@ -7,7 +7,7 @@
  * Client-side pagination and sorting.
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

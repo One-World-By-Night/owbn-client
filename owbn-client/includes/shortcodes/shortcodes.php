@@ -4,7 +4,7 @@
  * OWBN-Client Shortcode
  * location: includes/shortcodes/shortcodes.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

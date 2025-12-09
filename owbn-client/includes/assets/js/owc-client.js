@@ -1,8 +1,8 @@
 /**
- * OWBN-CC-Client Scripts
+ * OWBNClient Scripts
  *
- * @package OWBN-CC-Client
- * @version 2.1.2
+ * @package OWBNClient
+
  */
 
 // Client-side functionality will go here

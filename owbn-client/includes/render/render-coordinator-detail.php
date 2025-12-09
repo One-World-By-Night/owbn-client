@@ -4,7 +4,7 @@
  * OWBN-Client Coordinator Detail Render
  * location : includes/render/render-coordinator-detail.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

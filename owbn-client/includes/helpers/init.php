@@ -4,7 +4,7 @@
  * OWBN-Client Helpers Init
  * location: includes/helpers/init.php
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;

@@ -6,7 +6,7 @@
  * Reusable display components for frontend rendering.
  * 
  * @package OWBN-Client
- * @version 2.1.2
+
  */
 
 defined('ABSPATH') || exit;
