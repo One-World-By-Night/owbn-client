@@ -6,7 +6,7 @@
  * Handles remote and local API calls to fetch chronicle/coordinator/territory data.
  * 
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;

@@ -4,7 +4,7 @@
  * OWBN-Client Settings Page
  * location : includes/admin/settings.php
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;

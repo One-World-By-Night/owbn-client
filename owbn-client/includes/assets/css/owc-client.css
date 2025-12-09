@@ -2,266 +2,274 @@
  * OWBN-Client Styles
  * 
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 /* Chronicle and Coordinator card styles will go here */
 
 /* Info Box (In Brief, Game Sessions) */
 .owc-info-box {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 8px;
-    padding: 1em;
-    margin: 1em;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .owc-info-box h3 {
-    margin: 0 0 0.75em;
-    font-size: 1.3em;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5em;
+  margin: 0 0 0.75em;
+  font-size: 1.3em;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5em;
 }
 
 .owc-brief-item {
-    margin-bottom: 0.5em;
-    line-height: 1.4;
+  margin-bottom: 0.5em;
+  line-height: 1.4;
 }
 
 /* Layout: In Brief floated right */
 .owc-main-content-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
 }
 
 .owc-in-brief {
-    flex: 0 0 280px;
-    order: 2;
+  flex: 0 0 280px;
+  order: 2;
 }
 
 .owc-chronicle-about {
-    flex: 1 1 400px;
-    order: 1;
-    min-width: 0;
+  flex: 1 1 400px;
+  order: 1;
+  min-width: 0;
 }
 
 /* Staff + Sessions layout */
 .owc-staff-sessions-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em;
-    margin-top: 1.5em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-top: 1.5em;
 }
 
 .owc-chronicle-staff {
-    flex: 1 1 400px;
-    min-width: 0;
+  flex: 1 1 400px;
+  min-width: 0;
 }
 
 .owc-game-sessions-box {
-    flex: 0 0 280px;
+  flex: 0 0 280px;
 }
 
 .owc-staff-list {
-    margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 .owc-staff-line {
-    margin-bottom: 0.4em;
+  margin-bottom: 0.4em;
 }
 
 .owc-staff-role {
-    font-weight: 600;
-    margin-right: 0.5em;
+  font-weight: 600;
+  margin-right: 0.5em;
 }
 
 .owc-staff-email {
-    margin-left: 0.5em;
-    color: #2980b9;
+  margin-left: 0.5em;
 }
 
 /* Session items in box */
 .owc-game-sessions-box .owc-session-item {
-    margin-bottom: 1em;
-    padding-bottom: 0.75em;
-    border-bottom: 1px solid #eee;
+  margin-bottom: 1em;
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid #eee;
 }
 
 .owc-game-sessions-box .owc-session-item:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .owc-session-when {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 /* Narrative sections */
 .owc-narrative-section {
-    margin-bottom: 1.5em;
+  margin-bottom: 1.5em;
 }
 
 .owc-narrative-section h3 {
-    margin-bottom: 0.5em;
-    color: #333;
+  margin-bottom: 0.5em;
 }
 
 /* Clear float helper */
 .owc-clear {
-    clear: both;
+  clear: both;
 }
 
 /* Responsive: stack on narrow screens */
 @media (max-width: 700px) {
-    .owc-main-content-wrapper,
-    .owc-staff-sessions-wrapper {
-        flex-direction: column;
-    }
+  .owc-main-content-wrapper,
+  .owc-staff-sessions-wrapper {
+    flex-direction: column;
+  }
 
-    .owc-in-brief,
-    .owc-game-sessions-box {
-        order: 0;
-        flex: 1 1 100%;
-    }
+  .owc-in-brief,
+  .owc-game-sessions-box {
+    order: 0;
+    flex: 1 1 100%;
+  }
 }
 
 /* Break out of theme width constraints */
 .owc-chronicle-detail,
 .owc-coordinator-detail {
-    max-width: none;
-    width: 100%;
+  max-width: none;
+  width: 100%;
 }
 
 /* If needed, also target parent */
 .entry-content:has(.owc-chronicle-detail),
 .post-content:has(.owc-chronicle-detail) {
-    max-width: none;
-    width: 100%;
+  max-width: none;
+  width: 100%;
 }
 
 /* Override theme body constraint */
 body:has(.owc-chronicle-detail),
 body:has(.owc-coordinator-detail) {
-    max-width: none;
+  max-width: none;
 }
 
 /* Coordinator detail layout */
 .owc-coord-row {
-    display: flex;
-    gap: 1.5em;
-    margin-bottom: 1.5em;
+  display: flex;
+  gap: 1.5em;
+  margin-bottom: 1.5em;
 }
 
 .owc-coord-main {
-    flex: 2;
-    min-width: 0;
+  flex: 2;
+  min-width: 0;
 }
 
 .owc-coord-sidebar {
-    flex: 1;
-    min-width: 200px;
+  flex: 1;
+  min-width: 200px;
 }
 
 .owc-coord-row.owc-no-sidebar .owc-coord-main {
-    flex: 1 1 100%;
+  flex: 1 1 100%;
 }
 
 /* Inline table rows */
 .owc-inline-table {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .owc-inline-row {
-    display: flex;
-    gap: 1em;
-    padding: 0.4em 0;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 1em;
+  padding: 0.4em 0;
+  border-bottom: 1px solid #eee;
 }
 
 .owc-inline-name {
-    flex: 1;
-    font-weight: 500;
+  flex: 1;
+  font-weight: 500;
 }
 
 .owc-inline-role {
-    flex: 1;
-    color: #666;
+  flex: 1;
+  opacity: 0.8;
 }
 
 .owc-inline-email {
-    flex: 1;
-    color: #2980b9;
+  flex: 1;
 }
 
 /* Player list table */
 .owc-player-list-table {
-    margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 .owc-player-list-row {
-    display: flex;
-    gap: 1em;
-    padding: 0.5em 0;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 1em;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #eee;
 }
 
-.owc-pl-name { flex: 2; }
-.owc-pl-access { flex: 1; }
-.owc-pl-type { flex: 1; }
-.owc-pl-moderator { flex: 2; }
-.owc-pl-link { flex: 0 0 60px; text-align: right; }
+.owc-pl-name {
+  flex: 2;
+}
+.owc-pl-access {
+  flex: 1;
+}
+.owc-pl-type {
+  flex: 1;
+}
+.owc-pl-moderator {
+  flex: 2;
+}
+.owc-pl-link {
+  flex: 0 0 60px;
+  text-align: right;
+}
 
 /* Responsive */
 @media (max-width: 700px) {
-    .owc-coord-row {
-        flex-direction: column;
-    }
+  .owc-coord-row {
+    flex-direction: column;
+  }
 }
 
 /* Table headers */
 .owc-inline-header,
 .owc-player-list-header {
-    font-weight: 600;
-    background: #f5f5f5;
-    border-bottom: 2px solid #ddd;
+  font-weight: 600;
+  background: #f5f5f5;
+  border-bottom: 2px solid #ddd;
 }
 
 /* Auth notice */
 .owc-auth-notice {
-    font-size: 0.85em;
-    color: #666;
-    font-style: italic;
-    margin-top: 0.75em;
-    padding-top: 0.5em;
-    border-top: 1px solid #eee;
+  font-size: 0.85em;
+  font-style: italic;
+  margin-top: 0.75em;
+  padding-top: 0.5em;
+  border-top: 1px solid #eee;
+  opacity: 0.8;
 }
 
 /* Back link row with page type label */
 .owc-back-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
 }
 
 .owc-page-type {
-    font-size: 0.85em;
-    color: #666;
-    font-style: italic;
+  font-size: 0.85em;
+  font-style: italic;
+  opacity: 0.8;
 }
 
 /* Consistent section headers */
 .owc-coordinator-player-lists h3,
 .owc-coordinator-subcoords h3,
 .owc-coordinator-info h3 {
-    margin: 0 0 0.75em;
-    font-size: 1.3em;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5em;
+  margin: 0 0 0.75em;
+  font-size: 1.3em;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5em;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -270,279 +278,277 @@ body:has(.owc-coordinator-detail) {
 
 /* Territory box (embedded in chronicle/coordinator detail) */
 .owc-territory-box {
-    margin-top: 1.5em;
+  margin-top: 1.5em;
 }
 
 .owc-terr-controls {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .owc-terr-controls select {
-    padding: 0.25em 0.5em;
+  padding: 0.25em 0.5em;
 }
 
 .owc-terr-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .owc-terr-list li {
-    padding: 0.5em 0.75em;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-    transition: background 0.15s;
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
 .owc-terr-list li:hover {
-    background: #f5f5f5;
+  background: #f5f5f5;
 }
 
 .owc-terr-pagination {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    margin-top: 1em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-top: 1em;
 }
 
 .owc-terr-pagination button {
-    padding: 0.25em 0.75em;
-    cursor: pointer;
+  padding: 0.25em 0.75em;
+  cursor: pointer;
 }
 
 .owc-terr-pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Territory detail modal */
 .owc-terr-detail-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
 .owc-terr-detail-modal[hidden] {
-    display: none;
+  display: none;
 }
 
 .owc-terr-detail-content {
-    background: #fff;
-    padding: 1.5em;
-    border-radius: 8px;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
+  background: #fff;
+  padding: 1.5em;
+  border-radius: 8px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
 }
 
 .owc-terr-detail-close {
-    position: absolute;
-    top: 0.5em;
-    right: 0.75em;
-    font-size: 1.5em;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #666;
+  position: absolute;
+  top: 0.5em;
+  right: 0.75em;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
 }
 
 .owc-terr-detail-close:hover {
-    color: #000;
+  opacity: 1;
 }
 
 /* Territory list page */
 .owc-territories-list {
-    margin: 1em 0;
+  margin: 1em 0;
 }
 
 .owc-territories-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .owc-territories-table th,
 .owc-territories-table td {
-    padding: 0.5em 0.75em;
-    text-align: left;
-    border-bottom: 1px solid #eee;
+  padding: 0.5em 0.75em;
+  text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
 .owc-territories-table th {
-    background: #f5f5f5;
-    font-weight: 600;
+  background: #f5f5f5;
+  font-weight: 600;
 }
 
 .owc-territories-table th a {
-    color: inherit;
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .owc-territories-table th.owc-sortable a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .owc-territories-table th.owc-sorted {
-    background: #e8e8e8;
+  background: #e8e8e8;
 }
 
 .owc-sort-controls {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .owc-pagination {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    margin: 1em 0;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 1em 0;
 }
 
 .owc-territories-count {
-    color: #666;
-    font-size: 0.9em;
+  font-size: 0.9em;
+  opacity: 0.8;
 }
 
 /* Territory detail page */
 .owc-territory-detail {
-    max-width: 800px;
+  max-width: 800px;
 }
 
 .owc-territory-meta {
-    margin: 1.5em 0;
+  margin: 1.5em 0;
 }
 
 .owc-territory-row {
-    display: flex;
-    gap: 1em;
-    padding: 0.5em 0;
-    border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 1em;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #eee;
 }
 
 .owc-territory-row .owc-label {
-    flex: 0 0 120px;
-    font-weight: 600;
-    color: #555;
+  flex: 0 0 120px;
+  font-weight: 600;
+  opacity: 0.8;
 }
 
 .owc-territory-row .owc-value {
-    flex: 1;
+  flex: 1;
 }
 
 .owc-territory-description {
-    margin-top: 1.5em;
+  margin-top: 1.5em;
 }
 
 .owc-territory-description h3 {
-    margin-bottom: 0.75em;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5em;
+  margin-bottom: 0.75em;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5em;
 }
 
 /* Chronicle/Coordinator territories section */
 .owc-chronicle-territories,
 .owc-coordinator-territories {
-    margin-top: 2em;
-    padding-top: 1.5em;
-    border-top: 1px solid #ddd;
+  margin-top: 2em;
+  padding-top: 1.5em;
+  border-top: 1px solid #ddd;
 }
 
 .owc-chronicle-territories h2,
 .owc-coordinator-territories h2 {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 /* Error and notice states */
 .owc-error {
-    color: #c0392b;
-    padding: 1em;
-    background: #fdf2f2;
-    border-radius: 4px;
+  padding: 1em;
+  background: #fdf2f2;
+  border-radius: 4px;
 }
 
 .owc-notice {
-    color: #666;
-    font-style: italic;
+  font-style: italic;
+  opacity: 0.8;
 }
 
 /* Territory list controls */
 .owc-terr-controls {
-    display: flex;
-    gap: 1em;
-    margin-bottom: 1em;
-    flex-wrap: wrap;
-    align-items: center;
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1em;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .owc-terr-search {
-    flex: 1;
-    min-width: 200px;
+  flex: 1;
+  min-width: 200px;
 }
 
 .owc-terr-search-input {
-    width: 100%;
-    padding: 0.5em 0.75em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
+  width: 100%;
+  padding: 0.5em 0.75em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
 }
 
 /* Territory modal */
 .owc-terr-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .owc-terr-modal-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .owc-terr-modal-content {
-    position: relative;
-    background: #fff;
-    max-width: 800px;
-    width: 90%;
-    max-height: 85vh;
-    overflow-y: auto;
-    border-radius: 8px;
-    padding: 2em;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  background: #fff;
+  max-width: 800px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 2em;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .owc-terr-modal-close {
-    position: absolute;
-    top: 0.5em;
-    right: 0.75em;
-    font-size: 1.75em;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #666;
-    line-height: 1;
+  position: absolute;
+  top: 0.5em;
+  right: 0.75em;
+  font-size: 1.75em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  line-height: 1;
 }
 
 .owc-terr-modal-close:hover {
-    color: #000;
+  opacity: 1;
 }
 
 .owc-terr-modal[hidden] {
-    display: none;
+  display: none;
 }

@@ -6,7 +6,7 @@
  * Thin wrapper around cached client-api functions.
  * 
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;

@@ -4,7 +4,7 @@
  * OWBN-Client Coordinator Detail Render
  * location : includes/render/render-coordinator-detail.php
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;
@@ -18,7 +18,8 @@ function owc_render_coordinator_detail(array $coordinator): string
         return '<p class="owc-error">' . esc_html($coordinator['error'] ?? __('Coordinator not found.', 'owbn-client')) . '</p>';
     }
 
-    $back_url = home_url('/' . owc_get_coordinators_slug() . '/');
+    $list_page_id = get_option(owc_option_name('coordinators_list_page'), 0);
+    $back_url = $list_page_id ? get_permalink($list_page_id) : home_url('/');
 
     // Check if sidebar has any content
     $has_hosting = !empty($coordinator['hosting_chronicle']);

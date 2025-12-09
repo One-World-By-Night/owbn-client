@@ -7,7 +7,7 @@
  * Client-side pagination and sorting.
  * 
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;
@@ -66,8 +66,8 @@ function owc_render_territory_box(array $territories, string $context = '', stri
             const data = <?php echo wp_json_encode(owc_prepare_territory_data($territories)); ?>;
             const slugTypes = <?php echo wp_json_encode($slug_types); ?>;
             const currentSlug = <?php echo wp_json_encode($current_slug); ?>;
-            const chroniclesBase = '<?php echo esc_js(owc_get_chronicles_slug()); ?>';
-            const coordinatorsBase = '<?php echo esc_js(owc_get_coordinators_slug()); ?>';
+            const chroniclesDetailUrl = '<?php echo esc_js(get_permalink(get_option(owc_option_name("chronicles_detail_page"), 0)) ?: ""); ?>';
+            const coordinatorsDetailUrl = '<?php echo esc_js(get_permalink(get_option(owc_option_name("coordinators_detail_page"), 0)) ?: ""); ?>';
             const perPage = 10;
             let page = 1;
             let sortKey = 'title';
@@ -117,12 +117,24 @@ function owc_render_territory_box(array $territories, string $context = '', stri
                 return div.innerHTML;
             }
 
+            function decodeHtml(str) {
+                if (!str) return '';
+                // First decode any HTML entities
+                const doc = new DOMParser().parseFromString(str, 'text/html');
+                let decoded = doc.body.innerHTML;
+                // If no HTML tags present, convert newlines to <br>
+                if (!/<[a-z][\s\S]*>/i.test(decoded)) {
+                    decoded = decoded.replace(/\n/g, '<br>');
+                }
+                return decoded;
+            }
+
             function buildSlugLink(slug) {
                 const type = slugTypes[slug] || '';
-                if (type === 'chronicle') {
-                    return `<a href="/${chroniclesBase}/${slug}/">${escHtml(slug)}</a>`;
-                } else if (type === 'coordinator') {
-                    return `<a href="/${coordinatorsBase}/${slug}/">${escHtml(slug)}</a>`;
+                if (type === 'chronicle' && chroniclesDetailUrl) {
+                    return `<a href="${chroniclesDetailUrl}?slug=${encodeURIComponent(slug)}">${escHtml(slug)}</a>`;
+                } else if (type === 'coordinator' && coordinatorsDetailUrl) {
+                    return `<a href="${coordinatorsDetailUrl}?slug=${encodeURIComponent(slug)}">${escHtml(slug)}</a>`;
                 }
                 return escHtml(slug);
             }
@@ -159,7 +171,7 @@ function owc_render_territory_box(array $territories, string $context = '', stri
                 }
 
                 if (item.description) {
-                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-client'); ?></strong><div>${item.description}</div></div>`;
+                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-client'); ?></strong><div>${decodeHtml(item.description)}</div></div>`;
                 }
 
                 modalContent.innerHTML = html;

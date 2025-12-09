@@ -4,7 +4,7 @@
  * OWBN-Client Shortcode
  * location: includes/shortcodes/shortcodes.php
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;
@@ -122,7 +122,7 @@ function owc_enqueue_assets()
     // Get URLs and version from dynamic constants
     $css_url = defined($prefix . 'CSS_URL') ? constant($prefix . 'CSS_URL') : OWC_PLUGIN_URL . 'includes/assets/css/';
     $js_url  = defined($prefix . 'JS_URL') ? constant($prefix . 'JS_URL') : OWC_PLUGIN_URL . 'includes/assets/js/';
-    $version = defined($prefix . 'VERSION') ? constant($prefix . 'VERSION') : '2.1.0';
+    $version = defined($prefix . 'VERSION') ? constant($prefix . 'VERSION') : '2.1.1';
 
     // Tables CSS (base styles)
     wp_register_style(

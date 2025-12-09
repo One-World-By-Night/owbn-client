@@ -82,9 +82,8 @@
 .owc-coordinators-list .owc-col-coordinator { flex: 1.5; min-width: 120px; }
 .owc-coordinators-list .owc-col-email { flex: 1.5; min-width: 150px; }
 
-/* Links */
+/* Links - inherit from theme */
 .owc-list-row a {
-    color: #2980b9;
     text-decoration: none;
 }
 
@@ -113,7 +112,6 @@
     .owc-list-row > div::before {
         content: attr(data-label) ': ';
         font-weight: 600;
-        color: #555;
     }
     
     .owc-list-row .owc-col-title::before {
@@ -145,7 +143,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
-    -webkit-appearance: none; /* Better iOS styling */
+    -webkit-appearance: none;
 }
 
 .owc-filter-input:focus {
@@ -179,8 +177,8 @@
     .owc-filter-input {
         width: 100%;
         min-width: unset;
-        padding: 12px; /* Larger touch target */
-        font-size: 16px; /* Prevents iOS zoom on focus */
+        padding: 12px;
+        font-size: 16px;
     }
     
     .owc-clear-filters {
@@ -214,15 +212,15 @@
 }
 
 .owc-coord-group .owc-list-header > div {
-    cursor: default; /* No sorting */
+    cursor: default;
 }
 
 .owc-coord-group .owc-list-header > div::after {
-    content: ''; /* Remove sort indicator */
+    content: '';
 }
 
 .owc-coord-group .owc-list-header > div:hover {
-    background: #2c3e50; /* No hover effect */
+    background: #2c3e50;
 }
 
 @media (max-width: 768px) {

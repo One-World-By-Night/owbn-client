@@ -4,7 +4,7 @@
  * OWBN-Client Chronicles List Render
  * location: includes/render/render-chronicles-list.php
  * @package OWBN-Client
- * @version 2.1.0
+ * @version 2.1.1
  */
 
 defined('ABSPATH') || exit;
