@@ -269,6 +269,9 @@ function owc_render_document_links(array $links): string
                 <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
                     <?php echo esc_html($doc['title'] ?: $url); ?>
                 </a>
+                <?php if (!empty($doc['last_updated'])) : ?>
+                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-client'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
+                <?php endif; ?>
             </li>
         <?php endforeach; ?>
     </ul>

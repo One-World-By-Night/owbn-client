@@ -189,6 +189,9 @@ function owc_render_coordinator_documents(array $coordinator): string
                 <?php else : ?>
                     <?php echo esc_html($doc['title'] ?: __('Document', 'owbn-client')); ?>
                 <?php endif; ?>
+                <?php if (!empty($doc['last_updated'])) : ?>
+                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-client'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
         <?php if (!$is_logged_in) : ?>
