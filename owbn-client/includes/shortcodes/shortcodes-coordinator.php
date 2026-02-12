@@ -53,7 +53,7 @@ function owc_get_coordinator_data(?string $slug = null): ?array
     }
 
     if (!isset($cache[$slug])) {
-        $cache[$slug] = owc_fetch_single('coordinators', $slug);
+        $cache[$slug] = owc_fetch_detail('coordinators', $slug);
     }
 
     return $cache[$slug];
