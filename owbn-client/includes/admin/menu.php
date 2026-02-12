@@ -24,8 +24,8 @@ add_action('admin_menu', function () {
         30
     );
 
-    // Chronicles submenu (only if enabled)
-    if (get_option(owc_option_name('enable_chronicles'), false)) {
+    // Chronicles submenu (only if enabled AND manager not active)
+    if (!owc_manager_active() && owc_chronicles_enabled()) {
         add_submenu_page(
             $menu_slug,
             __('Chronicles', 'owbn-client'),
@@ -36,8 +36,8 @@ add_action('admin_menu', function () {
         );
     }
 
-    // Coordinators submenu (only if enabled)
-    if (get_option(owc_option_name('enable_coordinators'), false)) {
+    // Coordinators submenu (only if enabled AND manager not active)
+    if (!owc_manager_active() && owc_coordinators_enabled()) {
         add_submenu_page(
             $menu_slug,
             __('Coordinators', 'owbn-client'),
@@ -48,8 +48,8 @@ add_action('admin_menu', function () {
         );
     }
 
-    // Territories submenu (only if enabled)
-    if (get_option(owc_option_name('enable_territories'), false)) {
+    // Territories submenu (only if enabled — always uses client's own settings)
+    if (owc_territories_enabled()) {
         add_submenu_page(
             $menu_slug,
             __('Territories', 'owbn-client'),

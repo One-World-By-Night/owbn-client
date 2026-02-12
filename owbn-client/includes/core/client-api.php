@@ -354,8 +354,8 @@ function owc_get_chronicles(bool $force_refresh = false)
     if ($mode === 'local') {
         $data = owc_get_local_chronicles();
     } else {
-        $url = trailingslashit(get_option(owc_option_name('chronicles_url'), '')) . 'chronicles';
-        $key = get_option(owc_option_name('chronicles_api_key'), '');
+        $url = trailingslashit(owc_get_effective_option('chronicles_url', '')) . 'entities/chronicle/list';
+        $key = owc_get_effective_option('chronicles_api_key', '');
         $data = owc_remote_request($url, $key);
     }
 
@@ -389,8 +389,8 @@ function owc_get_coordinators(bool $force_refresh = false)
     if ($mode === 'local') {
         $data = owc_get_local_coordinators();
     } else {
-        $url = trailingslashit(get_option(owc_option_name('coordinators_url'), '')) . 'coordinators';
-        $key = get_option(owc_option_name('coordinators_api_key'), '');
+        $url = trailingslashit(owc_get_effective_option('coordinators_url', '')) . 'entities/coordinator/list';
+        $key = owc_get_effective_option('coordinators_api_key', '');
         $data = owc_remote_request($url, $key);
     }
 
@@ -461,8 +461,8 @@ function owc_get_chronicle_detail(string $slug)
     if ($mode === 'local') {
         $data = owc_get_local_chronicle_detail($slug);
     } else {
-        $url = trailingslashit(get_option(owc_option_name('chronicles_url'), '')) . 'chronicle-detail';
-        $key = get_option(owc_option_name('chronicles_api_key'), '');
+        $url = trailingslashit(owc_get_effective_option('chronicles_url', '')) . 'entities/chronicle/detail';
+        $key = owc_get_effective_option('chronicles_api_key', '');
         $data = owc_remote_request($url, $key, ['slug' => $slug]);
     }
 
@@ -494,8 +494,8 @@ function owc_get_coordinator_detail(string $slug)
     if ($mode === 'local') {
         $data = owc_get_local_coordinator_detail($slug);
     } else {
-        $url = trailingslashit(get_option(owc_option_name('coordinators_url'), '')) . 'coordinator-detail';
-        $key = get_option(owc_option_name('coordinators_api_key'), '');
+        $url = trailingslashit(owc_get_effective_option('coordinators_url', '')) . 'entities/coordinator/detail';
+        $key = owc_get_effective_option('coordinators_api_key', '');
         $data = owc_remote_request($url, $key, ['slug' => $slug]);
     }
 

@@ -1,9 +1,14 @@
 # OWBN Client
 
+**Version:** 3.0.0
+**Author:** OWBN Web Coordination Team, Greg Hacke
+**License:** GPL-2.0-or-later
+
 A WordPress plugin for the [One World by Night](https://www.owbn.net) organization. Fetches and displays chronicle, coordinator, and territory data from remote or local OWBN plugin instances.
 
 ## Features
 
+- **Manager delegation** - When the C&C Manager plugin is installed on the same site, chronicle and coordinator settings are read automatically from the manager (no duplicate configuration)
 - **Dual data source** - Local custom post types or remote REST API with API key auth
 - **Three data types** - Chronicles, coordinators, and territories with list and detail views
 - **Sortable/filterable tables** - Client-side column sorting and real-time text filtering
@@ -18,7 +23,9 @@ A WordPress plugin for the [One World by Night](https://www.owbn.net) organizati
 2. Activate the plugin in WordPress.
 3. Go to **OWBN Client** in the admin sidebar to configure.
 
-For each data type, choose **Local** or **Remote** mode. Remote mode requires an endpoint URL and API key pointing to a WordPress site running the OWBN server plugin.
+If the **C&C Manager plugin** is also installed, chronicle and coordinator settings are delegated automatically. The client settings page will show informational banners with links to the manager's settings. No client-side configuration is needed for those entity types.
+
+For standalone installations (without the manager), choose **Local** or **Remote** mode for each data type. Remote mode requires an endpoint URL and API key pointing to a WordPress site running the OWBN server plugin.
 
 ### Multi-Instance Setup
 
@@ -82,7 +89,8 @@ Settings are available under **OWBN Client** in the WordPress admin:
 | API Key | Authentication key for remote requests |
 | Cache TTL | How long to cache responses (default: 3600s) |
 | Page Assignments | Which WordPress pages display list/detail views |
-| Slug Customization | Custom URL slugs for rewrite rules |
+
+When the C&C Manager plugin is active, chronicle and coordinator settings show a "Managed by C&C Plugin" banner instead of editable fields. Territory settings remain fully editable (different manager plugin).
 
 ## Architecture
 
@@ -102,6 +110,27 @@ owbn-client/
         ├── css/              # Table and client styles
         └── js/               # Sorting and filtering scripts
 ```
+
+## Changelog
+
+### 3.0.0
+
+- Settings delegation — when the C&C Manager plugin is active, chronicle and coordinator settings are read from the manager's options automatically
+- No duplicate settings configuration needed when both plugins are installed on the same site
+- Settings page shows informational banners for managed entity types with links to C&C Plugin settings
+- Admin menu hides chronicle/coordinator submenus when manager is active (managed via C&C Plugin admin)
+- Standalone mode preserved — client uses its own settings when manager is not installed
+
+### 2.1.2
+
+- Added field-level shortcodes for chronicles and coordinators
+- Link and style adjustments
+- Added parent chronicle slug support
+
+### 2.1.1
+
+- Added last_updated tracking for documents
+- Removed excess version numbers
 
 ## Requirements
 
