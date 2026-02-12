@@ -56,7 +56,7 @@ function owc_get_chronicle_data(?string $slug = null): ?array
     }
 
     if (!isset($cache[$slug])) {
-        $cache[$slug] = owc_fetch_single('chronicles', $slug);
+        $cache[$slug] = owc_fetch_detail('chronicles', $slug);
     }
 
     return $cache[$slug];

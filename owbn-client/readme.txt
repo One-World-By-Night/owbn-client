@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 3.1.1 =
+* Fixed critical error when remote API fails — error arrays no longer crash list renders
+* Fixed undefined function owc_fetch_single() in field shortcodes
+* Added JSON validation for remote API responses
 
 = 3.1.0 =
 * Added ASC path resolver — `owc_resolve_asc_path()` resolves AccessSchema paths (e.g. `chronicle/kony/hst`) to entity data fields

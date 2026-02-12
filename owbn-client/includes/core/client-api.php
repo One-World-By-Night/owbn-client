@@ -56,6 +56,10 @@ function owc_remote_request(string $url, string $api_key, array $body = [])
         );
     }
 
+    if (!is_array($data)) {
+        return new WP_Error('owc_api_error', __('Invalid JSON response from API', 'owbn-client'));
+    }
+
     return $data;
 }
 

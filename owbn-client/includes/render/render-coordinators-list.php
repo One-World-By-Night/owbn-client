@@ -17,6 +17,10 @@ defined('ABSPATH') || exit;
  */
 function owc_render_coordinators_list(array $coordinators): string
 {
+    if (isset($coordinators['error'])) {
+        return '<p class="owc-error">' . esc_html($coordinators['error']) . '</p>';
+    }
+
     if (empty($coordinators)) {
         return '<p class="owc-no-results">' . esc_html__('No coordinators found.', 'owbn-client') . '</p>';
     }

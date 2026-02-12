@@ -17,6 +17,10 @@ defined('ABSPATH') || exit;
  */
 function owc_render_chronicles_list(array $chronicles): string
 {
+    if (isset($chronicles['error'])) {
+        return '<p class="owc-error">' . esc_html($chronicles['error']) . '</p>';
+    }
+
     if (empty($chronicles)) {
         return '<p class="owc-no-results">' . esc_html__('No chronicles found.', 'owbn-client') . '</p>';
     }
