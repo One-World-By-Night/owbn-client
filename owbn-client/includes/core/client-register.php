@@ -128,6 +128,107 @@ function owc_territories_enabled(): bool
 }
 
 /**
+ * Parse an AccessSchema path into its components.
+ *
+ * Paths follow the pattern: {entity_type}/{slug}/{role}
+ * e.g. "chronicle/kony/hst", "coordinator/sabbat/coordinator"
+ *
+ * @param string $path The ASC path.
+ * @return array{type: string, slug: string, role: string}|null Parsed components, or null if invalid.
+ */
+function owc_parse_asc_path(string $path): ?array
+{
+    $parts = explode('/', trim($path, '/'));
+    if (count($parts) < 2) {
+        return null;
+    }
+
+    return [
+        'type' => $parts[0],
+        'slug' => $parts[1],
+        'role' => $parts[2] ?? '',
+    ];
+}
+
+/**
+ * Resolve an AccessSchema path to entity data.
+ *
+ * Takes an ASC path like "chronicle/kony/hst" and returns the requested
+ * field(s) from the matching entity record. Uses the client's existing
+ * fetch functions (local or remote, cached).
+ *
+ * Usage by other plugins:
+ *   owc_resolve_asc_path('chronicle/kony/cm', 'title')
+ *     → "New York City, NY - USA, Kings of New York"
+ *
+ *   owc_resolve_asc_path('coordinator/sabbat/coordinator', ['title', 'coordinator_type'])
+ *     → ['title' => 'Sabbat Coordinator', 'coordinator_type' => 'Genre']
+ *
+ *   owc_resolve_asc_path('chronicle/kony/hst')
+ *     → full entity detail array
+ *
+ *   owc_resolve_asc_path('chronicle/kony/hst', 'title', true)
+ *     → "New York City, NY - USA, Kings of New York — HST"
+ *
+ * @param string            $path         The ASC path (e.g. "chronicle/kony/cm").
+ * @param string|array|null $fields       Field name, array of field names, or null for full record.
+ * @param bool              $with_suffix  Append the role suffix to string results (e.g. " — HST").
+ * @return mixed Field value, array of values, full record, or null if not found.
+ */
+function owc_resolve_asc_path(string $path, $fields = null, bool $with_suffix = false)
+{
+    $parsed = owc_parse_asc_path($path);
+    if (!$parsed) {
+        return null;
+    }
+
+    $type = $parsed['type'];
+    $slug = $parsed['slug'];
+    $role = $parsed['role'];
+
+    // Fetch entity detail by type
+    switch ($type) {
+        case 'chronicle':
+            $data = owc_get_chronicle_detail($slug);
+            break;
+        case 'coordinator':
+            $data = owc_get_coordinator_detail($slug);
+            break;
+        default:
+            return null;
+    }
+
+    if (!$data || is_wp_error($data)) {
+        return null;
+    }
+
+    // No specific fields requested — return full record
+    if ($fields === null) {
+        return $data;
+    }
+
+    // Single field requested
+    if (is_string($fields)) {
+        $value = $data[$fields] ?? null;
+        if ($with_suffix && $role && is_string($value)) {
+            $value .= ' — ' . strtoupper($role);
+        }
+        return $value;
+    }
+
+    // Array of fields requested
+    if (is_array($fields)) {
+        $result = [];
+        foreach ($fields as $field) {
+            $result[$field] = $data[$field] ?? null;
+        }
+        return $result;
+    }
+
+    return null;
+}
+
+/**
  * Register client on init.
  */
 add_action('init', function () {
