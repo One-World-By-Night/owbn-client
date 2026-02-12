@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,10 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 3.1.2 =
+* Fixed remote URL construction — normalizes stored URLs to correct REST namespace base regardless of format
+* Accepts full endpoint URLs, namespace base URLs, or bare domain URLs and constructs correct v2 API paths
 
 = 3.1.1 =
 * Fixed critical error when remote API fails — error arrays no longer crash list renders
