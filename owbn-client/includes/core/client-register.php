@@ -43,12 +43,21 @@ function owc_manager_active(): bool
 }
 
 /**
- * Get an effective option value, delegating to the manager when active.
+ * Check if the OWBN Territory Manager plugin is active.
  *
- * When the C&C Manager plugin is active on the same site, chronicle and
- * coordinator settings are read from the manager's options instead of the
- * client's own options. Territory settings always use the client's options
- * (different manager plugin).
+ * @return bool
+ */
+function owc_territory_manager_active(): bool
+{
+    return function_exists('owbn_tm_render_settings_page');
+}
+
+/**
+ * Get an effective option value, delegating to manager plugins when active.
+ *
+ * When the C&C Manager plugin is active, chronicle and coordinator settings
+ * are read from the manager's options. When the Territory Manager is active,
+ * territories are implicitly enabled in local mode.
  *
  * @param string $key     Option key suffix (e.g. 'enable_chronicles', 'chronicles_mode')
  * @param mixed  $default Default value
@@ -56,17 +65,26 @@ function owc_manager_active(): bool
  */
 function owc_get_effective_option(string $key, $default = false)
 {
-    // Territory keys always use client's own options
+    // Territory keys — delegate to Territory Manager when active
     if (strpos($key, 'territories') === 0 || $key === 'enable_territories') {
+        if (owc_territory_manager_active()) {
+            $tm_overrides = [
+                'enable_territories' => true,
+                'territories_mode'   => 'local',
+            ];
+            if (isset($tm_overrides[$key])) {
+                return $tm_overrides[$key];
+            }
+        }
         return get_option(owc_option_name($key), $default);
     }
 
-    // If manager is not active, use client's own options
+    // If C&C manager is not active, use client's own options
     if (!owc_manager_active()) {
         return get_option(owc_option_name($key), $default);
     }
 
-    // Manager is active — map client keys to manager option names
+    // C&C Manager is active — map client keys to manager option names
     $manager_map = [
         'enable_chronicles'  => 'owbn_enable_chronicles',
         'chronicles_mode'    => 'owbn_chronicles_mode',

@@ -161,6 +161,7 @@ function owc_render_settings_page()
     $client_id = owc_get_client_id();
     $group = $client_id . '_owc_settings';
     $manager_active = owc_manager_active();
+    $tm_active      = owc_territory_manager_active();
 
     // Current values (use effective options for display)
     $chron_enabled = owc_get_effective_option('enable_chronicles', false);
@@ -173,8 +174,8 @@ function owc_render_settings_page()
     $coord_url     = owc_get_effective_option('coordinators_url', '');
     $coord_key     = owc_get_effective_option('coordinators_api_key', '');
 
-    $terr_enabled = get_option(owc_option_name('enable_territories'), false);
-    $terr_mode    = get_option(owc_option_name('territories_mode'), 'local');
+    $terr_enabled = owc_get_effective_option('enable_territories', false);
+    $terr_mode    = owc_get_effective_option('territories_mode', 'local');
     $terr_url     = get_option(owc_option_name('territories_url'), '');
     $terr_key     = get_option(owc_option_name('territories_api_key'), '');
 
@@ -367,64 +368,85 @@ function owc_render_settings_page()
 
             <!-- TERRITORIES -->
             <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>"
-                                id="owc_enable_territories"
-                                value="1"
-                                <?php checked($terr_enabled); ?> />
-                            <?php esc_html_e('Enable Territories', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-territories-options" <?php echo $terr_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
+            <?php if ($tm_active): ?>
+                <div style="margin-bottom: 15px; padding: 10px 14px; background-color: #e8f5e9; border-left: 4px solid #4CAF50;">
+                    <strong><?php esc_html_e('Managed by Territory Manager', 'owbn-client'); ?></strong> &mdash;
+                    <?php
+                    printf(
+                        /* translators: %s: settings page link */
+                        esc_html__('Territory settings are managed by the Territory Manager plugin. Go to %s to configure.', 'owbn-client'),
+                        '<a href="' . esc_url(admin_url('admin.php?page=owbn-territory-settings')) . '">' . esc_html__('OWBN Territory &gt; Settings', 'owbn-client') . '</a>'
+                    );
+                    ?>
+                    <br>
+                    <small>
+                        <?php echo esc_html__('Status:', 'owbn-client'); ?>
+                        <?php esc_html_e('Enabled', 'owbn-client'); ?>
+                        &bull;
+                        <?php echo esc_html__('Mode:', 'owbn-client'); ?>
+                        <?php esc_html_e('Local', 'owbn-client'); ?>
+                    </small>
+                </div>
+            <?php else: ?>
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
+                        <td>
                             <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
-                                    class="owc-territories-mode"
-                                    value="local"
-                                    <?php checked($terr_mode, 'local'); ?> />
-                                <?php esc_html_e('Local (same site)', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
-                                    class="owc-territories-mode"
-                                    value="remote"
-                                    <?php checked($terr_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote API', 'owbn-client'); ?>
+                                <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>" value="0" />
+                                <input type="checkbox"
+                                    name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>"
+                                    id="owc_enable_territories"
+                                    value="1"
+                                    <?php checked($terr_enabled); ?> />
+                                <?php esc_html_e('Enable Territories', 'owbn-client'); ?>
                             </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API URL', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('territories_url')); ?>"
-                            value="<?php echo esc_url($terr_url); ?>"
-                            class="regular-text"
-                            placeholder="https://example.com/wp-json/owbn-tm/v1/" />
-                    </td>
-                </tr>
-                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('territories_api_key')); ?>"
-                            value="<?php echo esc_attr($terr_key); ?>"
-                            class="regular-text code" />
-                    </td>
-                </tr>
-            </table>
+                        </td>
+                    </tr>
+                    <tr class="owc-territories-options" <?php echo $terr_enabled ? '' : 'style="display:none;"'; ?>>
+                        <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                        <td>
+                            <fieldset>
+                                <label>
+                                    <input type="radio"
+                                        name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
+                                        class="owc-territories-mode"
+                                        value="local"
+                                        <?php checked($terr_mode, 'local'); ?> />
+                                    <?php esc_html_e('Local (same site)', 'owbn-client'); ?>
+                                </label><br>
+                                <label>
+                                    <input type="radio"
+                                        name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
+                                        class="owc-territories-mode"
+                                        value="remote"
+                                        <?php checked($terr_mode, 'remote'); ?> />
+                                    <?php esc_html_e('Remote API', 'owbn-client'); ?>
+                                </label>
+                            </fieldset>
+                        </td>
+                    </tr>
+                    <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                        <th scope="row"><?php esc_html_e('API URL', 'owbn-client'); ?></th>
+                        <td>
+                            <input type="url"
+                                name="<?php echo esc_attr(owc_option_name('territories_url')); ?>"
+                                value="<?php echo esc_url($terr_url); ?>"
+                                class="regular-text"
+                                placeholder="https://example.com/wp-json/owbn-tm/v1/" />
+                        </td>
+                    </tr>
+                    <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                        <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
+                        <td>
+                            <input type="text"
+                                name="<?php echo esc_attr(owc_option_name('territories_api_key')); ?>"
+                                value="<?php echo esc_attr($terr_key); ?>"
+                                class="regular-text code" />
+                        </td>
+                    </tr>
+                </table>
+            <?php endif; ?>
 
             <hr />
 
@@ -655,6 +677,18 @@ function owc_render_settings_page()
                     <?php
                     if ($manager_active) {
                         esc_html_e('Detected — delegating chronicle & coordinator settings', 'owbn-client');
+                    } else {
+                        esc_html_e('Not installed', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('Territory Manager', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if ($tm_active) {
+                        esc_html_e('Detected — delegating territory settings', 'owbn-client');
                     } else {
                         esc_html_e('Not installed', 'owbn-client');
                     }
