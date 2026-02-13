@@ -31,14 +31,6 @@ function owc_create_default_pages()
             'title'   => __('Coordinator Detail', 'owbn-client'),
             'content' => '[owc-client type="coordinator-detail"]',
         ],
-        'territories_list_page' => [
-            'title'   => __('Territories', 'owbn-client'),
-            'content' => '[owc-client type="territory-list"]',
-        ],
-        'territories_detail_page' => [
-            'title'   => __('Territory Detail', 'owbn-client'),
-            'content' => '[owc-client type="territory-detail"]',
-        ],
     ];
 
     foreach ($pages as $option_key => $page_data) {

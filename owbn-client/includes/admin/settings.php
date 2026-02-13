@@ -97,16 +97,6 @@ add_action('admin_init', function () {
         'default' => 0,
         'sanitize_callback' => 'absint',
     ]);
-    register_setting($group, owc_option_name('territories_list_page'), [
-        'type' => 'integer',
-        'default' => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-    register_setting($group, owc_option_name('territories_detail_page'), [
-        'type' => 'integer',
-        'default' => 0,
-        'sanitize_callback' => 'absint',
-    ]);
 
     // Player ID
     register_setting($group, owc_option_name('enable_player_id'), [
@@ -184,8 +174,6 @@ function owc_render_settings_page()
     $chron_detail_page = get_option(owc_option_name('chronicles_detail_page'), 0);
     $coord_list_page   = get_option(owc_option_name('coordinators_list_page'), 0);
     $coord_detail_page = get_option(owc_option_name('coordinators_detail_page'), 0);
-    $terr_list_page    = get_option(owc_option_name('territories_list_page'), 0);
-    $terr_detail_page  = get_option(owc_option_name('territories_detail_page'), 0);
 
     $cache_ttl = get_option(owc_option_name('cache_ttl'), 3600);
 
@@ -552,28 +540,6 @@ function owc_render_settings_page()
                         <?php wp_dropdown_pages([
                             'name'              => owc_option_name('coordinators_detail_page'),
                             'selected'          => $coord_detail_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php esc_html_e('Territories List Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('territories_list_page'),
-                            'selected'          => $terr_list_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php esc_html_e('Territories Detail Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('territories_detail_page'),
-                            'selected'          => $terr_detail_page,
                             'show_option_none'  => __('— Select Page —', 'owbn-client'),
                             'option_none_value' => 0,
                         ]); ?>
