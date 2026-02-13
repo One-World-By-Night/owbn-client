@@ -582,6 +582,101 @@ function owc_render_settings_page()
 
         <hr />
 
+        <!-- STATUS -->
+        <h2><?php esc_html_e('Status', 'owbn-client'); ?></h2>
+
+        <?php
+        $chronicles_cache   = get_transient('owc_chronicles_cache');
+        $coordinators_cache = get_transient('owc_coordinators_cache');
+        $territories_cache  = get_transient('owc_territories_cache');
+        $pid_on             = get_option(owc_option_name('enable_player_id'), false);
+        $pid_current_mode   = get_option(owc_option_name('player_id_mode'), 'client');
+        $elementor_active   = did_action('elementor/loaded');
+        ?>
+
+        <table class="widefat" style="max-width:500px;">
+            <tr>
+                <td><strong><?php esc_html_e('Chronicles', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if (!$chron_enabled) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } elseif (is_array($chronicles_cache)) {
+                        echo absint(count($chronicles_cache)) . ' (' . esc_html($chron_mode) . ')';
+                    } else {
+                        echo esc_html__('Enabled', 'owbn-client') . ' (' . esc_html($chron_mode) . ') — ' . esc_html__('no cached data', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('Coordinators', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if (!$coord_enabled) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } elseif (is_array($coordinators_cache)) {
+                        echo absint(count($coordinators_cache)) . ' (' . esc_html($coord_mode) . ')';
+                    } else {
+                        echo esc_html__('Enabled', 'owbn-client') . ' (' . esc_html($coord_mode) . ') — ' . esc_html__('no cached data', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('Territories', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if (!$terr_enabled) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } elseif (is_array($territories_cache)) {
+                        echo absint(count($territories_cache)) . ' (' . esc_html($terr_mode) . ')';
+                    } else {
+                        echo esc_html__('Enabled', 'owbn-client') . ' (' . esc_html($terr_mode) . ') — ' . esc_html__('no cached data', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('Player ID', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if (!$pid_on) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } else {
+                        echo esc_html(ucfirst($pid_current_mode)) . ' ' . esc_html__('mode', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('C&C Manager', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if ($manager_active) {
+                        esc_html_e('Detected — delegating chronicle & coordinator settings', 'owbn-client');
+                    } else {
+                        esc_html_e('Not installed', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('Elementor', 'owbn-client'); ?></strong></td>
+                <td>
+                    <?php
+                    if ($elementor_active) {
+                        esc_html_e('Active — 8 widgets available', 'owbn-client');
+                    } else {
+                        esc_html_e('Not active — using shortcodes only', 'owbn-client');
+                    }
+                    ?>
+                </td>
+            </tr>
+        </table>
+
+        <hr />
+
         <!-- CACHE MANAGEMENT -->
         <h2><?php esc_html_e('Cache Management', 'owbn-client'); ?></h2>
         <p class="description"><?php esc_html_e('Clear cached data to fetch fresh content from data sources.', 'owbn-client'); ?></p>
