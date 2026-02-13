@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.1.0
+Stable tag: 4.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ OWBN Client is a WordPress plugin designed for the One World by Night (OWBN) org
 * **Shortcode System** - Embed lists, detail views, and individual fields anywhere using WordPress shortcodes.
 * **Multi-Tenant Support** - Run multiple independent instances on the same WordPress installation using unique prefixes.
 * **Intelligent Caching** - Transient-based caching with configurable TTL to minimize API requests.
-* **Automatic Page Creation** - On activation, creates six pre-configured pages with the appropriate shortcodes.
+* **Automatic Page Creation** - On activation, creates four pre-configured pages with the appropriate shortcodes.
 
 == Installation ==
 
@@ -113,6 +113,12 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.2.0 =
+* Added Status section to settings page — shows entity counts, modes, and companion plugin detection
+* Territory Manager delegation — when OWBN Territory Manager is active, territory settings are auto-managed (enabled, local mode)
+* Removed dead territory page settings — territory list uses inline modal, no separate pages needed
+* Chronicle and coordinator page settings remain (used for cross-link URL routing)
 
 = 4.1.0 =
 * Added Player ID module — manages unique player identifiers across OWBN network
