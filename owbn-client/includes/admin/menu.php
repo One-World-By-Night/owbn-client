@@ -60,6 +60,16 @@ add_action('admin_menu', function () {
         );
     }
 
+    // Migration helper submenu
+    add_submenu_page(
+        $menu_slug,
+        __('Migrate to Elementor', 'owbn-client'),
+        __('Migrate to Elementor', 'owbn-client'),
+        'manage_options',
+        $client_id . '-owc-migration',
+        'owc_render_migration_page'
+    );
+
     // Settings submenu (rename the default)
     add_submenu_page(
         $menu_slug,

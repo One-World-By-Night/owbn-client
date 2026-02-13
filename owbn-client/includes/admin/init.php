@@ -15,3 +15,4 @@ require_once __DIR__ . '/chronicles.php';
 require_once __DIR__ . '/coordinators.php';
 require_once __DIR__ . '/territory.php';
 require_once __DIR__ . '/ajax.php';
+require_once __DIR__ . '/migration-helper.php';
