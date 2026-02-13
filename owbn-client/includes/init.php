@@ -29,5 +29,13 @@ require_once __DIR__ . '/render/init.php';
 // Shortcodes
 require_once __DIR__ . '/shortcodes/init.php';
 
+// Player ID (self-guarded — checks enable_player_id option internally)
+require_once __DIR__ . '/player-id/init.php';
+
+// Elementor widgets (self-guarded — only loads when Elementor is active)
+if (did_action('elementor/loaded') || !did_action('plugins_loaded')) {
+	require_once __DIR__ . '/elementor/widgets-loader.php';
+}
+
 // Fire loaded action
 do_action('owc_client_loaded', OWC_PREFIX);

@@ -108,6 +108,22 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'absint',
     ]);
 
+    // Player ID
+    register_setting($group, owc_option_name('enable_player_id'), [
+        'type' => 'boolean',
+        'default' => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($group, owc_option_name('player_id_mode'), [
+        'type' => 'string',
+        'default' => 'client',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    register_setting($group, owc_option_name('player_id_sso_url'), [
+        'type' => 'string',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+
     // Cache
     register_setting($group, owc_option_name('cache_ttl'), [
         'type' => 'integer',
@@ -412,6 +428,66 @@ function owc_render_settings_page()
 
             <hr />
 
+            <!-- PLAYER ID -->
+            <h2><?php esc_html_e('Player ID', 'owbn-client'); ?></h2>
+            <?php
+                $pid_enabled = get_option(owc_option_name('enable_player_id'), false);
+                $pid_mode    = get_option(owc_option_name('player_id_mode'), 'client');
+                $pid_sso_url = get_option(owc_option_name('player_id_sso_url'), '');
+            ?>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_player_id')); ?>" value="0" />
+                            <input type="checkbox"
+                                name="<?php echo esc_attr(owc_option_name('enable_player_id')); ?>"
+                                id="owc_enable_player_id"
+                                value="1"
+                                <?php checked($pid_enabled); ?> />
+                            <?php esc_html_e('Enable Player ID', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owc-player-id-options" <?php echo $pid_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Mode', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('player_id_mode')); ?>"
+                                    class="owc-player-id-mode"
+                                    value="server"
+                                    <?php checked($pid_mode, 'server'); ?> />
+                                <?php esc_html_e('Server — This site manages Player IDs (SSO server)', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('player_id_mode')); ?>"
+                                    class="owc-player-id-mode"
+                                    value="client"
+                                    <?php checked($pid_mode, 'client'); ?> />
+                                <?php esc_html_e('Client — Capture Player ID from SSO login', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-player-id-options owc-player-id-client" <?php echo ($pid_enabled && $pid_mode === 'client') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('SSO Server URL', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('player_id_sso_url')); ?>"
+                            value="<?php echo esc_url($pid_sso_url); ?>"
+                            class="regular-text"
+                            placeholder="https://sso.owbn.net" />
+                        <p class="description"><?php esc_html_e('Base URL of the SSO server. Only OAuth responses from this URL will be intercepted.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
+
             <!-- PAGE SETTINGS -->
             <h2><?php esc_html_e('Page Settings', 'owbn-client'); ?></h2>
             <table class="form-table" role="presentation">
@@ -559,6 +635,21 @@ function owc_render_settings_page()
             setupToggle('chronicles');
             setupToggle('coordinators');
             setupToggle('territories');
+
+            // Player ID toggle
+            var $pidEnable = $('#owc_enable_player_id');
+            $pidEnable.on('change', function() {
+                $('.owc-player-id-options').toggle(this.checked);
+                if (!this.checked) {
+                    $('.owc-player-id-client').hide();
+                } else {
+                    var isClient = $('.owc-player-id-mode:checked').val() === 'client';
+                    $('.owc-player-id-client').toggle(isClient);
+                }
+            });
+            $('.owc-player-id-mode').on('change', function() {
+                $('.owc-player-id-client').toggle(this.value === 'client');
+            });
         })(jQuery);
     </script>
 <?php

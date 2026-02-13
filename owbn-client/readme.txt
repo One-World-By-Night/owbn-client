@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.1.2
+Stable tag: 4.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,23 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.1.0 =
+* Added Player ID module — manages unique player identifiers across OWBN network
+* Server mode: Stores Player ID, validates uniqueness, adds to OAuth/OIDC/JWT responses
+* Client mode: Captures Player ID from SSO login, stores in local user meta
+* Player ID column in admin Users list
+* `[player_id]` shortcode displays current user's Player ID
+* Registration form integration (server mode)
+* Replaces standalone player-id-plugin — deactivate it before upgrading
+
+= 4.0.0 =
+* Major: Full Elementor widget integration (8 widgets)
+* Chronicle List, Coordinator List, Territory List widgets
+* Chronicle Detail, Coordinator Detail, Territory Detail widgets
+* Chronicle Field, Coordinator Field widgets
+* Migration helper for converting shortcode pages to Elementor
+* All widgets with Content and Style tab controls
 
 = 3.1.2 =
 * Fixed remote URL construction — normalizes stored URLs to correct REST namespace base regardless of format
