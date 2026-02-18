@@ -63,28 +63,34 @@ function owbn_gateway_authenticate( $request ) {
     }
 
     // 3. Domain whitelist check (applied after successful auth)
+    // Only enforced when Origin or Referer is present (browser requests).
+    // Server-to-server calls (wp_remote_post) don't send these headers,
+    // so the API key alone is sufficient authentication for those.
     $whitelist = get_option( 'owbn_gateway_domain_whitelist', array() );
     if ( ! empty( $whitelist ) && is_array( $whitelist ) ) {
         $origin      = $request->get_header( 'origin' );
         $referer     = $request->get_header( 'referer' );
         $source      = $origin ? $origin : $referer;
         $source_host = $source ? parse_url( $source, PHP_URL_HOST ) : '';
-        $allowed     = false;
 
-        foreach ( $whitelist as $domain ) {
-            $domain = trim( $domain );
-            if ( $domain && $source_host === $domain ) {
-                $allowed = true;
-                break;
+        if ( $source_host ) {
+            $allowed = false;
+
+            foreach ( $whitelist as $domain ) {
+                $domain = trim( $domain );
+                if ( $domain && $source_host === $domain ) {
+                    $allowed = true;
+                    break;
+                }
             }
-        }
 
-        if ( ! $allowed ) {
-            return new WP_Error(
-                'owbn_gateway_forbidden',
-                __( 'Request origin not permitted.', 'owbn-client' ),
-                array( 'status' => 403 )
-            );
+            if ( ! $allowed ) {
+                return new WP_Error(
+                    'owbn_gateway_forbidden',
+                    __( 'Request origin not permitted.', 'owbn-client' ),
+                    array( 'status' => 403 )
+                );
+            }
         }
     }
 
