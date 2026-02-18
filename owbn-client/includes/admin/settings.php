@@ -342,8 +342,10 @@ function owc_render_settings_page()
             <h2><?php esc_html_e('Chronicles', 'owbn-client'); ?></h2>
             <p class="description">
                 <?php
-                if ($manager_active) {
+                if ($manager_active && $chron_enabled) {
                     esc_html_e('Chronicle Manager is active — chronicle data is served from local CPTs.', 'owbn-client');
+                } elseif ($manager_active) {
+                    esc_html_e('Chronicle Manager is installed but Chronicles are not enabled. Enable below to serve chronicle data from local CPTs.', 'owbn-client');
                 } elseif ($remote_url) {
                     esc_html_e('No local Chronicle Manager detected — chronicle data will be fetched from the remote gateway.', 'owbn-client');
                 } else {
@@ -396,8 +398,10 @@ function owc_render_settings_page()
             <h2><?php esc_html_e('Coordinators', 'owbn-client'); ?></h2>
             <p class="description">
                 <?php
-                if ($manager_active) {
+                if ($manager_active && $coord_enabled) {
                     esc_html_e('Chronicle Manager is active — coordinator data is served from local CPTs.', 'owbn-client');
+                } elseif ($manager_active) {
+                    esc_html_e('Chronicle Manager is installed but Coordinators are not enabled. Enable below to serve coordinator data from local CPTs.', 'owbn-client');
                 } elseif ($remote_url) {
                     esc_html_e('No local Chronicle Manager detected — coordinator data will be fetched from the remote gateway.', 'owbn-client');
                 } else {
