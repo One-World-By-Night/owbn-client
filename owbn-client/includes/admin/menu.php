@@ -21,11 +21,11 @@ add_action('admin_menu', function () {
         $menu_slug,
         'owc_render_settings_page',
         'dashicons-networking',
-        30
+        29
     );
 
-    // Chronicles submenu (only if enabled AND manager not active)
-    if (!owc_manager_active() && owc_chronicles_enabled()) {
+    // Chronicles submenu (if enabled — dashboard shows local or remote status)
+    if (owc_chronicles_enabled()) {
         add_submenu_page(
             $menu_slug,
             __('Chronicles', 'owbn-client'),
@@ -36,8 +36,8 @@ add_action('admin_menu', function () {
         );
     }
 
-    // Coordinators submenu (only if enabled AND manager not active)
-    if (!owc_manager_active() && owc_coordinators_enabled()) {
+    // Coordinators submenu (if enabled — dashboard shows local or remote status)
+    if (owc_coordinators_enabled()) {
         add_submenu_page(
             $menu_slug,
             __('Coordinators', 'owbn-client'),
@@ -48,7 +48,7 @@ add_action('admin_menu', function () {
         );
     }
 
-    // Territories submenu (only if enabled — always uses client's own settings)
+    // Territories submenu (if enabled — dashboard shows local or remote status)
     if (owc_territories_enabled()) {
         add_submenu_page(
             $menu_slug,
