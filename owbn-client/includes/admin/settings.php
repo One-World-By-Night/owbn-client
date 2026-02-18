@@ -61,7 +61,7 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
 
-    // Remote gateway (consumer-side)
+    // Default remote gateway (consumer-side fallback)
     register_setting($group, owc_option_name('remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'esc_url_raw',
@@ -87,6 +87,26 @@ add_action('admin_init', function () {
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
+
+    // Per-type mode + remote overrides
+    $mode_sanitize = function ($value) {
+        return in_array($value, ['local', 'remote'], true) ? $value : 'local';
+    };
+    foreach (['chronicles', 'coordinators', 'territories'] as $dtype) {
+        register_setting($group, owc_option_name($dtype . '_mode'), [
+            'type'              => 'string',
+            'default'           => 'local',
+            'sanitize_callback' => $mode_sanitize,
+        ]);
+        register_setting($group, owc_option_name($dtype . '_remote_url'), [
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+        ]);
+        register_setting($group, owc_option_name($dtype . '_remote_api_key'), [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+        ]);
+    }
 
     // Page settings
     register_setting($group, owc_option_name('chronicles_list_page'), [
@@ -171,7 +191,7 @@ function owc_render_settings_page()
     $gw_logging   = get_option('owbn_gateway_logging_enabled', false);
     $gw_base_url  = rest_url('owbn/v1/');
 
-    // Remote gateway (consumer-side)
+    // Default remote gateway (consumer-side)
     $remote_url     = get_option(owc_option_name('remote_url'), '');
     $remote_api_key = get_option(owc_option_name('remote_api_key'), '');
 
@@ -183,6 +203,17 @@ function owc_render_settings_page()
     $chron_enabled = (bool) get_option(owc_option_name('enable_chronicles'), false);
     $coord_enabled = (bool) get_option(owc_option_name('enable_coordinators'), false);
     $terr_enabled  = (bool) get_option(owc_option_name('enable_territories'), false);
+
+    // Per-type mode and remote overrides
+    $chron_mode           = owc_get_mode('chronicles');
+    $coord_mode           = owc_get_mode('coordinators');
+    $terr_mode            = owc_get_mode('territories');
+    $chron_remote_url     = get_option(owc_option_name('chronicles_remote_url'), '');
+    $chron_remote_key     = get_option(owc_option_name('chronicles_remote_api_key'), '');
+    $coord_remote_url     = get_option(owc_option_name('coordinators_remote_url'), '');
+    $coord_remote_key     = get_option(owc_option_name('coordinators_remote_api_key'), '');
+    $terr_remote_url      = get_option(owc_option_name('territories_remote_url'), '');
+    $terr_remote_key      = get_option(owc_option_name('territories_remote_api_key'), '');
 
     // Page settings
     $chron_list_page   = get_option(owc_option_name('chronicles_list_page'), 0);
@@ -203,7 +234,7 @@ function owc_render_settings_page()
 
             <!-- API GATEWAY (producer-side) -->
             <h2><?php esc_html_e('API Gateway', 'owbn-client'); ?></h2>
-            <p class="description"><?php esc_html_e('Expose local data via the unified owbn/v1/ REST namespace. Enable this on producer sites (e.g. chronicles.owbn.net).', 'owbn-client'); ?></p>
+            <p class="description"><?php esc_html_e('Expose local data via the unified owbn/v1/ REST namespace. Enable this on sites that serve data to other OWBN sites.', 'owbn-client'); ?></p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Enable Gateway', 'owbn-client'); ?></th>
@@ -309,9 +340,9 @@ function owc_render_settings_page()
 
             <hr />
 
-            <!-- REMOTE GATEWAY (consumer-side) -->
-            <h2><?php esc_html_e('Remote Gateway', 'owbn-client'); ?></h2>
-            <p class="description"><?php esc_html_e('Configure when this site fetches chronicle, coordinator, and territory data from a remote producer site. Leave empty to use only local data sources.', 'owbn-client'); ?></p>
+            <!-- DEFAULT REMOTE GATEWAY (consumer-side) -->
+            <h2><?php esc_html_e('Default Remote Gateway', 'owbn-client'); ?></h2>
+            <p class="description"><?php esc_html_e('Default remote gateway for data types set to "Remote" mode. Individual data types can override this with their own remote URL and key.', 'owbn-client'); ?></p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Remote URL', 'owbn-client'); ?></th>
@@ -321,7 +352,7 @@ function owc_render_settings_page()
                             value="<?php echo esc_url($remote_url); ?>"
                             class="regular-text"
                             placeholder="https://chronicles.owbn.net" />
-                        <p class="description"><?php esc_html_e('Base URL of the producer site (e.g. https://chronicles.owbn.net). The gateway path is appended automatically.', 'owbn-client'); ?></p>
+                        <p class="description"><?php esc_html_e('Base URL of the default producer site. Used for any remote data type that does not specify its own URL.', 'owbn-client'); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -331,7 +362,7 @@ function owc_render_settings_page()
                             name="<?php echo esc_attr(owc_option_name('remote_api_key')); ?>"
                             value="<?php echo esc_attr($remote_api_key); ?>"
                             class="regular-text code" />
-                        <p class="description"><?php esc_html_e('API key issued by the producer site. Used for all endpoint requests.', 'owbn-client'); ?></p>
+                        <p class="description"><?php esc_html_e('API key for the default remote gateway.', 'owbn-client'); ?></p>
                     </td>
                 </tr>
             </table>
@@ -340,19 +371,6 @@ function owc_render_settings_page()
 
             <!-- CHRONICLES -->
             <h2><?php esc_html_e('Chronicles', 'owbn-client'); ?></h2>
-            <p class="description">
-                <?php
-                if ($manager_active && $chron_enabled) {
-                    esc_html_e('Chronicle Manager is active — chronicle data is served from local CPTs.', 'owbn-client');
-                } elseif ($manager_active) {
-                    esc_html_e('Chronicle Manager is installed but Chronicles are not enabled. Enable below to serve chronicle data from local CPTs.', 'owbn-client');
-                } elseif ($remote_url) {
-                    esc_html_e('No local Chronicle Manager detected — chronicle data will be fetched from the remote gateway.', 'owbn-client');
-                } else {
-                    esc_html_e('No local Chronicle Manager and no remote gateway configured.', 'owbn-client');
-                }
-                ?>
-            </p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
@@ -366,6 +384,50 @@ function owc_render_settings_page()
                                 <?php checked($chron_enabled); ?> />
                             <?php esc_html_e('Enable Chronicles', 'owbn-client'); ?>
                         </label>
+                    </td>
+                </tr>
+                <tr class="owc-chronicles-options" <?php echo $chron_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('chronicles_mode')); ?>"
+                                    class="owc-chronicles-mode"
+                                    value="local"
+                                    <?php checked($chron_mode, 'local'); ?> />
+                                <?php esc_html_e('Local — Serve from Chronicle Manager CPTs on this site', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('chronicles_mode')); ?>"
+                                    class="owc-chronicles-mode"
+                                    value="remote"
+                                    <?php checked($chron_mode, 'remote'); ?> />
+                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-chronicles-options owc-chronicles-remote" <?php echo ($chron_enabled && $chron_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('chronicles_remote_url')); ?>"
+                            value="<?php echo esc_url($chron_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
+                        <p class="description"><?php esc_html_e('Only set if chronicles come from a different gateway than the default.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-chronicles-options owc-chronicles-remote" <?php echo ($chron_enabled && $chron_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('chronicles_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($chron_remote_key); ?>"
+                            class="regular-text code"
+                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
                     </td>
                 </tr>
                 <tr class="owc-chronicles-options" <?php echo $chron_enabled ? '' : 'style="display:none;"'; ?>>
@@ -396,19 +458,6 @@ function owc_render_settings_page()
 
             <!-- COORDINATORS -->
             <h2><?php esc_html_e('Coordinators', 'owbn-client'); ?></h2>
-            <p class="description">
-                <?php
-                if ($manager_active && $coord_enabled) {
-                    esc_html_e('Chronicle Manager is active — coordinator data is served from local CPTs.', 'owbn-client');
-                } elseif ($manager_active) {
-                    esc_html_e('Chronicle Manager is installed but Coordinators are not enabled. Enable below to serve coordinator data from local CPTs.', 'owbn-client');
-                } elseif ($remote_url) {
-                    esc_html_e('No local Chronicle Manager detected — coordinator data will be fetched from the remote gateway.', 'owbn-client');
-                } else {
-                    esc_html_e('No local Chronicle Manager and no remote gateway configured.', 'owbn-client');
-                }
-                ?>
-            </p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
@@ -422,6 +471,50 @@ function owc_render_settings_page()
                                 <?php checked($coord_enabled); ?> />
                             <?php esc_html_e('Enable Coordinators', 'owbn-client'); ?>
                         </label>
+                    </td>
+                </tr>
+                <tr class="owc-coordinators-options" <?php echo $coord_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('coordinators_mode')); ?>"
+                                    class="owc-coordinators-mode"
+                                    value="local"
+                                    <?php checked($coord_mode, 'local'); ?> />
+                                <?php esc_html_e('Local — Serve from Chronicle Manager CPTs on this site', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('coordinators_mode')); ?>"
+                                    class="owc-coordinators-mode"
+                                    value="remote"
+                                    <?php checked($coord_mode, 'remote'); ?> />
+                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-coordinators-options owc-coordinators-remote" <?php echo ($coord_enabled && $coord_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('coordinators_remote_url')); ?>"
+                            value="<?php echo esc_url($coord_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
+                        <p class="description"><?php esc_html_e('Only set if coordinators come from a different gateway than the default.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-coordinators-options owc-coordinators-remote" <?php echo ($coord_enabled && $coord_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('coordinators_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($coord_remote_key); ?>"
+                            class="regular-text code"
+                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
                     </td>
                 </tr>
                 <tr class="owc-coordinators-options" <?php echo $coord_enabled ? '' : 'style="display:none;"'; ?>>
@@ -452,17 +545,6 @@ function owc_render_settings_page()
 
             <!-- TERRITORIES -->
             <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
-            <p class="description">
-                <?php
-                if ($tm_active) {
-                    esc_html_e('Territory Manager is active — territory data is served from local CPTs.', 'owbn-client');
-                } elseif ($remote_url) {
-                    esc_html_e('No local Territory Manager detected — territory data will be fetched from the remote gateway.', 'owbn-client');
-                } else {
-                    esc_html_e('No local Territory Manager and no remote gateway configured.', 'owbn-client');
-                }
-                ?>
-            </p>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
@@ -476,6 +558,50 @@ function owc_render_settings_page()
                                 <?php checked($terr_enabled); ?> />
                             <?php esc_html_e('Enable Territories', 'owbn-client'); ?>
                         </label>
+                    </td>
+                </tr>
+                <tr class="owc-territories-options" <?php echo $terr_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
+                                    class="owc-territories-mode"
+                                    value="local"
+                                    <?php checked($terr_mode, 'local'); ?> />
+                                <?php esc_html_e('Local — Serve from Territory Manager CPTs on this site', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
+                                    class="owc-territories-mode"
+                                    value="remote"
+                                    <?php checked($terr_mode, 'remote'); ?> />
+                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('territories_remote_url')); ?>"
+                            value="<?php echo esc_url($terr_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
+                        <p class="description"><?php esc_html_e('Only set if territories come from a different gateway than the default.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('territories_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($terr_remote_key); ?>"
+                            class="regular-text code"
+                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
                     </td>
                 </tr>
             </table>
@@ -567,10 +693,6 @@ function owc_render_settings_page()
         <h2><?php esc_html_e('Status', 'owbn-client'); ?></h2>
 
         <?php
-        // Determine data source for each type
-        $chron_source = $manager_active ? 'local' : ($remote_url ? 'remote' : 'none');
-        $terr_source  = $tm_active      ? 'local' : ($remote_url ? 'remote' : 'none');
-
         // Read from cache only — avoid triggering remote requests on settings page load
         $chronicles_cache   = get_transient('owc_chronicles_cache');
         $coordinators_cache = get_transient('owc_coordinators_cache');
@@ -588,9 +710,14 @@ function owc_render_settings_page()
 
         // Gateway data sources
         $gw_data_sources = apply_filters('owbn_gateway_data_sources', []);
+
+        // Resolve effective remote URLs for status display
+        $chron_effective_url = $chron_remote_url ? $chron_remote_url : $remote_url;
+        $coord_effective_url = $coord_remote_url ? $coord_remote_url : $remote_url;
+        $terr_effective_url  = $terr_remote_url ? $terr_remote_url : $remote_url;
         ?>
 
-        <table class="widefat" style="max-width:600px;">
+        <table class="widefat" style="max-width:700px;">
             <thead>
                 <tr>
                     <th><?php esc_html_e('Feature', 'owbn-client'); ?></th>
@@ -605,6 +732,9 @@ function owc_render_settings_page()
                     <?php
                     if (!$chron_enabled) {
                         esc_html_e('Disabled', 'owbn-client');
+                    } elseif ($chron_mode === 'local' && $manager_active && $chron_enabled) {
+                        $count = is_array($chronicles_cache) ? count($chronicles_cache) : 0;
+                        echo absint($count) . ' ' . esc_html__('records cached', 'owbn-client');
                     } elseif (is_array($chronicles_cache)) {
                         echo absint(count($chronicles_cache)) . ' ' . esc_html__('records cached', 'owbn-client');
                     } else {
@@ -612,7 +742,14 @@ function owc_render_settings_page()
                     }
                     ?>
                 </td>
-                <td><?php echo esc_html(ucfirst($chron_source)); ?></td>
+                <td>
+                    <?php
+                    echo esc_html(ucfirst($chron_mode));
+                    if ($chron_mode === 'remote' && $chron_effective_url) {
+                        echo ' — ' . esc_html($chron_effective_url);
+                    }
+                    ?>
+                </td>
             </tr>
             <tr>
                 <td><strong><?php esc_html_e('Coordinators', 'owbn-client'); ?></strong></td>
@@ -627,7 +764,14 @@ function owc_render_settings_page()
                     }
                     ?>
                 </td>
-                <td><?php echo esc_html(ucfirst($chron_source)); ?></td>
+                <td>
+                    <?php
+                    echo esc_html(ucfirst($coord_mode));
+                    if ($coord_mode === 'remote' && $coord_effective_url) {
+                        echo ' — ' . esc_html($coord_effective_url);
+                    }
+                    ?>
+                </td>
             </tr>
             <tr>
                 <td><strong><?php esc_html_e('Territories', 'owbn-client'); ?></strong></td>
@@ -635,7 +779,7 @@ function owc_render_settings_page()
                     <?php
                     if (!$terr_enabled) {
                         esc_html_e('Disabled', 'owbn-client');
-                    } elseif ($tm_active) {
+                    } elseif ($terr_mode === 'local' && $tm_active) {
                         echo absint($territory_cpt_count) . ' ' . esc_html__('published', 'owbn-client');
                     } elseif (is_array($territories_cache)) {
                         echo absint(count($territories_cache)) . ' ' . esc_html__('records cached', 'owbn-client');
@@ -644,7 +788,14 @@ function owc_render_settings_page()
                     }
                     ?>
                 </td>
-                <td><?php echo esc_html(ucfirst($terr_source)); ?></td>
+                <td>
+                    <?php
+                    echo esc_html(ucfirst($terr_mode));
+                    if ($terr_mode === 'remote' && $terr_effective_url) {
+                        echo ' — ' . esc_html($terr_effective_url);
+                    }
+                    ?>
+                </td>
             </tr>
             <tr>
                 <td><strong><?php esc_html_e('Player ID', 'owbn-client'); ?></strong></td>
@@ -659,7 +810,7 @@ function owc_render_settings_page()
                 </td>
             </tr>
             <tr>
-                <td><strong><?php esc_html_e('Remote Gateway', 'owbn-client'); ?></strong></td>
+                <td><strong><?php esc_html_e('Default Remote', 'owbn-client'); ?></strong></td>
                 <td colspan="2">
                     <?php
                     if ($remote_url) {
@@ -770,15 +921,27 @@ function owc_render_settings_page()
                 $('#owbn_gateway_api_key').val(key);
             });
 
-            // Chronicles enable toggle
-            $('#owc_enable_chronicles').on('change', function() {
-                $('.owc-chronicles-options').toggle(this.checked);
-            });
+            // Data type toggle helper
+            function setupDataTypeToggle(type) {
+                var $enable = $('#owc_enable_' + type);
+                $enable.on('change', function() {
+                    var show = this.checked;
+                    $('.owc-' + type + '-options').toggle(show);
+                    if (!show) {
+                        $('.owc-' + type + '-remote').hide();
+                    } else {
+                        var isRemote = $('.owc-' + type + '-mode:checked').val() === 'remote';
+                        $('.owc-' + type + '-remote').toggle(isRemote);
+                    }
+                });
+                $('.owc-' + type + '-mode').on('change', function() {
+                    $('.owc-' + type + '-remote').toggle(this.value === 'remote');
+                });
+            }
 
-            // Coordinators enable toggle
-            $('#owc_enable_coordinators').on('change', function() {
-                $('.owc-coordinators-options').toggle(this.checked);
-            });
+            setupDataTypeToggle('chronicles');
+            setupDataTypeToggle('coordinators');
+            setupDataTypeToggle('territories');
 
             // Player ID toggle
             var $pidEnable = $('#owc_enable_player_id');
