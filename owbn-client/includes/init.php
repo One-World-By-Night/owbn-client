@@ -14,6 +14,9 @@ defined('ABSPATH') || exit;
 // Core (client registration, API functions)
 require_once __DIR__ . '/core/init.php';
 
+// Gateway (owbn/v1/ REST API — producer mode)
+require_once __DIR__ . '/gateway/init.php';
+
 // Helper functions
 require_once __DIR__ . '/helpers/init.php';
 

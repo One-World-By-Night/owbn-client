@@ -16,6 +16,53 @@ defined('ABSPATH') || exit;
 add_action('admin_init', function () {
     $group = owc_get_client_id() . '_owc_settings';
 
+    // Gateway
+    register_setting($group, 'owbn_gateway_enabled', [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($group, 'owbn_gateway_api_key', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    register_setting($group, 'owbn_gateway_auth_methods', [
+        'type'              => 'array',
+        'default'           => ['api_key'],
+        'sanitize_callback' => function ($value) {
+            if (!is_array($value)) {
+                return ['api_key'];
+            }
+            $allowed = ['api_key', 'app_password'];
+            return array_values(array_intersect($value, $allowed));
+        },
+    ]);
+    register_setting($group, 'owbn_gateway_domain_whitelist', [
+        'type'              => 'array',
+        'default'           => [],
+        'sanitize_callback' => function ($value) {
+            if (!is_array($value)) {
+                // Textarea input — split by newline
+                $lines = preg_split('/[\r\n]+/', (string) $value);
+            } else {
+                $lines = $value;
+            }
+            $domains = [];
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line !== '') {
+                    $domains[] = sanitize_text_field($line);
+                }
+            }
+            return $domains;
+        },
+    ]);
+    register_setting($group, 'owbn_gateway_logging_enabled', [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+
     // Chronicles
     register_setting($group, owc_option_name('enable_chronicles'), [
         'type' => 'boolean',
@@ -153,6 +200,18 @@ function owc_render_settings_page()
     $manager_active = owc_manager_active();
     $tm_active      = owc_territory_manager_active();
 
+    // Gateway values
+    $gw_enabled    = get_option('owbn_gateway_enabled', false);
+    $gw_api_key    = get_option('owbn_gateway_api_key', '');
+    $gw_auth       = get_option('owbn_gateway_auth_methods', ['api_key']);
+    $gw_whitelist  = get_option('owbn_gateway_domain_whitelist', []);
+    $gw_logging    = get_option('owbn_gateway_logging_enabled', false);
+    $gw_base_url   = rest_url('owbn/v1/');
+
+    // Data source status for gateway
+    $gw_has_chronicles  = function_exists('owbn_get_entity_types');
+    $gw_has_territories = post_type_exists('owbn_territory');
+
     // Current values (use effective options for display)
     $chron_enabled = owc_get_effective_option('enable_chronicles', false);
     $chron_mode    = owc_get_effective_option('chronicles_mode', 'local');
@@ -185,6 +244,119 @@ function owc_render_settings_page()
 
         <form method="post" action="options.php">
             <?php settings_fields($group); ?>
+
+            <!-- API GATEWAY -->
+            <h2><?php esc_html_e('API Gateway', 'owbn-client'); ?></h2>
+            <p class="description"><?php esc_html_e('Expose local data via the unified owbn/v1/ REST namespace. Enable this on producer sites (e.g. chronicles.owbn.net).', 'owbn-client'); ?></p>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Enable Gateway', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="owbn_gateway_enabled" value="0" />
+                            <input type="checkbox"
+                                name="owbn_gateway_enabled"
+                                id="owbn_gateway_enabled"
+                                value="1"
+                                <?php checked($gw_enabled); ?> />
+                            <?php esc_html_e('Enable the API Gateway', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Gateway Base URL', 'owbn-client'); ?></th>
+                    <td>
+                        <code><?php echo esc_html($gw_base_url); ?></code>
+                        <p class="description"><?php esc_html_e('Read-only. This is the base URL consumers will use.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="owbn_gateway_api_key"
+                            id="owbn_gateway_api_key"
+                            value="<?php echo esc_attr($gw_api_key); ?>"
+                            class="regular-text code" />
+                        <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
+                            <?php esc_html_e('Generate', 'owbn-client'); ?>
+                        </button>
+                        <p class="description"><?php esc_html_e('One key for all endpoints. Share this with consumer sites.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Auth Methods', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="checkbox"
+                                    name="owbn_gateway_auth_methods[]"
+                                    value="api_key"
+                                    <?php checked(in_array('api_key', (array) $gw_auth, true)); ?> />
+                                <?php esc_html_e('API Key (x-api-key header)', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="checkbox"
+                                    name="owbn_gateway_auth_methods[]"
+                                    value="app_password"
+                                    <?php checked(in_array('app_password', (array) $gw_auth, true)); ?> />
+                                <?php esc_html_e('Application Password (Authorization: Basic)', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Domain Whitelist', 'owbn-client'); ?></th>
+                    <td>
+                        <textarea
+                            name="owbn_gateway_domain_whitelist"
+                            rows="4"
+                            class="regular-text"
+                            placeholder="council.owbn.net"><?php echo esc_textarea(implode("\n", (array) $gw_whitelist)); ?></textarea>
+                        <p class="description"><?php esc_html_e('One domain per line. Leave empty to allow all origins.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Request Logging', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="owbn_gateway_logging_enabled" value="0" />
+                            <input type="checkbox"
+                                name="owbn_gateway_logging_enabled"
+                                value="1"
+                                <?php checked($gw_logging); ?> />
+                            <?php esc_html_e('Log gateway requests to PHP error log', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Sources', 'owbn-client'); ?></th>
+                    <td>
+                        <ul style="margin:0; padding:0; list-style:none;">
+                            <li>
+                                <?php if ($gw_has_chronicles): ?>
+                                    <span style="color:#4CAF50;">&#10003;</span>
+                                    <?php esc_html_e('Chronicle Manager active — chronicles &amp; coordinators available', 'owbn-client'); ?>
+                                <?php else: ?>
+                                    <span style="color:#999;">&#10007;</span>
+                                    <?php esc_html_e('Chronicle Manager not active — chronicles &amp; coordinators unavailable', 'owbn-client'); ?>
+                                <?php endif; ?>
+                            </li>
+                            <li>
+                                <?php if ($gw_has_territories): ?>
+                                    <span style="color:#4CAF50;">&#10003;</span>
+                                    <?php esc_html_e('Territory Manager active — territories available', 'owbn-client'); ?>
+                                <?php else: ?>
+                                    <span style="color:#999;">&#10007;</span>
+                                    <?php esc_html_e('Territory Manager not active — territories unavailable', 'owbn-client'); ?>
+                                <?php endif; ?>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
 
             <!-- CHRONICLES -->
             <h2><?php esc_html_e('Chronicles', 'owbn-client'); ?></h2>
@@ -707,6 +879,21 @@ function owc_render_settings_page()
 
     <script>
         (function($) {
+            // Gateway enable/disable toggle
+            $('#owbn_gateway_enabled').on('change', function() {
+                $('.owbn-gateway-options').toggle(this.checked);
+            });
+
+            // Generate API key
+            $('#owbn_gateway_generate_key').on('click', function() {
+                var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var key = '';
+                for (var i = 0; i < 48; i++) {
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                $('#owbn_gateway_api_key').val(key);
+            });
+
             // Generic toggle handler
             function setupToggle(prefix) {
                 var $enable = $('#owc_enable_' + prefix);
