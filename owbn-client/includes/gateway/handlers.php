@@ -5,11 +5,15 @@
  * location: includes/gateway/handlers.php
  *
  * Route callbacks that resolve data from local CPTs or fall back to the
- * existing remote fetch configuration.
+ * remote gateway configured in OWBN Client settings.
  *
  * Local detection:
  *   - Chronicles/Coordinators: function_exists('owbn_get_entity_types')
  *   - Territories:             post_type_exists('owbn_territory')
+ *
+ * Remote fallback uses a single gateway URL and API key:
+ *   - URL:  {prefix}_owc_remote_url  → owc_get_remote_base()
+ *   - Key:  {prefix}_owc_remote_api_key
  *
  * @package OWBN-Client
  */
@@ -55,9 +59,9 @@ function owbn_gateway_list_chronicles( $request ) {
     if ( function_exists( 'owbn_get_entity_types' ) ) {
         $data = owc_get_local_chronicles();
     } else {
-        $base = owc_normalize_api_base( owc_get_effective_option( 'chronicles_url', '' ) );
-        $key  = owc_get_effective_option( 'chronicles_api_key', '' );
-        $data = owc_remote_request( $base . 'entities/chronicle/list', $key );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'chronicles', $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -75,9 +79,9 @@ function owbn_gateway_detail_chronicle( $request ) {
     if ( function_exists( 'owbn_get_entity_types' ) ) {
         $data = owc_get_local_chronicle_detail( $slug );
     } else {
-        $base = owc_normalize_api_base( owc_get_effective_option( 'chronicles_url', '' ) );
-        $key  = owc_get_effective_option( 'chronicles_api_key', '' );
-        $data = owc_remote_request( $base . 'entities/chronicle/detail', $key, array( 'slug' => $slug ) );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'chronicles/' . rawurlencode( $slug ), $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -97,9 +101,9 @@ function owbn_gateway_list_coordinators( $request ) {
     if ( function_exists( 'owbn_get_entity_types' ) ) {
         $data = owc_get_local_coordinators();
     } else {
-        $base = owc_normalize_api_base( owc_get_effective_option( 'coordinators_url', '' ) );
-        $key  = owc_get_effective_option( 'coordinators_api_key', '' );
-        $data = owc_remote_request( $base . 'entities/coordinator/list', $key );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'coordinators', $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -117,9 +121,9 @@ function owbn_gateway_detail_coordinator( $request ) {
     if ( function_exists( 'owbn_get_entity_types' ) ) {
         $data = owc_get_local_coordinator_detail( $slug );
     } else {
-        $base = owc_normalize_api_base( owc_get_effective_option( 'coordinators_url', '' ) );
-        $key  = owc_get_effective_option( 'coordinators_api_key', '' );
-        $data = owc_remote_request( $base . 'entities/coordinator/detail', $key, array( 'slug' => $slug ) );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'coordinators/' . rawurlencode( $slug ), $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -139,9 +143,9 @@ function owbn_gateway_list_territories( $request ) {
     if ( post_type_exists( 'owbn_territory' ) ) {
         $data = owc_get_local_territories();
     } else {
-        $url  = trailingslashit( get_option( owc_option_name( 'territories_url' ), '' ) ) . 'territories';
-        $key  = get_option( owc_option_name( 'territories_api_key' ), '' );
-        $data = owc_remote_request( $url, $key );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'territories', $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -159,9 +163,9 @@ function owbn_gateway_detail_territory( $request ) {
     if ( post_type_exists( 'owbn_territory' ) ) {
         $data = owc_get_local_territory_detail( $id );
     } else {
-        $url  = trailingslashit( get_option( owc_option_name( 'territories_url' ), '' ) ) . 'territory';
-        $key  = get_option( owc_option_name( 'territories_api_key' ), '' );
-        $data = owc_remote_request( $url, $key, array( 'id' => $id ) );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'territories/' . absint( $id ), $key );
     }
 
     return owbn_gateway_respond( $data );
@@ -179,9 +183,9 @@ function owbn_gateway_territories_by_slug( $request ) {
     if ( post_type_exists( 'owbn_territory' ) ) {
         $data = owc_get_local_territories_by_slug( $slug );
     } else {
-        $url  = trailingslashit( get_option( owc_option_name( 'territories_url' ), '' ) ) . 'territories-by-slug';
-        $key  = get_option( owc_option_name( 'territories_api_key' ), '' );
-        $data = owc_remote_request( $url, $key, array( 'slug' => $slug ) );
+        $base = owc_get_remote_base();
+        $key  = get_option( owc_option_name( 'remote_api_key' ), '' );
+        $data = owc_remote_request( $base . 'territories/by-slug/' . rawurlencode( $slug ), $key );
     }
 
     return owbn_gateway_respond( $data );

@@ -4,9 +4,8 @@
  * OWBN-Client API Functions
  * location: includes/core/client-api.php
  * Handles remote and local API calls to fetch chronicle/coordinator/territory data.
- * 
+ *
  * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;
@@ -22,33 +21,20 @@ function owc_get_cache_ttl(): int
 }
 
 /**
- * Normalize a remote API base URL to the REST namespace root.
+ * Build the remote gateway base URL.
  *
- * Accepts any of:
- *   https://example.com/wp-json/owbn-cc/v1/chronicles   → strips trailing entity path
- *   https://example.com/wp-json/owbn-cc/v1/             → already correct
- *   https://example.com                                  → appends namespace
+ * Reads the single remote_url option (e.g. https://chronicles.owbn.net) and
+ * appends the WP REST namespace to produce the base URL for all API calls.
  *
- * @param string $url Stored URL (any format)
- * @return string Normalized base URL with trailing slash, or empty string
+ * @return string Base URL with trailing slash, or empty string if not configured.
  */
-function owc_normalize_api_base(string $url): string
+function owc_get_remote_base(): string
 {
-    $url = trim($url);
+    $url = trim(get_option(owc_option_name('remote_url'), ''));
     if (empty($url)) {
         return '';
     }
-
-    $namespace = '/wp-json/owbn-cc/v1';
-    $pos = strpos($url, $namespace);
-
-    if ($pos !== false) {
-        // Truncate everything after the namespace
-        return trailingslashit(substr($url, 0, $pos + strlen($namespace)));
-    }
-
-    // Namespace not present — append it
-    return trailingslashit(rtrim($url, '/') . $namespace);
+    return trailingslashit(rtrim($url, '/')) . 'wp-json/owbn/v1/';
 }
 
 /**
@@ -140,12 +126,12 @@ function owc_get_local_coordinators()
     return array_map(function ($p) {
         $id = $p->ID;
         return [
-            'id'               => $id,
-            'title'            => $p->post_title,
-            'slug'             => get_post_meta($id, 'coordinator_slug', true) ?: $p->post_name,
+            'id'                => $id,
+            'title'             => $p->post_title,
+            'slug'              => get_post_meta($id, 'coordinator_slug', true) ?: $p->post_name,
             'coordinator_title' => get_post_meta($id, 'coordinator_title', true),
-            'coordinator_type' => get_post_meta($id, 'coordinator_type', true),
-            'coord_info'       => get_post_meta($id, 'coord_info', true) ?: [],
+            'coordinator_type'  => get_post_meta($id, 'coordinator_type', true),
+            'coord_info'        => get_post_meta($id, 'coord_info', true) ?: [],
         ];
     }, $posts);
 }
@@ -211,7 +197,6 @@ function owc_get_local_chronicle_detail(string $slug)
     $post = $posts[0];
     $id = $post->ID;
 
-    // Get parent info if satellite
     $parent_id = get_post_meta($id, 'chronicle_parent_id', true);
     $parent_title = '';
     $parent_slug = '';
@@ -388,10 +373,9 @@ function owc_get_chronicles(bool $force_refresh = false)
     if ($mode === 'local') {
         $data = owc_get_local_chronicles();
     } else {
-        $base = owc_normalize_api_base(owc_get_effective_option('chronicles_url', ''));
-        $url = $base . 'entities/chronicle/list';
-        $key = owc_get_effective_option('chronicles_api_key', '');
-        $data = owc_remote_request($url, $key);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'chronicles', $key);
     }
 
     if (!is_wp_error($data)) {
@@ -424,10 +408,9 @@ function owc_get_coordinators(bool $force_refresh = false)
     if ($mode === 'local') {
         $data = owc_get_local_coordinators();
     } else {
-        $base = owc_normalize_api_base(owc_get_effective_option('coordinators_url', ''));
-        $url = $base . 'entities/coordinator/list';
-        $key = owc_get_effective_option('coordinators_api_key', '');
-        $data = owc_remote_request($url, $key);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'coordinators', $key);
     }
 
     if (!is_wp_error($data)) {
@@ -460,9 +443,9 @@ function owc_get_territories(bool $force_refresh = false)
     if ($mode === 'local') {
         $data = owc_get_local_territories();
     } else {
-        $url = trailingslashit(get_option(owc_option_name('territories_url'), '')) . 'territories';
-        $key = get_option(owc_option_name('territories_api_key'), '');
-        $data = owc_remote_request($url, $key);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'territories', $key);
     }
 
     if (!is_wp_error($data)) {
@@ -497,10 +480,9 @@ function owc_get_chronicle_detail(string $slug)
     if ($mode === 'local') {
         $data = owc_get_local_chronicle_detail($slug);
     } else {
-        $base = owc_normalize_api_base(owc_get_effective_option('chronicles_url', ''));
-        $url = $base . 'entities/chronicle/detail';
-        $key = owc_get_effective_option('chronicles_api_key', '');
-        $data = owc_remote_request($url, $key, ['slug' => $slug]);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'chronicles/' . rawurlencode($slug), $key);
     }
 
     if (!is_wp_error($data)) {
@@ -531,10 +513,9 @@ function owc_get_coordinator_detail(string $slug)
     if ($mode === 'local') {
         $data = owc_get_local_coordinator_detail($slug);
     } else {
-        $base = owc_normalize_api_base(owc_get_effective_option('coordinators_url', ''));
-        $url = $base . 'entities/coordinator/detail';
-        $key = owc_get_effective_option('coordinators_api_key', '');
-        $data = owc_remote_request($url, $key, ['slug' => $slug]);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'coordinators/' . rawurlencode($slug), $key);
     }
 
     if (!is_wp_error($data)) {
@@ -565,9 +546,9 @@ function owc_get_territory_detail(int $id)
     if ($mode === 'local') {
         $data = owc_get_local_territory_detail($id);
     } else {
-        $url = trailingslashit(get_option(owc_option_name('territories_url'), '')) . 'territory';
-        $key = get_option(owc_option_name('territories_api_key'), '');
-        $data = owc_remote_request($url, $key, ['id' => $id]);
+        $base = owc_get_remote_base();
+        $key  = get_option(owc_option_name('remote_api_key'), '');
+        $data = owc_remote_request($base . 'territories/' . absint($id), $key);
     }
 
     if (!is_wp_error($data)) {
@@ -592,9 +573,9 @@ function owc_get_territories_by_slug(string $slug)
         return owc_get_local_territories_by_slug($slug);
     }
 
-    $url = trailingslashit(get_option(owc_option_name('territories_url'), '')) . 'territories-by-slug';
-    $key = get_option(owc_option_name('territories_api_key'), '');
-    return owc_remote_request($url, $key, ['slug' => $slug]);
+    $base = owc_get_remote_base();
+    $key  = get_option(owc_option_name('remote_api_key'), '');
+    return owc_remote_request($base . 'territories/by-slug/' . rawurlencode($slug), $key);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -637,12 +618,10 @@ function owc_clear_all_caches(): void
 {
     global $wpdb;
 
-    // Clear list caches
     delete_transient('owc_chronicles_cache');
     delete_transient('owc_coordinators_cache');
     delete_transient('owc_territories_cache');
 
-    // Clear detail caches (pattern match)
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_chronicle_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_chronicle_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_coordinator_%'");
