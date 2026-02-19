@@ -21,6 +21,55 @@ function owc_get_cache_ttl(): int
 }
 
 /**
+ * Validate a remote URL to prevent SSRF attacks.
+ *
+ * Rejects non-http(s) schemes, localhost, loopback, and private/reserved IPs.
+ *
+ * @param string $url URL to validate.
+ * @return bool True if safe, false if blocked.
+ */
+function owc_validate_remote_url( $url ) {
+    if ( empty( $url ) ) {
+        return false;
+    }
+
+    $parsed = wp_parse_url( $url );
+    if ( ! $parsed || empty( $parsed['scheme'] ) || empty( $parsed['host'] ) ) {
+        error_log( 'OWC SSRF: Blocked URL with missing scheme or host: ' . $url );
+        return false;
+    }
+
+    // Only allow http and https.
+    if ( ! in_array( strtolower( $parsed['scheme'] ), array( 'http', 'https' ), true ) ) {
+        error_log( 'OWC SSRF: Blocked non-http(s) scheme: ' . $url );
+        return false;
+    }
+
+    $host = strtolower( $parsed['host'] );
+
+    // Reject obvious localhost aliases.
+    $blocked_hosts = array( 'localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]' );
+    if ( in_array( $host, $blocked_hosts, true ) ) {
+        error_log( 'OWC SSRF: Blocked localhost URL: ' . $url );
+        return false;
+    }
+
+    // Resolve hostname and check for private/reserved IPs.
+    $resolved = gethostbyname( $host );
+    if ( $resolved === $host ) {
+        // gethostbyname returns the input on failure — allow it (DNS may resolve later at request time).
+        return true;
+    }
+
+    if ( ! filter_var( $resolved, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+        error_log( 'OWC SSRF: Blocked private/reserved IP (' . $resolved . ') for URL: ' . $url );
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * Build the remote gateway base URL.
  *
  * Checks for a per-type remote URL override first, then falls back to the
@@ -35,12 +84,18 @@ function owc_get_remote_base($type = '')
     if ($type !== '') {
         $override = trim(get_option(owc_option_name($type . '_remote_url'), ''));
         if ($override !== '') {
+            if ( ! owc_validate_remote_url( $override ) ) {
+                return '';
+            }
             return trailingslashit(rtrim($override, '/')) . 'wp-json/owbn/v1/';
         }
     }
 
     $url = trim(get_option(owc_option_name('remote_url'), ''));
     if (empty($url)) {
+        return '';
+    }
+    if ( ! owc_validate_remote_url( $url ) ) {
         return '';
     }
     return trailingslashit(rtrim($url, '/')) . 'wp-json/owbn/v1/';
@@ -634,15 +689,6 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
         return array();
     }
 
-    $cache_key = 'owc_votes_' . $type . '_' . sanitize_key($slug);
-
-    if ( ! $force_refresh ) {
-        $cached = get_transient($cache_key);
-        if ($cached !== false) {
-            return $cached;
-        }
-    }
-
     // Check if the gateway handler exists locally AND wp-voting-plugin is active (producer site).
     if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) && defined('WPVP_VERSION') ) {
         $data = owbn_gateway_query_entity_votes($type, $slug);
@@ -654,13 +700,6 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
             $base . 'votes/by-entity/' . rawurlencode($type) . '/' . rawurlencode($slug),
             $key
         );
-    }
-
-    if ( ! is_wp_error($data) ) {
-        $ttl = owc_get_cache_ttl();
-        if ($ttl > 0) {
-            set_transient($cache_key, $data, $ttl);
-        }
     }
 
     return $data;

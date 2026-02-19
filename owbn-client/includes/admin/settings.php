@@ -8,6 +8,29 @@
 
 defined('ABSPATH') || exit;
 
+/**
+ * Sanitize a remote URL setting with SSRF protection.
+ *
+ * @param string $url Raw URL value from settings form.
+ * @return string Sanitized URL, or empty string if blocked.
+ */
+function owc_sanitize_remote_url( $url ) {
+    $url = esc_url_raw( $url );
+    if ( empty( $url ) ) {
+        return '';
+    }
+    if ( function_exists( 'owc_validate_remote_url' ) && ! owc_validate_remote_url( $url ) ) {
+        add_settings_error(
+            'owc_remote_url',
+            'owc_ssrf_blocked',
+            __( 'The remote URL was rejected because it points to a local or private network address.', 'owbn-client' ),
+            'error'
+        );
+        return '';
+    }
+    return $url;
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // REGISTER SETTINGS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -64,7 +87,7 @@ add_action('admin_init', function () {
     // Default remote gateway (consumer-side fallback)
     register_setting($group, owc_option_name('remote_url'), [
         'type'              => 'string',
-        'sanitize_callback' => 'esc_url_raw',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
     register_setting($group, owc_option_name('remote_api_key'), [
         'type'              => 'string',
@@ -100,7 +123,7 @@ add_action('admin_init', function () {
         ]);
         register_setting($group, owc_option_name($dtype . '_remote_url'), [
             'type'              => 'string',
-            'sanitize_callback' => 'esc_url_raw',
+            'sanitize_callback' => 'owc_sanitize_remote_url',
         ]);
         register_setting($group, owc_option_name($dtype . '_remote_api_key'), [
             'type'              => 'string',
@@ -138,7 +161,7 @@ add_action('admin_init', function () {
     ]);
     register_setting($group, owc_option_name('votes_remote_url'), [
         'type'              => 'string',
-        'sanitize_callback' => 'esc_url_raw',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
     register_setting($group, owc_option_name('votes_remote_api_key'), [
         'type'              => 'string',
