@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.2.0
+Stable tag: 4.6.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,28 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.6.0 =
+* Vote history on entity detail pages — chronicle and coordinator detail views now show a table of public vote records
+* New gateway endpoint: POST /owbn/v1/votes/by-entity/{type}/{slug} returns privacy-safe vote summaries
+* New render module: owc_render_entity_vote_history() with responsive table, stage badges, and date formatting
+* New client API function: owc_get_entity_votes() with local/remote routing and transient caching
+* Admin setting to enable/disable vote history display per site
+* Privacy: restricted votes excluded, anonymous/ranked/blind votes show "Voted" instead of choice
+
+= 4.5.0 =
+* Per-type remote URLs — each data type (chronicles, coordinators, territories) can now fetch from a different remote server
+* Mode-based gateway routing — gateway consumers auto-route to the correct producer based on data type configuration
+* Domain whitelist fix — server-to-server requests (no Origin/Referer) bypass whitelist check
+
+= 4.4.0 =
+* Data dashboards — admin overview panels showing entity counts and sync status
+* Menu cleanup — streamlined admin sidebar structure
+* Version display fix in admin footer
+
+= 4.3.0 =
+* Removed duplicate API key storage — consolidated remote gateway configuration
+* Single gateway key per remote server instead of per-data-type keys
 
 = 4.2.0 =
 * Added Status section to settings page — shows entity counts, modes, and companion plugin detection

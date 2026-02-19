@@ -552,3 +552,182 @@ body:has(.owc-coordinator-detail) {
 .owc-terr-modal[hidden] {
   display: none;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   VOTE HISTORY STYLES
+   Mirrors wp-voting-plugin's wpvp-vote-table for visual consistency.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Vote History section (on detail pages) */
+.owc-vote-history {
+  margin-top: 2em;
+  padding-top: 1.5em;
+  border-top: 1px solid #ddd;
+}
+
+.owc-vote-history h2 {
+  margin-bottom: 1em;
+}
+
+/* Vote table — matches wpvp-vote-table */
+.owc-vote-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.owc-vote-table thead {
+  background: #f6f7f7;
+}
+
+.owc-vote-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #50575e;
+  border-bottom: 2px solid #dcdcde;
+}
+
+.owc-vote-table tbody tr {
+  border-bottom: 1px solid #f0f0f1;
+  transition: background-color 0.15s;
+}
+
+.owc-vote-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.owc-vote-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.owc-vote-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.owc-vote-table__title {
+  font-weight: 600;
+}
+
+.owc-vote-table__link {
+  color: #2271b1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.owc-vote-table__link:hover {
+  color: #135e96;
+  text-decoration: underline;
+}
+
+.owc-vote-table__date {
+  color: #646970;
+  white-space: nowrap;
+}
+
+.owc-vote-table__status {
+  white-space: nowrap;
+}
+
+.owc-vote-table__choice {
+  font-weight: 500;
+}
+
+/* Badges — matches wpvp-badge */
+.owc-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.owc-badge--open {
+  background: #dff0d8;
+  color: #3c763d;
+}
+
+.owc-badge--completed {
+  background: #d9edf7;
+  color: #31708f;
+}
+
+.owc-badge--archived {
+  background: #e8e8e8;
+  color: #666;
+}
+
+/* Footer link */
+.owc-vote-history-footer {
+  margin-top: 1em;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+/* Responsive — matches wpvp-vote-table mobile stacking */
+@media screen and (max-width: 768px) {
+  .owc-vote-table,
+  .owc-vote-table thead,
+  .owc-vote-table tbody,
+  .owc-vote-table th,
+  .owc-vote-table td,
+  .owc-vote-table tr {
+    display: block;
+  }
+
+  .owc-vote-table thead {
+    display: none;
+  }
+
+  .owc-vote-table tbody tr {
+    margin-bottom: 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 12px;
+  }
+
+  .owc-vote-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .owc-vote-table td {
+    padding: 6px 0;
+    border: none;
+    position: relative;
+    padding-left: 35%;
+    text-align: left;
+  }
+
+  .owc-vote-table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 32%;
+    padding-right: 3%;
+    font-weight: 600;
+    font-size: 12px;
+    color: #50575e;
+    text-transform: uppercase;
+  }
+
+  .owc-vote-table__title {
+    padding-top: 0;
+    font-size: 16px;
+    padding-left: 0;
+  }
+
+  .owc-vote-table__title:before {
+    display: none;
+  }
+}

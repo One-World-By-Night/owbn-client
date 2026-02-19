@@ -23,3 +23,5 @@ require_once __DIR__ . '/render-territory-detail.php';
 
 // Boxes
 require_once __DIR__ . '/render-territory-box.php';
+// Vote History
+require_once __DIR__ . '/render-vote-history.php';

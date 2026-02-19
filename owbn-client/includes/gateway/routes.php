@@ -83,6 +83,23 @@ function owbn_gateway_register_routes() {
         ),
     ) );
 
+    // Entity vote history
+    register_rest_route( $namespace, '/votes/by-entity/(?P<type>[a-z]+)/(?P<slug>[a-z0-9\-]+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_entity_votes',
+        'permission_callback' => 'owbn_gateway_authenticate',
+        'args'                => array(
+            'type' => array(
+                'required'          => true,
+                'sanitize_callback' => 'sanitize_key',
+            ),
+            'slug' => array(
+                'required'          => true,
+                'sanitize_callback' => 'sanitize_title',
+            ),
+        ),
+    ) );
+
     // Territory detail by ID
     register_rest_route( $namespace, '/territories/(?P<id>\d+)', array(
         'methods'             => WP_REST_Server::CREATABLE,

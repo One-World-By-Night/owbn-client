@@ -609,6 +609,64 @@ function owc_get_territories_by_slug(string $slug)
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// CACHED FETCH FUNCTIONS - VOTE HISTORY
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch vote history for an entity (chronicle or coordinator).
+ *
+ * On the producer site (council), queries local wp-voting-plugin tables
+ * via the gateway handler. On consumer sites (chronicles, sso), fetches
+ * from the remote gateway.
+ *
+ * @param string $type          'chronicle' or 'coordinator'.
+ * @param string $slug          Entity slug.
+ * @param bool   $force_refresh Skip transient cache.
+ * @return array|WP_Error
+ */
+function owc_get_entity_votes($type, $slug, $force_refresh = false)
+{
+    if ( ! (bool) get_option(owc_option_name('enable_vote_history'), false) ) {
+        return array();
+    }
+
+    if ( ! in_array($type, array('chronicle', 'coordinator'), true) ) {
+        return array();
+    }
+
+    $cache_key = 'owc_votes_' . $type . '_' . sanitize_key($slug);
+
+    if ( ! $force_refresh ) {
+        $cached = get_transient($cache_key);
+        if ($cached !== false) {
+            return $cached;
+        }
+    }
+
+    // Check if the gateway handler exists locally (producer site).
+    if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) {
+        $data = owbn_gateway_query_entity_votes($type, $slug);
+    } else {
+        // Consumer site: fetch from remote gateway.
+        $base = owc_get_remote_base('votes');
+        $key  = owc_get_remote_key('votes');
+        $data = owc_remote_request(
+            $base . 'votes/by-entity/' . rawurlencode($type) . '/' . rawurlencode($slug),
+            $key
+        );
+    }
+
+    if ( ! is_wp_error($data) ) {
+        $ttl = owc_get_cache_ttl();
+        if ($ttl > 0) {
+            set_transient($cache_key, $data, $ttl);
+        }
+    }
+
+    return $data;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // CACHE MANAGEMENT
 // ══════════════════════════════════════════════════════════════════════════════
 
@@ -658,4 +716,6 @@ function owc_clear_all_caches(): void
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_coordinator_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_territory_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_territory_%'");
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_votes_%'");
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_votes_%'");
 }

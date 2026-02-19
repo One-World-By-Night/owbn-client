@@ -19,6 +19,7 @@ if ( ! get_option( 'owbn_gateway_enabled', false ) ) {
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/routes.php';
 require_once __DIR__ . '/handlers.php';
+require_once __DIR__ . '/handlers-votes.php';
 
 // CORS headers on all owbn/v1/ responses (priority 15)
 add_filter( 'rest_pre_serve_request', 'owbn_gateway_cors_headers', 15, 4 );

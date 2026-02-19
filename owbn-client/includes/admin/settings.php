@@ -130,6 +130,21 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'absint',
     ]);
 
+    // Vote History
+    register_setting($group, owc_option_name('enable_vote_history'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($group, owc_option_name('votes_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    register_setting($group, owc_option_name('votes_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+
     // Player ID
     register_setting($group, owc_option_name('enable_player_id'), [
         'type'              => 'boolean',
@@ -608,6 +623,63 @@ function owc_render_settings_page()
 
             <hr />
 
+            <!-- VOTE HISTORY -->
+            <h2><?php esc_html_e('Vote History', 'owbn-client'); ?></h2>
+            <?php
+                $vh_enabled    = (bool) get_option(owc_option_name('enable_vote_history'), false);
+                $vh_remote_url = get_option(owc_option_name('votes_remote_url'), '');
+                $vh_remote_key = get_option(owc_option_name('votes_remote_api_key'), '');
+            ?>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_vote_history')); ?>" value="0" />
+                            <input type="checkbox"
+                                name="<?php echo esc_attr(owc_option_name('enable_vote_history')); ?>"
+                                id="owc_enable_vote_history"
+                                value="1"
+                                <?php checked($vh_enabled); ?> />
+                            <?php esc_html_e('Show vote history on chronicle and coordinator detail pages', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                    <td>
+                        <?php if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) : ?>
+                            <p><span style="color:#4CAF50;">&#10003;</span> <?php esc_html_e('wp-voting-plugin detected locally — vote data will be queried directly.', 'owbn-client'); ?></p>
+                        <?php else : ?>
+                            <p class="description"><?php esc_html_e('Vote data will be fetched from the remote gateway (council.owbn.net).', 'owbn-client'); ?></p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('votes_remote_url')); ?>"
+                            value="<?php echo esc_url($vh_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
+                        <p class="description"><?php esc_html_e('Only set if vote data comes from a different gateway than the default remote URL.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('votes_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($vh_remote_key); ?>"
+                            class="regular-text code"
+                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
+
             <!-- PLAYER ID -->
             <h2><?php esc_html_e('Player ID', 'owbn-client'); ?></h2>
             <?php
@@ -798,6 +870,24 @@ function owc_render_settings_page()
                 </td>
             </tr>
             <tr>
+                <td><strong><?php esc_html_e('Vote History', 'owbn-client'); ?></strong></td>
+                <td colspan="2">
+                    <?php
+                    if ( ! $vh_enabled ) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } elseif ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) {
+                        esc_html_e('Enabled — local (wp-voting-plugin)', 'owbn-client');
+                    } else {
+                        $vh_effective_url = $vh_remote_url ? $vh_remote_url : $remote_url;
+                        echo esc_html__('Enabled — remote', 'owbn-client');
+                        if ($vh_effective_url) {
+                            echo ' — ' . esc_html($vh_effective_url);
+                        }
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
                 <td><strong><?php esc_html_e('Player ID', 'owbn-client'); ?></strong></td>
                 <td colspan="2">
                     <?php
@@ -942,6 +1032,11 @@ function owc_render_settings_page()
             setupDataTypeToggle('chronicles');
             setupDataTypeToggle('coordinators');
             setupDataTypeToggle('territories');
+
+            // Vote History toggle
+            $('#owc_enable_vote_history').on('change', function() {
+                $('.owc-vote-history-options').toggle(this.checked);
+            });
 
             // Player ID toggle
             var $pidEnable = $('#owc_enable_player_id');

@@ -54,6 +54,7 @@ function owc_render_coordinator_detail(array $coordinator): string
         </div>
 
         <?php echo owc_render_coordinator_territories($coordinator); ?>
+        <?php echo owc_render_entity_vote_history('coordinator', $coordinator['slug'] ?? ''); ?>
 
     </div>
 <?php

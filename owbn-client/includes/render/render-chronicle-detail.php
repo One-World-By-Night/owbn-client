@@ -53,6 +53,7 @@ function owc_render_chronicle_detail(array $chronicle): string
         <?php echo owc_render_chronicle_player_lists($chronicle); ?>
         <?php echo owc_render_satellite_parent($chronicle); ?>
         <?php echo owc_render_chronicle_territories($chronicle); ?>
+        <?php echo owc_render_entity_vote_history('chronicle', $chronicle['slug'] ?? ''); ?>
     </div>
 <?php
     return ob_get_clean();
