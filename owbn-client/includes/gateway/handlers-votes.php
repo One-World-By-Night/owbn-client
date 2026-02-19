@@ -12,7 +12,7 @@
  *  - Restricted visibility votes: excluded entirely
  *  - Draft stage votes: excluded entirely
  *  - Anonymous votes: choice shown as "Voted"
- *  - Ranked votes (rcv, stv, condorcet): choice shown as "Voted"
+ *  - Ranked votes (rcv, stv, condorcet, sequential_rcv): choice shown as "Voted"
  *  - Blind open votes (show_results_before_closing off): choice shown as "Voted"
  *
  * @package OWBN-Client
@@ -129,7 +129,7 @@ function owbn_gateway_query_entity_votes( $entity_type, $entity_slug ) {
 
         $is_anonymous  = ! empty( $settings['anonymous_voting'] );
         $is_blind_open = ( $row->voting_stage === 'open' && empty( $settings['show_results_before_closing'] ) );
-        $is_ranked     = in_array( $row->voting_type, array( 'rcv', 'stv', 'condorcet' ), true );
+        $is_ranked     = in_array( $row->voting_type, array( 'rcv', 'stv', 'condorcet', 'sequential_rcv' ), true );
 
         // Determine the choice to display.
         if ( $is_anonymous || $is_ranked || $is_blind_open ) {
