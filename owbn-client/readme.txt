@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.8.0
+Stable tag: 4.8.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.8.1 =
+* Fix: OWC_VERSION constant now matches plugin header version
+* Performance: Local list functions now prime post meta cache in a single query instead of N+1 per-post queries
+* Fix: Vote history API errors are now logged and return empty array instead of propagating WP_Error to templates
+* Improvement: Settings changes to mode, remote URL, or enable flags now automatically clear relevant transient caches
 
 = 4.8.0 =
 * New: Cache invalidation hooks — editing or deleting chronicle, coordinator, or territory posts now automatically clears the relevant transient caches

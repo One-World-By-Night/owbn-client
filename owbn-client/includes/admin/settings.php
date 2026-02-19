@@ -193,6 +193,36 @@ add_action('admin_init', function () {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
+// AUTO-CLEAR CACHES ON SETTINGS CHANGE
+// ══════════════════════════════════════════════════════════════════════════════
+
+add_action( 'updated_option', function ( $option, $old_value, $new_value ) {
+    if ( $old_value === $new_value ) {
+        return;
+    }
+
+    // Map option names to the transient key(s) they affect.
+    $cache_map = array(
+        owc_option_name('chronicles_mode')          => array( 'owc_chronicles_cache' ),
+        owc_option_name('chronicles_remote_url')     => array( 'owc_chronicles_cache' ),
+        owc_option_name('enable_chronicles')         => array( 'owc_chronicles_cache' ),
+        owc_option_name('coordinators_mode')         => array( 'owc_coordinators_cache' ),
+        owc_option_name('coordinators_remote_url')   => array( 'owc_coordinators_cache' ),
+        owc_option_name('enable_coordinators')       => array( 'owc_coordinators_cache' ),
+        owc_option_name('territories_mode')          => array( 'owc_territories_cache' ),
+        owc_option_name('territories_remote_url')    => array( 'owc_territories_cache' ),
+        owc_option_name('enable_territories')        => array( 'owc_territories_cache' ),
+        owc_option_name('remote_url')                => array( 'owc_chronicles_cache', 'owc_coordinators_cache', 'owc_territories_cache' ),
+    );
+
+    if ( isset( $cache_map[ $option ] ) ) {
+        foreach ( $cache_map[ $option ] as $transient_key ) {
+            delete_transient( $transient_key );
+        }
+    }
+}, 10, 3 );
+
+// ══════════════════════════════════════════════════════════════════════════════
 // RENDER SETTINGS PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 

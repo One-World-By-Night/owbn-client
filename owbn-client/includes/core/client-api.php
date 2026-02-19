@@ -180,6 +180,10 @@ function owc_get_local_chronicles()
         'posts_per_page' => -1,
     ]);
 
+    // Prime post meta cache in a single query to avoid N+1.
+    $post_ids = wp_list_pluck( $posts, 'ID' );
+    update_postmeta_cache( $post_ids );
+
     return array_map(function ($p) {
         $id = $p->ID;
         return [
@@ -208,6 +212,10 @@ function owc_get_local_coordinators()
         'posts_per_page' => -1,
     ]);
 
+    // Prime post meta cache in a single query to avoid N+1.
+    $post_ids = wp_list_pluck( $posts, 'ID' );
+    update_postmeta_cache( $post_ids );
+
     return array_map(function ($p) {
         $id = $p->ID;
         return [
@@ -232,6 +240,10 @@ function owc_get_local_territories()
         'post_status'    => 'publish',
         'posts_per_page' => -1,
     ]);
+
+    // Prime post meta cache in a single query to avoid N+1.
+    $post_ids = wp_list_pluck( $posts, 'ID' );
+    update_postmeta_cache( $post_ids );
 
     return array_map(function ($p) {
         $id = $p->ID;
@@ -405,6 +417,10 @@ function owc_get_local_territories_by_slug(string $slug)
         'post_status'    => 'publish',
         'posts_per_page' => -1,
     ]);
+
+    // Prime post meta cache in a single query to avoid N+1.
+    $post_ids = wp_list_pluck( $posts, 'ID' );
+    update_postmeta_cache( $post_ids );
 
     $results = [];
     foreach ($posts as $post) {
@@ -700,6 +716,15 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
             $base . 'votes/by-entity/' . rawurlencode($type) . '/' . rawurlencode($slug),
             $key
         );
+    }
+
+    // Ensure we always return a usable array for the render layer.
+    if ( is_wp_error( $data ) ) {
+        error_log( 'OWC vote history error for ' . $type . '/' . $slug . ': ' . $data->get_error_message() );
+        return array();
+    }
+    if ( ! is_array( $data ) ) {
+        return array();
     }
 
     return $data;
