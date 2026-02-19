@@ -643,8 +643,8 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
         }
     }
 
-    // Check if the gateway handler exists locally (producer site).
-    if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) {
+    // Check if the gateway handler exists locally AND wp-voting-plugin is active (producer site).
+    if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) && defined('WPVP_VERSION') ) {
         $data = owbn_gateway_query_entity_votes($type, $slug);
     } else {
         // Consumer site: fetch from remote gateway.

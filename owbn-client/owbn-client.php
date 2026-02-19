@@ -4,7 +4,7 @@
  * Plugin Name: OWBN Client
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Embeddable client for fetching and displaying chronicle, coordinator, and territory data from remote or local OWBN plugin instances.
- * Version: 4.7.0
+ * Version: 4.7.1
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-client
