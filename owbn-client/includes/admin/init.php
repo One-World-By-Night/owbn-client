@@ -18,3 +18,4 @@ require_once __DIR__ . '/territory.php';
 require_once __DIR__ . '/ajax.php';
 require_once __DIR__ . '/ajax-data-search.php';
 require_once __DIR__ . '/migration-helper.php';
+require_once __DIR__ . '/users-table.php';
