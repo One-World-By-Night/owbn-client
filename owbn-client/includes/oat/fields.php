@@ -315,6 +315,44 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</td></tr>';
 			return;
 
+		case 'signature':
+			// Composite field: name (pre-filled, read-only) + agree checkbox + hidden timestamp/user_id.
+			$sig_data = is_string( $value ) ? json_decode( $value, true ) : ( is_array( $value ) ? $value : array() );
+			if ( ! is_array( $sig_data ) ) {
+				$sig_data = array();
+			}
+			$user         = wp_get_current_user();
+			$sig_name     = isset( $sig_data['name'] ) ? $sig_data['name'] : ( $user && $user->ID ? $user->display_name : '' );
+			$sig_agreed   = ! empty( $sig_data['agreed'] );
+			$sig_ts       = isset( $sig_data['timestamp'] ) ? $sig_data['timestamp'] : '';
+			$sig_uid      = isset( $sig_data['user_id'] ) ? (int) $sig_data['user_id'] : ( $user && $user->ID ? $user->ID : 0 );
+
+			echo '<tr class="oat-field oat-field-signature"' . $cond_attrs . '>';
+			echo '<th>' . esc_html( $label ) . $req_star . '</th>';
+			echo '<td>';
+			echo '<div class="oat-signature-wrap">';
+			printf( '<input type="text" value="%s" class="regular-text" readonly="readonly" tabindex="-1" />', esc_attr( $sig_name ) );
+			echo '<label style="display:block;margin-top:4px;">';
+			printf(
+				'<input type="checkbox" class="oat-sig-agree" data-sig-name="%s"%s /> I agree and sign',
+				esc_attr( $name ),
+				$sig_agreed ? ' checked="checked"' : ''
+			);
+			echo '</label>';
+			// Hidden input holds the composite JSON value.
+			printf( '<input type="hidden" name="%s" id="%s" value="%s" />', $name, $id, esc_attr( wp_json_encode( array(
+				'name'      => $sig_name,
+				'agreed'    => $sig_agreed,
+				'timestamp' => $sig_ts,
+				'user_id'   => $sig_uid,
+			) ) ) );
+			echo '</div>';
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
 		default:
 			// Unknown type — render as text.
 			echo '<tr class="oat-field"' . $cond_attrs . '>';
@@ -455,6 +493,23 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			}
 			break;
 
+		case 'signature':
+			$sig_data = is_string( $value ) ? json_decode( $value, true ) : ( is_array( $value ) ? $value : array() );
+			if ( ! is_array( $sig_data ) ) {
+				$sig_data = array();
+			}
+			if ( ! empty( $sig_data['agreed'] ) && ! empty( $sig_data['name'] ) ) {
+				$ts = ! empty( $sig_data['timestamp'] ) ? $sig_data['timestamp'] : '';
+				printf(
+					'Signed by %s%s',
+					esc_html( $sig_data['name'] ),
+					$ts ? ' on ' . esc_html( $ts ) : ''
+				);
+			} else {
+				echo '<em>Not signed</em>';
+			}
+			break;
+
 		default:
 			echo esc_html( $value );
 			break;
@@ -543,6 +598,19 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 			$attrs  = isset( $field['attributes'] ) && is_array( $field['attributes'] ) ? $field['attributes'] : array();
 			$source = isset( $attrs['source'] ) ? $attrs['source'] : '';
 			return sanitize_text_field( _owc_oat_resolve_auto_prop( $source ) );
+
+		case 'signature':
+			$sig = is_string( $raw_value ) ? json_decode( $raw_value, true ) : ( is_array( $raw_value ) ? $raw_value : array() );
+			if ( ! is_array( $sig ) ) {
+				$sig = array();
+			}
+			$user = wp_get_current_user();
+			return wp_json_encode( array(
+				'name'      => isset( $sig['name'] ) ? sanitize_text_field( $sig['name'] ) : ( $user && $user->ID ? $user->display_name : '' ),
+				'agreed'    => ! empty( $sig['agreed'] ),
+				'timestamp' => ! empty( $sig['agreed'] ) ? current_time( 'mysql' ) : '',
+				'user_id'   => $user && $user->ID ? $user->ID : 0,
+			) );
 
 		default:
 			return sanitize_text_field( $raw_value );
@@ -657,6 +725,15 @@ function owc_oat_validate_field( $field, $value ) {
 					if ( ! array_key_exists( $v, $options ) ) {
 						return new WP_Error( 'oat_field_invalid', sprintf( '%s contains an invalid selection.', $label ) );
 					}
+				}
+			}
+			break;
+
+		case 'signature':
+			if ( $required ) {
+				$sig = is_string( $value ) ? json_decode( $value, true ) : $value;
+				if ( ! is_array( $sig ) || empty( $sig['agreed'] ) ) {
+					return new WP_Error( 'oat_field_required', sprintf( '%s must be signed.', $label ) );
 				}
 			}
 			break;

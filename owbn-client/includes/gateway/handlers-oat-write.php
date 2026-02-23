@@ -92,21 +92,55 @@ function owbn_gateway_oat_submit( $request ) {
         ) );
     }
 
-    // Build meta array for the workflow engine (domain validation reads from $data['meta']).
+    // Build meta: use field-aware sanitization when field definitions available.
     $meta = array();
+    if ( isset( $body['meta'] ) && is_array( $body['meta'] ) ) {
+        if ( class_exists( 'OAT_Form_Field' ) && function_exists( 'owc_oat_sanitize_field' ) ) {
+            $field_defs = OAT_Form_Field::get_fields( $domain, 'submit' );
+            if ( ! empty( $field_defs ) ) {
+                // Build key-indexed lookup of field definitions.
+                $field_map = array();
+                foreach ( $field_defs as $f ) {
+                    $fk = isset( $f['key'] ) ? $f['key'] : '';
+                    if ( $fk !== '' ) {
+                        $field_map[ $fk ] = $f;
+                    }
+                }
+                foreach ( $body['meta'] as $key => $value ) {
+                    $safe_key = sanitize_key( $key );
+                    if ( $safe_key === '' ) {
+                        continue;
+                    }
+                    if ( isset( $field_map[ $safe_key ] ) ) {
+                        $meta[ $safe_key ] = owc_oat_sanitize_field( $field_map[ $safe_key ], $value );
+                    } else {
+                        $meta[ $safe_key ] = sanitize_text_field( $value );
+                    }
+                }
+            } else {
+                // No field definitions seeded yet — generic fallback.
+                foreach ( $body['meta'] as $key => $value ) {
+                    $safe_key = sanitize_key( $key );
+                    if ( $safe_key !== '' ) {
+                        $meta[ $safe_key ] = wp_kses_post( $value );
+                    }
+                }
+            }
+        } else {
+            // OAT_Form_Field or sanitize function not available — generic fallback.
+            foreach ( $body['meta'] as $key => $value ) {
+                $safe_key = sanitize_key( $key );
+                if ( $safe_key !== '' ) {
+                    $meta[ $safe_key ] = wp_kses_post( $value );
+                }
+            }
+        }
+    }
     if ( isset( $body['title'] ) ) {
         $meta['title'] = sanitize_text_field( $body['title'] );
     }
     if ( isset( $body['description'] ) ) {
         $meta['description'] = wp_kses_post( $body['description'] );
-    }
-    if ( isset( $body['meta'] ) && is_array( $body['meta'] ) ) {
-        foreach ( $body['meta'] as $key => $value ) {
-            $safe_key = sanitize_key( $key );
-            if ( $safe_key !== '' ) {
-                $meta[ $safe_key ] = wp_kses_post( $value );
-            }
-        }
     }
 
     // Attach regulation rules.

@@ -22,6 +22,8 @@
                 $container.html(response.data.html);
                 // Re-initialize conditional field logic for new fields.
                 initConditionalFields();
+                // Re-initialize TinyMCE editors for htmlarea fields.
+                initEditors();
             } else {
                 $container.html('<p>No fields defined for this domain.</p>');
             }
@@ -126,5 +128,55 @@
         });
     }
     initConditionalFields();
+
+    // Signature field: update hidden JSON when agree checkbox changes.
+    $(document).on('change', '.oat-sig-agree', function() {
+        var $cb = $(this);
+        var hiddenName = $cb.data('sig-name');
+        var $hidden = $('[name="' + hiddenName + '"]');
+        if (!$hidden.length) return;
+
+        var sig = {};
+        try { sig = JSON.parse($hidden.val()); } catch(e) { sig = {}; }
+        sig.agreed = $cb.is(':checked');
+        if (sig.agreed) {
+            sig.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        } else {
+            sig.timestamp = '';
+        }
+        $hidden.val(JSON.stringify(sig));
+    });
+
+    // Re-initialize TinyMCE for wp_editor instances loaded via AJAX.
+    function initEditors() {
+        if (typeof tinyMCE === 'undefined' || typeof tinyMCEPreInit === 'undefined') {
+            return;
+        }
+        $('#owc-oat-domain-fields .wp-editor-area').each(function() {
+            var id = this.id;
+            if (!id) return;
+            // Remove existing instance before re-init.
+            var existing = tinyMCE.get(id);
+            if (existing) {
+                existing.remove();
+            }
+            // Clone settings from a known editor or use defaults.
+            var settings = tinyMCEPreInit.mceInit[id] || {
+                selector: '#' + id,
+                theme: 'modern',
+                skin: 'lightgray',
+                plugins: 'lists,paste',
+                toolbar1: 'bold,italic,bullist,numlist,link,unlink',
+                menubar: false,
+                statusbar: false
+            };
+            settings.selector = '#' + id;
+            tinyMCE.init(settings);
+            // Also re-init quicktags if available.
+            if (typeof quicktags !== 'undefined' && tinyMCEPreInit.qtInit && tinyMCEPreInit.qtInit[id]) {
+                quicktags(tinyMCEPreInit.qtInit[id]);
+            }
+        });
+    }
 
 })(jQuery);

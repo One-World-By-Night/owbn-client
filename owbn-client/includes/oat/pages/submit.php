@@ -56,11 +56,12 @@ function owc_oat_page_submit() {
                 'rules'  => array(),
             );
 
-            if ( ! empty( $_POST['oat_chronicle_slug'] ) ) {
-                $submit_data['chronicle_slug'] = sanitize_text_field( $_POST['oat_chronicle_slug'] );
+            // Promote chronicle_slug and coordinator_genre from meta to entry-level fields.
+            if ( ! empty( $meta['chronicle_slug'] ) ) {
+                $submit_data['chronicle_slug'] = $meta['chronicle_slug'];
             }
-            if ( ! empty( $_POST['oat_coordinator_genre'] ) ) {
-                $submit_data['coordinator_genre'] = sanitize_text_field( $_POST['oat_coordinator_genre'] );
+            if ( ! empty( $meta['coordinator_genre'] ) ) {
+                $submit_data['coordinator_genre'] = $meta['coordinator_genre'];
             }
             if ( ! empty( $_POST['oat_rule_ids'] ) ) {
                 $submit_data['rules'] = array_map( 'absint', (array) $_POST['oat_rule_ids'] );

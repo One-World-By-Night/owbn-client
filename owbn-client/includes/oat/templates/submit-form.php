@@ -53,14 +53,6 @@ defined( 'ABSPATH' ) || exit;
 
         <table class="form-table">
             <tr>
-                <th><label for="oat_chronicle_slug">Chronicle</label></th>
-                <td><input type="text" name="oat_chronicle_slug" id="oat_chronicle_slug" class="regular-text" placeholder="Chronicle slug (optional)"></td>
-            </tr>
-            <tr>
-                <th><label for="oat_coordinator_genre">Coordinator Genre</label></th>
-                <td><input type="text" name="oat_coordinator_genre" id="oat_coordinator_genre" class="regular-text" placeholder="Genre (optional, auto-set from rules)"></td>
-            </tr>
-            <tr>
                 <th><label for="oat_note">Note</label></th>
                 <td><textarea name="oat_note" id="oat_note" rows="3" class="large-text" placeholder="Optional note with your submission"></textarea></td>
             </tr>
