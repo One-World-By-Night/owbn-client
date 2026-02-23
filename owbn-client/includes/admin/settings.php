@@ -375,6 +375,16 @@ function owc_render_settings_page()
         }
     }
 
+    // Handle entity cache refresh.
+    if (isset($_POST['owc_refresh_entity_cache']) && check_admin_referer('owc_refresh_entity_cache_action')) {
+        if ( function_exists( 'owc_entity_refresh' ) ) {
+            owc_entity_refresh();
+            add_settings_error('owc_settings', 'entity_cache_refreshed', __('Entity resolution cache refreshed.', 'owbn-client'), 'success');
+        } else {
+            add_settings_error('owc_settings', 'entity_cache_unavailable', __('Entity resolution module not loaded.', 'owbn-client'), 'error');
+        }
+    }
+
     $client_id  = owc_get_client_id();
     $group      = $client_id . '_owc_settings';
     $tabs       = owc_get_settings_tabs();

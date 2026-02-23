@@ -761,6 +761,11 @@ function owc_refresh_all_caches()
         }
     }
 
+    // Rebuild entity resolution index on top of refreshed data.
+    if ( function_exists( 'owc_entity_refresh' ) ) {
+        owc_entity_refresh();
+    }
+
     if (!empty($errors)) {
         return new WP_Error('refresh_failed', implode(' | ', $errors));
     }
@@ -785,4 +790,10 @@ function owc_clear_all_caches(): void
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_territory_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_votes_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_votes_%'");
+
+    // Clear entity resolution in-memory cache (rebuilt on next access).
+    if ( function_exists( 'owc_entity_refresh' ) ) {
+        global $owc_entity_cache;
+        $owc_entity_cache = array();
+    }
 }

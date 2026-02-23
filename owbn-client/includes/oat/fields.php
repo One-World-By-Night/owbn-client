@@ -353,6 +353,97 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</td></tr>';
 			return;
 
+		case 'character_picker':
+			// Composite: autocomplete search + create-new panel (D-056).
+			// Options hold creature taxonomy JSON (D-057).
+			$taxonomy_json = ! empty( $options ) ? wp_json_encode( $options ) : '{}';
+			echo '<tr class="oat-field oat-field-character-picker"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '">';
+			// Search input.
+			printf(
+				'<input type="text" id="%s_search" class="oat-character-search regular-text" placeholder="%s" autocomplete="off" />',
+				$id,
+				esc_attr__( 'Search characters by name...', 'owbn-client' )
+			);
+			echo '<div id="' . $id . '_results" class="oat-character-results"></div>';
+			// Selected character display.
+			echo '<div id="' . $id . '_selected" class="oat-character-selected" style="display:none;">';
+			echo '<span class="oat-character-selected-name"></span>';
+			echo ' <button type="button" class="button-link oat-character-clear">(' . esc_html__( 'clear', 'owbn-client' ) . ')</button>';
+			echo '</div>';
+			// Hidden input: stores character UUID.
+			printf( '<input type="hidden" name="%s" id="%s" value="%s" class="oat-character-uuid" />', $name, $id, esc_attr( $value ) );
+			// Create-new toggle.
+			echo '<p style="margin-top:6px;">';
+			echo '<button type="button" class="button button-secondary oat-character-create-toggle">';
+			echo esc_html__( 'Create New Character', 'owbn-client' );
+			echo '</button></p>';
+			// Create-new panel (hidden by default).
+			echo '<div class="oat-character-create-panel" style="display:none;border:1px solid #ccd0d4;padding:12px;margin-top:8px;background:#f9f9f9;">';
+			echo '<p><label>' . esc_html__( 'Character Name', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<input type="text" class="oat-cc-name regular-text" /></label></p>';
+			echo '<p><label>' . esc_html__( 'Home Chronicle', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-client' ) . '" autocomplete="off" /></label></p>';
+			echo '<input type="hidden" class="oat-cc-chronicle-slug" />';
+			// Creature Type select (top-level keys from taxonomy).
+			echo '<p><label>' . esc_html__( 'Creature Type', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<select class="oat-cc-creature-type">';
+			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-client' ) . '</option>';
+			if ( ! empty( $options ) ) {
+				foreach ( array_keys( $options ) as $creature ) {
+					printf( '<option value="%s">%s</option>', esc_attr( $creature ), esc_html( $creature ) );
+				}
+			}
+			echo '</select></label></p>';
+			// Sub-Type select (cascading, populated by JS — D-057).
+			echo '<p><label>' . esc_html__( 'Sub-Type', 'owbn-client' ) . '<br>';
+			echo '<select class="oat-cc-sub-type" disabled="disabled">';
+			echo '<option value="">' . esc_html__( '-- Select creature type first --', 'owbn-client' ) . '</option>';
+			echo '</select></label></p>';
+			// Hidden inputs for creature_type and sub_type (stored as entry meta alongside character).
+			echo '<input type="hidden" name="oat_meta_creature_type" class="oat-cc-creature-type-val" />';
+			echo '<input type="hidden" name="oat_meta_creature_sub_type" class="oat-cc-sub-type-val" />';
+			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-client' ) . '</button>';
+			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-client' ) . '</button></p>';
+			echo '</div>'; // .oat-character-create-panel
+			echo '</div>'; // .oat-character-picker-wrap
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
+		case 'dependent_lookup':
+			// Text field that auto-populates via AJAX when a dependency field changes (D-058).
+			// attributes: depends_on, lookup, role_path, fallback.
+			$depends_on = isset( $attrs['depends_on'] ) ? $attrs['depends_on'] : '';
+			$lookup     = isset( $attrs['lookup'] ) ? $attrs['lookup'] : '';
+			$role_path  = isset( $attrs['role_path'] ) ? $attrs['role_path'] : '';
+			$fallback   = isset( $attrs['fallback'] ) ? $attrs['fallback'] : 'editable';
+			echo '<tr class="oat-field oat-field-dependent-lookup"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			printf(
+				'<div class="oat-dependent-lookup-wrap" data-depends-on="%s" data-lookup="%s" data-role-path="%s" data-fallback="%s">',
+				esc_attr( $depends_on ),
+				esc_attr( $lookup ),
+				esc_attr( $role_path ),
+				esc_attr( $fallback )
+			);
+			printf(
+				'<input type="text" id="%s" name="%s" value="%s" placeholder="%s"%s%s />',
+				$id, $name, esc_attr( $value ), $placeholder, $req_attr, $extra_attrs
+			);
+			echo '<span class="oat-dependent-lookup-status spinner" style="float:none;"></span>';
+			echo '</div>';
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
 		default:
 			// Unknown type — render as text.
 			echo '<tr class="oat-field"' . $cond_attrs . '>';
@@ -510,6 +601,31 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			}
 			break;
 
+		case 'character_picker':
+			// Show character name from UUID lookup.
+			if ( $value && class_exists( 'OAT_Character' ) ) {
+				$char = OAT_Character::find_by_uuid( $value );
+				if ( $char ) {
+					$display = esc_html( $char->character_name );
+					if ( $char->chronicle_slug ) {
+						$chron_title = function_exists( 'owc_entity_get_title' )
+							? owc_entity_get_title( 'chronicle', $char->chronicle_slug )
+							: '';
+						$display .= ' <span style="color:#666;">(' . esc_html( $chron_title ? $chron_title : $char->chronicle_slug ) . ')</span>';
+					}
+					echo $display;
+				} else {
+					echo esc_html( $value );
+				}
+			} else {
+				echo esc_html( $value );
+			}
+			break;
+
+		case 'dependent_lookup':
+			echo esc_html( $value );
+			break;
+
 		default:
 			echo esc_html( $value );
 			break;
@@ -611,6 +727,17 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 				'timestamp' => ! empty( $sig['agreed'] ) ? current_time( 'mysql' ) : '',
 				'user_id'   => $user && $user->ID ? $user->ID : 0,
 			) );
+
+		case 'character_picker':
+			// Stored value is a UUID string (char 36).
+			$uuid = sanitize_text_field( $raw_value );
+			if ( $uuid && ! preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid ) ) {
+				return '';
+			}
+			return $uuid;
+
+		case 'dependent_lookup':
+			return sanitize_text_field( $raw_value );
 
 		default:
 			return sanitize_text_field( $raw_value );
@@ -735,6 +862,12 @@ function owc_oat_validate_field( $field, $value ) {
 				if ( ! is_array( $sig ) || empty( $sig['agreed'] ) ) {
 					return new WP_Error( 'oat_field_required', sprintf( '%s must be signed.', $label ) );
 				}
+			}
+			break;
+
+		case 'character_picker':
+			if ( $value && ! preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value ) ) {
+				return new WP_Error( 'oat_field_invalid', sprintf( '%s must be a valid character UUID.', $label ) );
 			}
 			break;
 	}

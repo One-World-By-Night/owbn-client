@@ -560,4 +560,14 @@ $elementor_active = did_action( 'elementor/loaded' );
             <p class="description"><?php esc_html_e( 'Clears and immediately re-fetches all data from sources.', 'owbn-client' ); ?></p>
         </td>
     </tr>
+    <tr>
+        <th scope="row"><?php esc_html_e( 'Entity Cache', 'owbn-client' ); ?></th>
+        <td>
+            <form method="post" style="display:inline;">
+                <?php wp_nonce_field( 'owc_refresh_entity_cache_action' ); ?>
+                <?php submit_button( __( 'Refresh Entity Cache', 'owbn-client' ), 'secondary', 'owc_refresh_entity_cache', false ); ?>
+            </form>
+            <p class="description"><?php esc_html_e( 'Rebuilds the slug↔title lookup index for chronicles and coordinators.', 'owbn-client' ); ?></p>
+        </td>
+    </tr>
 </table>
