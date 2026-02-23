@@ -279,22 +279,44 @@ function owc_asc_get_user_roles( $client_id, $email ) {
 /**
  * Get all roles from the ASC server.
  *
- * @param string $client_id The plugin client ID (for context/logging).
- * @return array|WP_Error   Array with 'total', 'roles', 'hierarchy' or error.
+ * Uses a transient cache to avoid hitting the remote server on every request.
+ * Pass $force_refresh = true to bypass the cache.
+ *
+ * @param string $client_id     The plugin client ID (for context/logging).
+ * @param bool   $force_refresh Whether to bypass the transient cache.
+ * @return array|WP_Error       Array with 'total', 'roles', 'hierarchy' or error.
  */
-function owc_asc_get_all_roles( $client_id ) {
+function owc_asc_get_all_roles( $client_id, $force_refresh = false ) {
+	$cache_key = 'owc_asc_roles_all';
+
+	if ( ! $force_refresh ) {
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+	}
+
 	if ( owc_asc_is_remote_mode() ) {
-		return owc_asc_remote_get( 'roles/all' );
+		$data = owc_asc_remote_get( 'roles/all' );
+	} else {
+		$request  = new WP_REST_Request( 'GET', '/access-schema/v1/roles/all' );
+		$response = rest_do_request( $request );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$data = $response->get_data();
 	}
 
-	$request  = new WP_REST_Request( 'GET', '/access-schema/v1/roles/all' );
-	$response = rest_do_request( $request );
-
-	if ( is_wp_error( $response ) ) {
-		return $response;
+	if ( ! is_wp_error( $data ) && is_array( $data ) ) {
+		$ttl = (int) get_option( owc_option_name( 'asc_cache_ttl' ), OWC_ASC_CACHE_TTL );
+		if ( $ttl > 0 ) {
+			set_transient( $cache_key, $data, $ttl );
+		}
 	}
 
-	return $response->get_data();
+	return $data;
 }
 
 /**

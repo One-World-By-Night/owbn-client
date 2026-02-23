@@ -1,12 +1,33 @@
 (function($) {
     'use strict';
 
-    // Domain selector → reload page with domain param to render fields.
+    // Domain selector → AJAX load rendered form fields.
     $('#oat_domain').on('change', function() {
         var domain = $(this).val();
-        if (domain) {
-            window.location.href = window.location.pathname + '?page=owc-oat-submit&domain=' + encodeURIComponent(domain);
+        var $container = $('#owc-oat-domain-fields');
+
+        if (!domain) {
+            $container.empty();
+            return;
         }
+
+        $container.html('<p>Loading fields...</p>');
+
+        $.get(owc_oat_ajax.url, {
+            action: 'owc_oat_get_domain_fields',
+            nonce: owc_oat_ajax.nonce,
+            domain: domain
+        }, function(response) {
+            if (response.success && response.data && response.data.html !== undefined) {
+                $container.html(response.data.html);
+                // Re-initialize conditional field logic for new fields.
+                initConditionalFields();
+            } else {
+                $container.html('<p>No fields defined for this domain.</p>');
+            }
+        }).fail(function() {
+            $container.html('<p style="color:red;">Failed to load fields.</p>');
+        });
     });
 
     // AJAX action handler for entry detail actions.
@@ -88,18 +109,22 @@
     });
 
     // Conditional fields: show/hide <tr> rows based on another field value.
-    $('tr[data-condition-field]').each(function() {
-        var $row = $(this);
-        var condField = $row.data('condition-field');
-        var condValue = String($row.data('condition-value'));
+    function initConditionalFields() {
+        $('tr[data-condition-field]').each(function() {
+            var $row = $(this);
+            var condField = $row.data('condition-field');
+            var condValue = String($row.data('condition-value'));
 
-        $('[name="oat_meta_' + condField + '"]').on('change', function() {
-            if ($(this).val() === condValue) {
-                $row.show();
-            } else {
-                $row.hide().find(':input').val('');
-            }
-        }).trigger('change');
-    });
+            // Unbind previous handlers to avoid duplicates after AJAX reload.
+            $('[name="oat_meta_' + condField + '"]').off('change.oatCond').on('change.oatCond', function() {
+                if ($(this).val() === condValue) {
+                    $row.show();
+                } else {
+                    $row.hide().find(':input').val('');
+                }
+            }).trigger('change');
+        });
+    }
+    initConditionalFields();
 
 })(jQuery);

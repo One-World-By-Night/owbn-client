@@ -11,8 +11,10 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/menu.php';
 require_once __DIR__ . '/settings.php';
+require_once __DIR__ . '/enqueue-scripts.php';
 require_once __DIR__ . '/chronicles.php';
 require_once __DIR__ . '/coordinators.php';
 require_once __DIR__ . '/territory.php';
 require_once __DIR__ . '/ajax.php';
+require_once __DIR__ . '/ajax-data-search.php';
 require_once __DIR__ . '/migration-helper.php';

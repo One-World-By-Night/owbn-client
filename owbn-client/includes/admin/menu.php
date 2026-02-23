@@ -13,7 +13,7 @@ add_action('admin_menu', function () {
     $client_id = owc_get_client_id();
     $menu_slug = $client_id . '-owc-settings';
 
-    // Top-level menu
+    // Top-level menu — lands on Settings (tabbed layout)
     add_menu_page(
         __('OWBN Client', 'owbn-client'),
         __('OWBN Client', 'owbn-client'),
@@ -23,42 +23,6 @@ add_action('admin_menu', function () {
         'dashicons-networking',
         29
     );
-
-    // Chronicles submenu (if enabled — dashboard shows local or remote status)
-    if (owc_chronicles_enabled()) {
-        add_submenu_page(
-            $menu_slug,
-            __('Chronicles', 'owbn-client'),
-            __('Chronicles', 'owbn-client'),
-            'manage_options',
-            $client_id . '-owc-chronicles',
-            'owc_render_chronicles_page'
-        );
-    }
-
-    // Coordinators submenu (if enabled — dashboard shows local or remote status)
-    if (owc_coordinators_enabled()) {
-        add_submenu_page(
-            $menu_slug,
-            __('Coordinators', 'owbn-client'),
-            __('Coordinators', 'owbn-client'),
-            'manage_options',
-            $client_id . '-owc-coordinators',
-            'owc_render_coordinators_page'
-        );
-    }
-
-    // Territories submenu (if enabled — dashboard shows local or remote status)
-    if (owc_territories_enabled()) {
-        add_submenu_page(
-            $menu_slug,
-            __('Territories', 'owbn-client'),
-            __('Territories', 'owbn-client'),
-            'manage_options',
-            $client_id . '-owc-territories',
-            'owc_render_territories_page'
-        );
-    }
 
     // Migration helper submenu
     add_submenu_page(

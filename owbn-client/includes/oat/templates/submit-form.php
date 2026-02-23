@@ -42,45 +42,13 @@ defined( 'ABSPATH' ) || exit;
             </tr>
         </table>
 
-        <!-- Domain-specific fields rendered by JS (AJAX) or server-side on reload -->
+        <!-- Domain-specific fields rendered by server (AJAX or page reload) -->
         <div id="owc-oat-domain-fields">
-            <?php if ( ! empty( $domain_fields ) ) : ?>
-                <table class="form-table">
-                    <?php foreach ( $domain_fields as $field ) :
-                        $cond_attrs = '';
-                        if ( ! empty( $field['condition'] ) && is_array( $field['condition'] ) ) {
-                            $cond_key = key( $field['condition'] );
-                            $cond_val = $field['condition'][ $cond_key ];
-                            $cond_attrs = ' data-condition-field="' . esc_attr( $cond_key ) . '" data-condition-value="' . esc_attr( $cond_val ) . '"';
-                        }
-                    ?>
-                        <tr<?php echo $cond_attrs; ?>>
-                            <th><label for="oat_meta_<?php echo esc_attr( $field['key'] ); ?>"><?php echo esc_html( $field['label'] ); ?></label></th>
-                            <td>
-                                <?php if ( $field['type'] === 'select' && ! empty( $field['options'] ) ) : ?>
-                                    <select name="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" id="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" <?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>>
-                                        <option value="">Select...</option>
-                                        <?php foreach ( $field['options'] as $val => $label ) : ?>
-                                            <option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php elseif ( $field['type'] === 'textarea' ) : ?>
-                                    <textarea name="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" id="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" rows="4" class="large-text" <?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>></textarea>
-                                <?php elseif ( $field['type'] === 'rule_picker' ) : ?>
-                                    <div class="oat-rule-picker">
-                                        <input type="text" id="oat_rule_search" placeholder="Search regulation rules..." class="regular-text" autocomplete="off">
-                                        <div id="oat-selected-rules"></div>
-                                    </div>
-                                <?php elseif ( $field['type'] === 'number' ) : ?>
-                                    <input type="number" name="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" id="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" class="small-text" <?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>>
-                                <?php else : ?>
-                                    <input type="text" name="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" id="oat_meta_<?php echo esc_attr( $field['key'] ); ?>" class="regular-text" <?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </table>
-            <?php endif; ?>
+            <?php
+            if ( ! empty( $domain_fields ) ) {
+                owc_oat_render_fields( $domain_fields );
+            }
+            ?>
         </div>
 
         <table class="form-table">

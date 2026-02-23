@@ -16,6 +16,7 @@
  *   $domain_label      string Human-readable domain label.
  *   $step_label        string Human-readable step label.
  *   $user_map          array  user_id => display_name.
+ *   $domain_fields     array  Form field definitions for read-only rendering.
  *   $created           bool   Whether entry was just created (show success notice).
  *   $entry_id          int    Entry ID.
  *
@@ -82,16 +83,20 @@ function owc_oat_user_name( $uid, $map ) {
     <!-- Meta Summary -->
     <?php if ( ! empty( $meta ) ) : ?>
         <h2>Details</h2>
-        <table class="widefat fixed striped">
-            <tbody>
-                <?php foreach ( $meta as $key => $value ) : ?>
-                    <tr>
-                        <th style="width:200px"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ); ?></th>
-                        <td><?php echo esc_html( $value ); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <?php if ( ! empty( $domain_fields ) ) : ?>
+            <?php owc_oat_render_fields_readonly( $domain_fields, $meta ); ?>
+        <?php else : ?>
+            <table class="widefat fixed striped">
+                <tbody>
+                    <?php foreach ( $meta as $key => $value ) : ?>
+                        <tr>
+                            <th style="width:200px"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ); ?></th>
+                            <td><?php echo esc_html( $value ); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     <?php endif; ?>
 
     <!-- Linked Rules -->

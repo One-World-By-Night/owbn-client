@@ -104,7 +104,10 @@ function owc_oat_ajax_toggle_watch() {
 }
 
 /**
- * AJAX: Get form fields for a domain.
+ * AJAX: Get rendered form fields for a domain.
+ *
+ * Returns server-rendered HTML so the client can insert it directly
+ * into #owc-oat-domain-fields without client-side field rendering.
  *
  * @return void
  */
@@ -122,5 +125,14 @@ function owc_oat_ajax_get_domain_fields() {
         wp_send_json_error( $fields->get_error_message() );
     }
 
-    wp_send_json_success( $fields );
+    if ( empty( $fields ) ) {
+        wp_send_json_success( array( 'html' => '' ) );
+    }
+
+    // Render fields to HTML string.
+    ob_start();
+    owc_oat_render_fields( $fields );
+    $html = ob_get_clean();
+
+    wp_send_json_success( array( 'html' => $html ) );
 }

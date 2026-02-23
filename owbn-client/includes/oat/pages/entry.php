@@ -49,5 +49,9 @@ function owc_oat_page_entry() {
     $step_label        = isset( $bundle['step_label'] ) ? $bundle['step_label'] : '';
     $user_map          = isset( $bundle['user_map'] ) ? $bundle['user_map'] : array();
 
+    // Fetch form field definitions for rendering meta in read-only mode.
+    $domain_slug   = isset( $entry['domain'] ) ? $entry['domain'] : '';
+    $domain_fields = $domain_slug ? owc_oat_get_form_fields( $domain_slug, 'submit' ) : array();
+
     include dirname( __DIR__ ) . '/templates/entry-detail.php';
 }

@@ -3,6 +3,9 @@
 /**
  * OWBN-Client Settings Page
  * location : includes/admin/settings.php
+ *
+ * Tab registry, settings registration, cache-clear hook, and tab router.
+ *
  * @package OWBN-Client
  */
 
@@ -29,6 +32,68 @@ function owc_sanitize_remote_url( $url ) {
         return '';
     }
     return $url;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB REGISTRY
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get all settings tabs.
+ *
+ * @return array Tab slug => config array.
+ */
+function owc_get_settings_tabs() {
+    return array(
+        'general'      => array(
+            'label'     => __( 'General', 'owbn-client' ),
+            'icon'      => 'dashicons-admin-settings',
+            'always_on' => true,
+            'partial'   => __DIR__ . '/settings-tabs/tab-general.php',
+        ),
+        'chronicles'   => array(
+            'label'      => __( 'Chronicles', 'owbn-client' ),
+            'icon'       => 'dashicons-book-alt',
+            'enable_key' => 'enable_chronicles',
+            'partial'    => __DIR__ . '/settings-tabs/tab-chronicles.php',
+        ),
+        'coordinators' => array(
+            'label'      => __( 'Coordinators', 'owbn-client' ),
+            'icon'       => 'dashicons-groups',
+            'enable_key' => 'enable_coordinators',
+            'partial'    => __DIR__ . '/settings-tabs/tab-coordinators.php',
+        ),
+        'territories'  => array(
+            'label'      => __( 'Territories', 'owbn-client' ),
+            'icon'       => 'dashicons-location-alt',
+            'enable_key' => 'enable_territories',
+            'partial'    => __DIR__ . '/settings-tabs/tab-territories.php',
+        ),
+        'vote-history' => array(
+            'label'      => __( 'Vote History', 'owbn-client' ),
+            'icon'       => 'dashicons-chart-bar',
+            'enable_key' => 'enable_vote_history',
+            'partial'    => __DIR__ . '/settings-tabs/tab-vote-history.php',
+        ),
+        'player-id'    => array(
+            'label'      => __( 'Player ID', 'owbn-client' ),
+            'icon'       => 'dashicons-id-alt',
+            'enable_key' => 'enable_player_id',
+            'partial'    => __DIR__ . '/settings-tabs/tab-player-id.php',
+        ),
+        'oat'          => array(
+            'label'      => __( 'OAT', 'owbn-client' ),
+            'icon'       => 'dashicons-archive',
+            'enable_key' => 'enable_oat',
+            'partial'    => __DIR__ . '/settings-tabs/tab-oat.php',
+        ),
+        'accessschema' => array(
+            'label'      => __( 'accessSchema', 'owbn-client' ),
+            'icon'       => 'dashicons-shield',
+            'enable_key' => 'asc_enabled',
+            'partial'    => __DIR__ . '/settings-tabs/tab-accessschema.php',
+        ),
+    );
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -169,6 +234,11 @@ add_action('admin_init', function () {
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
+    register_setting($group, owc_option_name('votes_mode'), [
+        'type'              => 'string',
+        'default'           => 'local',
+        'sanitize_callback' => $mode_sanitize,
+    ]);
     register_setting($group, owc_option_name('votes_remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'owc_sanitize_remote_url',
@@ -280,7 +350,7 @@ add_action( 'updated_option', function ( $option, $old_value, $new_value ) {
 }, 10, 3 );
 
 // ══════════════════════════════════════════════════════════════════════════════
-// RENDER SETTINGS PAGE
+// RENDER SETTINGS PAGE (TAB ROUTER)
 // ══════════════════════════════════════════════════════════════════════════════
 
 function owc_render_settings_page()
@@ -289,13 +359,13 @@ function owc_render_settings_page()
         return;
     }
 
-    // Handle cache clear
+    // Handle cache clear.
     if (isset($_POST['owc_clear_cache']) && check_admin_referer('owc_clear_cache_action')) {
         owc_clear_all_caches();
         add_settings_error('owc_settings', 'cache_cleared', __('Cache cleared successfully.', 'owbn-client'), 'success');
     }
 
-    // Handle cache refresh
+    // Handle cache refresh.
     if (isset($_POST['owc_refresh_cache']) && check_admin_referer('owc_refresh_cache_action')) {
         $result = owc_refresh_all_caches();
         if (is_wp_error($result)) {
@@ -305,1133 +375,74 @@ function owc_render_settings_page()
         }
     }
 
-    $client_id = owc_get_client_id();
-    $group     = $client_id . '_owc_settings';
+    $client_id  = owc_get_client_id();
+    $group      = $client_id . '_owc_settings';
+    $tabs       = owc_get_settings_tabs();
+    $active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 
-    // Gateway (producer-side)
-    $gw_enabled   = get_option('owbn_gateway_enabled', false);
-    $gw_api_key   = get_option('owbn_gateway_api_key', '');
-    $gw_auth      = get_option('owbn_gateway_auth_methods', ['api_key']);
-    $gw_whitelist = get_option('owbn_gateway_domain_whitelist', []);
-    $gw_logging   = get_option('owbn_gateway_logging_enabled', false);
-    $gw_sso_url   = get_option('owbn_gateway_sso_url', '');
-    $gw_sso_key   = get_option('owbn_gateway_sso_api_key', '');
-    $gw_base_url  = rest_url('owbn/v1/');
+    if ( ! isset( $tabs[ $active_tab ] ) ) {
+        $active_tab = 'general';
+    }
 
-    // Default remote gateway (consumer-side)
-    $remote_url     = get_option(owc_option_name('remote_url'), '');
-    $remote_api_key = get_option(owc_option_name('remote_api_key'), '');
+    $page_url = admin_url( 'admin.php?page=' . $client_id . '-owc-settings' );
 
-    // Plugin presence
-    $manager_active = owc_manager_active();
-    $tm_active      = owc_territory_manager_active();
-
-    // Feature flags
-    $chron_enabled = (bool) get_option(owc_option_name('enable_chronicles'), false);
-    $coord_enabled = (bool) get_option(owc_option_name('enable_coordinators'), false);
-    $terr_enabled  = (bool) get_option(owc_option_name('enable_territories'), false);
-
-    // Per-type mode and remote overrides
-    $chron_mode           = owc_get_mode('chronicles');
-    $coord_mode           = owc_get_mode('coordinators');
-    $terr_mode            = owc_get_mode('territories');
-    $chron_remote_url     = get_option(owc_option_name('chronicles_remote_url'), '');
-    $chron_remote_key     = get_option(owc_option_name('chronicles_remote_api_key'), '');
-    $coord_remote_url     = get_option(owc_option_name('coordinators_remote_url'), '');
-    $coord_remote_key     = get_option(owc_option_name('coordinators_remote_api_key'), '');
-    $terr_remote_url      = get_option(owc_option_name('territories_remote_url'), '');
-    $terr_remote_key      = get_option(owc_option_name('territories_remote_api_key'), '');
-
-    // Page settings
-    $chron_list_page   = get_option(owc_option_name('chronicles_list_page'), 0);
-    $chron_detail_page = get_option(owc_option_name('chronicles_detail_page'), 0);
-    $coord_list_page   = get_option(owc_option_name('coordinators_list_page'), 0);
-    $coord_detail_page = get_option(owc_option_name('coordinators_detail_page'), 0);
-
-    $cache_ttl = get_option(owc_option_name('cache_ttl'), 3600);
-
-?>
+    ?>
     <div class="wrap">
         <h1><?php esc_html_e('OWBN Client Settings', 'owbn-client'); ?></h1>
 
         <?php settings_errors(); ?>
 
-        <form method="post" action="options.php">
-            <?php settings_fields($group); ?>
-
-            <!-- API GATEWAY (producer-side) -->
-            <h2><?php esc_html_e('API Gateway', 'owbn-client'); ?></h2>
-            <p class="description"><?php esc_html_e('Expose local data via the unified owbn/v1/ REST namespace. Enable this on sites that serve data to other OWBN sites.', 'owbn-client'); ?></p>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable Gateway', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="owbn_gateway_enabled" value="0" />
-                            <input type="checkbox"
-                                name="owbn_gateway_enabled"
-                                id="owbn_gateway_enabled"
-                                value="1"
-                                <?php checked($gw_enabled); ?> />
-                            <?php esc_html_e('Enable the API Gateway', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Gateway Base URL', 'owbn-client'); ?></th>
-                    <td>
-                        <code><?php echo esc_html($gw_base_url); ?></code>
-                        <p class="description"><?php esc_html_e('Read-only. This is the base URL consumers will use.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="owbn_gateway_api_key"
-                            id="owbn_gateway_api_key"
-                            value="<?php echo esc_attr($gw_api_key); ?>"
-                            class="regular-text code" />
-                        <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
-                            <?php esc_html_e('Generate', 'owbn-client'); ?>
-                        </button>
-                        <p class="description"><?php esc_html_e('One key for all endpoints. Share this with consumer sites.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Auth Methods', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="checkbox"
-                                    name="owbn_gateway_auth_methods[]"
-                                    value="api_key"
-                                    <?php checked(in_array('api_key', (array) $gw_auth, true)); ?> />
-                                <?php esc_html_e('API Key (x-api-key header)', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="checkbox"
-                                    name="owbn_gateway_auth_methods[]"
-                                    value="app_password"
-                                    <?php checked(in_array('app_password', (array) $gw_auth, true)); ?> />
-                                <?php esc_html_e('Application Password (Authorization: Basic)', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Domain Whitelist', 'owbn-client'); ?></th>
-                    <td>
-                        <textarea
-                            name="owbn_gateway_domain_whitelist"
-                            rows="4"
-                            class="regular-text"
-                            placeholder="council.owbn.net"><?php echo esc_textarea(implode("\n", (array) $gw_whitelist)); ?></textarea>
-                        <p class="description"><?php esc_html_e('One domain per line. Leave empty to allow all origins.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Request Logging', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="owbn_gateway_logging_enabled" value="0" />
-                            <input type="checkbox"
-                                name="owbn_gateway_logging_enabled"
-                                value="1"
-                                <?php checked($gw_logging); ?> />
-                            <?php esc_html_e('Log gateway requests to PHP error log', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('SSO Server URL', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="owbn_gateway_sso_url"
-                            value="<?php echo esc_url($gw_sso_url); ?>"
-                            class="regular-text"
-                            placeholder="https://sso.owbn.net" />
-                        <p class="description"><?php esc_html_e('SSO server to verify users for JIT provisioning. Only needed on sites that receive OAT API requests.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('SSO API Key', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="owbn_gateway_sso_api_key"
-                            value="<?php echo esc_attr($gw_sso_key); ?>"
-                            class="regular-text code" />
-                        <p class="description"><?php esc_html_e('API key for the SSO server gateway.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Sources', 'owbn-client'); ?></th>
-                    <td>
-                        <?php
-                        $gw_sources = apply_filters('owbn_gateway_data_sources', []);
-                        if (!empty($gw_sources)) :
-                        ?>
-                        <ul style="margin:0; padding:0; list-style:none;">
-                            <?php foreach ($gw_sources as $key => $source) : ?>
-                            <li>
-                                <span style="color:#4CAF50;">&#10003;</span>
-                                <?php echo esc_html($source['label'] . ' — ' . $source['provider']); ?>
-                            </li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php else : ?>
-                        <p style="color:#999;"><?php esc_html_e('No data source plugins detected. Install Chronicle Manager and/or Territory Manager on this site.', 'owbn-client'); ?></p>
+        <div class="owc-settings-wrap">
+            <!-- Left: vertical tab nav -->
+            <ul class="owc-settings-tabs">
+                <?php foreach ( $tabs as $slug => $tab ) :
+                    $is_enabled = ! empty( $tab['always_on'] )
+                        || (bool) get_option( owc_option_name( $tab['enable_key'] ), false );
+                    $classes = array( 'owc-settings-tab' );
+                    if ( $slug === $active_tab ) {
+                        $classes[] = 'owc-settings-tab--active';
+                    }
+                    if ( ! $is_enabled && empty( $tab['always_on'] ) ) {
+                        $classes[] = 'owc-settings-tab--disabled';
+                    }
+                ?>
+                <li class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
+                    <a href="<?php echo esc_url( add_query_arg( 'tab', $slug, $page_url ) ); ?>">
+                        <span class="dashicons <?php echo esc_attr( $tab['icon'] ); ?>"></span>
+                        <?php echo esc_html( $tab['label'] ); ?>
+                        <?php if ( ! $is_enabled && empty( $tab['always_on'] ) ) : ?>
+                            <span class="owc-tab-badge"><?php esc_html_e( 'Off', 'owbn-client' ); ?></span>
                         <?php endif; ?>
-                    </td>
-                </tr>
-            </table>
+                    </a>
+                </li>
+                <?php endforeach; ?>
+            </ul>
 
-            <hr />
+            <!-- Right: tab content -->
+            <div class="owc-settings-content">
+                <?php
+                $tab_config = $tabs[ $active_tab ];
+                $is_enabled = ! empty( $tab_config['always_on'] )
+                    || (bool) get_option( owc_option_name( $tab_config['enable_key'] ), false );
 
-            <!-- DEFAULT REMOTE GATEWAY (consumer-side) -->
-            <h2><?php esc_html_e('Default Remote Gateway', 'owbn-client'); ?></h2>
-            <p class="description"><?php esc_html_e('Default remote gateway for data types set to "Remote" mode. Individual data types can override this with their own remote URL and key.', 'owbn-client'); ?></p>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Remote URL', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('remote_url')); ?>"
-                            value="<?php echo esc_url($remote_url); ?>"
-                            class="regular-text"
-                            placeholder="https://chronicles.owbn.net" />
-                        <p class="description"><?php esc_html_e('Base URL of the default producer site. Used for any remote data type that does not specify its own URL.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('remote_api_key')); ?>"
-                            value="<?php echo esc_attr($remote_api_key); ?>"
-                            class="regular-text code" />
-                        <p class="description"><?php esc_html_e('API key for the default remote gateway.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- CHRONICLES -->
-            <h2><?php esc_html_e('Chronicles', 'owbn-client'); ?></h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_chronicles')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_chronicles')); ?>"
-                                id="owc_enable_chronicles"
-                                value="1"
-                                <?php checked($chron_enabled); ?> />
-                            <?php esc_html_e('Enable Chronicles', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-chronicles-options" <?php echo $chron_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('chronicles_mode')); ?>"
-                                    class="owc-chronicles-mode"
-                                    value="local"
-                                    <?php checked($chron_mode, 'local'); ?> />
-                                <?php esc_html_e('Local — Serve from Chronicle Manager CPTs on this site', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('chronicles_mode')); ?>"
-                                    class="owc-chronicles-mode"
-                                    value="remote"
-                                    <?php checked($chron_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-chronicles-options owc-chronicles-remote" <?php echo ($chron_enabled && $chron_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('chronicles_remote_url')); ?>"
-                            value="<?php echo esc_url($chron_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
-                        <p class="description"><?php esc_html_e('Only set if chronicles come from a different gateway than the default.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-chronicles-options owc-chronicles-remote" <?php echo ($chron_enabled && $chron_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('chronicles_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($chron_remote_key); ?>"
-                            class="regular-text code"
-                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
-                    </td>
-                </tr>
-                <tr class="owc-chronicles-options" <?php echo $chron_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Chronicles List Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('chronicles_list_page'),
-                            'selected'          => $chron_list_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-                <tr class="owc-chronicles-options" <?php echo $chron_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Chronicles Detail Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('chronicles_detail_page'),
-                            'selected'          => $chron_detail_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- COORDINATORS -->
-            <h2><?php esc_html_e('Coordinators', 'owbn-client'); ?></h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_coordinators')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_coordinators')); ?>"
-                                id="owc_enable_coordinators"
-                                value="1"
-                                <?php checked($coord_enabled); ?> />
-                            <?php esc_html_e('Enable Coordinators', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-coordinators-options" <?php echo $coord_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('coordinators_mode')); ?>"
-                                    class="owc-coordinators-mode"
-                                    value="local"
-                                    <?php checked($coord_mode, 'local'); ?> />
-                                <?php esc_html_e('Local — Serve from Chronicle Manager CPTs on this site', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('coordinators_mode')); ?>"
-                                    class="owc-coordinators-mode"
-                                    value="remote"
-                                    <?php checked($coord_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-coordinators-options owc-coordinators-remote" <?php echo ($coord_enabled && $coord_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('coordinators_remote_url')); ?>"
-                            value="<?php echo esc_url($coord_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
-                        <p class="description"><?php esc_html_e('Only set if coordinators come from a different gateway than the default.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-coordinators-options owc-coordinators-remote" <?php echo ($coord_enabled && $coord_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('coordinators_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($coord_remote_key); ?>"
-                            class="regular-text code"
-                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
-                    </td>
-                </tr>
-                <tr class="owc-coordinators-options" <?php echo $coord_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Coordinators List Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('coordinators_list_page'),
-                            'selected'          => $coord_list_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-                <tr class="owc-coordinators-options" <?php echo $coord_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Coordinators Detail Page', 'owbn-client'); ?></th>
-                    <td>
-                        <?php wp_dropdown_pages([
-                            'name'              => owc_option_name('coordinators_detail_page'),
-                            'selected'          => $coord_detail_page,
-                            'show_option_none'  => __('— Select Page —', 'owbn-client'),
-                            'option_none_value' => 0,
-                        ]); ?>
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- TERRITORIES -->
-            <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_territories')); ?>"
-                                id="owc_enable_territories"
-                                value="1"
-                                <?php checked($terr_enabled); ?> />
-                            <?php esc_html_e('Enable Territories', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-territories-options" <?php echo $terr_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
-                                    class="owc-territories-mode"
-                                    value="local"
-                                    <?php checked($terr_mode, 'local'); ?> />
-                                <?php esc_html_e('Local — Serve from Territory Manager CPTs on this site', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('territories_mode')); ?>"
-                                    class="owc-territories-mode"
-                                    value="remote"
-                                    <?php checked($terr_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote — Fetch from a remote gateway', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('territories_remote_url')); ?>"
-                            value="<?php echo esc_url($terr_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
-                        <p class="description"><?php esc_html_e('Only set if territories come from a different gateway than the default.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-territories-options owc-territories-remote" <?php echo ($terr_enabled && $terr_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('territories_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($terr_remote_key); ?>"
-                            class="regular-text code"
-                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- VOTE HISTORY -->
-            <h2><?php esc_html_e('Vote History', 'owbn-client'); ?></h2>
-            <?php
-                $vh_enabled    = (bool) get_option(owc_option_name('enable_vote_history'), false);
-                $vh_remote_url = get_option(owc_option_name('votes_remote_url'), '');
-                $vh_remote_key = get_option(owc_option_name('votes_remote_api_key'), '');
-            ?>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_vote_history')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_vote_history')); ?>"
-                                id="owc_enable_vote_history"
-                                value="1"
-                                <?php checked($vh_enabled); ?> />
-                            <?php esc_html_e('Show vote history on chronicle and coordinator detail pages', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <?php if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) : ?>
-                            <p><span style="color:#4CAF50;">&#10003;</span> <?php esc_html_e('wp-voting-plugin detected locally — vote data will be queried directly.', 'owbn-client'); ?></p>
-                        <?php else : ?>
-                            <p class="description"><?php esc_html_e('Vote data will be fetched from the remote gateway (council.owbn.net).', 'owbn-client'); ?></p>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('votes_remote_url')); ?>"
-                            value="<?php echo esc_url($vh_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
-                        <p class="description"><?php esc_html_e('Only set if vote data comes from a different gateway than the default remote URL.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-vote-history-options" <?php echo $vh_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('votes_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($vh_remote_key); ?>"
-                            class="regular-text code"
-                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- PLAYER ID -->
-            <h2><?php esc_html_e('Player ID', 'owbn-client'); ?></h2>
-            <?php
-                $pid_enabled = get_option(owc_option_name('enable_player_id'), false);
-                $pid_mode    = get_option(owc_option_name('player_id_mode'), 'client');
-                $pid_sso_url = get_option(owc_option_name('player_id_sso_url'), '');
-            ?>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_player_id')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_player_id')); ?>"
-                                id="owc_enable_player_id"
-                                value="1"
-                                <?php checked($pid_enabled); ?> />
-                            <?php esc_html_e('Enable Player ID', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-player-id-options" <?php echo $pid_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Mode', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('player_id_mode')); ?>"
-                                    class="owc-player-id-mode"
-                                    value="server"
-                                    <?php checked($pid_mode, 'server'); ?> />
-                                <?php esc_html_e('Server — This site manages Player IDs (SSO server)', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('player_id_mode')); ?>"
-                                    class="owc-player-id-mode"
-                                    value="client"
-                                    <?php checked($pid_mode, 'client'); ?> />
-                                <?php esc_html_e('Client — Capture Player ID from SSO login', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-player-id-options owc-player-id-client" <?php echo ($pid_enabled && $pid_mode === 'client') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('SSO Server URL', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('player_id_sso_url')); ?>"
-                            value="<?php echo esc_url($pid_sso_url); ?>"
-                            class="regular-text"
-                            placeholder="https://sso.owbn.net" />
-                        <p class="description"><?php esc_html_e('Base URL of the SSO server. Only OAuth responses from this URL will be intercepted.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- OAT (ARCHIVIST TOOLKIT) -->
-            <h2><?php esc_html_e('Archivist Toolkit (OAT)', 'owbn-client'); ?></h2>
-            <?php
-                $oat_enabled    = (bool) get_option(owc_option_name('enable_oat'), false);
-                $oat_mode       = owc_get_mode('oat');
-                $oat_remote_url = get_option(owc_option_name('oat_remote_url'), '');
-                $oat_remote_key = get_option(owc_option_name('oat_remote_api_key'), '');
-            ?>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_oat')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('enable_oat')); ?>"
-                                id="owc_enable_oat"
-                                value="1"
-                                <?php checked($oat_enabled); ?> />
-                            <?php esc_html_e('Enable OAT pages (Inbox, Submit, Entry Detail)', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-oat-options" <?php echo $oat_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('oat_mode')); ?>"
-                                    class="owc-oat-mode"
-                                    value="local"
-                                    <?php checked($oat_mode, 'local'); ?> />
-                                <?php esc_html_e('Local — OAT plugin is installed on this site', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('oat_mode')); ?>"
-                                    class="owc-oat-mode"
-                                    value="remote"
-                                    <?php checked($oat_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote — Fetch from archivist.owbn.net gateway', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-oat-options owc-oat-remote" <?php echo ($oat_enabled && $oat_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('oat_remote_url')); ?>"
-                            value="<?php echo esc_url($oat_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
-                        <p class="description"><?php esc_html_e('Only set if OAT data comes from a different gateway than the default remote URL.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-oat-options owc-oat-remote" <?php echo ($oat_enabled && $oat_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('oat_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($oat_remote_key); ?>"
-                            class="regular-text code"
-                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
-                    </td>
-                </tr>
-            </table>
-
-            <hr />
-
-            <!-- ACCESSSCHEMA -->
-            <h2><?php esc_html_e('accessSchema', 'owbn-client'); ?></h2>
-            <p class="description"><?php esc_html_e('Centralized accessSchema client. Provides role-based access control for all OWBN plugins through a single configuration.', 'owbn-client'); ?></p>
-            <?php
-                $asc_enabled    = (bool) get_option(owc_option_name('asc_enabled'), false);
-                $asc_mode       = get_option(owc_option_name('asc_mode'), 'remote');
-                $asc_remote_url = get_option(owc_option_name('asc_remote_url'), '');
-                $asc_remote_key = get_option(owc_option_name('asc_remote_api_key'), '');
-                $asc_cache_ttl  = get_option(owc_option_name('asc_cache_ttl'), 3600);
-            ?>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
-                    <td>
-                        <label>
-                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('asc_enabled')); ?>" value="0" />
-                            <input type="checkbox"
-                                name="<?php echo esc_attr(owc_option_name('asc_enabled')); ?>"
-                                id="owc_enable_asc"
-                                value="1"
-                                <?php checked($asc_enabled); ?> />
-                            <?php esc_html_e('Enable centralized accessSchema client', 'owbn-client'); ?>
-                        </label>
-                    </td>
-                </tr>
-                <tr class="owc-asc-options" <?php echo $asc_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Mode', 'owbn-client'); ?></th>
-                    <td>
-                        <fieldset>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('asc_mode')); ?>"
-                                    class="owc-asc-mode"
-                                    value="local"
-                                    <?php checked($asc_mode, 'local'); ?> />
-                                <?php esc_html_e('Local — accessSchema server plugin is installed on this site', 'owbn-client'); ?>
-                            </label><br>
-                            <label>
-                                <input type="radio"
-                                    name="<?php echo esc_attr(owc_option_name('asc_mode')); ?>"
-                                    class="owc-asc-mode"
-                                    value="remote"
-                                    <?php checked($asc_mode, 'remote'); ?> />
-                                <?php esc_html_e('Remote — Connect to a remote accessSchema server', 'owbn-client'); ?>
-                            </label>
-                        </fieldset>
-                    </td>
-                </tr>
-                <tr class="owc-asc-options owc-asc-remote" <?php echo ($asc_enabled && $asc_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Server URL', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="url"
-                            name="<?php echo esc_attr(owc_option_name('asc_remote_url')); ?>"
-                            value="<?php echo esc_url($asc_remote_url); ?>"
-                            class="regular-text"
-                            placeholder="https://council.owbn.net" />
-                        <p class="description"><?php esc_html_e('Base URL of the site running the accessSchema server plugin.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-asc-options owc-asc-remote" <?php echo ($asc_enabled && $asc_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="text"
-                            name="<?php echo esc_attr(owc_option_name('asc_remote_api_key')); ?>"
-                            value="<?php echo esc_attr($asc_remote_key); ?>"
-                            class="regular-text code" />
-                        <p class="description"><?php esc_html_e('API key for the accessSchema server.', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <tr class="owc-asc-options" <?php echo $asc_enabled ? '' : 'style="display:none;"'; ?>>
-                    <th scope="row"><?php esc_html_e('Role Cache TTL (seconds)', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="number"
-                            name="<?php echo esc_attr(owc_option_name('asc_cache_ttl')); ?>"
-                            value="<?php echo esc_attr($asc_cache_ttl); ?>"
-                            class="small-text"
-                            min="0" />
-                        <p class="description"><?php esc_html_e('How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-                <?php if ($asc_enabled && function_exists('owc_asc_get_clients')) : ?>
-                <tr class="owc-asc-options">
-                    <th scope="row"><?php esc_html_e('Registered Clients', 'owbn-client'); ?></th>
-                    <td>
-                        <?php
-                        $asc_clients = owc_asc_get_clients();
-                        if (!empty($asc_clients)) :
-                        ?>
-                        <ul style="margin:0; padding:0; list-style:none;">
-                            <?php foreach ($asc_clients as $cid => $clabel) : ?>
-                            <li>
-                                <span style="color:#4CAF50;">&#10003;</span>
-                                <?php echo esc_html($cid . ' — ' . $clabel); ?>
-                            </li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php else : ?>
-                        <p style="color:#999;"><?php esc_html_e('No plugins have registered with the centralized ASC module yet.', 'owbn-client'); ?></p>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endif; ?>
-            </table>
-
-            <hr />
-
-            <!-- CACHE SETTINGS -->
-            <h2><?php esc_html_e('Cache Settings', 'owbn-client'); ?></h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><?php esc_html_e('Cache TTL (seconds)', 'owbn-client'); ?></th>
-                    <td>
-                        <input type="number"
-                            name="<?php echo esc_attr(owc_option_name('cache_ttl')); ?>"
-                            value="<?php echo esc_attr($cache_ttl); ?>"
-                            class="small-text"
-                            min="0" />
-                        <p class="description"><?php esc_html_e('0 = no caching. Default: 3600 (1 hour)', 'owbn-client'); ?></p>
-                    </td>
-                </tr>
-            </table>
-
-            <?php submit_button(); ?>
-        </form>
-
-        <hr />
-
-        <!-- STATUS -->
-        <h2><?php esc_html_e('Status', 'owbn-client'); ?></h2>
-
-        <?php
-        // Read from cache only — avoid triggering remote requests on settings page load
-        $chronicles_cache   = get_transient('owc_chronicles_cache');
-        $coordinators_cache = get_transient('owc_coordinators_cache');
-        $territories_cache  = get_transient('owc_territories_cache');
-
-        // Count local territory CPTs directly
-        $territory_cpt_count = 0;
-        if ($tm_active) {
-            $territory_cpt_count = (int) wp_count_posts('owbn_territory')->publish;
-        }
-
-        $pid_on           = get_option(owc_option_name('enable_player_id'), false);
-        $pid_current_mode = get_option(owc_option_name('player_id_mode'), 'client');
-        $elementor_active = did_action('elementor/loaded');
-
-        // Gateway data sources
-        $gw_data_sources = apply_filters('owbn_gateway_data_sources', []);
-
-        // Resolve effective remote URLs for status display
-        $chron_effective_url = $chron_remote_url ? $chron_remote_url : $remote_url;
-        $coord_effective_url = $coord_remote_url ? $coord_remote_url : $remote_url;
-        $terr_effective_url  = $terr_remote_url ? $terr_remote_url : $remote_url;
-        ?>
-
-        <table class="widefat" style="max-width:700px;">
-            <thead>
-                <tr>
-                    <th><?php esc_html_e('Feature', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('Status', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('Source', 'owbn-client'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><strong><?php esc_html_e('Chronicles', 'owbn-client'); ?></strong></td>
-                <td>
-                    <?php
-                    if (!$chron_enabled) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } elseif ($chron_mode === 'local' && $manager_active && $chron_enabled) {
-                        $count = is_array($chronicles_cache) ? count($chronicles_cache) : 0;
-                        echo absint($count) . ' ' . esc_html__('records cached', 'owbn-client');
-                    } elseif (is_array($chronicles_cache)) {
-                        echo absint(count($chronicles_cache)) . ' ' . esc_html__('records cached', 'owbn-client');
-                    } else {
-                        esc_html_e('Enabled — no cached data', 'owbn-client');
-                    }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                    echo esc_html(ucfirst($chron_mode));
-                    if ($chron_mode === 'remote' && $chron_effective_url) {
-                        echo ' — ' . esc_html($chron_effective_url);
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Coordinators', 'owbn-client'); ?></strong></td>
-                <td>
-                    <?php
-                    if (!$coord_enabled) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } elseif (is_array($coordinators_cache)) {
-                        echo absint(count($coordinators_cache)) . ' ' . esc_html__('records cached', 'owbn-client');
-                    } else {
-                        esc_html_e('Enabled — no cached data', 'owbn-client');
-                    }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                    echo esc_html(ucfirst($coord_mode));
-                    if ($coord_mode === 'remote' && $coord_effective_url) {
-                        echo ' — ' . esc_html($coord_effective_url);
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Territories', 'owbn-client'); ?></strong></td>
-                <td>
-                    <?php
-                    if (!$terr_enabled) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } elseif ($terr_mode === 'local' && $tm_active) {
-                        echo absint($territory_cpt_count) . ' ' . esc_html__('published', 'owbn-client');
-                    } elseif (is_array($territories_cache)) {
-                        echo absint(count($territories_cache)) . ' ' . esc_html__('records cached', 'owbn-client');
-                    } else {
-                        esc_html_e('Enabled — no cached data', 'owbn-client');
-                    }
-                    ?>
-                </td>
-                <td>
-                    <?php
-                    echo esc_html(ucfirst($terr_mode));
-                    if ($terr_mode === 'remote' && $terr_effective_url) {
-                        echo ' — ' . esc_html($terr_effective_url);
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Vote History', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ( ! $vh_enabled ) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } elseif ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) ) {
-                        esc_html_e('Enabled — local (wp-voting-plugin)', 'owbn-client');
-                    } else {
-                        $vh_effective_url = $vh_remote_url ? $vh_remote_url : $remote_url;
-                        echo esc_html__('Enabled — remote', 'owbn-client');
-                        if ($vh_effective_url) {
-                            echo ' — ' . esc_html($vh_effective_url);
-                        }
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Player ID', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if (!$pid_on) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } else {
-                        echo esc_html(ucfirst($pid_current_mode)) . ' ' . esc_html__('mode', 'owbn-client');
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('OAT', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ( ! $oat_enabled ) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } else {
-                        echo esc_html(ucfirst($oat_mode)) . ' ' . esc_html__('mode', 'owbn-client');
-                        if ($oat_mode === 'remote') {
-                            $oat_effective_url = $oat_remote_url ? $oat_remote_url : $remote_url;
-                            if ($oat_effective_url) {
-                                echo ' — ' . esc_html($oat_effective_url);
-                            }
-                        }
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('accessSchema', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ( ! $asc_enabled ) {
-                        esc_html_e('Disabled', 'owbn-client');
-                    } else {
-                        echo esc_html(ucfirst($asc_mode)) . ' ' . esc_html__('mode', 'owbn-client');
-                        if ($asc_mode === 'remote' && $asc_remote_url) {
-                            echo ' — ' . esc_html($asc_remote_url);
-                        }
-                        if (function_exists('owc_asc_get_clients')) {
-                            $asc_client_count = count(owc_asc_get_clients());
-                            if ($asc_client_count > 0) {
-                                echo ' (' . absint($asc_client_count) . ' ' . esc_html__('clients', 'owbn-client') . ')';
-                            }
-                        }
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Default Remote', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ($remote_url) {
-                        echo esc_html($remote_url);
-                    } else {
-                        esc_html_e('Not configured', 'owbn-client');
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Gateway (this site)', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ($gw_enabled) {
-                        echo esc_html__('Active', 'owbn-client') . ' — ' . esc_html($gw_base_url);
-                    } else {
-                        esc_html_e('Disabled', 'owbn-client');
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('C&C Manager', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php echo $manager_active ? esc_html__('Active', 'owbn-client') : esc_html__('Not installed', 'owbn-client'); ?>
-                </td>
-            </tr>
-            <tr>
-                <td><strong><?php esc_html_e('Territory Manager', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php echo $tm_active ? esc_html__('Active', 'owbn-client') : esc_html__('Not installed', 'owbn-client'); ?>
-                </td>
-            </tr>
-            <?php if (!empty($gw_data_sources)) : ?>
-            <tr>
-                <td><strong><?php esc_html_e('Gateway Sources', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    $labels = [];
-                    foreach ($gw_data_sources as $source) {
-                        $labels[] = esc_html($source['label'] . ' (' . $source['provider'] . ')');
-                    }
-                    echo implode(', ', $labels);
-                    ?>
-                </td>
-            </tr>
-            <?php endif; ?>
-            <tr>
-                <td><strong><?php esc_html_e('Elementor', 'owbn-client'); ?></strong></td>
-                <td colspan="2">
-                    <?php
-                    if ($elementor_active) {
-                        esc_html_e('Active — widgets available', 'owbn-client');
-                    } else {
-                        esc_html_e('Not active — using shortcodes only', 'owbn-client');
-                    }
-                    ?>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <hr />
-
-        <!-- CACHE MANAGEMENT -->
-        <h2><?php esc_html_e('Cache Management', 'owbn-client'); ?></h2>
-        <p class="description"><?php esc_html_e('Clear cached data to fetch fresh content from data sources.', 'owbn-client'); ?></p>
-
-        <table class="form-table" role="presentation">
-            <tr>
-                <th scope="row"><?php esc_html_e('Clear Cache', 'owbn-client'); ?></th>
-                <td>
-                    <form method="post" style="display:inline;">
-                        <?php wp_nonce_field('owc_clear_cache_action'); ?>
-                        <?php submit_button(__('Clear All Cache', 'owbn-client'), 'secondary', 'owc_clear_cache', false); ?>
-                    </form>
-                    <p class="description"><?php esc_html_e('Removes all cached data. Next page load will fetch fresh data.', 'owbn-client'); ?></p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row"><?php esc_html_e('Refresh Cache', 'owbn-client'); ?></th>
-                <td>
-                    <form method="post" style="display:inline;">
-                        <?php wp_nonce_field('owc_refresh_cache_action'); ?>
-                        <?php submit_button(__('Refresh All Cache', 'owbn-client'), 'secondary', 'owc_refresh_cache', false); ?>
-                    </form>
-                    <p class="description"><?php esc_html_e('Clears and immediately re-fetches all data from sources.', 'owbn-client'); ?></p>
-                </td>
-            </tr>
-        </table>
+                if ( ! $is_enabled && empty( $tab_config['always_on'] ) ) {
+                    // Show disabled message.
+                    printf(
+                        '<div class="owc-tab-disabled-notice"><p>%s</p><p><a href="%s" class="button">%s</a></p></div>',
+                        esc_html( sprintf(
+                            /* translators: %s: feature name */
+                            __( '%s is currently disabled. Enable it on the General tab to configure.', 'owbn-client' ),
+                            $tab_config['label']
+                        ) ),
+                        esc_url( add_query_arg( 'tab', 'general', $page_url ) ),
+                        esc_html__( 'Go to General Settings', 'owbn-client' )
+                    );
+                } else {
+                    include $tab_config['partial'];
+                }
+                ?>
+            </div>
+        </div>
     </div>
-
-    <script>
-        (function($) {
-            // Gateway enable/disable toggle
-            $('#owbn_gateway_enabled').on('change', function() {
-                $('.owbn-gateway-options').toggle(this.checked);
-            });
-
-            // Generate API key
-            $('#owbn_gateway_generate_key').on('click', function() {
-                var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var key = '';
-                for (var i = 0; i < 48; i++) {
-                    key += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                $('#owbn_gateway_api_key').val(key);
-            });
-
-            // Data type toggle helper
-            function setupDataTypeToggle(type) {
-                var $enable = $('#owc_enable_' + type);
-                $enable.on('change', function() {
-                    var show = this.checked;
-                    $('.owc-' + type + '-options').toggle(show);
-                    if (!show) {
-                        $('.owc-' + type + '-remote').hide();
-                    } else {
-                        var isRemote = $('.owc-' + type + '-mode:checked').val() === 'remote';
-                        $('.owc-' + type + '-remote').toggle(isRemote);
-                    }
-                });
-                $('.owc-' + type + '-mode').on('change', function() {
-                    $('.owc-' + type + '-remote').toggle(this.value === 'remote');
-                });
-            }
-
-            setupDataTypeToggle('chronicles');
-            setupDataTypeToggle('coordinators');
-            setupDataTypeToggle('territories');
-
-            // Vote History toggle
-            $('#owc_enable_vote_history').on('change', function() {
-                $('.owc-vote-history-options').toggle(this.checked);
-            });
-
-            // Player ID toggle
-            var $pidEnable = $('#owc_enable_player_id');
-            $pidEnable.on('change', function() {
-                $('.owc-player-id-options').toggle(this.checked);
-                if (!this.checked) {
-                    $('.owc-player-id-client').hide();
-                } else {
-                    var isClient = $('.owc-player-id-mode:checked').val() === 'client';
-                    $('.owc-player-id-client').toggle(isClient);
-                }
-            });
-            $('.owc-player-id-mode').on('change', function() {
-                $('.owc-player-id-client').toggle(this.value === 'client');
-            });
-
-            // OAT toggle
-            var $oatEnable = $('#owc_enable_oat');
-            $oatEnable.on('change', function() {
-                $('.owc-oat-options').toggle(this.checked);
-                if (!this.checked) {
-                    $('.owc-oat-remote').hide();
-                } else {
-                    var isRemote = $('.owc-oat-mode:checked').val() === 'remote';
-                    $('.owc-oat-remote').toggle(isRemote);
-                }
-            });
-            $('.owc-oat-mode').on('change', function() {
-                $('.owc-oat-remote').toggle(this.value === 'remote');
-            });
-
-            // ASC toggle
-            var $ascEnable = $('#owc_enable_asc');
-            $ascEnable.on('change', function() {
-                $('.owc-asc-options').toggle(this.checked);
-                if (!this.checked) {
-                    $('.owc-asc-remote').hide();
-                } else {
-                    var isRemote = $('.owc-asc-mode:checked').val() === 'remote';
-                    $('.owc-asc-remote').toggle(isRemote);
-                }
-            });
-            $('.owc-asc-mode').on('change', function() {
-                $('.owc-asc-remote').toggle(this.value === 'remote');
-            });
-        })(jQuery);
-    </script>
-<?php
+    <?php
 }

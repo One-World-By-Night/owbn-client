@@ -705,11 +705,13 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
         return array();
     }
 
-    // Check if the gateway handler exists locally AND wp-voting-plugin is active (producer site).
-    if ( function_exists('owbn_gateway_query_entity_votes') && get_option('owbn_gateway_enabled', false) && defined('WPVP_VERSION') ) {
+    $votes_mode = owc_get_mode('votes');
+
+    // Local mode: query wp-voting-plugin tables directly (only if handler exists and plugin is active).
+    if ( $votes_mode === 'local' && function_exists('owbn_gateway_query_entity_votes') && defined('WPVP_VERSION') ) {
         $data = owbn_gateway_query_entity_votes($type, $slug);
     } else {
-        // Consumer site: fetch from remote gateway.
+        // Remote mode (or local mode without plugin): fetch from remote gateway.
         $base = owc_get_remote_base('votes');
         $key  = owc_get_remote_key('votes');
         $data = owc_remote_request(
@@ -773,6 +775,7 @@ function owc_clear_all_caches(): void
     delete_transient('owc_chronicles_cache');
     delete_transient('owc_coordinators_cache');
     delete_transient('owc_territories_cache');
+    delete_transient('owc_asc_roles_all');
 
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_chronicle_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_chronicle_%'");

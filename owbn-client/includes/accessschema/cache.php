@@ -85,4 +85,5 @@ function owc_asc_cache_clear_all() {
 	global $wpdb;
 	$wpdb->delete( $wpdb->usermeta, array( 'meta_key' => OWC_ASC_CACHE_KEY ) );
 	$wpdb->delete( $wpdb->usermeta, array( 'meta_key' => OWC_ASC_CACHE_TS_KEY ) );
+	delete_transient( 'owc_asc_roles_all' );
 }
