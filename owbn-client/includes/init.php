@@ -35,6 +35,12 @@ require_once __DIR__ . '/shortcodes/init.php';
 // Player ID (self-guarded — checks enable_player_id option internally)
 require_once __DIR__ . '/player-id/init.php';
 
+// accessSchema (self-guarded — checks asc_enabled option internally)
+require_once __DIR__ . '/accessschema/init.php';
+
+// OAT — Archivist Toolkit (self-guarded — checks enable_oat option internally)
+require_once __DIR__ . '/oat/init.php';
+
 // Elementor widgets (self-guarded — only loads when Elementor is active)
 if (did_action('elementor/loaded') || !did_action('plugins_loaded')) {
 	require_once __DIR__ . '/elementor/widgets-loader.php';

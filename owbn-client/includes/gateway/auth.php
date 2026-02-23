@@ -170,7 +170,7 @@ function owbn_gateway_cors_headers( $served, $result, $request, $server ) {
     }
 
     header( 'Access-Control-Allow-Methods: POST, OPTIONS' );
-    header( 'Access-Control-Allow-Headers: Content-Type, Authorization, x-api-key' );
+    header( 'Access-Control-Allow-Headers: Content-Type, Authorization, x-api-key, x-oat-user-email, x-oat-player-id' );
     header( 'Access-Control-Max-Age: 86400' );
 
     return $served;

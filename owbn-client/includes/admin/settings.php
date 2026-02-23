@@ -84,6 +84,16 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
 
+    // SSO gateway (for JIT user provisioning)
+    register_setting($group, 'owbn_gateway_sso_url', [
+        'type'              => 'string',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    register_setting($group, 'owbn_gateway_sso_api_key', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+
     // Default remote gateway (consumer-side fallback)
     register_setting($group, owc_option_name('remote_url'), [
         'type'              => 'string',
@@ -184,6 +194,53 @@ add_action('admin_init', function () {
         'sanitize_callback' => 'esc_url_raw',
     ]);
 
+    // OAT (Archivist Toolkit)
+    register_setting($group, owc_option_name('enable_oat'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($group, owc_option_name('oat_mode'), [
+        'type'              => 'string',
+        'default'           => 'local',
+        'sanitize_callback' => $mode_sanitize,
+    ]);
+    register_setting($group, owc_option_name('oat_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
+    ]);
+    register_setting($group, owc_option_name('oat_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+
+    // accessSchema (centralized ASC client)
+    register_setting($group, owc_option_name('asc_enabled'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($group, owc_option_name('asc_mode'), [
+        'type'              => 'string',
+        'default'           => 'remote',
+        'sanitize_callback' => function ($value) {
+            return in_array($value, ['local', 'remote'], true) ? $value : 'remote';
+        },
+    ]);
+    register_setting($group, owc_option_name('asc_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
+    ]);
+    register_setting($group, owc_option_name('asc_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    register_setting($group, owc_option_name('asc_cache_ttl'), [
+        'type'              => 'integer',
+        'default'           => 3600,
+        'sanitize_callback' => 'absint',
+    ]);
+
     // Cache
     register_setting($group, owc_option_name('cache_ttl'), [
         'type'              => 'integer',
@@ -257,6 +314,8 @@ function owc_render_settings_page()
     $gw_auth      = get_option('owbn_gateway_auth_methods', ['api_key']);
     $gw_whitelist = get_option('owbn_gateway_domain_whitelist', []);
     $gw_logging   = get_option('owbn_gateway_logging_enabled', false);
+    $gw_sso_url   = get_option('owbn_gateway_sso_url', '');
+    $gw_sso_key   = get_option('owbn_gateway_sso_api_key', '');
     $gw_base_url  = rest_url('owbn/v1/');
 
     // Default remote gateway (consumer-side)
@@ -382,6 +441,27 @@ function owc_render_settings_page()
                                 <?php checked($gw_logging); ?> />
                             <?php esc_html_e('Log gateway requests to PHP error log', 'owbn-client'); ?>
                         </label>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('SSO Server URL', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="owbn_gateway_sso_url"
+                            value="<?php echo esc_url($gw_sso_url); ?>"
+                            class="regular-text"
+                            placeholder="https://sso.owbn.net" />
+                        <p class="description"><?php esc_html_e('SSO server to verify users for JIT provisioning. Only needed on sites that receive OAT API requests.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('SSO API Key', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="owbn_gateway_sso_api_key"
+                            value="<?php echo esc_attr($gw_sso_key); ?>"
+                            class="regular-text code" />
+                        <p class="description"><?php esc_html_e('API key for the SSO server gateway.', 'owbn-client'); ?></p>
                     </td>
                 </tr>
                 <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
@@ -793,6 +873,183 @@ function owc_render_settings_page()
 
             <hr />
 
+            <!-- OAT (ARCHIVIST TOOLKIT) -->
+            <h2><?php esc_html_e('Archivist Toolkit (OAT)', 'owbn-client'); ?></h2>
+            <?php
+                $oat_enabled    = (bool) get_option(owc_option_name('enable_oat'), false);
+                $oat_mode       = owc_get_mode('oat');
+                $oat_remote_url = get_option(owc_option_name('oat_remote_url'), '');
+                $oat_remote_key = get_option(owc_option_name('oat_remote_api_key'), '');
+            ?>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('enable_oat')); ?>" value="0" />
+                            <input type="checkbox"
+                                name="<?php echo esc_attr(owc_option_name('enable_oat')); ?>"
+                                id="owc_enable_oat"
+                                value="1"
+                                <?php checked($oat_enabled); ?> />
+                            <?php esc_html_e('Enable OAT pages (Inbox, Submit, Entry Detail)', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owc-oat-options" <?php echo $oat_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Data Source', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('oat_mode')); ?>"
+                                    class="owc-oat-mode"
+                                    value="local"
+                                    <?php checked($oat_mode, 'local'); ?> />
+                                <?php esc_html_e('Local — OAT plugin is installed on this site', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('oat_mode')); ?>"
+                                    class="owc-oat-mode"
+                                    value="remote"
+                                    <?php checked($oat_mode, 'remote'); ?> />
+                                <?php esc_html_e('Remote — Fetch from archivist.owbn.net gateway', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-oat-options owc-oat-remote" <?php echo ($oat_enabled && $oat_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Remote URL Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('oat_remote_url')); ?>"
+                            value="<?php echo esc_url($oat_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="<?php esc_attr_e('Leave empty to use default remote', 'owbn-client'); ?>" />
+                        <p class="description"><?php esc_html_e('Only set if OAT data comes from a different gateway than the default remote URL.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-oat-options owc-oat-remote" <?php echo ($oat_enabled && $oat_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key Override', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('oat_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($oat_remote_key); ?>"
+                            class="regular-text code"
+                            placeholder="<?php esc_attr_e('Leave empty to use default key', 'owbn-client'); ?>" />
+                    </td>
+                </tr>
+            </table>
+
+            <hr />
+
+            <!-- ACCESSSCHEMA -->
+            <h2><?php esc_html_e('accessSchema', 'owbn-client'); ?></h2>
+            <p class="description"><?php esc_html_e('Centralized accessSchema client. Provides role-based access control for all OWBN plugins through a single configuration.', 'owbn-client'); ?></p>
+            <?php
+                $asc_enabled    = (bool) get_option(owc_option_name('asc_enabled'), false);
+                $asc_mode       = get_option(owc_option_name('asc_mode'), 'remote');
+                $asc_remote_url = get_option(owc_option_name('asc_remote_url'), '');
+                $asc_remote_key = get_option(owc_option_name('asc_remote_api_key'), '');
+                $asc_cache_ttl  = get_option(owc_option_name('asc_cache_ttl'), 3600);
+            ?>
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><?php esc_html_e('Enable', 'owbn-client'); ?></th>
+                    <td>
+                        <label>
+                            <input type="hidden" name="<?php echo esc_attr(owc_option_name('asc_enabled')); ?>" value="0" />
+                            <input type="checkbox"
+                                name="<?php echo esc_attr(owc_option_name('asc_enabled')); ?>"
+                                id="owc_enable_asc"
+                                value="1"
+                                <?php checked($asc_enabled); ?> />
+                            <?php esc_html_e('Enable centralized accessSchema client', 'owbn-client'); ?>
+                        </label>
+                    </td>
+                </tr>
+                <tr class="owc-asc-options" <?php echo $asc_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Mode', 'owbn-client'); ?></th>
+                    <td>
+                        <fieldset>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('asc_mode')); ?>"
+                                    class="owc-asc-mode"
+                                    value="local"
+                                    <?php checked($asc_mode, 'local'); ?> />
+                                <?php esc_html_e('Local — accessSchema server plugin is installed on this site', 'owbn-client'); ?>
+                            </label><br>
+                            <label>
+                                <input type="radio"
+                                    name="<?php echo esc_attr(owc_option_name('asc_mode')); ?>"
+                                    class="owc-asc-mode"
+                                    value="remote"
+                                    <?php checked($asc_mode, 'remote'); ?> />
+                                <?php esc_html_e('Remote — Connect to a remote accessSchema server', 'owbn-client'); ?>
+                            </label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr class="owc-asc-options owc-asc-remote" <?php echo ($asc_enabled && $asc_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Server URL', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="url"
+                            name="<?php echo esc_attr(owc_option_name('asc_remote_url')); ?>"
+                            value="<?php echo esc_url($asc_remote_url); ?>"
+                            class="regular-text"
+                            placeholder="https://council.owbn.net" />
+                        <p class="description"><?php esc_html_e('Base URL of the site running the accessSchema server plugin.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-asc-options owc-asc-remote" <?php echo ($asc_enabled && $asc_mode === 'remote') ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('API Key', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="text"
+                            name="<?php echo esc_attr(owc_option_name('asc_remote_api_key')); ?>"
+                            value="<?php echo esc_attr($asc_remote_key); ?>"
+                            class="regular-text code" />
+                        <p class="description"><?php esc_html_e('API key for the accessSchema server.', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <tr class="owc-asc-options" <?php echo $asc_enabled ? '' : 'style="display:none;"'; ?>>
+                    <th scope="row"><?php esc_html_e('Role Cache TTL (seconds)', 'owbn-client'); ?></th>
+                    <td>
+                        <input type="number"
+                            name="<?php echo esc_attr(owc_option_name('asc_cache_ttl')); ?>"
+                            value="<?php echo esc_attr($asc_cache_ttl); ?>"
+                            class="small-text"
+                            min="0" />
+                        <p class="description"><?php esc_html_e('How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)', 'owbn-client'); ?></p>
+                    </td>
+                </tr>
+                <?php if ($asc_enabled && function_exists('owc_asc_get_clients')) : ?>
+                <tr class="owc-asc-options">
+                    <th scope="row"><?php esc_html_e('Registered Clients', 'owbn-client'); ?></th>
+                    <td>
+                        <?php
+                        $asc_clients = owc_asc_get_clients();
+                        if (!empty($asc_clients)) :
+                        ?>
+                        <ul style="margin:0; padding:0; list-style:none;">
+                            <?php foreach ($asc_clients as $cid => $clabel) : ?>
+                            <li>
+                                <span style="color:#4CAF50;">&#10003;</span>
+                                <?php echo esc_html($cid . ' — ' . $clabel); ?>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <?php else : ?>
+                        <p style="color:#999;"><?php esc_html_e('No plugins have registered with the centralized ASC module yet.', 'owbn-client'); ?></p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </table>
+
+            <hr />
+
             <!-- CACHE SETTINGS -->
             <h2><?php esc_html_e('Cache Settings', 'owbn-client'); ?></h2>
             <table class="form-table" role="presentation">
@@ -953,6 +1210,45 @@ function owc_render_settings_page()
                 </td>
             </tr>
             <tr>
+                <td><strong><?php esc_html_e('OAT', 'owbn-client'); ?></strong></td>
+                <td colspan="2">
+                    <?php
+                    if ( ! $oat_enabled ) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } else {
+                        echo esc_html(ucfirst($oat_mode)) . ' ' . esc_html__('mode', 'owbn-client');
+                        if ($oat_mode === 'remote') {
+                            $oat_effective_url = $oat_remote_url ? $oat_remote_url : $remote_url;
+                            if ($oat_effective_url) {
+                                echo ' — ' . esc_html($oat_effective_url);
+                            }
+                        }
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><strong><?php esc_html_e('accessSchema', 'owbn-client'); ?></strong></td>
+                <td colspan="2">
+                    <?php
+                    if ( ! $asc_enabled ) {
+                        esc_html_e('Disabled', 'owbn-client');
+                    } else {
+                        echo esc_html(ucfirst($asc_mode)) . ' ' . esc_html__('mode', 'owbn-client');
+                        if ($asc_mode === 'remote' && $asc_remote_url) {
+                            echo ' — ' . esc_html($asc_remote_url);
+                        }
+                        if (function_exists('owc_asc_get_clients')) {
+                            $asc_client_count = count(owc_asc_get_clients());
+                            if ($asc_client_count > 0) {
+                                echo ' (' . absint($asc_client_count) . ' ' . esc_html__('clients', 'owbn-client') . ')';
+                            }
+                        }
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
                 <td><strong><?php esc_html_e('Default Remote', 'owbn-client'); ?></strong></td>
                 <td colspan="2">
                     <?php
@@ -1104,6 +1400,36 @@ function owc_render_settings_page()
             });
             $('.owc-player-id-mode').on('change', function() {
                 $('.owc-player-id-client').toggle(this.value === 'client');
+            });
+
+            // OAT toggle
+            var $oatEnable = $('#owc_enable_oat');
+            $oatEnable.on('change', function() {
+                $('.owc-oat-options').toggle(this.checked);
+                if (!this.checked) {
+                    $('.owc-oat-remote').hide();
+                } else {
+                    var isRemote = $('.owc-oat-mode:checked').val() === 'remote';
+                    $('.owc-oat-remote').toggle(isRemote);
+                }
+            });
+            $('.owc-oat-mode').on('change', function() {
+                $('.owc-oat-remote').toggle(this.value === 'remote');
+            });
+
+            // ASC toggle
+            var $ascEnable = $('#owc_enable_asc');
+            $ascEnable.on('change', function() {
+                $('.owc-asc-options').toggle(this.checked);
+                if (!this.checked) {
+                    $('.owc-asc-remote').hide();
+                } else {
+                    var isRemote = $('.owc-asc-mode:checked').val() === 'remote';
+                    $('.owc-asc-remote').toggle(isRemote);
+                }
+            });
+            $('.owc-asc-mode').on('change', function() {
+                $('.owc-asc-remote').toggle(this.value === 'remote');
             });
         })(jQuery);
     </script>
