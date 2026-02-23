@@ -172,10 +172,13 @@ function owc_entity_get_title( $type, $slug ) {
 }
 
 /**
- * Get the slug for a title (exact match, case-insensitive).
+ * Get the slug for a title.
+ *
+ * Tries exact match first, then falls back to partial matching:
+ * starts_with > contains > slug_match. Returns the best single match.
  *
  * @param string $type  'chronicle' or 'coordinator'.
- * @param string $title Entity title.
+ * @param string $title Entity title (full or partial).
  * @return string Slug, or empty string if not found.
  */
 function owc_entity_get_slug( $type, $title ) {
@@ -184,11 +187,42 @@ function owc_entity_get_slug( $type, $title ) {
 	global $owc_entity_cache;
 	$lower = strtolower( trim( (string) $title ) );
 
+	if ( '' === $lower ) {
+		return '';
+	}
+
+	// Exact match (fast path).
 	if ( isset( $owc_entity_cache[ $type ]['title_to_slug'][ $lower ] ) ) {
 		return $owc_entity_cache[ $type ]['title_to_slug'][ $lower ];
 	}
 
-	return '';
+	// Partial match: scan all entries for best hit.
+	$map = isset( $owc_entity_cache[ $type ]['slug_to_entry'] )
+		? $owc_entity_cache[ $type ]['slug_to_entry']
+		: array();
+
+	$best_slug  = '';
+	$best_score = 0;
+
+	foreach ( $map as $slug => $entry ) {
+		$title_lower = strtolower( $entry['title'] );
+		$score       = 0;
+
+		if ( 0 === strpos( $title_lower, $lower ) ) {
+			$score = 80;
+		} elseif ( false !== strpos( $title_lower, $lower ) ) {
+			$score = 60;
+		} elseif ( false !== strpos( $slug, $lower ) ) {
+			$score = 50;
+		}
+
+		if ( $score > $best_score ) {
+			$best_score = $score;
+			$best_slug  = $slug;
+		}
+	}
+
+	return $best_slug;
 }
 
 /**
