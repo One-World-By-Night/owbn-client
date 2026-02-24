@@ -168,7 +168,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 				'textarea_name' => $name,
 				'textarea_rows' => $rows,
 				'media_buttons' => $media,
-				'teeny'         => true,
+				'teeny'         => false,
 				'quicktags'     => true,
 			) );
 			if ( $help_text ) {

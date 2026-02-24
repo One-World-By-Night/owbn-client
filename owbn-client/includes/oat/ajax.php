@@ -135,6 +135,12 @@ function owc_oat_ajax_get_domain_fields() {
     // Render fields to HTML string.
     ob_start();
     owc_oat_render_fields( $fields );
+    // Flush TinyMCE init JS that wp_editor() queued internally.
+    // During AJAX, admin_print_footer_scripts never fires, so the
+    // tinyMCEPreInit.mceInit settings are lost unless we output them here.
+    if ( class_exists( '_WP_Editors', false ) ) {
+        _WP_Editors::editor_js();
+    }
     $html = ob_get_clean();
 
     wp_send_json_success( array( 'html' => $html ) );

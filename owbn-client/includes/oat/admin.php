@@ -144,8 +144,9 @@ function owc_oat_enqueue_assets( $hook ) {
         'nonce' => wp_create_nonce( 'owc_oat_nonce' ),
     ) );
 
-    // Regulation picker on submit page.
+    // Submit page: preload editor scripts so AJAX-loaded htmlarea fields work.
     if ( strpos( $hook, 'owc-oat-submit' ) !== false ) {
+        wp_enqueue_editor();
         wp_enqueue_script( 'jquery-ui-autocomplete' );
         wp_enqueue_style( 'wp-jquery-ui-dialog' );
         wp_enqueue_script(
