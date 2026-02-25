@@ -20,6 +20,7 @@ add_action( 'wp_ajax_owc_oat_search_characters', 'owc_oat_ajax_search_characters
 add_action( 'wp_ajax_owc_oat_create_character', 'owc_oat_ajax_create_character' );
 add_action( 'wp_ajax_owc_oat_lookup_hst', 'owc_oat_ajax_lookup_hst' );
 add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
+add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coordinators_for_rules' );
 
 /**
  * AJAX: Search regulation rules for autocomplete.
@@ -410,4 +411,58 @@ function owc_oat_search_users_by_role_prefix( $prefix ) {
     }
 
     return $results;
+}
+
+/**
+ * AJAX: Get controlling coordinator(s) for a set of regulation rule IDs.
+ *
+ * Accepts a JSON array of rule IDs, queries OAT_Regulation_Rule for each,
+ * and returns unique coordinator genre slugs with human-readable names.
+ *
+ * @return void
+ */
+function owc_oat_ajax_get_coordinators_for_rules() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $rule_ids_raw = isset( $_GET['rule_ids'] ) ? sanitize_text_field( $_GET['rule_ids'] ) : '[]';
+    $rule_ids     = json_decode( $rule_ids_raw, true );
+
+    if ( ! is_array( $rule_ids ) || empty( $rule_ids ) ) {
+        wp_send_json_success( array( 'coordinators' => array() ) );
+    }
+
+    $rule_ids = array_map( 'absint', $rule_ids );
+    $seen     = array();
+    $results  = array();
+
+    foreach ( $rule_ids as $rid ) {
+        if ( ! $rid || ! class_exists( 'OAT_Regulation_Rule' ) ) {
+            continue;
+        }
+        $rule = OAT_Regulation_Rule::find( $rid );
+        if ( ! $rule || empty( $rule->genre ) ) {
+            continue;
+        }
+        $genre = $rule->genre;
+        if ( isset( $seen[ $genre ] ) ) {
+            continue;
+        }
+        $seen[ $genre ] = true;
+
+        // Resolve genre slug to human-readable name.
+        $name = $genre;
+        if ( function_exists( 'owc_entity_get_title' ) ) {
+            $title = owc_entity_get_title( 'coordinator', $genre );
+            if ( $title ) {
+                $name = $title;
+            }
+        }
+
+        $results[] = array(
+            'genre' => $genre,
+            'name'  => $name,
+        );
+    }
+
+    wp_send_json_success( array( 'coordinators' => $results ) );
 }

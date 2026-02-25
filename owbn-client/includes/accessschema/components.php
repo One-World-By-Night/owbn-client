@@ -60,29 +60,72 @@ function owc_asc_render_chronicle_picker( $args ) {
 		return;
 	}
 
-	// Render select.
-	printf(
-		'<select id="%s" name="%s"%s>',
-		esc_attr( $id ),
-		esc_attr( $name ),
-		$req_attr
-	);
-	echo '<option value="">-- Select Chronicle --</option>';
-
-	foreach ( $entries as $entry ) {
-		$opt_value = esc_attr( $entry['slug'] );
-		$opt_label = esc_html( $entry['title'] );
-		if ( $show_role && ! empty( $entry['role_label'] ) ) {
-			$opt_label .= ' &mdash; ' . esc_html( $entry['role_label'] );
+	// Searchable autocomplete for large lists (>20 entries or wildcard roles).
+	if ( count( $entries ) > 20 ) {
+		$json_entries = array();
+		$pre_label    = '';
+		foreach ( $entries as $entry ) {
+			$label = $entry['title'];
+			if ( $show_role && ! empty( $entry['role_label'] ) ) {
+				$label .= ' — ' . $entry['role_label'];
+			}
+			$json_entries[] = array( 'value' => $entry['slug'], 'label' => $label );
+			if ( $value === $entry['slug'] ) {
+				$pre_label = $label;
+			}
 		}
+
 		printf(
-			'<option value="%s"%s>%s</option>',
-			$opt_value,
-			selected( $value, $entry['slug'], false ),
-			$opt_label
+			'<div class="oat-chronicle-autocomplete-wrap" data-entries=\'%s\'>',
+			esc_attr( wp_json_encode( $json_entries ) )
 		);
+		printf(
+			'<input type="text" id="%s_search" class="oat-chronicle-search regular-text" placeholder="Type to search chronicles..." autocomplete="off"%s />',
+			esc_attr( $id ),
+			( '' !== $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<div class="oat-chronicle-selected"%s>',
+			( '' === $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<span class="oat-chronicle-selected-name">%s</span> ',
+			esc_html( $pre_label )
+		);
+		echo '<button type="button" class="button-link oat-chronicle-clear">(clear)</button>';
+		echo '</div>';
+		printf(
+			'<input type="hidden" name="%s" id="%s" value="%s" />',
+			esc_attr( $name ),
+			esc_attr( $id ),
+			esc_attr( $value )
+		);
+		echo '</div>';
+	} else {
+		// Standard select for small lists.
+		printf(
+			'<select id="%s" name="%s"%s>',
+			esc_attr( $id ),
+			esc_attr( $name ),
+			$req_attr
+		);
+		echo '<option value="">-- Select Chronicle --</option>';
+
+		foreach ( $entries as $entry ) {
+			$opt_value = esc_attr( $entry['slug'] );
+			$opt_label = esc_html( $entry['title'] );
+			if ( $show_role && ! empty( $entry['role_label'] ) ) {
+				$opt_label .= ' &mdash; ' . esc_html( $entry['role_label'] );
+			}
+			printf(
+				'<option value="%s"%s>%s</option>',
+				$opt_value,
+				selected( $value, $entry['slug'], false ),
+				$opt_label
+			);
+		}
+		echo '</select>';
 	}
-	echo '</select>';
 
 	// Emit auto_prop hidden fields.
 	foreach ( $auto_props as $prop_key => $prop_source ) {
@@ -177,6 +220,11 @@ function owc_asc_render_coordinator_picker( $args ) {
  * @return array Array of array( 'slug', 'title', 'role_label' ), sorted by title.
  */
 function _owc_asc_get_user_entity_entries( $entity_type, $role_filter = array() ) {
+	// Wildcard: return ALL entities of this type (no role filtering).
+	if ( in_array( '*', $role_filter, true ) ) {
+		return _owc_asc_get_all_entity_entries( $entity_type );
+	}
+
 	$user = wp_get_current_user();
 	if ( ! $user || ! $user->ID ) {
 		return array();
@@ -259,6 +307,58 @@ function _owc_asc_get_user_entity_entries( $entity_type, $role_filter = array() 
 	}
 
 	// Sort by title ascending.
+	usort( $entries, function ( $a, $b ) {
+		return strcasecmp( $a['title'], $b['title'] );
+	} );
+
+	return $entries;
+}
+
+/**
+ * Return ALL entries for an entity type (no role filtering).
+ *
+ * Used when role_filter contains '*' (wildcard).
+ *
+ * @param string $entity_type Entity type: 'chronicle' or 'coordinator'.
+ * @return array Array of [ slug, title, role_label ] entries.
+ */
+function _owc_asc_get_all_entity_entries( $entity_type ) {
+	$entries = array();
+
+	if ( 'chronicle' === $entity_type && function_exists( 'owc_get_chronicles' ) ) {
+		$chronicles = owc_get_chronicles();
+		if ( is_array( $chronicles ) ) {
+			foreach ( $chronicles as $c ) {
+				$slug  = isset( $c['slug'] ) ? $c['slug'] : '';
+				$title = isset( $c['title'] ) ? $c['title'] : ucfirst( $slug );
+				if ( '' === $slug ) {
+					continue;
+				}
+				$entries[] = array(
+					'slug'       => $slug,
+					'title'      => $title,
+					'role_label' => '',
+				);
+			}
+		}
+	} elseif ( 'coordinator' === $entity_type && function_exists( 'owc_get_coordinators' ) ) {
+		$coordinators = owc_get_coordinators();
+		if ( is_array( $coordinators ) ) {
+			foreach ( $coordinators as $c ) {
+				$slug  = isset( $c['slug'] ) ? $c['slug'] : ( isset( $c['genre'] ) ? $c['genre'] : '' );
+				$title = isset( $c['title'] ) ? $c['title'] : ucfirst( $slug );
+				if ( '' === $slug ) {
+					continue;
+				}
+				$entries[] = array(
+					'slug'       => $slug,
+					'title'      => $title,
+					'role_label' => '',
+				);
+			}
+		}
+	}
+
 	usort( $entries, function ( $a, $b ) {
 		return strcasecmp( $a['title'], $b['title'] );
 	} );

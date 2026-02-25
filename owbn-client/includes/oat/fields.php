@@ -78,10 +78,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 	// Condition data attributes.
 	$cond_attrs = '';
 	if ( $condition && isset( $condition['field_key'] ) && isset( $condition['value'] ) ) {
+		$operator  = isset( $condition['operator'] ) ? $condition['operator'] : '=';
+		$cond_val  = is_array( $condition['value'] ) ? wp_json_encode( $condition['value'] ) : $condition['value'];
 		$cond_attrs = sprintf(
-			' data-condition-field="%s" data-condition-value="%s"',
+			' data-condition-field="%s" data-condition-value="%s" data-condition-operator="%s"',
 			esc_attr( $condition['field_key'] ),
-			esc_attr( $condition['value'] )
+			esc_attr( $cond_val ),
+			esc_attr( $operator )
 		);
 	}
 
@@ -415,6 +418,102 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</td></tr>';
 			return;
 
+		case 'user_picker':
+			// Autocomplete search against WP users, with free-text fallback.
+			$store_id_in = isset( $attrs['store_id_in'] ) ? $attrs['store_id_in'] : '';
+			$fallback    = isset( $attrs['fallback'] ) ? $attrs['fallback'] : 'free_text';
+			echo '<tr class="oat-field oat-field-user-picker"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			echo '<div class="oat-user-picker" data-field-id="' . esc_attr( $id ) . '" data-store-id-in="' . esc_attr( $store_id_in ) . '" data-fallback="' . esc_attr( $fallback ) . '">';
+			// Search input.
+			printf(
+				'<input type="text" id="%s_search" class="oat-user-search regular-text" placeholder="%s" autocomplete="off" />',
+				$id,
+				esc_attr__( 'Search users by name or email...', 'owbn-client' )
+			);
+			// Selected user display.
+			echo '<div class="oat-user-picked" style="display:none;">';
+			echo '<span class="oat-user-tag"></span>';
+			echo '</div>';
+			// Hidden input: stores display name or matched text.
+			printf( '<input type="hidden" name="%s" id="%s" value="%s" class="oat-user-picker-value" />', $name, $id, esc_attr( $value ) );
+			// Hidden input for user ID (stored in store_id_in field).
+			if ( $store_id_in ) {
+				$uid_name = 'oat_meta_' . esc_attr( $store_id_in );
+				printf( '<input type="hidden" name="%s" id="oat_meta_%s" value="" class="oat-user-picker-uid" />', $uid_name, esc_attr( $store_id_in ) );
+			}
+			// Free-text fallback: email field shown when no user selected.
+			if ( 'free_text' === $fallback ) {
+				echo '<div class="oat-user-freetext" style="display:none;margin-top:6px;">';
+				echo '<p class="description">' . esc_html__( 'User not found in system. Enter their email:', 'owbn-client' ) . '</p>';
+				printf(
+					'<input type="email" class="oat-user-freetext-email regular-text" placeholder="%s" />',
+					esc_attr__( 'player@example.com', 'owbn-client' )
+				);
+				echo '</div>';
+			}
+			echo '</div>'; // .oat-user-picker
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
+		case 'coordinator_display':
+			// Read-only display of coordinator(s) derived from selected regulation rules.
+			echo '<tr class="oat-field oat-field-coordinator-display"' . $cond_attrs . '>';
+			echo '<th>' . esc_html( $label ) . '</th>';
+			echo '<td>';
+			echo '<div class="oat-coordinator-display" data-field-id="' . esc_attr( $id ) . '">';
+			echo '<span class="oat-coordinator-names">';
+			if ( $value ) {
+				echo esc_html( $value );
+			} else {
+				echo '<em>' . esc_html__( 'Select regulation rules to see coordinators.', 'owbn-client' ) . '</em>';
+			}
+			echo '</span>';
+			printf( '<input type="hidden" name="%s" id="%s" value="%s" />', $name, $id, esc_attr( $value ) );
+			echo '</div>';
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
+		case 'template_selector':
+			// Dropdown of pre-canned templates that populate a target htmlarea.
+			$target_field = isset( $attrs['target_field'] ) ? $attrs['target_field'] : '';
+			echo '<tr class="oat-field oat-field-template-selector"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			echo '<select id="' . $id . '" name="' . $name . '" class="oat-template-selector" data-target-field="' . esc_attr( $target_field ) . '"' . $req_attr . '>';
+			echo '<option value="">' . esc_html__( '-- Select Template --', 'owbn-client' ) . '</option>';
+			foreach ( $options as $opt_val => $opt_label_or_content ) {
+				// Options can be simple (label only) or complex (label with template content).
+				// If the value is a JSON string containing template HTML, use the key as label.
+				if ( is_array( $opt_label_or_content ) ) {
+					$tpl_label   = isset( $opt_label_or_content['label'] ) ? $opt_label_or_content['label'] : $opt_val;
+					$tpl_content = isset( $opt_label_or_content['content'] ) ? $opt_label_or_content['content'] : '';
+				} else {
+					$tpl_label   = $opt_val;
+					$tpl_content = $opt_label_or_content;
+				}
+				printf(
+					'<option value="%s" data-template="%s"%s>%s</option>',
+					esc_attr( $opt_val ),
+					esc_attr( $tpl_content ),
+					selected( $value, (string) $opt_val, false ),
+					esc_html( $tpl_label )
+				);
+			}
+			echo '</select>';
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
 		case 'dependent_lookup':
 			// Text field that auto-populates via AJAX when a dependency field changes (D-058).
 			// attributes: depends_on, lookup, role_path, fallback.
@@ -626,6 +725,20 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			echo esc_html( $value );
 			break;
 
+		case 'user_picker':
+			// Show display name. If a user_id is stored, could also show email.
+			echo esc_html( $value ? $value : '-' );
+			break;
+
+		case 'coordinator_display':
+			echo esc_html( $value ? $value : '-' );
+			break;
+
+		case 'template_selector':
+			$display = isset( $options[ $value ] ) ? ( is_array( $options[ $value ] ) ? $options[ $value ]['label'] : $value ) : $value;
+			echo esc_html( $display ? $display : '-' );
+			break;
+
 		default:
 			echo esc_html( $value );
 			break;
@@ -737,6 +850,9 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 			return $uuid;
 
 		case 'dependent_lookup':
+		case 'user_picker':
+		case 'coordinator_display':
+		case 'template_selector':
 			return sanitize_text_field( $raw_value );
 
 		default:
@@ -868,6 +984,20 @@ function owc_oat_validate_field( $field, $value ) {
 		case 'character_picker':
 			if ( $value && ! preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value ) ) {
 				return new WP_Error( 'oat_field_invalid', sprintf( '%s must be a valid character UUID.', $label ) );
+			}
+			break;
+
+		case 'user_picker':
+			// Value is display name (text) — no special format to validate.
+			break;
+
+		case 'coordinator_display':
+			// Read-only, no validation needed.
+			break;
+
+		case 'template_selector':
+			if ( ! empty( $options ) && $value && ! array_key_exists( $value, $options ) ) {
+				return new WP_Error( 'oat_field_invalid', sprintf( '%s has an invalid selection.', $label ) );
 			}
 			break;
 	}

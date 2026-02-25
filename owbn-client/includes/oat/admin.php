@@ -122,7 +122,7 @@ function owc_oat_enqueue_assets( $hook ) {
     }
 
     $base_url = plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'includes/oat/assets/';
-    $version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.0';
+    $version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.3';
 
     wp_enqueue_style(
         'owc-oat-client',
