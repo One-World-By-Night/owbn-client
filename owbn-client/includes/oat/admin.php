@@ -134,7 +134,7 @@ function owc_oat_enqueue_assets( $hook ) {
     wp_enqueue_script(
         'owc-oat-client',
         $base_url . 'js/oat-client.js',
-        array( 'jquery' ),
+        array( 'jquery', 'jquery-ui-autocomplete' ),
         $version,
         true
     );
@@ -156,5 +156,11 @@ function owc_oat_enqueue_assets( $hook ) {
             $version,
             true
         );
+    }
+
+    // Entry detail page: autocomplete for reassign/delegate user pickers.
+    if ( strpos( $hook, 'owc-oat-entry' ) !== false ) {
+        wp_enqueue_script( 'jquery-ui-autocomplete' );
+        wp_enqueue_style( 'wp-jquery-ui-dialog' );
     }
 }

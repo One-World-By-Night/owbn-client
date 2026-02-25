@@ -49,9 +49,9 @@
     border: 1px solid #ccd0d4;
     border-radius: 4px;
     padding: 15px;
-    min-width: 280px;
+    min-width: 320px;
     flex: 1;
-    max-width: 400px;
+    max-width: 500px;
 }
 
 .oat-action-card strong {
@@ -154,6 +154,66 @@
     color: #8b0000;
     margin-left: 5px;
     font-weight: bold;
+}
+
+/* User picker (reassign/delegate) */
+.oat-user-picker {
+    margin: 6px 0;
+}
+
+.oat-user-picker .oat-user-search {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.oat-user-picked {
+    display: block;
+    margin-top: 6px;
+}
+
+.oat-user-tag {
+    display: inline-block;
+    background: #e5f5fa;
+    border: 1px solid #b4dce7;
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+.oat-remove-user {
+    cursor: pointer;
+    color: #8b0000;
+    margin-left: 6px;
+    font-weight: bold;
+}
+
+/* Timer extend */
+.oat-timer-extend-fields {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 6px 0;
+}
+
+.oat-timer-extend-fields label {
+    font-weight: 500;
+}
+
+.oat-timer-extend-fields .small-text {
+    width: 60px;
+}
+
+.oat-action-card .large-text {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* jQuery UI autocomplete styling within action cards */
+.ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100100;
 }
 
 /* Responsive */

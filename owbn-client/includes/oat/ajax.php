@@ -19,6 +19,7 @@ add_action( 'wp_ajax_owc_oat_get_domain_fields', 'owc_oat_ajax_get_domain_fields
 add_action( 'wp_ajax_owc_oat_search_characters', 'owc_oat_ajax_search_characters' );
 add_action( 'wp_ajax_owc_oat_create_character', 'owc_oat_ajax_create_character' );
 add_action( 'wp_ajax_owc_oat_lookup_hst', 'owc_oat_ajax_lookup_hst' );
+add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
 
 /**
  * AJAX: Search regulation rules for autocomplete.
@@ -282,4 +283,131 @@ function owc_oat_ajax_lookup_hst() {
     }
 
     wp_send_json_success( array( 'found' => false, 'name' => '' ) );
+}
+
+/**
+ * AJAX: Search users by name for reassign/delegate autocomplete.
+ *
+ * Returns users matching display_name or user_login, plus ASC role path
+ * matches if the term looks like a role path (contains '/').
+ *
+ * @return void
+ */
+function owc_oat_ajax_search_users() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $term = isset( $_GET['term'] ) ? sanitize_text_field( $_GET['term'] ) : '';
+    if ( strlen( $term ) < 2 ) {
+        wp_send_json( array() );
+    }
+
+    $results = array();
+
+    // Search WordPress users by display_name or user_login.
+    $users = get_users( array(
+        'search'         => '*' . $term . '*',
+        'search_columns' => array( 'user_login', 'display_name', 'user_email' ),
+        'number'         => 15,
+        'orderby'        => 'display_name',
+    ) );
+
+    foreach ( $users as $user ) {
+        $results[] = array(
+            'id'    => $user->ID,
+            'label' => $user->display_name . ' (' . $user->user_login . ')',
+            'value' => $user->display_name,
+            'type'  => 'user',
+        );
+    }
+
+    // If term contains '/' it might be an ASC role path — resolve to user(s).
+    if ( strpos( $term, '/' ) !== false && function_exists( 'owc_asc_get_users_by_role' ) ) {
+        // Exact role path match first.
+        $role_users = owc_asc_get_users_by_role( 'oat', $term );
+
+        // No exact match — try prefix match (e.g. "coordinator/tremere" matches
+        // users with "coordinator/tremere/coordinator").
+        if ( empty( $role_users ) || is_wp_error( $role_users ) ) {
+            $role_users = owc_oat_search_users_by_role_prefix( $term );
+        }
+
+        if ( is_array( $role_users ) ) {
+            $seen_ids = array();
+            foreach ( $results as $r ) {
+                $seen_ids[ $r['id'] ] = true;
+            }
+            foreach ( $role_users as $ru ) {
+                $ru  = (array) $ru;
+                $uid = isset( $ru['user_id'] ) ? (int) $ru['user_id'] : 0;
+                if ( ! $uid || isset( $seen_ids[ $uid ] ) ) {
+                    continue;
+                }
+                $name = isset( $ru['display_name'] ) ? $ru['display_name'] : '';
+                $path = isset( $ru['role_path'] ) ? $ru['role_path'] : $term;
+                $results[] = array(
+                    'id'    => $uid,
+                    'label' => $name . ' (via ' . $path . ')',
+                    'value' => $name,
+                    'type'  => 'role',
+                );
+                $seen_ids[ $uid ] = true;
+            }
+        }
+    }
+
+    wp_send_json( $results );
+}
+
+/**
+ * Search users whose cached ASC roles start with a given prefix.
+ *
+ * E.g. prefix "coordinator/tremere" matches users holding
+ * "coordinator/tremere/coordinator" or "coordinator/tremere/sub-coordinator".
+ *
+ * @param string $prefix Role path prefix.
+ * @return array Array of arrays with user_id, display_name, role_path.
+ */
+function owc_oat_search_users_by_role_prefix( $prefix ) {
+    if ( ! defined( 'OWC_ASC_CACHE_KEY' ) ) {
+        return array();
+    }
+
+    global $wpdb;
+    $prefix = sanitize_text_field( $prefix );
+    $like   = '%' . $wpdb->esc_like( $prefix ) . '%';
+
+    $user_ids = $wpdb->get_col( $wpdb->prepare(
+        "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value LIKE %s",
+        OWC_ASC_CACHE_KEY,
+        $like
+    ) );
+
+    if ( empty( $user_ids ) ) {
+        return array();
+    }
+
+    $results    = array();
+    $prefix_low = strtolower( $prefix );
+
+    foreach ( $user_ids as $uid ) {
+        $cached_roles = get_user_meta( (int) $uid, OWC_ASC_CACHE_KEY, true );
+        if ( ! is_array( $cached_roles ) ) {
+            continue;
+        }
+        foreach ( $cached_roles as $cached_path ) {
+            if ( strpos( strtolower( $cached_path ), $prefix_low ) === 0 ) {
+                $user = get_user_by( 'id', (int) $uid );
+                if ( $user ) {
+                    $results[] = array(
+                        'user_id'      => $user->ID,
+                        'display_name' => $user->display_name,
+                        'role_path'    => $cached_path,
+                    );
+                }
+                break;
+            }
+        }
+    }
+
+    return $results;
 }

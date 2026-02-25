@@ -262,7 +262,7 @@ function owc_asc_get_user_roles( $client_id, $email ) {
 		$response = accessSchema_client_local_post( 'roles', $payload );
 	}
 
-	// Cache the result.
+	// Cache the result and sync player_id from SSO.
 	if (
 		! is_wp_error( $response ) &&
 		is_array( $response ) &&
@@ -271,6 +271,17 @@ function owc_asc_get_user_roles( $client_id, $email ) {
 		$user
 	) {
 		owc_asc_cache_set( $user->ID, $response['roles'] );
+
+		// Sync player_id from SSO if present and not yet stored locally.
+		if (
+			! empty( $response['player_id'] ) &&
+			defined( 'OWC_PLAYER_ID_META_KEY' )
+		) {
+			$local_pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+			if ( empty( $local_pid ) ) {
+				update_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, sanitize_text_field( $response['player_id'] ) );
+			}
+		}
 	}
 
 	return $response;
@@ -322,24 +333,88 @@ function owc_asc_get_all_roles( $client_id, $force_refresh = false ) {
 /**
  * Get users assigned to a specific role path.
  *
+ * In remote mode, calls the SSO /roles endpoint with role_path
+ * which returns users who hold that role. Falls back to searching
+ * local cached role meta if the remote call fails.
+ *
  * @param string $client_id The plugin client ID (for context/logging).
  * @param string $role_path Role path to search.
- * @return array|WP_Error   Array of user data or error.
+ * @return array|WP_Error   Array of user data arrays or error.
  */
 function owc_asc_get_users_by_role( $client_id, $role_path ) {
-	$payload = array(
-		'role_path' => sanitize_text_field( $role_path ),
-	);
+	$role_path = sanitize_text_field( $role_path );
 
-	if ( owc_asc_is_remote_mode() ) {
-		return owc_asc_remote_post( 'roles', $payload );
+	if ( ! owc_asc_is_remote_mode() ) {
+		$payload = array( 'role_path' => $role_path );
+		if ( function_exists( 'accessSchema_client_local_post' ) ) {
+			return accessSchema_client_local_post( 'roles', $payload );
+		}
+		return new WP_Error( 'missing_server', 'ASC server plugin not active for local mode.' );
 	}
 
-	if ( function_exists( 'accessSchema_client_local_post' ) ) {
-		return accessSchema_client_local_post( 'roles', $payload );
+	// Remote mode: call SSO with role_path for reverse lookup.
+	$payload  = array( 'role_path' => $role_path );
+	$response = owc_asc_remote_post( 'roles', $payload );
+
+	if ( ! is_wp_error( $response ) && isset( $response['users'] ) && is_array( $response['users'] ) ) {
+		return $response['users'];
 	}
 
-	return new WP_Error( 'missing_server', 'ASC server plugin not active for local mode.' );
+	// Fallback: search local cached role meta.
+	return owc_asc_local_users_by_role( $role_path );
+}
+
+/**
+ * Search local user meta cache for users holding a specific role path.
+ *
+ * Fallback for when the remote SSO call fails or isn't available.
+ *
+ * @param string $role_path Role path to search.
+ * @return array Array of user data arrays.
+ */
+function owc_asc_local_users_by_role( $role_path ) {
+	global $wpdb;
+
+	$like     = '%' . $wpdb->esc_like( $role_path ) . '%';
+	$user_ids = $wpdb->get_col( $wpdb->prepare(
+		"SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value LIKE %s",
+		OWC_ASC_CACHE_KEY,
+		$like
+	) );
+
+	if ( empty( $user_ids ) ) {
+		return array();
+	}
+
+	$results = array();
+	foreach ( $user_ids as $uid ) {
+		$cached_roles = get_user_meta( (int) $uid, OWC_ASC_CACHE_KEY, true );
+		if ( ! is_array( $cached_roles ) ) {
+			continue;
+		}
+		// Verify exact role path match (LIKE can match substrings).
+		$found = false;
+		foreach ( $cached_roles as $cached_path ) {
+			if ( strcasecmp( $cached_path, $role_path ) === 0 ) {
+				$found = true;
+				break;
+			}
+		}
+		if ( ! $found ) {
+			continue;
+		}
+		$user = get_user_by( 'id', (int) $uid );
+		if ( $user ) {
+			$results[] = array(
+				'user_id'      => $user->ID,
+				'display_name' => $user->display_name,
+				'email'        => $user->user_email,
+				'user_login'   => $user->user_login,
+			);
+		}
+	}
+
+	return $results;
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -448,6 +523,17 @@ function owc_asc_refresh_user_roles( $user_id ) {
 		is_array( $response['roles'] )
 	) {
 		owc_asc_cache_set( $user->ID, $response['roles'] );
+
+		// Sync player_id from SSO if present and not yet stored locally.
+		if (
+			! empty( $response['player_id'] ) &&
+			defined( 'OWC_PLAYER_ID_META_KEY' )
+		) {
+			$local_pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+			if ( empty( $local_pid ) ) {
+				update_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, sanitize_text_field( $response['player_id'] ) );
+			}
+		}
 	}
 
 	return $response;

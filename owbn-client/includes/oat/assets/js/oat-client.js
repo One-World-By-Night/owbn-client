@@ -149,6 +149,58 @@
         $hidden.val(JSON.stringify(sig));
     });
 
+    // User autocomplete for reassign/delegate pickers.
+    function initUserPickers() {
+        $('.oat-user-picker').each(function() {
+            var $wrap = $(this);
+            if ($wrap.data('pickerInit')) return;
+            $wrap.data('pickerInit', true);
+
+            var $search = $wrap.find('.oat-user-search');
+            var $hidden = $wrap.find('input[type="hidden"]');
+            var $picked = $wrap.find('.oat-user-picked');
+
+            $search.autocomplete({
+                source: function(request, response) {
+                    $.getJSON(owc_oat_ajax.url, {
+                        action: 'owc_oat_search_users',
+                        nonce: owc_oat_ajax.nonce,
+                        term: request.term
+                    }, function(data) {
+                        response(data);
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $hidden.val(ui.item.id);
+                    $search.val('');
+                    $picked.html(
+                        '<span class="oat-user-tag">' +
+                        ui.item.label +
+                        ' <span class="oat-remove-user">&times;</span>' +
+                        '</span>'
+                    );
+                }
+            });
+
+            $wrap.on('click', '.oat-remove-user', function() {
+                $hidden.val('');
+                $picked.empty();
+            });
+        });
+    }
+    initUserPickers();
+
+    // Timer extend: convert days/hours to seconds in hidden field.
+    $(document).on('change input', '.oat-timer-extend-fields input[type="number"]', function() {
+        var $fields = $(this).closest('.oat-timer-extend-fields');
+        var days  = parseInt($fields.find('[name="extend_days"]').val(), 10) || 0;
+        var hours = parseInt($fields.find('[name="extend_hours"]').val(), 10) || 0;
+        var total = (days * 86400) + (hours * 3600);
+        $fields.find('[name="additional_seconds"]').val(total);
+    });
+
     // Re-initialize TinyMCE for wp_editor instances loaded via AJAX.
     function initEditors() {
         if (typeof tinyMCE === 'undefined' || typeof tinyMCEPreInit === 'undefined') {

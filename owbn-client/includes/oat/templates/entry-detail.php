@@ -177,19 +177,31 @@ function owc_oat_user_name( $uid, $map ) {
                         <strong><?php echo esc_html( $label ); ?></strong>
 
                         <?php if ( $action_type === 'council_override' ) : ?>
-                            <input type="text" name="vote_reference" placeholder="Vote reference (required)" class="regular-text" required>
+                            <input type="text" name="vote_reference" placeholder="Vote reference (required)" class="large-text" required>
                         <?php endif; ?>
 
                         <?php if ( $action_type === 'timer_extend' ) : ?>
-                            <input type="number" name="additional_seconds" placeholder="Seconds to extend" class="small-text" required>
+                            <div class="oat-timer-extend-fields">
+                                <label>Days: <input type="number" name="extend_days" min="0" max="90" value="0" class="small-text"></label>
+                                <label>Hours: <input type="number" name="extend_hours" min="0" max="23" value="0" class="small-text"></label>
+                                <input type="hidden" name="additional_seconds" value="0">
+                            </div>
                         <?php endif; ?>
 
                         <?php if ( $action_type === 'reassign' ) : ?>
-                            <input type="number" name="new_user_id" placeholder="New user ID" class="small-text" required>
+                            <div class="oat-user-picker">
+                                <input type="text" class="oat-user-search large-text" placeholder="Search by name, login, or role path (e.g. Coordinator/Tremere/Coordinator)">
+                                <input type="hidden" name="new_user_id" value="" required>
+                                <span class="oat-user-picked"></span>
+                            </div>
                         <?php endif; ?>
 
                         <?php if ( $action_type === 'delegate' ) : ?>
-                            <input type="number" name="delegate_user_id" placeholder="Delegate user ID" class="small-text" required>
+                            <div class="oat-user-picker">
+                                <input type="text" class="oat-user-search large-text" placeholder="Search by name, login, or role path (e.g. Coordinator/Tremere/Coordinator)">
+                                <input type="hidden" name="delegate_user_id" value="" required>
+                                <span class="oat-user-picked"></span>
+                            </div>
                         <?php endif; ?>
 
                         <?php $note_required = ( $action_type !== 'bump' ); ?>

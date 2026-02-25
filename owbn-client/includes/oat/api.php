@@ -215,7 +215,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
     if ( owc_oat_is_local() ) {
         $user_id = get_current_user_id();
 
-        // Assignments.
+        // Assignments: explicit assignee rows.
         $assignments_raw = OAT_Assignee::inbox( $user_id );
         if ( $domain_filter ) {
             $assignments_raw = array_filter( $assignments_raw, function ( $a ) use ( $domain_filter ) {
@@ -241,6 +241,25 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
                 'current_step' => isset( $a->current_step ) ? $a->current_step : '',
                 'title'        => isset( $a->title ) ? $a->title : '',
                 'created_at'   => owc_oat_format_date( isset( $a->created_at ) ? $a->created_at : '' ),
+            );
+        }
+
+        // Capability-based inbox: entries at steps the user can act on.
+        $cap_entries = owc_oat_capability_inbox_entries( $user_id, $domain_filter );
+        foreach ( $cap_entries as $ce ) {
+            $eid = (int) $ce->id;
+            if ( isset( $seen_entries[ $eid ] ) ) {
+                continue;
+            }
+            $seen_entries[ $eid ] = true;
+            $assignments[] = array(
+                'entry_id'     => $eid,
+                'domain'       => $ce->domain,
+                'domain_label' => OAT_Domain_Registry::get_label( $ce->domain ) ?: $ce->domain,
+                'status'       => $ce->status,
+                'current_step' => $ce->current_step,
+                'title'        => isset( $ce->title ) ? $ce->title : '',
+                'created_at'   => owc_oat_format_date( $ce->created_at ),
             );
         }
 
@@ -278,6 +297,11 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
         foreach ( $assignments_raw as $a ) {
             if ( isset( $a->originator_id ) ) {
                 $user_ids[] = (int) $a->originator_id;
+            }
+        }
+        foreach ( $cap_entries as $ce ) {
+            if ( isset( $ce->originator_id ) ) {
+                $user_ids[] = (int) $ce->originator_id;
             }
         }
         $user_ids[] = $user_id;
@@ -905,12 +929,18 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
         return $actions;
     }
 
+    // Check explicit assignee row.
     $is_assignee = false;
     foreach ( $assignees as $a ) {
         if ( (int) $a->user_id === $user_id && $a->step === $entry->current_step && $a->status === 'pending' ) {
             $is_assignee = true;
             break;
         }
+    }
+
+    // Role-path-based: user holds the ASC role matching the step's assignee_role.
+    if ( ! $is_assignee ) {
+        $is_assignee = owc_oat_user_can_act_on_step( $entry, $user_id );
     }
 
     if ( $is_assignee ) {
@@ -940,6 +970,186 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
     }
 
     return array_unique( $actions );
+}
+
+/**
+ * Get a user's cached ASC role paths, lowercase-normalized.
+ *
+ * @param int $user_id WordPress user ID.
+ * @return array Array of lowercase role path strings.
+ */
+function owc_oat_get_user_asc_roles( $user_id ) {
+    if ( ! defined( 'OWC_ASC_CACHE_KEY' ) ) {
+        return array();
+    }
+    $cached = get_user_meta( $user_id, OWC_ASC_CACHE_KEY, true );
+    if ( ! is_array( $cached ) ) {
+        return array();
+    }
+    return array_map( 'strtolower', $cached );
+}
+
+/**
+ * Resolve a step's assignee_role pattern against entry data.
+ *
+ * Replaces {chronicle_slug} and {coordinator_genre} placeholders
+ * with actual entry values.
+ *
+ * @param object $entry       Entry row object.
+ * @param array  $step_config Step configuration array.
+ * @return string Resolved lowercase role path, or empty string.
+ */
+function owc_oat_resolve_step_role( $entry, $step_config ) {
+    $pattern = isset( $step_config['assignee_role'] ) ? $step_config['assignee_role'] : '';
+    if ( empty( $pattern ) ) {
+        return '';
+    }
+    $resolved = str_replace(
+        array( '{chronicle_slug}', '{coordinator_genre}' ),
+        array(
+            isset( $entry->chronicle_slug ) ? $entry->chronicle_slug : '',
+            isset( $entry->coordinator_genre ) ? $entry->coordinator_genre : '',
+        ),
+        $pattern
+    );
+    return strtolower( $resolved );
+}
+
+/**
+ * Check if any of the user's roles grant archivist oversight.
+ *
+ * @param array $user_roles Lowercase-normalized role paths.
+ * @return bool
+ */
+function owc_oat_is_archivist_oversight( $user_roles ) {
+    $oversight_paths = apply_filters( 'oat_archivist_oversight_paths', array(
+        'exec/archivist/coordinator',
+    ) );
+    foreach ( $oversight_paths as $path ) {
+        if ( in_array( strtolower( $path ), $user_roles, true ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Check if a user holds the resolved step role.
+ *
+ * @param array  $user_roles    Lowercase-normalized role paths.
+ * @param string $resolved_role Resolved lowercase role path.
+ * @return bool
+ */
+function owc_oat_user_has_step_role( $user_roles, $resolved_role ) {
+    if ( empty( $resolved_role ) ) {
+        return false;
+    }
+    return in_array( $resolved_role, $user_roles, true );
+}
+
+/**
+ * Check if a user can act on the entry's current step based on
+ * ASC role-path matching.
+ *
+ * @param object $entry   Entry row object.
+ * @param int    $user_id WordPress user ID. Defaults to current user.
+ * @return bool
+ */
+function owc_oat_user_can_act_on_step( $entry, $user_id = 0 ) {
+    if ( ! class_exists( 'OAT_Workflow_Engine' ) ) {
+        return false;
+    }
+    if ( ! $user_id ) {
+        $user_id = get_current_user_id();
+    }
+    $user_roles = owc_oat_get_user_asc_roles( $user_id );
+    if ( empty( $user_roles ) ) {
+        return false;
+    }
+    if ( owc_oat_is_archivist_oversight( $user_roles ) ) {
+        return true;
+    }
+    $step_config = OAT_Workflow_Engine::get_step_config( $entry );
+    if ( ! $step_config ) {
+        return false;
+    }
+    $resolved_role = owc_oat_resolve_step_role( $entry, $step_config );
+    return owc_oat_user_has_step_role( $user_roles, $resolved_role );
+}
+
+/**
+ * Get pending entries the user can act on based on ASC role-path matching.
+ *
+ * Queries all non-terminal entries, then filters to those whose current step's
+ * resolved assignee_role matches one of the user's ASC roles.
+ * Archivist oversight (exec/archivist/coordinator) sees all entries.
+ *
+ * @param int    $user_id       WordPress user ID.
+ * @param string $domain_filter Optional domain slug filter.
+ * @return array Array of entry row objects.
+ */
+function owc_oat_capability_inbox_entries( $user_id, $domain_filter = '' ) {
+    if ( ! class_exists( 'OAT_Constants' ) || ! class_exists( 'OAT_Workflow_Engine' ) ) {
+        return array();
+    }
+
+    $user_roles = owc_oat_get_user_asc_roles( $user_id );
+    if ( empty( $user_roles ) ) {
+        return array();
+    }
+
+    $is_archivist = owc_oat_is_archivist_oversight( $user_roles );
+
+    // Query non-terminal entries.
+    global $wpdb;
+    $table = $wpdb->prefix . 'oat_entries';
+    $terminal = array(
+        OAT_Constants::STATUS_APPROVED,
+        OAT_Constants::STATUS_DENIED,
+        OAT_Constants::STATUS_CANCELLED,
+        OAT_Constants::STATUS_AUTO_APPROVED,
+        OAT_Constants::STATUS_AUTO_DENIED,
+    );
+    $placeholders = implode( ', ', array_fill( 0, count( $terminal ), '%s' ) );
+    $sql = "SELECT * FROM {$table} WHERE status NOT IN ({$placeholders})";
+    $args = $terminal;
+
+    if ( $domain_filter ) {
+        $sql .= ' AND domain = %s';
+        $args[] = $domain_filter;
+    }
+    $sql .= ' ORDER BY created_at DESC';
+
+    $entries = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
+    if ( ! $entries ) {
+        return array();
+    }
+
+    // Archivist oversight: return all non-terminal entries.
+    if ( $is_archivist ) {
+        return $entries;
+    }
+
+    // Filter to entries whose resolved step role matches user's ASC roles.
+    $result     = array();
+    $step_cache = array();
+
+    foreach ( $entries as $entry ) {
+        $cache_key = $entry->domain . '::' . $entry->current_step;
+        if ( ! isset( $step_cache[ $cache_key ] ) ) {
+            $step_cache[ $cache_key ] = OAT_Workflow_Engine::get_step_config( $entry );
+        }
+        $step_config = $step_cache[ $cache_key ];
+        if ( ! $step_config ) {
+            continue;
+        }
+        $resolved_role = owc_oat_resolve_step_role( $entry, $step_config );
+        if ( owc_oat_user_has_step_role( $user_roles, $resolved_role ) ) {
+            $result[] = $entry;
+        }
+    }
+
+    return $result;
 }
 
 /**
