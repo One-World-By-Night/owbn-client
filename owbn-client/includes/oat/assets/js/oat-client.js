@@ -24,6 +24,8 @@
                 initConditionalFields();
                 // Re-initialize TinyMCE editors for htmlarea fields.
                 initEditors();
+                // Notify other scripts (rule picker, character picker, etc.).
+                $(document).trigger('oat-fields-loaded');
             } else {
                 $container.html('<p>No fields defined for this domain.</p>');
             }

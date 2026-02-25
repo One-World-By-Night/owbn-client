@@ -1,77 +1,113 @@
 (function($) {
     'use strict';
 
-    var selectedRules = [];
+    /**
+     * Initialize a single rule_picker field.
+     *
+     * Uses class-based selectors to match the HTML rendered by fields.php:
+     *   .oat-rule-search      → autocomplete text input
+     *   .oat-rule-selected    → container for selected-rule tags
+     *   input[type="hidden"]  → stores JSON array of rule IDs
+     */
+    function initPicker($wrap) {
+        var $search   = $wrap.find('.oat-rule-search');
+        var $selected = $wrap.find('.oat-rule-selected');
+        var $hidden   = $wrap.find('input[type="hidden"]');
+        var selectedRules = [];
 
-    $('#oat_rule_search').autocomplete({
-        source: function(request, response) {
-            $.getJSON(owc_oat_ajax.url, {
-                action: 'owc_oat_search_rules',
-                nonce: owc_oat_ajax.nonce,
-                term: request.term
-            }, response);
-        },
-        minLength: 2,
-        select: function(event, ui) {
-            event.preventDefault();
-            addRule(ui.item);
-            $(this).val('');
+        // Load any pre-selected rule IDs from hidden input.
+        var initial = [];
+        try { initial = JSON.parse($hidden.val() || '[]'); } catch (e) { initial = []; }
+        if (initial.length > 0) {
+            initial.forEach(function(id) {
+                selectedRules.push({ id: parseInt(id, 10), label: 'Rule #' + id });
+            });
+            renderSelectedRules();
         }
-    });
 
-    function addRule(rule) {
-        // Prevent duplicates.
-        for (var i = 0; i < selectedRules.length; i++) {
-            if (selectedRules[i].id === rule.id) {
-                return;
+        $search.autocomplete({
+            source: function(request, response) {
+                $.getJSON(owc_oat_ajax.url, {
+                    action: 'owc_oat_search_rules',
+                    nonce: owc_oat_ajax.nonce,
+                    term: request.term
+                }, function(data) {
+                    response(data);
+                });
+            },
+            minLength: 2,
+            select: function(event, ui) {
+                event.preventDefault();
+                addRule(ui.item);
+                $(this).val('');
+            }
+        });
+
+        function addRule(rule) {
+            for (var i = 0; i < selectedRules.length; i++) {
+                if (selectedRules[i].id === rule.id) {
+                    return;
+                }
+            }
+            selectedRules.push(rule);
+            renderSelectedRules();
+        }
+
+        function removeRule(ruleId) {
+            selectedRules = selectedRules.filter(function(r) {
+                return r.id !== ruleId;
+            });
+            renderSelectedRules();
+        }
+
+        function renderSelectedRules() {
+            $selected.empty();
+
+            selectedRules.forEach(function(rule) {
+                var $tag = $('<span class="oat-rule-tag"></span>')
+                    .text(rule.label + ' ');
+
+                var $remove = $('<span class="oat-remove-rule">&times;</span>')
+                    .on('click', function() { removeRule(rule.id); });
+
+                $tag.append($remove);
+                $selected.append($tag);
+            });
+
+            // Update hidden input with JSON array of IDs.
+            var ids = selectedRules.map(function(r) { return r.id; });
+            $hidden.val(JSON.stringify(ids));
+
+            // Auto-set coordinator genre from first rule.
+            if (selectedRules.length > 0 && selectedRules[0].coordinator) {
+                var $genre = $wrap.closest('form').find('[name="oat_meta_coordinator_genre"]');
+                if ($genre.length) {
+                    $genre.val(selectedRules[0].coordinator);
+                }
             }
         }
 
-        selectedRules.push(rule);
-        renderSelectedRules();
-    }
-
-    function removeRule(ruleId) {
-        selectedRules = selectedRules.filter(function(r) {
-            return r.id !== ruleId;
+        $wrap.data('rulePicker', {
+            getSelected: function() { return selectedRules; },
+            addRule: addRule,
+            removeRule: removeRule
         });
-        renderSelectedRules();
     }
 
-    function renderSelectedRules() {
-        var $container = $('#oat-selected-rules');
-        $container.empty();
-
-        // Remove old hidden inputs.
-        $('input[name="oat_rule_ids[]"]').remove();
-
-        selectedRules.forEach(function(rule) {
-            var $tag = $('<span class="oat-rule-tag"></span>')
-                .text(rule.label + ' ');
-
-            var $remove = $('<span class="oat-remove-rule">&times;</span>')
-                .on('click', function() { removeRule(rule.id); });
-
-            $tag.append($remove);
-            $container.append($tag);
-
-            // Hidden input for form submission.
-            $container.append(
-                $('<input type="hidden" name="oat_rule_ids[]">').val(rule.id)
-            );
+    // Initialize on page load.
+    $(function() {
+        $('.oat-rule-picker-wrap').each(function() {
+            initPicker($(this));
         });
+    });
 
-        // Auto-set coordinator genre from first rule.
-        if (selectedRules.length > 0 && selectedRules[0].coordinator) {
-            $('#oat_coordinator_genre').val(selectedRules[0].coordinator);
-        }
-    }
-
-    // Expose for external use.
-    window.owcOatRulePicker = {
-        getSelected: function() { return selectedRules; },
-        addRule: addRule,
-        removeRule: removeRule
-    };
+    // Initialize pickers loaded via AJAX (dynamic domain forms).
+    $(document).on('oat-fields-loaded', function() {
+        $('.oat-rule-picker-wrap').each(function() {
+            if (!$(this).data('rulePicker')) {
+                initPicker($(this));
+            }
+        });
+    });
 
 })(jQuery);
