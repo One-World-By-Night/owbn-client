@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.8.1
+Stable tag: 4.8.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,27 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.8.6 =
+* New: Elementor widget suite for OAT module — Dashboard, Activity Feed, Entry Detail, Inbox, and Submit widgets
+* New: `owc_oat_get_dashboard_counts()` — returns assigned, submissions, and watching counts for a user's dashboard
+* New: `owc_oat_get_recent_activity()` — returns paginated timeline events visible to a user, filterable by domain
+* New: AJAX endpoint for frontend OAT form submission via Elementor Submit widget
+* New: AJAX endpoint for activity feed auto-refresh
+* New: OAT frontend CSS and JS assets
+* Fix: Elementor widget loader now registers via `elementor/loaded` hook instead of fragile `did_action` conditional
+
+= 4.8.5 =
+* New: OAT form signature fields, Business Acumen fields, and cascading select support
+
+= 4.8.4 =
+* Security: Role-path-scoped OAT authorization, ASC reverse role lookup, user autocomplete
+
+= 4.8.3 =
+* Fix: Regulation rules autocomplete on OAT submit form
+
+= 4.8.2 =
+* New: Chronicle autocomplete, wildcard roles, P2a/P2b/P2c field types
 
 = 4.8.1 =
 * Fix: OWC_VERSION constant now matches plugin header version

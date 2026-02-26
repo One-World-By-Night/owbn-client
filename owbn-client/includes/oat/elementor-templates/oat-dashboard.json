@@ -1,0 +1,89 @@
+{
+  "version": "0.4",
+  "title": "OAT Dashboard",
+  "type": "page",
+  "content": [
+    {
+      "id": "a1b2c3d",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "gap": "no",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "20",
+          "bottom": "0",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "e4f5a6b",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "c7d8e9f",
+              "elType": "widget",
+              "widgetType": "owc_oat_dashboard",
+              "settings": {
+                "show_pending": "yes",
+                "show_submissions": "yes",
+                "show_watching": "yes",
+                "submit_page_url": "/oat-submit/",
+                "inbox_page_url": "/oat-inbox/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2c3d4e",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "gap": "no",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "20",
+          "bottom": "20",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "f5a6b7c",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "d8e9f0a",
+              "elType": "widget",
+              "widgetType": "owc_oat_activity",
+              "settings": {
+                "item_count": 10,
+                "domain_filter": "",
+                "auto_refresh": 0,
+                "entry_detail_page": "/oat-entry/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_canvas"
+  }
+}

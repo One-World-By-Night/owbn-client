@@ -21,6 +21,8 @@ add_action( 'wp_ajax_owc_oat_create_character', 'owc_oat_ajax_create_character' 
 add_action( 'wp_ajax_owc_oat_lookup_hst', 'owc_oat_ajax_lookup_hst' );
 add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
 add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coordinators_for_rules' );
+add_action( 'wp_ajax_owc_oat_submit_entry_frontend', 'owc_oat_ajax_submit_entry_frontend' );
+add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_activity' );
 
 /**
  * AJAX: Search regulation rules for autocomplete.
@@ -509,4 +511,83 @@ function owc_oat_ajax_get_coordinators_for_rules() {
         'coordinators'   => $results,
         'requires_coord' => $highest >= 2,
     ) );
+}
+
+/**
+ * AJAX: Frontend entry submission from Elementor Submit Form widget.
+ *
+ * Collects POST data, strips framework fields, passes meta to owc_oat_submit().
+ * Returns entry_id on success.
+ *
+ * @return void
+ */
+function owc_oat_ajax_submit_entry_frontend() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( __( 'You must be logged in to submit.', 'owbn-client' ) );
+    }
+
+    $domain = isset( $_POST['oat_domain'] ) ? sanitize_key( $_POST['oat_domain'] ) : '';
+    if ( ! $domain ) {
+        wp_send_json_error( __( 'Please select a domain.', 'owbn-client' ) );
+    }
+
+    $note = isset( $_POST['oat_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['oat_note'] ) ) : '';
+
+    // Strip framework fields — everything remaining is domain meta.
+    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_note' );
+    $meta = array();
+    foreach ( $_POST as $key => $value ) {
+        if ( in_array( $key, $skip, true ) ) {
+            continue;
+        }
+        $clean_key = sanitize_key( $key );
+        if ( is_array( $value ) ) {
+            $meta[ $clean_key ] = array_map( 'sanitize_text_field', array_map( 'wp_unslash', $value ) );
+        } else {
+            $meta[ $clean_key ] = sanitize_text_field( wp_unslash( $value ) );
+        }
+    }
+
+    $result = owc_oat_submit( $domain, $meta, $note );
+
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
+    }
+
+    $entry_id = is_array( $result ) && isset( $result['entry_id'] ) ? (int) $result['entry_id'] : (int) $result;
+    wp_send_json_success( array( 'entry_id' => $entry_id ) );
+}
+
+/**
+ * AJAX: Recent activity feed for Elementor Activity Feed widget auto-refresh.
+ *
+ * @return void
+ */
+function owc_oat_ajax_get_recent_activity() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Not logged in.' );
+    }
+
+    $user_id = get_current_user_id();
+    $limit   = isset( $_POST['limit'] ) ? absint( $_POST['limit'] ) : 10;
+    $domain  = isset( $_POST['domain'] ) ? sanitize_key( $_POST['domain'] ) : '';
+
+    $items = owc_oat_get_recent_activity( $user_id, $limit, $domain );
+
+    if ( is_wp_error( $items ) ) {
+        wp_send_json_error( $items->get_error_message() );
+    }
+
+    // Render HTML for AJAX refresh using the Activity widget's static method.
+    $detail_url = '/oat-entry/';
+    if ( class_exists( 'OWC_OAT_Activity_Widget' ) ) {
+        $html = OWC_OAT_Activity_Widget::render_items( $items, $detail_url );
+        wp_send_json_success( array( 'html' => $html ) );
+    }
+
+    wp_send_json_success( array( 'items' => $items ) );
 }

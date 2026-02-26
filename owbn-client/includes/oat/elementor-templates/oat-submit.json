@@ -1,0 +1,54 @@
+{
+  "version": "0.4",
+  "title": "OAT Submit",
+  "type": "page",
+  "content": [
+    {
+      "id": "d4e5f6a",
+      "elType": "section",
+      "settings": {
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 800
+        },
+        "gap": "no",
+        "padding": {
+          "unit": "px",
+          "top": "40",
+          "right": "20",
+          "bottom": "40",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "b7c8d9e",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "f0a1b2c",
+              "elType": "widget",
+              "widgetType": "owc_oat_submit",
+              "settings": {
+                "domain_mode": "selector",
+                "fixed_domain": "",
+                "show_note": "yes",
+                "submit_button_text": "Submit Request",
+                "redirect_url": "/oat-entry/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_canvas"
+  }
+}

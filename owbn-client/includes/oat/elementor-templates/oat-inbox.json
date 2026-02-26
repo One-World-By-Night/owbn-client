@@ -1,0 +1,51 @@
+{
+  "version": "0.4",
+  "title": "OAT Inbox",
+  "type": "page",
+  "content": [
+    {
+      "id": "c3d4e5f",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "gap": "no",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "20",
+          "bottom": "20",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "a6b7c8d",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "e9f0a1b",
+              "elType": "widget",
+              "widgetType": "owc_oat_inbox",
+              "settings": {
+                "default_tab": "assigned",
+                "per_page": 20,
+                "show_domain_filter": "yes",
+                "show_status_filter": "yes",
+                "show_search": "yes",
+                "entry_detail_page": "/oat-entry/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_canvas"
+  }
+}

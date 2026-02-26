@@ -15,7 +15,7 @@ add_action( 'admin_enqueue_scripts', function ( $hook_suffix ) {
     }
 
     $assets_url = plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'includes/assets/';
-    $version    = '4.8.1';
+    $version    = '4.8.6';
 
     wp_enqueue_style(
         'owc-admin-settings',

@@ -1224,3 +1224,160 @@ function owc_oat_set_regulation_meta( $entry_id, $rule_ids ) {
         OAT_Entry_Meta::set( $entry_id, 'regulation_level', $regulation_level );
     }
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD COUNTS (new — used by OAT Dashboard Elementor widget)
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get entry counts for a user's dashboard.
+ *
+ * Returns:
+ *   ['assigned' => int, 'submissions' => int, 'watching' => int]
+ *
+ * Local mode:  queries oat_assignees, oat_entries, oat_watchers directly.
+ * Remote mode: POST /oat/dashboard-counts.
+ *
+ * @param int $user_id WordPress user ID.
+ * @return array|WP_Error
+ */
+function owc_oat_get_dashboard_counts( $user_id ) {
+    $user_id = (int) $user_id;
+
+    if ( owc_oat_is_local() ) {
+        global $wpdb;
+        $prefix = $wpdb->prefix;
+
+        $assigned = (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(DISTINCT entry_id) FROM {$prefix}oat_assignees
+             WHERE user_id = %d AND status = 'active'",
+            $user_id
+        ) );
+
+        $submissions = (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$prefix}oat_entries
+             WHERE originator_id = %d AND status NOT IN ('approved','denied','cancelled')",
+            $user_id
+        ) );
+
+        $watching = (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$prefix}oat_watchers WHERE user_id = %d",
+            $user_id
+        ) );
+
+        return array(
+            'assigned'    => $assigned,
+            'submissions' => $submissions,
+            'watching'    => $watching,
+        );
+    }
+
+    // Remote mode.
+    $response = owc_oat_request( 'POST', '/oat/dashboard-counts', array( 'user_id' => $user_id ) );
+    if ( is_wp_error( $response ) ) {
+        return $response;
+    }
+    return isset( $response['counts'] ) ? $response['counts'] : $response;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RECENT ACTIVITY (new — used by OAT Activity Feed Elementor widget)
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get recent timeline activity visible to a user.
+ *
+ * Returns array of event arrays:
+ *   [['entry_id', 'domain', 'domain_label', 'action_type', 'actor_name', 'note', 'created_at'], ...]
+ *
+ * Local mode:  joins oat_timeline + oat_entries, filters by user's accessible entries.
+ * Remote mode: POST /oat/recent-activity.
+ *
+ * @param int    $user_id WordPress user ID.
+ * @param int    $limit   Maximum number of events to return (default 10).
+ * @param string $domain  Optional domain slug to filter by (empty = all).
+ * @return array|WP_Error
+ */
+function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
+    $user_id = (int) $user_id;
+    $limit   = max( 1, (int) $limit );
+    $domain  = sanitize_key( $domain );
+
+    if ( owc_oat_is_local() ) {
+        global $wpdb;
+        $prefix = $wpdb->prefix;
+
+        // Collect entry IDs accessible to this user:
+        //   - entries they originated
+        //   - entries they are assigned to
+        //   - entries they are watching
+        $entry_ids_sql =
+            "SELECT DISTINCT e.id FROM {$prefix}oat_entries e
+             WHERE e.originator_id = {$user_id}
+             UNION
+             SELECT DISTINCT a.entry_id FROM {$prefix}oat_assignees a WHERE a.user_id = {$user_id}
+             UNION
+             SELECT DISTINCT w.entry_id FROM {$prefix}oat_watchers w WHERE w.user_id = {$user_id}";
+
+        $domain_clause = $domain ? $wpdb->prepare( "AND e.domain = %s", $domain ) : '';
+
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT t.entry_id, e.domain, t.action_type, t.actor_id, t.note, t.created_at
+             FROM {$prefix}oat_timeline t
+             INNER JOIN {$prefix}oat_entries e ON e.id = t.entry_id
+             WHERE t.entry_id IN ({$entry_ids_sql})
+               AND t.visibility_tier IN ('public','player')
+               {$domain_clause}
+             ORDER BY t.created_at DESC
+             LIMIT %d",
+            $limit
+        ), ARRAY_A );
+
+        if ( ! $rows ) {
+            return array();
+        }
+
+        // Resolve actor names.
+        $actor_ids = array_unique( array_column( $rows, 'actor_id' ) );
+        $actor_map = array();
+        foreach ( $actor_ids as $aid ) {
+            $u = get_user_by( 'id', $aid );
+            $actor_map[ $aid ] = $u ? $u->display_name : '#' . $aid;
+        }
+
+        // Collect domain labels.
+        $domain_labels = array();
+        if ( function_exists( 'owc_oat_get_domains' ) ) {
+            $domains = owc_oat_get_domains();
+            foreach ( $domains as $d ) {
+                $domain_labels[ $d['slug'] ] = $d['label'];
+            }
+        }
+
+        $events = array();
+        foreach ( $rows as $row ) {
+            $events[] = array(
+                'entry_id'     => (int) $row['entry_id'],
+                'domain'       => $row['domain'],
+                'domain_label' => isset( $domain_labels[ $row['domain'] ] ) ? $domain_labels[ $row['domain'] ] : ucfirst( str_replace( '_', ' ', $row['domain'] ) ),
+                'action_type'  => $row['action_type'],
+                'actor_name'   => isset( $actor_map[ $row['actor_id'] ] ) ? $actor_map[ $row['actor_id'] ] : '',
+                'note'         => $row['note'],
+                'created_at'   => owc_oat_format_date( $row['created_at'] ),
+            );
+        }
+
+        return $events;
+    }
+
+    // Remote mode.
+    $response = owc_oat_request( 'POST', '/oat/recent-activity', array(
+        'user_id' => $user_id,
+        'limit'   => $limit,
+        'domain'  => $domain,
+    ) );
+    if ( is_wp_error( $response ) ) {
+        return $response;
+    }
+    return isset( $response['events'] ) ? $response['events'] : $response;
+}

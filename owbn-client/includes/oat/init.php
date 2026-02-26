@@ -28,3 +28,8 @@ require_once __DIR__ . '/admin.php';
 
 // AJAX handlers.
 require_once __DIR__ . '/ajax.php';
+
+// Elementor widgets (only when Elementor is active).
+add_action( 'elementor/loaded', function() {
+	require_once __DIR__ . '/elementor/loader.php';
+} );

@@ -1,0 +1,54 @@
+{
+  "version": "0.4",
+  "title": "OAT Entry Detail",
+  "type": "page",
+  "content": [
+    {
+      "id": "e5f6a7b",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "gap": "no",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "20",
+          "bottom": "20",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "c8d9e0f",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "a1b2c3e",
+              "elType": "widget",
+              "widgetType": "owc_oat_entry",
+              "settings": {
+                "entry_source": "url_param",
+                "url_param_name": "oat_entry",
+                "fixed_entry_id": 0,
+                "show_meta": "yes",
+                "show_rules": "yes",
+                "show_assignees": "yes",
+                "show_timeline": "yes",
+                "timeline_default": "expanded",
+                "show_actions": "yes"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_canvas"
+  }
+}
