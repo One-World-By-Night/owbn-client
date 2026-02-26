@@ -122,7 +122,7 @@ function owc_oat_enqueue_assets( $hook ) {
     }
 
     $base_url = plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'includes/oat/assets/';
-    $version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.3';
+    $version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.6';
 
     wp_enqueue_style(
         'owc-oat-client',
@@ -139,9 +139,12 @@ function owc_oat_enqueue_assets( $hook ) {
         true
     );
 
+    $current_user = wp_get_current_user();
     wp_localize_script( 'owc-oat-client', 'owc_oat_ajax', array(
-        'url'   => admin_url( 'admin-ajax.php' ),
-        'nonce' => wp_create_nonce( 'owc_oat_nonce' ),
+        'url'             => admin_url( 'admin-ajax.php' ),
+        'nonce'           => wp_create_nonce( 'owc_oat_nonce' ),
+        'currentUserName' => $current_user && $current_user->ID ? $current_user->display_name : '',
+        'currentUserId'   => $current_user && $current_user->ID ? $current_user->ID : 0,
     ) );
 
     // Submit page: preload editor scripts so AJAX-loaded htmlarea fields work.

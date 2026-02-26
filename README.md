@@ -1,6 +1,6 @@
 # OWBN Client
 
-**Version:** 3.0.0
+**Version:** 4.8.5
 **Author:** OWBN Web Coordination Team, Greg Hacke
 **License:** GPL-2.0-or-later
 
@@ -112,6 +112,20 @@ owbn-client/
 ```
 
 ## Changelog
+
+### 4.8.5
+
+- OAT: Cascading select fields with optgroup-based filtering
+- OAT: Step-aware signature rendering — only active sig shows signer name
+- OAT: Role-filtered submitter_role options based on ASC role paths
+- OAT: Chronicle picker and coordinator genre fields for binding agreements
+- OAT: PC/NPC regulation level matching in coordinator lookup
+- OAT: Entry relationships (me-too / linked entries) in entry detail
+- OAT: Localized current user data for client-side signature handling
+
+### 4.8.4
+
+- OAT: Role-path-scoped authorization, ASC reverse role lookup, user autocomplete
 
 ### 3.0.0
 

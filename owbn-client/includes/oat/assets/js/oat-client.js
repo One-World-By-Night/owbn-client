@@ -205,12 +205,376 @@
     }
     initChronicleAutocomplete();
 
+    // P4b: Chronicle picker filtering by submitter_role.
+    function initChronicleRoleFilter() {
+        $('.oat-chronicle-filter-wrap').each(function() {
+            var $filterWrap = $(this);
+            if ($filterWrap.data('cfInit')) return;
+            $filterWrap.data('cfInit', true);
+
+            var filterBy   = $filterWrap.data('filter-by') || '';
+            var roleScopes = $filterWrap.data('role-scopes') || {};
+            if (!filterBy) return;
+
+            var $acWrap    = $filterWrap.find('.oat-chronicle-autocomplete-wrap');
+            if (!$acWrap.length) return;
+
+            var allEntries  = $acWrap.data('entries') || [];
+            var $slugsEl    = $filterWrap.find('.oat-user-chronicle-slugs');
+            var userSlugs   = [];
+            if ($slugsEl.length) {
+                try { userSlugs = JSON.parse($slugsEl.text()); } catch(e) { userSlugs = []; }
+            }
+
+            var $search     = $acWrap.find('.oat-chronicle-search');
+            var $hidden     = $acWrap.find('input[type="hidden"]');
+            var $selected   = $acWrap.find('.oat-chronicle-selected');
+
+            function getActiveEntries() {
+                var role = $('[name="oat_meta_' + filterBy + '"]').val() || '';
+                var scopes = roleScopes[role] || [];
+                // If scopes contain '*', show all.
+                if (scopes.indexOf('*') !== -1) return allEntries;
+                // Otherwise filter to user's own chronicles.
+                if (!userSlugs.length) return allEntries;
+                var filtered = [];
+                for (var i = 0; i < allEntries.length; i++) {
+                    if (userSlugs.indexOf(allEntries[i].value) !== -1) {
+                        filtered.push(allEntries[i]);
+                    }
+                }
+                return filtered;
+            }
+
+            // Override the autocomplete source to use filtered entries.
+            if ($search.length && $search.data('uiAutocomplete')) {
+                $search.autocomplete('option', 'source', function(request, response) {
+                    var term = request.term.toLowerCase();
+                    var active = getActiveEntries();
+                    var matches = [];
+                    for (var i = 0; i < active.length; i++) {
+                        if (active[i].label.toLowerCase().indexOf(term) !== -1) {
+                            matches.push(active[i]);
+                            if (matches.length >= 20) break;
+                        }
+                    }
+                    response(matches);
+                });
+            }
+
+            // When submitter_role changes, clear the chronicle selection.
+            $('[name="oat_meta_' + filterBy + '"]').on('change.chronFilter', function() {
+                $hidden.val('').trigger('change');
+                $selected.hide();
+                $search.show().val('');
+            });
+        });
+    }
+    initChronicleRoleFilter();
+
+    // Character picker: autocomplete search + inline-create with PC/NPC (P3).
+    function initCharacterPickers() {
+        $('.oat-character-picker-wrap').each(function() {
+            var $wrap = $(this);
+            if ($wrap.data('cpInit')) return;
+            $wrap.data('cpInit', true);
+
+            var fieldId   = $wrap.data('field-id');
+            var taxonomy  = $wrap.data('taxonomy') || {};
+            var filterBy  = $wrap.data('filter-by') || '';
+            var $search   = $wrap.find('.oat-character-search');
+            var $results  = $wrap.find('.oat-character-results');
+            var $selected = $wrap.find('.oat-character-selected');
+            var $selName  = $wrap.find('.oat-character-selected-name');
+            var $hidden   = $wrap.find('.oat-character-uuid');
+
+            // P4a: clear character picker when submitter_role changes.
+            if (filterBy) {
+                $('[name="oat_meta_' + filterBy + '"]').on('change.cpScope', function() {
+                    $hidden.val('').trigger('change');
+                    $selected.hide();
+                    $search.show().val('');
+                    $wrap.find('.oat-cc-pc-npc-val').val('');
+                });
+            }
+
+            // ── Autocomplete search ──
+            $search.autocomplete({
+                source: function(request, response) {
+                    var params = {
+                        action: 'owc_oat_search_characters',
+                        nonce: owc_oat_ajax.nonce,
+                        term: request.term
+                    };
+                    // P4a: pass scope filter from submitter_role.
+                    if (filterBy) {
+                        var role = $('[name="oat_meta_' + filterBy + '"]').val() || '';
+                        if (role) params.scope = role;
+                        if (role === 'staff') {
+                            var chron = $('[name="oat_meta_chronicle_slug"]').val() || '';
+                            if (chron) params.chronicle_slug = chron;
+                        }
+                    }
+                    $.getJSON(owc_oat_ajax.url, params, function(data) {
+                        var items = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var d = data[i];
+                            items.push({
+                                label: d.character_name + ' (' + d.chronicle_title + ') — ' + d.player_name,
+                                value: d.character_name,
+                                uuid: d.uuid,
+                                pc_npc: d.pc_npc || 'pc'
+                            });
+                        }
+                        response(items);
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    event.preventDefault();
+                    selectCharacter(ui.item.uuid, ui.item.value, ui.item.pc_npc);
+                }
+            });
+
+            function selectCharacter(uuid, name, pcNpc) {
+                $hidden.val(uuid).trigger('change');
+                $selName.text(name);
+                $search.hide().val('');
+                $selected.show();
+                // Set pc_npc hidden meta field.
+                var $pcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
+                if ($pcNpcVal.length) $pcNpcVal.val(pcNpc || '');
+            }
+
+            // ── Clear selection ──
+            $wrap.on('click', '.oat-character-clear', function() {
+                $hidden.val('').trigger('change');
+                $selected.hide();
+                $search.show().val('').focus();
+                $wrap.find('.oat-cc-pc-npc-val').val('');
+            });
+
+            // ── Create-new toggle ──
+            $wrap.on('click', '.oat-character-create-toggle', function() {
+                $wrap.find('.oat-character-create-panel').toggle();
+            });
+            $wrap.on('click', '.oat-character-create-cancel', function() {
+                $wrap.find('.oat-character-create-panel').hide();
+            });
+
+            // ── Chronicle search in create panel ──
+            var $ccChronicle = $wrap.find('.oat-cc-chronicle');
+            var $ccChronSlug = $wrap.find('.oat-cc-chronicle-slug');
+            // Reuse the inline chronicle data from any existing chronicle picker on the page.
+            var chronEntries = [];
+            var $existingChronWrap = $('.oat-chronicle-autocomplete-wrap').first();
+            if ($existingChronWrap.length) {
+                chronEntries = $existingChronWrap.data('entries') || [];
+            }
+            if (chronEntries.length) {
+                $ccChronicle.autocomplete({
+                    source: function(request, response) {
+                        var term = request.term.toLowerCase();
+                        var matches = [];
+                        for (var i = 0; i < chronEntries.length; i++) {
+                            if (chronEntries[i].label.toLowerCase().indexOf(term) !== -1) {
+                                matches.push(chronEntries[i]);
+                                if (matches.length >= 20) break;
+                            }
+                        }
+                        response(matches);
+                    },
+                    minLength: 1,
+                    select: function(event, ui) {
+                        event.preventDefault();
+                        $ccChronicle.val(ui.item.label);
+                        $ccChronSlug.val(ui.item.value);
+                    }
+                });
+            }
+
+            // ── Creature type cascade → sub-type ──
+            var $ccCreatureType = $wrap.find('.oat-cc-creature-type');
+            var $ccSubType      = $wrap.find('.oat-cc-sub-type');
+            var $ccCreatureVal  = $wrap.find('.oat-cc-creature-type-val');
+            var $ccSubTypeVal   = $wrap.find('.oat-cc-sub-type-val');
+
+            $ccCreatureType.on('change', function() {
+                var creature = $(this).val();
+                $ccCreatureVal.val(creature);
+                $ccSubType.empty();
+                $ccSubTypeVal.val('');
+
+                if (!creature || !taxonomy[creature]) {
+                    $ccSubType.append('<option value="">-- Select creature type first --</option>').prop('disabled', true);
+                    return;
+                }
+
+                $ccSubType.prop('disabled', false);
+                $ccSubType.append('<option value="">-- Select --</option>');
+                var subs = taxonomy[creature];
+                // subs can be an array or an object (affiliation → array of names).
+                if ($.isArray(subs)) {
+                    for (var i = 0; i < subs.length; i++) {
+                        $ccSubType.append('<option value="' + subs[i] + '">' + subs[i] + '</option>');
+                    }
+                } else {
+                    // Object: keys are affiliations/groups, values are arrays.
+                    $.each(subs, function(group, names) {
+                        if ($.isArray(names)) {
+                            var $optgroup = $('<optgroup label="' + group + '"></optgroup>');
+                            for (var j = 0; j < names.length; j++) {
+                                $optgroup.append('<option value="' + names[j] + '">' + names[j] + '</option>');
+                            }
+                            $ccSubType.append($optgroup);
+                        } else {
+                            $ccSubType.append('<option value="' + names + '">' + names + '</option>');
+                        }
+                    });
+                }
+            });
+
+            $ccSubType.on('change', function() {
+                $ccSubTypeVal.val($(this).val());
+            });
+
+            // ── PC/NPC select sync ──
+            var $ccPcNpc    = $wrap.find('.oat-cc-pc-npc');
+            var $ccPcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
+            $ccPcNpc.on('change', function() {
+                $ccPcNpcVal.val($(this).val());
+            });
+
+            // ── Create character AJAX ──
+            $wrap.on('click', '.oat-character-create-save', function() {
+                var $btn = $(this);
+                var name       = $wrap.find('.oat-cc-name').val();
+                var chronSlug  = $ccChronSlug.val();
+                var pcNpc      = $ccPcNpc.val();
+
+                if (!name) { alert('Character name is required.'); return; }
+                if (!pcNpc) { alert('PC/NPC designation is required.'); return; }
+
+                $btn.prop('disabled', true).text('Creating...');
+
+                $.post(owc_oat_ajax.url, {
+                    action: 'owc_oat_create_character',
+                    nonce: owc_oat_ajax.nonce,
+                    character_name: name,
+                    chronicle_slug: chronSlug || '',
+                    pc_npc: pcNpc
+                }, function(response) {
+                    if (response.success && response.data) {
+                        selectCharacter(response.data.uuid, response.data.character_name, pcNpc);
+                        // Also set creature type/sub-type meta from panel values.
+                        $ccCreatureVal.val($ccCreatureType.val());
+                        $ccSubTypeVal.val($ccSubType.val());
+                        // Reset and hide create panel.
+                        $wrap.find('.oat-character-create-panel').hide();
+                        $wrap.find('.oat-cc-name').val('');
+                    } else {
+                        alert('Error: ' + (response.data || 'Failed to create character.'));
+                    }
+                    $btn.prop('disabled', false).text('Create Character');
+                }).fail(function() {
+                    alert('Request failed.');
+                    $btn.prop('disabled', false).text('Create Character');
+                });
+            });
+        });
+    }
+    initCharacterPickers();
+
+    // BA-001: Enable/disable signatures based on submitter_role.
+    // When submitter_role changes, only the matching sig is active; others are grayed out.
+    function initSignatureStepControl() {
+        var $submitterRole = $('[name="oat_meta_submitter_role"]');
+        if (!$submitterRole.length) return;
+
+        var $sigs = $('.oat-signature-wrap[data-signed-by-role]');
+        if (!$sigs.length) return;
+
+        function updateSigStates() {
+            var role = $submitterRole.val() || '';
+            var currentUserName = (typeof owc_oat_ajax !== 'undefined' && owc_oat_ajax.currentUserName) ? owc_oat_ajax.currentUserName : '';
+            var currentUserId   = (typeof owc_oat_ajax !== 'undefined' && owc_oat_ajax.currentUserId) ? parseInt(owc_oat_ajax.currentUserId, 10) : 0;
+            $sigs.each(function() {
+                var $wrap = $(this);
+                var sigRole = $wrap.data('signed-by-role');
+                var $checkbox = $wrap.find('.oat-sig-agree');
+                var $nameInput = $wrap.find('.oat-sig-name');
+                var hiddenName = $checkbox.data('sig-name');
+                var $hidden = $('[name="' + hiddenName + '"]');
+
+                if (sigRole === role) {
+                    // This sig is editable for the submitter — populate with current user.
+                    $checkbox.prop('disabled', false);
+                    $nameInput.val(currentUserName).css('opacity', '1');
+                    $wrap.closest('tr').css('opacity', '1');
+                    if ($hidden.length) {
+                        var sig = {};
+                        try { sig = JSON.parse($hidden.val()); } catch(e) { sig = {}; }
+                        sig.name = currentUserName;
+                        sig.user_id = currentUserId;
+                        $hidden.val(JSON.stringify(sig));
+                    }
+                } else {
+                    // This sig is disabled — clear name and disable.
+                    $checkbox.prop('disabled', true).prop('checked', false);
+                    $nameInput.val('').css('opacity', '0.5');
+                    $wrap.closest('tr').css('opacity', '0.5');
+                    // Clear the sig data.
+                    if ($hidden.length) {
+                        var sig = {};
+                        try { sig = JSON.parse($hidden.val()); } catch(e) { sig = {}; }
+                        sig.name = '';
+                        sig.agreed = false;
+                        sig.timestamp = '';
+                        sig.user_id = 0;
+                        $hidden.val(JSON.stringify(sig));
+                    }
+                }
+            });
+        }
+
+        $submitterRole.on('change.sigControl', updateSigStates);
+        // Defer initial call to let conditional fields settle first.
+        setTimeout(updateSigStates, 100);
+    }
+    initSignatureStepControl();
+
+    // BA-002: Auto-set player_user_id when submitter_role = player.
+    // When submitter is a player, they ARE the player — auto-fill from current user ID.
+    function initPlayerUserAutoSet() {
+        var $submitterRole = $('[name="oat_meta_submitter_role"]');
+        if (!$submitterRole.length) return;
+
+        var $playerUserId = $('[name="oat_meta_player_user_id"]');
+        var $submitterUserId = $('[name="oat_meta_submitter_user_id"]');
+        if (!$playerUserId.length || !$submitterUserId.length) return;
+
+        $submitterRole.on('change.playerAuto', function() {
+            var role = $(this).val();
+            if (role === 'player') {
+                // Player is the submitter — auto-set player_user_id.
+                $playerUserId.val($submitterUserId.val());
+            }
+            // When staff/coordinator, the user_picker handles it via store_id_in.
+        });
+    }
+    initPlayerUserAutoSet();
+
     // Re-init after AJAX field load.
     $(document).on('oat-fields-loaded', function() {
         initChronicleAutocomplete();
+        initChronicleRoleFilter();
+        initCharacterPickers();
         initUserPickers();
         initCoordinatorDisplay();
         initTemplateSelectors();
+        initSignatureStepControl();
+        initPlayerUserAutoSet();
+        initCascadingSelects();
     });
 
     // Signature field: update hidden JSON when agree checkbox changes.
@@ -374,13 +738,19 @@
             if (!ruleIds || !ruleIds.length) {
                 $names.html('<em>Select regulation rules to see coordinators.</em>');
                 $hidden.val('');
+                // D3: Clear requires_coord when no rules selected.
+                $('[name="oat_meta_requires_coord"]').val('0');
                 return;
             }
+
+            // D3: Read PC/NPC type from character picker meta.
+            var pcNpc = $('[name="oat_meta_pc_npc"]').val() || 'pc';
 
             $.getJSON(owc_oat_ajax.url, {
                 action: 'owc_oat_get_coordinators_for_rules',
                 nonce: owc_oat_ajax.nonce,
-                rule_ids: JSON.stringify(ruleIds)
+                rule_ids: JSON.stringify(ruleIds),
+                pc_npc: pcNpc
             }, function(response) {
                 if (response.success && response.data && response.data.coordinators) {
                     var coords = response.data.coordinators;
@@ -396,6 +766,9 @@
                         $names.text(joined);
                         $hidden.val(joined);
                     }
+                    // D3: Set requires_coord based on rule levels.
+                    var reqCoord = response.data.requires_coord ? '1' : '0';
+                    $('[name="oat_meta_requires_coord"]').val(reqCoord);
                 }
             });
         }
@@ -486,6 +859,55 @@
     });
 
     initTemplateSelectors();
+
+    // D1: Cascading select — filter options based on a source field value.
+    function initCascadingSelects() {
+        $('select[data-cascading-from]').each(function() {
+            var $select = $(this);
+            if ($select.data('cascadeInit')) return;
+            $select.data('cascadeInit', true);
+
+            var sourceField = $select.data('cascading-from');
+            var $source = $('[name="oat_meta_' + sourceField + '"]');
+            if (!$source.length) return;
+
+            function filterOptions() {
+                var parentVal = ($source.val() || '').toLowerCase();
+                // Handle optgroup-based cascading.
+                var $groups = $select.find('optgroup[data-cascade-parent]');
+                if ($groups.length) {
+                    $groups.each(function() {
+                        var $group = $(this);
+                        var groupParent = ($group.data('cascade-parent') || '').toLowerCase();
+                        if (!parentVal || groupParent === parentVal) {
+                            $group.show().find('option').prop('disabled', false);
+                        } else {
+                            $group.hide().find('option').prop('disabled', true);
+                        }
+                    });
+                }
+                // Handle flat option-based cascading.
+                $select.find('option[data-cascade-parent]').each(function() {
+                    var $opt = $(this);
+                    var optParent = ($opt.data('cascade-parent') || '').toLowerCase();
+                    if (!parentVal || optParent === parentVal) {
+                        $opt.show().prop('disabled', false);
+                    } else {
+                        $opt.hide().prop('disabled', true);
+                    }
+                });
+                // Reset selection if current value is now hidden/disabled.
+                var $selected = $select.find('option:selected');
+                if ($selected.length && $selected.prop('disabled')) {
+                    $select.val('').trigger('change');
+                }
+            }
+
+            $source.on('change', filterOptions);
+            setTimeout(filterOptions, 100);
+        });
+    }
+    initCascadingSelects();
 
     // Timer extend: convert days/hours to seconds in hidden field.
     $(document).on('change input', '.oat-timer-extend-fields input[type="number"]', function() {

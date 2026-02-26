@@ -181,20 +181,78 @@ function owc_oat_render_field( $field, $value = '' ) {
 			return;
 
 		case 'select':
+			// Role-filter: remove options the current user isn't qualified for.
+			$role_filter = isset( $attrs['role_filter'] ) ? $attrs['role_filter'] : array();
+			if ( ! empty( $role_filter ) && function_exists( 'owc_asc_get_user_roles' ) ) {
+				$cur_user = wp_get_current_user();
+				$user_roles = array();
+				if ( $cur_user && $cur_user->ID ) {
+					$asc_resp = owc_asc_get_user_roles( 'OAT', $cur_user->user_email );
+					if ( ! is_wp_error( $asc_resp ) && isset( $asc_resp['roles'] ) ) {
+						$user_roles = $asc_resp['roles'];
+					}
+				}
+				foreach ( $role_filter as $opt_key => $patterns ) {
+					if ( ! isset( $options[ $opt_key ] ) ) {
+						continue;
+					}
+					$pat_list = is_array( $patterns ) ? $patterns : explode( '|', $patterns );
+					$has_match = false;
+					foreach ( $user_roles as $ur ) {
+						$role_path = is_array( $ur ) && isset( $ur['role_path'] ) ? $ur['role_path'] : ( is_string( $ur ) ? $ur : '' );
+						foreach ( $pat_list as $pat ) {
+							if ( fnmatch( $pat, $role_path, FNM_CASEFOLD ) ) {
+								$has_match = true;
+								break 2;
+							}
+						}
+					}
+					if ( ! $has_match ) {
+						unset( $options[ $opt_key ] );
+					}
+				}
+			}
+			$cascading_from = isset( $attrs['cascading_from'] ) ? $attrs['cascading_from'] : '';
 			echo '<tr class="oat-field"' . $cond_attrs . '>';
 			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
 			echo '<td>';
-			echo '<select id="' . $id . '" name="' . $name . '"' . $req_attr . '>';
-			echo '<option value="">-- Select --</option>';
-			foreach ( $options as $opt_val => $opt_label ) {
-				printf(
-					'<option value="%s"%s>%s</option>',
-					esc_attr( $opt_val ),
-					selected( $value, (string) $opt_val, false ),
-					esc_html( $opt_label )
-				);
+
+			if ( $cascading_from ) {
+				// D1: Cascading select — options_json is hierarchical: {parent: {group: [item, ...]}}.
+				echo '<select id="' . $id . '" name="' . $name . '" data-cascading-from="' . esc_attr( $cascading_from ) . '"' . $req_attr . '>';
+				echo '<option value="">-- Select --</option>';
+				foreach ( $options as $parent_val => $groups ) {
+					if ( ! is_array( $groups ) ) {
+						printf( '<option value="%s"%s>%s</option>', esc_attr( $parent_val ), selected( $value, (string) $parent_val, false ), esc_html( $groups ) );
+						continue;
+					}
+					foreach ( $groups as $group_label => $items ) {
+						if ( is_array( $items ) ) {
+							printf( '<optgroup label="%s" data-cascade-parent="%s">', esc_attr( $group_label ), esc_attr( $parent_val ) );
+							foreach ( $items as $item ) {
+								printf( '<option value="%s"%s>%s</option>', esc_attr( $item ), selected( $value, (string) $item, false ), esc_html( $item ) );
+							}
+							echo '</optgroup>';
+						} else {
+							printf( '<option value="%s" data-cascade-parent="%s"%s>%s</option>', esc_attr( $group_label ), esc_attr( $parent_val ), selected( $value, (string) $group_label, false ), esc_html( $items ) );
+						}
+					}
+				}
+				echo '</select>';
+			} else {
+				echo '<select id="' . $id . '" name="' . $name . '"' . $req_attr . '>';
+				echo '<option value="">-- Select --</option>';
+				foreach ( $options as $opt_val => $opt_label ) {
+					printf(
+						'<option value="%s"%s>%s</option>',
+						esc_attr( $opt_val ),
+						selected( $value, (string) $opt_val, false ),
+						esc_html( is_array( $opt_label ) ? (string) $opt_val : $opt_label )
+					);
+				}
+				echo '</select>';
 			}
-			echo '</select>';
+
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
@@ -252,15 +310,40 @@ function owc_oat_render_field( $field, $value = '' ) {
 			return;
 
 		case 'chronicle_picker':
+			$filter_by_chron   = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
+			$role_scopes_chron = isset( $attrs['role_scopes'] ) ? $attrs['role_scopes'] : array();
+			$chron_roles       = isset( $attrs['roles'] ) ? $attrs['roles'] : array();
+
+			// When filter_by is set, always render with all chronicles (*) so JS can filter.
+			if ( $filter_by_chron && ! empty( $role_scopes_chron ) ) {
+				$chron_roles = array( '*' );
+			}
+
 			echo '<tr class="oat-field"' . $cond_attrs . '>';
 			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
 			echo '<td>';
+			if ( $filter_by_chron ) {
+				echo '<div class="oat-chronicle-filter-wrap" data-filter-by="' . esc_attr( $filter_by_chron ) . '" data-role-scopes="' . esc_attr( wp_json_encode( $role_scopes_chron ) ) . '">';
+			}
 			if ( function_exists( 'owc_asc_render_chronicle_picker' ) ) {
+				// Get user's restricted entries for non-wildcard scopes.
+				if ( $filter_by_chron && function_exists( '_owc_asc_get_user_entity_entries' ) ) {
+					$user_entries = _owc_asc_get_user_entity_entries( 'chronicle', array( 'HST', 'Staff', 'CM', 'Player' ) );
+					$user_slugs   = array();
+					foreach ( $user_entries as $ue ) {
+						$user_slugs[] = $ue['slug'];
+					}
+					// Output as hidden data element for JS to read.
+					printf(
+						'<script type="application/json" class="oat-user-chronicle-slugs">%s</script>',
+						wp_json_encode( $user_slugs )
+					);
+				}
 				owc_asc_render_chronicle_picker( array(
 					'name'       => $name,
 					'id'         => $id,
 					'value'      => $value,
-					'roles'      => isset( $attrs['roles'] ) ? $attrs['roles'] : array(),
+					'roles'      => $chron_roles,
 					'auto_props' => isset( $attrs['auto_props'] ) ? $attrs['auto_props'] : array(),
 					'required'   => $required,
 				) );
@@ -270,6 +353,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 					'<input type="text" id="%s" name="%s" value="%s" placeholder="Chronicle slug"%s />',
 					$id, $name, esc_attr( $value ), $req_attr
 				);
+			}
+			if ( $filter_by_chron ) {
+				echo '</div>';
 			}
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
@@ -320,21 +406,28 @@ function owc_oat_render_field( $field, $value = '' ) {
 
 		case 'signature':
 			// Composite field: name (pre-filled, read-only) + agree checkbox + hidden timestamp/user_id.
+			// BA-001: signed_by_role attribute controls step-aware enable/disable.
+			$signed_by_role = isset( $attrs['signed_by_role'] ) ? $attrs['signed_by_role'] : '';
+			$for_steps      = isset( $attrs['for_steps'] ) && is_array( $attrs['for_steps'] ) ? $attrs['for_steps'] : array();
 			$sig_data = is_string( $value ) ? json_decode( $value, true ) : ( is_array( $value ) ? $value : array() );
 			if ( ! is_array( $sig_data ) ) {
 				$sig_data = array();
 			}
 			$user         = wp_get_current_user();
-			$sig_name     = isset( $sig_data['name'] ) ? $sig_data['name'] : ( $user && $user->ID ? $user->display_name : '' );
+			// Only pre-fill from saved data — JS handles populating the active sig's name on role change.
+			$sig_name     = isset( $sig_data['name'] ) ? $sig_data['name'] : '';
 			$sig_agreed   = ! empty( $sig_data['agreed'] );
 			$sig_ts       = isset( $sig_data['timestamp'] ) ? $sig_data['timestamp'] : '';
-			$sig_uid      = isset( $sig_data['user_id'] ) ? (int) $sig_data['user_id'] : ( $user && $user->ID ? $user->ID : 0 );
+			$sig_uid      = isset( $sig_data['user_id'] ) ? (int) $sig_data['user_id'] : 0;
+
+			$role_attr  = $signed_by_role ? ' data-signed-by-role="' . esc_attr( $signed_by_role ) . '"' : '';
+			$steps_attr = ! empty( $for_steps ) ? ' data-for-steps="' . esc_attr( wp_json_encode( $for_steps ) ) . '"' : '';
 
 			echo '<tr class="oat-field oat-field-signature"' . $cond_attrs . '>';
 			echo '<th>' . esc_html( $label ) . $req_star . '</th>';
 			echo '<td>';
-			echo '<div class="oat-signature-wrap">';
-			printf( '<input type="text" value="%s" class="regular-text" readonly="readonly" tabindex="-1" />', esc_attr( $sig_name ) );
+			echo '<div class="oat-signature-wrap"' . $role_attr . $steps_attr . '>';
+			printf( '<input type="text" value="%s" class="regular-text oat-sig-name" readonly="readonly" tabindex="-1" />', esc_attr( $sig_name ) );
 			echo '<label style="display:block;margin-top:4px;">';
 			printf(
 				'<input type="checkbox" class="oat-sig-agree" data-sig-name="%s"%s /> I agree and sign',
@@ -363,7 +456,8 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<tr class="oat-field oat-field-character-picker"' . $cond_attrs . '>';
 			echo '<th><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></th>';
 			echo '<td>';
-			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '">';
+			$filter_by = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
+			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . '>';
 			// Search input.
 			printf(
 				'<input type="text" id="%s_search" class="oat-character-search regular-text" placeholder="%s" autocomplete="off" />',
@@ -405,9 +499,17 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<select class="oat-cc-sub-type" disabled="disabled">';
 			echo '<option value="">' . esc_html__( '-- Select creature type first --', 'owbn-client' ) . '</option>';
 			echo '</select></label></p>';
+			// PC / NPC designation (D-056, required for regulation level matching).
+			echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<select class="oat-cc-pc-npc">';
+			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-client' ) . '</option>';
+			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-client' ) . '</option>';
+			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-client' ) . '</option>';
+			echo '</select></label></p>';
 			// Hidden inputs for creature_type and sub_type (stored as entry meta alongside character).
 			echo '<input type="hidden" name="oat_meta_creature_type" class="oat-cc-creature-type-val" />';
 			echo '<input type="hidden" name="oat_meta_creature_sub_type" class="oat-cc-sub-type-val" />';
+			echo '<input type="hidden" name="oat_meta_pc_npc" class="oat-cc-pc-npc-val" />';
 			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-client' ) . '</button>';
 			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-client' ) . '</button></p>';
 			echo '</div>'; // .oat-character-create-panel
@@ -1034,6 +1136,8 @@ function _owc_oat_resolve_auto_prop( $source ) {
 			return $user->display_name;
 		case 'user_email':
 			return $user->user_email;
+		case 'user_id':
+			return (string) $user->ID;
 		case 'player_id':
 			if ( defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
 				return (string) get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );

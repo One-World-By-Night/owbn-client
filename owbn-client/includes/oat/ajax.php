@@ -169,10 +169,26 @@ function owc_oat_ajax_search_characters() {
     $table = $wpdb->prefix . 'oat_characters';
     $like  = '%' . $wpdb->esc_like( $term ) . '%';
 
-    $rows = $wpdb->get_results( $wpdb->prepare(
-        "SELECT uuid, character_name, chronicle_slug, player_name FROM {$table} WHERE character_name LIKE %s ORDER BY character_name ASC LIMIT 15",
-        $like
-    ) );
+    // Role-based scope filtering (P4a / CC-002).
+    $scope           = isset( $_GET['scope'] ) ? sanitize_text_field( $_GET['scope'] ) : '';
+    $chronicle_slug  = isset( $_GET['chronicle_slug'] ) ? sanitize_text_field( $_GET['chronicle_slug'] ) : '';
+    $where_extra     = '';
+    $prepare_args    = array( $like );
+
+    if ( $scope === 'player' ) {
+        $user = wp_get_current_user();
+        if ( $user && $user->user_email ) {
+            $where_extra = ' AND player_email = %s';
+            $prepare_args[] = $user->user_email;
+        }
+    } elseif ( $scope === 'staff' && $chronicle_slug ) {
+        $where_extra = ' AND chronicle_slug = %s';
+        $prepare_args[] = $chronicle_slug;
+    }
+    // 'coordinator' and 'archivist' scopes have no filter — all characters.
+
+    $sql = "SELECT uuid, character_name, chronicle_slug, player_name, pc_npc FROM {$table} WHERE character_name LIKE %s{$where_extra} ORDER BY character_name ASC LIMIT 15";
+    $rows = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) );
 
     $results = array();
     foreach ( $rows as $row ) {
@@ -186,6 +202,7 @@ function owc_oat_ajax_search_characters() {
             'chronicle_slug'  => $row->chronicle_slug ? $row->chronicle_slug : '',
             'chronicle_title' => $chron_title ? $chron_title : ( $row->chronicle_slug ? $row->chronicle_slug : '' ),
             'player_name'     => $row->player_name,
+            'pc_npc'          => isset( $row->pc_npc ) ? $row->pc_npc : 'pc',
         );
     }
 
@@ -206,6 +223,7 @@ function owc_oat_ajax_create_character() {
 
     $char_name      = isset( $_POST['character_name'] ) ? sanitize_text_field( $_POST['character_name'] ) : '';
     $chronicle_slug = isset( $_POST['chronicle_slug'] ) ? sanitize_text_field( $_POST['chronicle_slug'] ) : '';
+    $pc_npc         = isset( $_POST['pc_npc'] ) ? sanitize_text_field( $_POST['pc_npc'] ) : 'pc';
 
     if ( empty( $char_name ) ) {
         wp_send_json_error( 'Character name is required.' );
@@ -216,13 +234,18 @@ function owc_oat_ajax_create_character() {
         wp_send_json_error( 'You must be logged in.' );
     }
 
-    $id = OAT_Character::create( array(
+    $create_data = array(
         'character_name' => $char_name,
         'chronicle_slug' => $chronicle_slug,
         'player_email'   => $user->user_email,
         'player_name'    => $user->display_name,
         'wp_user_id'     => $user->ID,
-    ) );
+    );
+    if ( in_array( $pc_npc, array( 'pc', 'npc' ), true ) ) {
+        $create_data['pc_npc'] = $pc_npc;
+    }
+
+    $id = OAT_Character::create( $create_data );
 
     if ( ! $id ) {
         wp_send_json_error( 'Failed to create character.' );
@@ -237,6 +260,7 @@ function owc_oat_ajax_create_character() {
         'uuid'           => $char->uuid,
         'character_name' => $char->character_name,
         'chronicle_slug' => $char->chronicle_slug ? $char->chronicle_slug : '',
+        'pc_npc'         => isset( $char->pc_npc ) ? $char->pc_npc : 'pc',
     ) );
 }
 
@@ -426,14 +450,25 @@ function owc_oat_ajax_get_coordinators_for_rules() {
 
     $rule_ids_raw = isset( $_GET['rule_ids'] ) ? sanitize_text_field( $_GET['rule_ids'] ) : '[]';
     $rule_ids     = json_decode( $rule_ids_raw, true );
+    // D3: PC/NPC determines which level column to use.
+    $pc_npc       = isset( $_GET['pc_npc'] ) ? sanitize_text_field( $_GET['pc_npc'] ) : 'pc';
 
     if ( ! is_array( $rule_ids ) || empty( $rule_ids ) ) {
-        wp_send_json_success( array( 'coordinators' => array() ) );
+        wp_send_json_success( array( 'coordinators' => array(), 'requires_coord' => false ) );
     }
 
     $rule_ids = array_map( 'absint', $rule_ids );
     $seen     = array();
     $results  = array();
+
+    // D3: Track highest regulation level for requires_coord determination.
+    $priority = array(
+        'council_vote'         => 4,
+        'disallowed'           => 3,
+        'coordinator_approval' => 2,
+        'coordinator_notify'   => 1,
+    );
+    $highest = 0;
 
     foreach ( $rule_ids as $rid ) {
         if ( ! $rid || ! class_exists( 'OAT_Regulation_Rule' ) ) {
@@ -443,13 +478,19 @@ function owc_oat_ajax_get_coordinators_for_rules() {
         if ( ! $rule || empty( $rule->genre ) ) {
             continue;
         }
+
+        // D3: Use pc_level or npc_level based on character type.
+        $level = ( 'npc' === $pc_npc && ! empty( $rule->npc_level ) ) ? $rule->npc_level : $rule->pc_level;
+        if ( $level && isset( $priority[ $level ] ) && $priority[ $level ] > $highest ) {
+            $highest = $priority[ $level ];
+        }
+
         $genre = $rule->genre;
         if ( isset( $seen[ $genre ] ) ) {
             continue;
         }
         $seen[ $genre ] = true;
 
-        // Resolve genre slug to human-readable name.
         $name = $genre;
         if ( function_exists( 'owc_entity_get_title' ) ) {
             $title = owc_entity_get_title( 'coordinator', $genre );
@@ -464,5 +505,8 @@ function owc_oat_ajax_get_coordinators_for_rules() {
         );
     }
 
-    wp_send_json_success( array( 'coordinators' => $results ) );
+    wp_send_json_success( array(
+        'coordinators'   => $results,
+        'requires_coord' => $highest >= 2,
+    ) );
 }

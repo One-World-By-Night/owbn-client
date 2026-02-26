@@ -17,6 +17,9 @@
  *   $step_label        string Human-readable step label.
  *   $user_map          array  user_id => display_name.
  *   $domain_fields     array  Form field definitions for read-only rendering.
+ *   $review_fields     array  Review context field definitions for step-aware rendering.
+ *   $current_step      string Current workflow step ID.
+ *   $relationships     array  Entry relationships (children/parents).
  *   $created           bool   Whether entry was just created (show success notice).
  *   $entry_id          int    Entry ID.
  *
@@ -204,12 +207,70 @@ function owc_oat_user_name( $uid, $map ) {
                             </div>
                         <?php endif; ?>
 
+                        <?php
+                        // D2: Render step-aware review fields (e.g., signature) in approve/request_changes actions.
+                        if ( in_array( $action_type, array( 'approve', 'request_changes' ), true ) && ! empty( $review_fields ) ) :
+                            foreach ( $review_fields as $rf ) :
+                                $rf_type     = isset( $rf['type'] ) ? $rf['type'] : '';
+                                $rf_key      = isset( $rf['key'] ) ? $rf['key'] : '';
+                                $rf_attrs    = isset( $rf['attributes'] ) && is_array( $rf['attributes'] ) ? $rf['attributes'] : array();
+                                $for_steps   = isset( $rf_attrs['for_steps'] ) && is_array( $rf_attrs['for_steps'] ) ? $rf_attrs['for_steps'] : array();
+                                $rf_value    = isset( $meta[ $rf_key ] ) ? $meta[ $rf_key ] : '';
+
+                                // Only render signature fields with for_steps matching the current step.
+                                if ( 'signature' !== $rf_type ) {
+                                    continue;
+                                }
+                                if ( ! empty( $for_steps ) && ! in_array( $current_step, $for_steps, true ) ) {
+                                    // Show as read-only if already signed.
+                                    $sig_data = is_string( $rf_value ) ? json_decode( $rf_value, true ) : array();
+                                    if ( ! empty( $sig_data['agreed'] ) && ! empty( $sig_data['name'] ) ) {
+                                        $ts = ! empty( $sig_data['timestamp'] ) ? $sig_data['timestamp'] : '';
+                                        echo '<div class="oat-review-sig-readonly" style="margin:8px 0;padding:6px;background:#f7f7f7;border-left:3px solid #0073aa;">';
+                                        echo '<strong>' . esc_html( isset( $rf['label'] ) ? $rf['label'] : $rf_key ) . ':</strong> ';
+                                        printf( 'Signed by %s%s', esc_html( $sig_data['name'] ), $ts ? ' on ' . esc_html( $ts ) : '' );
+                                        echo '</div>';
+                                    }
+                                    continue;
+                                }
+
+                                // Render editable signature for this step.
+                                if ( function_exists( 'owc_oat_render_field' ) ) {
+                                    echo '<div class="oat-review-sig-editable" style="margin:8px 0;">';
+                                    echo '<table class="form-table" style="margin:0;">';
+                                    owc_oat_render_field( $rf, $rf_value );
+                                    echo '</table>';
+                                    echo '</div>';
+                                }
+                            endforeach;
+                        endif;
+                        ?>
+
                         <?php $note_required = ( $action_type !== 'bump' ); ?>
                         <textarea name="oat_note" placeholder="Note (<?php echo $note_required ? 'required' : 'optional'; ?>)" rows="2" class="large-text" <?php echo $note_required ? 'required' : ''; ?>></textarea>
                         <button type="submit" class="button"><?php echo esc_html( $label ); ?></button>
                     </form>
                 </div>
             <?php endforeach; ?>
+
+            <?php
+            // D4/P6b.3: "Add Me-Too" button for disciplinary_actions at archivist step.
+            if ( isset( $entry['domain'] ) && 'disciplinary_actions' === $entry['domain']
+                && in_array( 'record', $available_actions, true )
+            ) :
+            ?>
+                <div class="oat-action-card oat-metoo-card">
+                    <form method="post" class="owc-oat-action-form">
+                        <?php wp_nonce_field( 'owc_oat_entry_action' ); ?>
+                        <input type="hidden" name="oat_action" value="me_too">
+                        <input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry['id'] ); ?>">
+                        <strong>Add Me-Too</strong>
+                        <p class="description">Create a linked DA entry for another chronicle executing the same action.</p>
+                        <textarea name="oat_note" placeholder="Chronicle and details for the me-too entry" rows="2" class="large-text" required></textarea>
+                        <button type="submit" class="button">Add Me-Too Entry</button>
+                    </form>
+                </div>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 
@@ -228,6 +289,42 @@ function owc_oat_user_name( $uid, $map ) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+    <?php endif; ?>
+
+    <!-- D4: Linked Entries (Me-Too / Relationships) -->
+    <?php
+    $has_children = ! empty( $relationships['children'] );
+    $has_parents  = ! empty( $relationships['parents'] );
+    if ( $has_children || $has_parents ) :
+    ?>
+        <h2>Linked Entries</h2>
+        <?php if ( $has_parents ) : ?>
+            <p><strong>Parent entry:</strong>
+            <?php foreach ( $relationships['parents'] as $rel ) : ?>
+                <a href="<?php echo esc_url( add_query_arg( 'entry_id', $rel['entry_id'], remove_query_arg( 'entry_id' ) ) ); ?>">
+                    #<?php echo esc_html( $rel['entry_id'] ); ?>
+                </a>
+                (<?php echo esc_html( str_replace( '_', ' ', $rel['type'] ) ); ?>)
+            <?php endforeach; ?>
+            </p>
+        <?php endif; ?>
+        <?php if ( $has_children ) : ?>
+            <table class="widefat fixed striped">
+                <thead><tr><th>Entry</th><th>Type</th></tr></thead>
+                <tbody>
+                    <?php foreach ( $relationships['children'] as $rel ) : ?>
+                        <tr>
+                            <td>
+                                <a href="<?php echo esc_url( add_query_arg( 'entry_id', $rel['entry_id'], remove_query_arg( 'entry_id' ) ) ); ?>">
+                                    #<?php echo esc_html( $rel['entry_id'] ); ?>
+                                </a>
+                            </td>
+                            <td><?php echo esc_html( ucfirst( str_replace( '_', ' ', $rel['type'] ) ) ); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     <?php endif; ?>
 
     <!-- Timeline -->

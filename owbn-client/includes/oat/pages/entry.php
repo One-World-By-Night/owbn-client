@@ -48,10 +48,14 @@ function owc_oat_page_entry() {
     $domain_label      = isset( $bundle['domain_label'] ) ? $bundle['domain_label'] : '';
     $step_label        = isset( $bundle['step_label'] ) ? $bundle['step_label'] : '';
     $user_map          = isset( $bundle['user_map'] ) ? $bundle['user_map'] : array();
+    $relationships     = isset( $bundle['relationships'] ) ? $bundle['relationships'] : array( 'children' => array(), 'parents' => array() );
 
     // Fetch form field definitions for rendering meta in read-only mode.
     $domain_slug   = isset( $entry['domain'] ) ? $entry['domain'] : '';
     $domain_fields = $domain_slug ? owc_oat_get_form_fields( $domain_slug, 'submit' ) : array();
+    // D2: Fetch review context fields for step-aware rendering in action cards.
+    $review_fields = $domain_slug ? owc_oat_get_form_fields( $domain_slug, 'review' ) : array();
+    $current_step  = isset( $entry['current_step'] ) ? $entry['current_step'] : '';
 
     include dirname( __DIR__ ) . '/templates/entry-detail.php';
 }

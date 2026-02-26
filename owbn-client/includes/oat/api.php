@@ -555,6 +555,25 @@ function owc_oat_get_entry( $entry_id ) {
             }
         }
 
+        // D4: Relationships (me-too, parent/child links).
+        $relationships = array( 'children' => array(), 'parents' => array() );
+        if ( class_exists( 'OAT_Entry_Relationship' ) ) {
+            $children_raw = OAT_Entry_Relationship::for_source( $entry_id );
+            foreach ( $children_raw as $rel ) {
+                $relationships['children'][] = array(
+                    'entry_id' => (int) $rel->target_entry_id,
+                    'type'     => $rel->relationship_type,
+                );
+            }
+            $parents_raw = OAT_Entry_Relationship::for_target( $entry_id );
+            foreach ( $parents_raw as $rel ) {
+                $relationships['parents'][] = array(
+                    'entry_id' => (int) $rel->source_entry_id,
+                    'type'     => $rel->relationship_type,
+                );
+            }
+        }
+
         return array(
             'entry'             => array(
                 'id'              => (int) $entry->id,
@@ -579,6 +598,7 @@ function owc_oat_get_entry( $entry_id ) {
             'domain_label'      => OAT_Domain_Registry::get_label( $entry->domain ) ?: $entry->domain,
             'step_label'        => $step_label,
             'user_map'          => $user_map,
+            'relationships'     => $relationships,
         );
     }
 
@@ -1165,6 +1185,15 @@ function owc_oat_set_regulation_meta( $entry_id, $rule_ids ) {
     $requires_coord = '0';
     $regulation_level = '';
 
+    // D3: Use pc_level or npc_level based on character's PC/NPC type.
+    $pc_npc = 'pc';
+    if ( class_exists( 'OAT_Entry_Meta' ) ) {
+        $stored = OAT_Entry_Meta::get( $entry_id, 'pc_npc' );
+        if ( $stored ) {
+            $pc_npc = $stored;
+        }
+    }
+
     $priority = array(
         'council_vote'         => 4,
         'disallowed'           => 3,
@@ -1179,7 +1208,7 @@ function owc_oat_set_regulation_meta( $entry_id, $rule_ids ) {
             continue;
         }
 
-        $level = $rule->pc_level;
+        $level = ( 'npc' === $pc_npc && ! empty( $rule->npc_level ) ) ? $rule->npc_level : $rule->pc_level;
         if ( $level && isset( $priority[ $level ] ) && $priority[ $level ] > $highest ) {
             $highest = $priority[ $level ];
             $regulation_level = $level;
