@@ -4,6 +4,19 @@
  * Builds on oat-client.css (loaded as dependency).
  */
 
+/* ── Centered Workspace ──────────────────────────────────────────────────── */
+
+.oat-dashboard,
+.oat-dashboard-actions,
+.oat-inbox-widget,
+.oat-submit-widget,
+.oat-entry-detail,
+.oat-activity-widget {
+	max-width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 /* ── Login Prompt ─────────────────────────────────────────────────────────── */
 
 .oat-login-prompt {
