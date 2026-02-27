@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.9.1
+Stable tag: 4.9.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.9.2 =
+* Improve: Inbox shows "Name > Domain" subject instead of entry ID
+* Improve: Archivist action renamed from "Record" to "Log", timeline shows "Logged"
+* Improve: Timeline labels for auto_approve/auto_deny display human-readable text
 
 = 4.9.1 =
 * Fix: Elementor loader timing — check did_action('elementor/loaded') before hooking, fixes blank pages when Elementor loads before owbn-client

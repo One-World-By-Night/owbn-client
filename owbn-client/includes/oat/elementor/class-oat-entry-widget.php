@@ -570,7 +570,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'delegate'         => __( 'Delegate', 'owbn-client' ),
 			'hold'             => __( 'Hold', 'owbn-client' ),
 			'resume'           => __( 'Resume', 'owbn-client' ),
-			'record'           => __( 'Record', 'owbn-client' ),
+			'record'           => __( 'Log', 'owbn-client' ),
 			'council_override' => __( 'Council Override', 'owbn-client' ),
 			'timer_extend'     => __( 'Extend Timer', 'owbn-client' ),
 		);
@@ -826,7 +826,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			<div class="oat-timeline<?php echo esc_attr( $collapsed_class ); ?>">
 				<?php foreach ( $timeline as $event ) :
 					$tier       = isset( $event['visibility_tier'] ) ? $event['visibility_tier'] : 'public';
-					$action_lbl = ucfirst( str_replace( '_', ' ', isset( $event['action_type'] ) ? $event['action_type'] : '' ) );
+					$action_raw = isset( $event['action_type'] ) ? $event['action_type'] : '';
+					$tl_labels  = array( 'record' => 'Logged', 'auto_approve' => 'Auto-Approved', 'auto_deny' => 'Auto-Denied' );
+					$action_lbl = isset( $tl_labels[ $action_raw ] ) ? $tl_labels[ $action_raw ] : ucfirst( str_replace( '_', ' ', $action_raw ) );
 					$actor      = $this->resolve_user( isset( $event['actor_id'] ) ? $event['actor_id'] : 0, $user_map );
 					$date       = isset( $event['created_at'] ) ? $event['created_at'] : '';
 					$note       = isset( $event['note'] ) ? $event['note'] : '';

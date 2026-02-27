@@ -210,10 +210,11 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		$inbox   = owc_oat_get_inbox( '' );
 		$domains = function_exists( 'owc_oat_get_domains' ) ? owc_oat_get_domains() : array();
 
-		// Normalize: api returns assignments, my_entries, watched.
+		// Normalize: api returns assignments, my_entries, watched, user_map.
 		$assignments = isset( $inbox['assignments'] ) ? $inbox['assignments'] : array();
 		$my_entries  = isset( $inbox['my_entries'] ) ? $inbox['my_entries'] : array();
 		$watched     = isset( $inbox['watched'] ) ? $inbox['watched'] : array();
+		$user_map    = isset( $inbox['user_map'] ) && is_array( $inbox['user_map'] ) ? $inbox['user_map'] : array();
 
 		// Collect all unique statuses for filter dropdown.
 		$all_rows    = array_merge( $assignments, $my_entries, $watched );
@@ -265,9 +266,9 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 			<?php endif; ?>
 
 			<!-- Panels -->
-			<?php echo $this->render_panel( 'assigned', $assignments, $detail_base, 'assigned' === $default_tab, $per_page, true ); ?>
-			<?php echo $this->render_panel( 'submissions', $my_entries, $detail_base, 'submissions' === $default_tab, $per_page, true ); ?>
-			<?php echo $this->render_panel( 'watching', $watched, $detail_base, 'watching' === $default_tab, $per_page, false ); ?>
+			<?php echo $this->render_panel( 'assigned', $assignments, $detail_base, 'assigned' === $default_tab, $per_page, true, $user_map ); ?>
+			<?php echo $this->render_panel( 'submissions', $my_entries, $detail_base, 'submissions' === $default_tab, $per_page, true, $user_map ); ?>
+			<?php echo $this->render_panel( 'watching', $watched, $detail_base, 'watching' === $default_tab, $per_page, false, $user_map ); ?>
 
 		</div>
 		<?php
@@ -304,7 +305,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 	 * @param bool   $show_step  Whether to include current step column.
 	 * @return string
 	 */
-	private function render_panel( $slug, $rows, $detail_url, $visible, $per_page, $show_step )
+	private function render_panel( $slug, $rows, $detail_url, $visible, $per_page, $show_step, $user_map = array() )
 	{
 		ob_start();
 		$display = $visible ? '' : ' style="display:none;"';
@@ -331,11 +332,14 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 							$entry_id    = isset( $row['entry_id'] ) ? (int) $row['entry_id'] : 0;
 							$domain_slug = isset( $row['domain'] ) ? $row['domain'] : '';
 							$domain_lbl  = isset( $row['domain_label'] ) ? $row['domain_label'] : ucfirst( str_replace( '_', ' ', $domain_slug ) );
+							$orig_id     = isset( $row['originator_id'] ) ? (int) $row['originator_id'] : 0;
+							$orig_name   = isset( $user_map[ $orig_id ] ) ? $user_map[ $orig_id ] : '';
 							$status      = isset( $row['status'] ) ? $row['status'] : '';
 							$step        = isset( $row['current_step'] ) ? $row['current_step'] : '';
 							$date_col    = isset( $row['updated_at'] ) ? $row['updated_at'] : ( isset( $row['created_at'] ) ? $row['created_at'] : '' );
 							$entry_url   = trailingslashit( $detail_url ) . '?oat_entry=' . $entry_id;
 							$row_hidden  = ( $i >= $per_page ) ? ' style="display:none;"' : '';
+							$subject     = $orig_name ? $orig_name . ' &#8250; ' . $domain_lbl : '#' . $entry_id;
 						?>
 							<tr data-domain="<?php echo esc_attr( $domain_slug ); ?>"
 								data-status="<?php echo esc_attr( $status ); ?>"
@@ -343,8 +347,9 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 								<td data-label="<?php esc_attr_e( 'Entry', 'owbn-client' ); ?>"
 									data-sort-value="<?php echo esc_attr( $entry_id ); ?>">
 									<a href="<?php echo esc_url( $entry_url ); ?>">
-										<strong>#<?php echo esc_html( $entry_id ); ?></strong>
+										<strong><?php echo $subject; ?></strong>
 									</a>
+									<span style="color:#999;font-size:11px;margin-left:6px;">#<?php echo esc_html( $entry_id ); ?></span>
 								</td>
 								<td data-label="<?php esc_attr_e( 'Domain', 'owbn-client' ); ?>"
 									data-sort-value="<?php echo esc_attr( $domain_lbl ); ?>">
