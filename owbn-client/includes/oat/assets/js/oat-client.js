@@ -205,6 +205,50 @@
     }
     initChronicleAutocomplete();
 
+    // Searchable coordinator picker (autocomplete from inline data).
+    function initCoordinatorAutocomplete() {
+        $('.oat-coordinator-autocomplete-wrap').each(function() {
+            var $wrap = $(this);
+            if ($wrap.data('acInit')) return;
+            $wrap.data('acInit', true);
+
+            var entries = $wrap.data('entries') || [];
+            var $search = $wrap.find('.oat-coordinator-search');
+            var $selected = $wrap.find('.oat-coordinator-selected');
+            var $selectedName = $wrap.find('.oat-coordinator-selected-name');
+            var $hidden = $wrap.find('input[type="hidden"]');
+
+            $search.autocomplete({
+                source: function(request, response) {
+                    var term = request.term.toLowerCase();
+                    var matches = [];
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].label.toLowerCase().indexOf(term) !== -1) {
+                            matches.push(entries[i]);
+                            if (matches.length >= 20) break;
+                        }
+                    }
+                    response(matches);
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $hidden.val(ui.item.value).trigger('change');
+                    $selectedName.text(ui.item.label);
+                    $search.hide().val('');
+                    $selected.show();
+                }
+            });
+
+            $wrap.on('click', '.oat-coordinator-clear', function() {
+                $hidden.val('').trigger('change');
+                $selected.hide();
+                $search.show().val('').focus();
+            });
+        });
+    }
+    initCoordinatorAutocomplete();
+
     // P4b: Chronicle picker filtering by submitter_role.
     function initChronicleRoleFilter() {
         $('.oat-chronicle-filter-wrap').each(function() {
@@ -566,7 +610,9 @@
 
     // Re-init after AJAX field load.
     $(document).on('oat-fields-loaded', function() {
+        initConditionalFields();
         initChronicleAutocomplete();
+        initCoordinatorAutocomplete();
         initChronicleRoleFilter();
         initCharacterPickers();
         initUserPickers();

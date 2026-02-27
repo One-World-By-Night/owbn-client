@@ -179,29 +179,72 @@ function owc_asc_render_coordinator_picker( $args ) {
 		return;
 	}
 
-	// Render select.
-	printf(
-		'<select id="%s" name="%s"%s>',
-		esc_attr( $id ),
-		esc_attr( $name ),
-		$req_attr
-	);
-	echo '<option value="">-- Select Coordinator --</option>';
-
-	foreach ( $entries as $entry ) {
-		$opt_value = esc_attr( $entry['slug'] );
-		$opt_label = esc_html( $entry['title'] );
-		if ( $show_role && ! empty( $entry['role_label'] ) ) {
-			$opt_label .= ' &mdash; ' . esc_html( $entry['role_label'] );
+	// Searchable autocomplete for large lists (>20 entries).
+	if ( count( $entries ) > 20 ) {
+		$json_entries = array();
+		$pre_label    = '';
+		foreach ( $entries as $entry ) {
+			$label = $entry['title'];
+			if ( $show_role && ! empty( $entry['role_label'] ) ) {
+				$label .= ' — ' . $entry['role_label'];
+			}
+			$json_entries[] = array( 'value' => $entry['slug'], 'label' => $label );
+			if ( $value === $entry['slug'] ) {
+				$pre_label = $label;
+			}
 		}
+
 		printf(
-			'<option value="%s"%s>%s</option>',
-			$opt_value,
-			selected( $value, $entry['slug'], false ),
-			$opt_label
+			'<div class="oat-coordinator-autocomplete-wrap" data-entries=\'%s\'>',
+			esc_attr( wp_json_encode( $json_entries ) )
 		);
+		printf(
+			'<input type="text" id="%s_search" class="oat-coordinator-search regular-text" placeholder="Type to search coordinators..." autocomplete="off"%s />',
+			esc_attr( $id ),
+			( '' !== $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<div class="oat-coordinator-selected"%s>',
+			( '' === $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<span class="oat-coordinator-selected-name">%s</span> ',
+			esc_html( $pre_label )
+		);
+		echo '<button type="button" class="button-link oat-coordinator-clear">(clear)</button>';
+		echo '</div>';
+		printf(
+			'<input type="hidden" name="%s" id="%s" value="%s" />',
+			esc_attr( $name ),
+			esc_attr( $id ),
+			esc_attr( $value )
+		);
+		echo '</div>';
+	} else {
+		// Standard select for small lists.
+		printf(
+			'<select id="%s" name="%s"%s>',
+			esc_attr( $id ),
+			esc_attr( $name ),
+			$req_attr
+		);
+		echo '<option value="">-- Select Coordinator --</option>';
+
+		foreach ( $entries as $entry ) {
+			$opt_value = esc_attr( $entry['slug'] );
+			$opt_label = esc_html( $entry['title'] );
+			if ( $show_role && ! empty( $entry['role_label'] ) ) {
+				$opt_label .= ' &mdash; ' . esc_html( $entry['role_label'] );
+			}
+			printf(
+				'<option value="%s"%s>%s</option>',
+				$opt_value,
+				selected( $value, $entry['slug'], false ),
+				$opt_label
+			);
+		}
+		echo '</select>';
 	}
-	echo '</select>';
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
