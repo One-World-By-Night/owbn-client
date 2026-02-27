@@ -4,11 +4,10 @@
   "type": "page",
   "content": [
     {
-      "id": "a1b2c3d",
-      "elType": "section",
+      "id": "oat_dash_1",
+      "elType": "container",
       "settings": {
-        "layout": "full_width",
-        "gap": "no",
+        "content_width": "full",
         "padding": {
           "unit": "px",
           "top": "20",
@@ -20,35 +19,25 @@
       },
       "elements": [
         {
-          "id": "e4f5a6b",
-          "elType": "column",
+          "id": "oat_dash_w1",
+          "elType": "widget",
+          "widgetType": "owc_oat_dashboard",
           "settings": {
-            "_column_size": 100
+            "show_pending": "yes",
+            "show_submissions": "yes",
+            "show_watching": "yes",
+            "submit_page_url": "/oat-submit/",
+            "inbox_page_url": "/oat-inbox/"
           },
-          "elements": [
-            {
-              "id": "c7d8e9f",
-              "elType": "widget",
-              "widgetType": "owc_oat_dashboard",
-              "settings": {
-                "show_pending": "yes",
-                "show_submissions": "yes",
-                "show_watching": "yes",
-                "submit_page_url": "/oat-submit/",
-                "inbox_page_url": "/oat-inbox/"
-              },
-              "elements": []
-            }
-          ]
+          "elements": []
         }
       ]
     },
     {
-      "id": "b2c3d4e",
-      "elType": "section",
+      "id": "oat_dash_2",
+      "elType": "container",
       "settings": {
-        "layout": "full_width",
-        "gap": "no",
+        "content_width": "full",
         "padding": {
           "unit": "px",
           "top": "20",
@@ -60,30 +49,21 @@
       },
       "elements": [
         {
-          "id": "f5a6b7c",
-          "elType": "column",
+          "id": "oat_dash_w2",
+          "elType": "widget",
+          "widgetType": "owc_oat_activity",
           "settings": {
-            "_column_size": 100
+            "item_count": 10,
+            "domain_filter": "",
+            "auto_refresh": 0,
+            "entry_detail_page": "/oat-entry/"
           },
-          "elements": [
-            {
-              "id": "d8e9f0a",
-              "elType": "widget",
-              "widgetType": "owc_oat_activity",
-              "settings": {
-                "item_count": 10,
-                "domain_filter": "",
-                "auto_refresh": 0,
-                "entry_detail_page": "/oat-entry/"
-              },
-              "elements": []
-            }
-          ]
+          "elements": []
         }
       ]
     }
   ],
   "page_settings": {
-    "template": "elementor_canvas"
+    "template": "elementor_header_footer"
   }
 }

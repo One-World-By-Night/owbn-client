@@ -121,7 +121,7 @@ function owc_oat_ajax_toggle_watch() {
 function owc_oat_ajax_get_domain_fields() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
-    $domain = isset( $_GET['domain'] ) ? sanitize_text_field( $_GET['domain'] ) : '';
+    $domain = isset( $_REQUEST['domain'] ) ? sanitize_text_field( $_REQUEST['domain'] ) : '';
     if ( empty( $domain ) ) {
         wp_send_json_error( 'Missing domain.' );
     }
