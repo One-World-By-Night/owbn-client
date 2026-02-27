@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.8.6
+Stable tag: 4.9.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,14 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.9.0 =
+* Official: OAT Elementor frontend — 5 widgets (Dashboard, Inbox, Submit, Entry Detail, Activity Feed) with full Elementor controls
+* New: Auto-creates 4 OAT frontend pages (Dashboard, Inbox, Submit, Entry) with Elementor canvas template on first load
+* New: Dedicated `owbn-oat` Elementor widget category
+* New: Frontend CSS/JS assets with tab navigation, client-side filtering, sortable columns, pagination, and auto-refresh
+* New: Elementor page templates (JSON) for quick page setup
+* Includes: All API, AJAX, and shared asset infrastructure from 4.8.5–4.8.6
 
 = 4.8.6 =
 * New: Elementor widget suite for OAT module — Dashboard, Activity Feed, Entry Detail, Inbox, and Submit widgets
