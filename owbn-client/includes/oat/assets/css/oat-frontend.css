@@ -11,7 +11,8 @@
 .oat-inbox-widget,
 .oat-submit-widget,
 .oat-entry-detail,
-.oat-activity-widget {
+.oat-activity-widget,
+.oat-frontend-form {
 	max-width: 960px;
 	margin-left: auto;
 	margin-right: auto;
