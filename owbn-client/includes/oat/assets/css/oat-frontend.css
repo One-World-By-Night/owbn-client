@@ -4,6 +4,20 @@
  * Builds on oat-client.css (loaded as dependency).
  */
 
+/* ── Centered Workspace ──────────────────────────────────────────────────── */
+
+.oat-dashboard,
+.oat-dashboard-actions,
+.oat-inbox-widget,
+.oat-submit-widget,
+.oat-entry-detail,
+.oat-activity-widget,
+.oat-frontend-form {
+	max-width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 /* ── Login Prompt ─────────────────────────────────────────────────────────── */
 
 .oat-login-prompt {
@@ -462,6 +476,66 @@
 .oat-submit-btn:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
+}
+
+/* ── Chronicle / Coordinator Autocomplete Pickers ────────────────────────── */
+
+.oat-chronicle-autocomplete-wrap,
+.oat-coordinator-autocomplete-wrap {
+	position: relative;
+}
+
+.oat-chronicle-selected,
+.oat-coordinator-selected {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	background: #f6f7f7;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.oat-chronicle-selected-name,
+.oat-coordinator-selected-name {
+	font-weight: 500;
+}
+
+.oat-chronicle-clear,
+.oat-coordinator-clear {
+	color: #8b0000;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+/* jQuery UI autocomplete dropdown */
+.ui-autocomplete {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+	max-height: 240px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	z-index: 100100;
+	list-style: none;
+	margin: 0;
+	padding: 4px 0;
+}
+
+.ui-autocomplete .ui-menu-item-wrapper {
+	display: block;
+	padding: 8px 12px;
+	font-size: 14px;
+	color: #1d2327;
+	cursor: pointer;
+}
+
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+.ui-autocomplete .ui-menu-item-wrapper:hover {
+	background: #e5f0f7;
+	color: #2271b1;
 }
 
 /* Submit feedback */

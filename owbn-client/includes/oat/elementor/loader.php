@@ -164,8 +164,8 @@ class OWC_OAT_Elementor_Loader
 /**
  * Create OAT frontend pages on first load if they don't exist.
  *
- * Each page is set to Elementor canvas template so admins can drop OAT widgets
- * onto them. Page IDs are stored in options for cross-linking between widgets.
+ * Each page uses the Elementor header/footer template (keeps theme nav).
+ * Page IDs are stored in options for cross-linking between widgets.
  *
  * @return void
  */
@@ -195,8 +195,9 @@ function owc_oat_create_pages()
 			'post_status' => 'publish',
 			'post_type'   => 'page',
 			'meta_input'  => array(
-				'_elementor_edit_mode' => 'builder',
-				'_wp_page_template'    => 'elementor_canvas',
+				'_elementor_edit_mode'    => 'builder',
+				'_elementor_template_type' => 'wp-page',
+				'_wp_page_template'       => 'elementor_header_footer',
 			),
 		) );
 

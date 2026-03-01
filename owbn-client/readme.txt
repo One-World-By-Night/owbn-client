@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.8.6
+Stable tag: 4.9.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,32 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.9.3 =
+* Fix: Conditional field visibility now works on AJAX-loaded domain fields (action_type show/hide)
+* Fix: Coordinator picker renders as searchable autocomplete for large lists (>20 entries)
+* Fix: Autocomplete dropdown has proper white background, border, and shadow styling
+* New: initCoordinatorAutocomplete() for type-to-match coordinator selection
+
+= 4.9.2 =
+* Improve: Inbox shows "Name > Domain" subject instead of entry ID
+* Improve: Archivist action renamed from "Record" to "Log", timeline shows "Logged"
+* Improve: Timeline labels for auto_approve/auto_deny display human-readable text
+
+= 4.9.1 =
+* Fix: Elementor loader timing — check did_action('elementor/loaded') before hooking, fixes blank pages when Elementor loads before owbn-client
+* Fix: Elementor templates use container layout (not deprecated section/column) for Elementor 3.x with Container experiment
+* Fix: Page template switched to elementor_header_footer to preserve theme navigation
+* Fix: AJAX domain field handler reads $_REQUEST (frontend posts via $.post)
+* Fix: Centered frontend workspace at 960px max-width
+
+= 4.9.0 =
+* Official: OAT Elementor frontend — 5 widgets (Dashboard, Inbox, Submit, Entry Detail, Activity Feed) with full Elementor controls
+* New: Auto-creates 4 OAT frontend pages (Dashboard, Inbox, Submit, Entry) with Elementor header/footer template on first load
+* New: Dedicated `owbn-oat` Elementor widget category
+* New: Frontend CSS/JS assets with tab navigation, client-side filtering, sortable columns, pagination, and auto-refresh
+* New: Elementor page templates (JSON, container format) for quick page setup
+* Includes: All API, AJAX, and shared asset infrastructure from 4.8.5–4.8.6
 
 = 4.8.6 =
 * New: Elementor widget suite for OAT module — Dashboard, Activity Feed, Entry Detail, Inbox, and Submit widgets

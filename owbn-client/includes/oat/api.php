@@ -234,13 +234,14 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
             }
             $seen_entries[ $eid ] = true;
             $assignments[] = array(
-                'entry_id'     => $eid,
-                'domain'       => $a->domain,
-                'domain_label' => OAT_Domain_Registry::get_label( $a->domain ) ?: $a->domain,
-                'status'       => isset( $a->entry_status ) ? $a->entry_status : $a->status,
-                'current_step' => isset( $a->current_step ) ? $a->current_step : '',
-                'title'        => isset( $a->title ) ? $a->title : '',
-                'created_at'   => owc_oat_format_date( isset( $a->created_at ) ? $a->created_at : '' ),
+                'entry_id'      => $eid,
+                'domain'        => $a->domain,
+                'domain_label'  => OAT_Domain_Registry::get_label( $a->domain ) ?: $a->domain,
+                'originator_id' => isset( $a->originator_id ) ? (int) $a->originator_id : 0,
+                'status'        => isset( $a->entry_status ) ? $a->entry_status : $a->status,
+                'current_step'  => isset( $a->current_step ) ? $a->current_step : '',
+                'title'         => isset( $a->title ) ? $a->title : '',
+                'created_at'    => owc_oat_format_date( isset( $a->created_at ) ? $a->created_at : '' ),
             );
         }
 
@@ -253,13 +254,14 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
             }
             $seen_entries[ $eid ] = true;
             $assignments[] = array(
-                'entry_id'     => $eid,
-                'domain'       => $ce->domain,
-                'domain_label' => OAT_Domain_Registry::get_label( $ce->domain ) ?: $ce->domain,
-                'status'       => $ce->status,
-                'current_step' => $ce->current_step,
-                'title'        => isset( $ce->title ) ? $ce->title : '',
-                'created_at'   => owc_oat_format_date( $ce->created_at ),
+                'entry_id'      => $eid,
+                'domain'        => $ce->domain,
+                'domain_label'  => OAT_Domain_Registry::get_label( $ce->domain ) ?: $ce->domain,
+                'originator_id' => isset( $ce->originator_id ) ? (int) $ce->originator_id : 0,
+                'status'        => $ce->status,
+                'current_step'  => $ce->current_step,
+                'title'         => isset( $ce->title ) ? $ce->title : '',
+                'created_at'    => owc_oat_format_date( $ce->created_at ),
             );
         }
 
@@ -268,13 +270,14 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
         $watched = array();
         foreach ( $watched_raw as $w ) {
             $watched[] = array(
-                'entry_id'     => (int) $w->entry_id,
-                'domain'       => $w->domain,
-                'domain_label' => OAT_Domain_Registry::get_label( $w->domain ) ?: $w->domain,
-                'status'       => $w->status,
-                'current_step' => isset( $w->current_step ) ? $w->current_step : '',
-                'title'        => isset( $w->title ) ? $w->title : '',
-                'updated_at'   => owc_oat_format_date( isset( $w->updated_at ) ? $w->updated_at : '' ),
+                'entry_id'      => (int) $w->entry_id,
+                'domain'        => $w->domain,
+                'domain_label'  => OAT_Domain_Registry::get_label( $w->domain ) ?: $w->domain,
+                'originator_id' => isset( $w->originator_id ) ? (int) $w->originator_id : 0,
+                'status'        => $w->status,
+                'current_step'  => isset( $w->current_step ) ? $w->current_step : '',
+                'title'         => isset( $w->title ) ? $w->title : '',
+                'updated_at'    => owc_oat_format_date( isset( $w->updated_at ) ? $w->updated_at : '' ),
             );
         }
 
@@ -283,12 +286,13 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
         $my_entries = array();
         foreach ( $my_entries_raw as $e ) {
             $my_entries[] = array(
-                'entry_id'     => (int) $e->id,
-                'domain'       => $e->domain,
-                'domain_label' => OAT_Domain_Registry::get_label( $e->domain ) ?: $e->domain,
-                'status'       => $e->status,
-                'current_step' => $e->current_step,
-                'created_at'   => owc_oat_format_date( $e->created_at ),
+                'entry_id'      => (int) $e->id,
+                'domain'        => $e->domain,
+                'domain_label'  => OAT_Domain_Registry::get_label( $e->domain ) ?: $e->domain,
+                'originator_id' => (int) $e->originator_id,
+                'status'        => $e->status,
+                'current_step'  => $e->current_step,
+                'created_at'    => owc_oat_format_date( $e->created_at ),
             );
         }
 

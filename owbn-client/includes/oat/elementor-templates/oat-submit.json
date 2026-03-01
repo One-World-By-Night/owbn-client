@@ -4,15 +4,13 @@
   "type": "page",
   "content": [
     {
-      "id": "d4e5f6a",
-      "elType": "section",
+      "id": "oat_submit_1",
+      "elType": "container",
       "settings": {
-        "layout": "boxed",
         "content_width": {
           "unit": "px",
           "size": 800
         },
-        "gap": "no",
         "padding": {
           "unit": "px",
           "top": "40",
@@ -24,31 +22,22 @@
       },
       "elements": [
         {
-          "id": "b7c8d9e",
-          "elType": "column",
+          "id": "oat_submit_w1",
+          "elType": "widget",
+          "widgetType": "owc_oat_submit",
           "settings": {
-            "_column_size": 100
+            "domain_mode": "selector",
+            "fixed_domain": "",
+            "show_note": "yes",
+            "submit_button_text": "Submit Request",
+            "redirect_url": "/oat-entry/"
           },
-          "elements": [
-            {
-              "id": "f0a1b2c",
-              "elType": "widget",
-              "widgetType": "owc_oat_submit",
-              "settings": {
-                "domain_mode": "selector",
-                "fixed_domain": "",
-                "show_note": "yes",
-                "submit_button_text": "Submit Request",
-                "redirect_url": "/oat-entry/"
-              },
-              "elements": []
-            }
-          ]
+          "elements": []
         }
       ]
     }
   ],
   "page_settings": {
-    "template": "elementor_canvas"
+    "template": "elementor_header_footer"
   }
 }
