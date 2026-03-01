@@ -74,17 +74,10 @@
                 $selected.append($tag);
             });
 
-            // Update hidden input with JSON array of IDs.
+            // Update hidden input with JSON array of IDs and notify listeners.
             var ids = selectedRules.map(function(r) { return r.id; });
-            $hidden.val(JSON.stringify(ids));
-
-            // Auto-set coordinator genre from first rule.
-            if (selectedRules.length > 0 && selectedRules[0].coordinator) {
-                var $genre = $wrap.closest('form').find('[name="oat_meta_coordinator_genre"]');
-                if ($genre.length) {
-                    $genre.val(selectedRules[0].coordinator);
-                }
-            }
+            $hidden.val(JSON.stringify(ids)).trigger('change');
+            $(document).trigger('oat-rules-changed');
         }
 
         $wrap.data('rulePicker', {
