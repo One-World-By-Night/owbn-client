@@ -3,8 +3,6 @@
 /**
  * OWBN-Client AJAX Handlers
  * location : includes/admin/ajax.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

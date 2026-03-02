@@ -8,8 +8,6 @@
  *   [owc-coordinator-field field="coord_info" slug="assamite"]
  *   [owc-coordinator-field field="subcoord_list" label="false"]
  * 
- * @package OWBN-Client
-
  */
 
 /**
@@ -37,9 +35,6 @@
 
 defined('ABSPATH') || exit;
 
-/**
- * Get coordinator data with per-request caching.
- */
 function owc_get_coordinator_data(?string $slug = null): ?array
 {
     static $cache = [];

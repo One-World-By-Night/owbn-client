@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying a searchable/sortable list of territories.
  *
- * location: includes/elementor/class-territory-list-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

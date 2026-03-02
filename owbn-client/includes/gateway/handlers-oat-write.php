@@ -2,21 +2,16 @@
 
 /**
  * OWBN Gateway - OAT Write Handlers
- * location: includes/gateway/handlers-oat-write.php
  *
  * Handles write OAT gateway endpoints: submit, action, watch.
  *
  * All handlers call OAT models directly (local mode only — these handlers
  * only load on archivist.owbn.net where OAT is installed).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SUBMIT
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/submit
@@ -177,9 +172,6 @@ function owbn_gateway_oat_submit( $request ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ACTION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/action
@@ -259,9 +251,6 @@ function owbn_gateway_oat_action( $request ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// WATCH
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/watch

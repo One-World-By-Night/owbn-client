@@ -2,9 +2,6 @@
 
 /**
  * OWBN-Client Helpers Init
- * location: includes/helpers/init.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

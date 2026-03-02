@@ -3,8 +3,6 @@
 /**
  * OWBN-Client Coordinator Detail Render
  * location : includes/render/render-coordinator-detail.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

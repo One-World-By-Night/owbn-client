@@ -5,7 +5,6 @@
  * Server mode: Adds player_id to OAuth/OIDC/JWT responses.
  * Client mode: Captures player_id from OAuth login and stores locally.
  *
- * @package OWBN-Client
  * @since 4.1.0
  */
 

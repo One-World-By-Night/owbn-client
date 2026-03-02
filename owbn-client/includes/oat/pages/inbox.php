@@ -2,9 +2,7 @@
 
 /**
  * OAT Client - Inbox Page Controller
- * location: includes/oat/pages/inbox.php
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

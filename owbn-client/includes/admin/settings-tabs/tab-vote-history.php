@@ -1,13 +1,11 @@
 <?php
 /**
  * Settings Tab: Vote History
- * location: includes/admin/settings-tabs/tab-vote-history.php
  *
  * Variables available from the orchestrator:
  *   $group     string  Settings group name.
  *   $page_url  string  Base settings page URL.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

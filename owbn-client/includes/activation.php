@@ -2,9 +2,6 @@
 
 /**
  * OWBN-Client Activation
- * location: includes/activation.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

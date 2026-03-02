@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying coordinator detail page.
  *
- * location: includes/elementor/class-coordinator-detail-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

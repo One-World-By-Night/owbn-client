@@ -2,9 +2,7 @@
 
 /**
  * OAT Client - Entry Detail Page Controller
- * location: includes/oat/pages/entry.php
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

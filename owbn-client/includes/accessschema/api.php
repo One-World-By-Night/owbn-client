@@ -8,7 +8,6 @@
  * Does NOT modify accessSchema-client or accessSchema server.
  * Simply wraps calls using centralized URL/key configuration.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,9 +20,6 @@ defined( 'ABSPATH' ) || exit;
 global $owc_asc_clients;
 $owc_asc_clients = array();
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CLIENT REGISTRATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Register an accessSchema client.
@@ -39,19 +35,11 @@ function owc_asc_register_client( $client_id, $label ) {
 	$owc_asc_clients[ sanitize_key( $client_id ) ] = sanitize_text_field( $label );
 }
 
-/**
- * Get all registered ASC clients.
- *
- * @return array client_id => label
- */
 function owc_asc_get_clients() {
 	global $owc_asc_clients;
 	return is_array( $owc_asc_clients ) ? $owc_asc_clients : array();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CONFIGURATION (centralized — single URL/key for all clients)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Check if centralized ASC is in remote mode.
@@ -62,11 +50,6 @@ function owc_asc_is_remote_mode() {
 	return 'remote' === get_option( owc_option_name( 'asc_mode' ), 'remote' );
 }
 
-/**
- * Get the centralized ASC remote URL.
- *
- * @return string
- */
 function owc_asc_get_remote_url() {
 	$url = trim( (string) get_option( owc_option_name( 'asc_remote_url' ), '' ) );
 	// Strip REST API path if stored in legacy format.
@@ -74,18 +57,10 @@ function owc_asc_get_remote_url() {
 	return rtrim( $url, '/' );
 }
 
-/**
- * Get the centralized ASC remote API key.
- *
- * @return string
- */
 function owc_asc_get_remote_key() {
 	return trim( (string) get_option( owc_option_name( 'asc_remote_api_key' ), '' ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HTTP TRANSPORT (uses centralized URL/key)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Send a POST request to the centralized ASC server.
@@ -179,9 +154,6 @@ function owc_asc_remote_get( $endpoint ) {
 	return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ACCESS CHECK
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Check if a user has access to a role path.
@@ -228,9 +200,6 @@ function owc_asc_check_access( $client_id, $email, $role_path, $include_children
 	return (bool) $data['granted'];
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ROLE RETRIEVAL
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get roles for a user.
@@ -417,9 +386,6 @@ function owc_asc_local_users_by_role( $role_path ) {
 	return $results;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ROLE MANAGEMENT
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Grant a role to a user.
@@ -487,9 +453,6 @@ function owc_asc_revoke_role( $client_id, $email, $role_path ) {
 	return $result;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CACHE REFRESH
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Refresh cached roles for a user.
@@ -539,9 +502,6 @@ function owc_asc_refresh_user_roles( $user_id ) {
 	return $response;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// FILTER INTEGRATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 // Wire registered clients into the accessschema_registered_slugs filter.
 // This allows the existing user_has_cap filter (from client-api.php) to

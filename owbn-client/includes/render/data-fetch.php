@@ -2,10 +2,8 @@
 
 /**
  * OWBN-Client Data Fetch Functions
- * location: includes/render/data-fetch.php
  * Thin wrapper around cached client-api functions.
  * 
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

@@ -2,9 +2,6 @@
 
 /**
  * OWBN-Client Core Init
- * location: includes/core/init.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

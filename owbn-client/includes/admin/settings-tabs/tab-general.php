@@ -1,7 +1,6 @@
 <?php
 /**
  * Settings Tab: General
- * location: includes/admin/settings-tabs/tab-general.php
  *
  * Gateway, Default Remote, Data Sources enable/disable, Cache, Status.
  *
@@ -9,7 +8,6 @@
  *   $group     string  Settings group name.
  *   $page_url  string  Base settings page URL (no tab param).
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

@@ -7,8 +7,6 @@
  * Domain fields are loaded via AJAX (owc_oat_get_domain_fields endpoint).
  * All 25 field types are rendered by owc_oat_render_fields() from fields.php.
  *
- * location: includes/oat/elementor/class-oat-submit-widget.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

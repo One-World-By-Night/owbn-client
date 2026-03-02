@@ -5,8 +5,6 @@
  *
  * Scans for pages using old shortcodes and migrates them to Elementor widgets.
  *
- * location: includes/admin/migration-helper.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

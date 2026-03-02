@@ -6,7 +6,6 @@
  * Uses the same user meta keys as the embedded accessSchema-client
  * copies for backward compatibility during migration.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

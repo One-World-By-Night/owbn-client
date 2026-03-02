@@ -2,7 +2,6 @@
 /**
  * Player ID — Profile Field, Validation, Admin Column, Shortcode
  *
- * @package OWBN-Client
  * @since 4.1.0
  */
 

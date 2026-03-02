@@ -6,7 +6,6 @@
  * Server mode: Stores field, validates uniqueness, adds to OAuth responses.
  * Client mode: Captures player_id from OAuth login, displays read-only.
  *
- * @package OWBN-Client
  * @since 4.1.0
  */
 

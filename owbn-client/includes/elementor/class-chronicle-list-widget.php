@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying a filterable/sortable list of chronicles.
  *
- * location: includes/elementor/class-chronicle-list-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
@@ -706,9 +704,6 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		return ob_get_clean();
 	}
 
-	/**
-	 * Get pages for dropdown.
-	 */
 	private function get_pages_options(): array
 	{
 		$pages = get_pages(['sort_column' => 'post_title']);

@@ -2,12 +2,10 @@
 
 /**
  * OAT Client Module
- * location: includes/oat/init.php
  *
  * Provides OAT user-facing pages (Inbox, Submit, Entry Detail) in owbn-client.
  * Self-guarded by the enable_oat option.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

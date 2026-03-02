@@ -2,7 +2,6 @@
 
 /**
  * OWBN Gateway - Vote History Handlers
- * location: includes/gateway/handlers-votes.php
  *
  * Handler for the /votes/by-entity/{type}/{slug} endpoint.
  * Queries wp-voting-plugin tables directly (both plugins coexist on the
@@ -15,7 +14,6 @@
  *  - Ranked votes (rcv, stv, condorcet, sequential_rcv): choice shown as "Voted"
  *  - Blind open votes (show_results_before_closing off): choice shown as "Voted"
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

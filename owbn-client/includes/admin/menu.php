@@ -3,8 +3,6 @@
 /**
  * OWBN-Client Admin Menu
  * locaiton: includes/admin/menu.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

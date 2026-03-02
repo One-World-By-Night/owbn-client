@@ -5,8 +5,6 @@
  *
  * Registers OWBN Client widgets with Elementor.
  *
- * location: includes/elementor/widgets-loader.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

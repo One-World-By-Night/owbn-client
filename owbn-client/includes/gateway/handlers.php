@@ -2,7 +2,6 @@
 
 /**
  * OWBN Gateway - Data Handlers
- * location: includes/gateway/handlers.php
  *
  * Route callbacks that resolve data from local CPTs or proxy to a remote
  * gateway based on the per-type mode setting (local vs remote).
@@ -15,14 +14,10 @@
  * Remote URL resolution uses owc_get_remote_base($type) which checks for
  * a per-type override first, then falls back to the default remote URL.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Wrap data in a standard REST response.
@@ -68,9 +63,6 @@ function owbn_gateway_remote_fetch( $type, $endpoint ) {
     return owc_remote_request( $base . $endpoint, $key );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CHRONICLES
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/chronicles
@@ -109,9 +101,6 @@ function owbn_gateway_detail_chronicle( $request ) {
     return owbn_gateway_respond( $data );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// COORDINATORS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/coordinators
@@ -150,9 +139,6 @@ function owbn_gateway_detail_coordinator( $request ) {
     return owbn_gateway_respond( $data );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TERRITORIES
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/territories

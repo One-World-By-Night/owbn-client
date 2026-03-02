@@ -5,14 +5,10 @@
  * Renders form fields from field definition arrays (DB-driven or legacy).
  * Handles rendering, sanitization, and validation for all 19 field types.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RENDER: FORM MODE
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render all fields for a form.
@@ -659,9 +655,6 @@ function owc_oat_render_field( $field, $value = '' ) {
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RENDER: READ-ONLY MODE (Entry Detail)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render all fields in read-only mode.
@@ -849,9 +842,6 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 	echo '</td></tr>';
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SANITIZATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Sanitize all submitted field values.
@@ -962,9 +952,6 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// VALIDATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Validate all submitted field values.
@@ -1115,9 +1102,6 @@ function owc_oat_validate_field( $field, $value ) {
 	return true;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INTERNAL HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Resolve an auto_prop source to a value.

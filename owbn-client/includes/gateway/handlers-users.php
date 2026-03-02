@@ -2,7 +2,6 @@
 
 /**
  * OWBN Gateway - User Verification Handler
- * location: includes/gateway/handlers-users.php
  *
  * Handles POST /owbn/v1/users/verify — validates that a user exists
  * on this site by email + player_id. Used by other OWBN sites for
@@ -11,7 +10,6 @@
  *
  * Only loaded when player-id module is in server mode (SSO server).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

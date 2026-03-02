@@ -6,8 +6,6 @@
  * Elementor widget for displaying a single OAT entry with full details,
  * timeline, and available actions. Replaces the admin Entry Detail page.
  *
- * location: includes/oat/elementor/class-oat-entry-widget.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

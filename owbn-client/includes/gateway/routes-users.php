@@ -2,12 +2,10 @@
 
 /**
  * OWBN Gateway - User Verification Routes
- * location: includes/gateway/routes-users.php
  *
  * Registers /users/verify endpoint for SSO user verification.
  * Only loaded when player-id module is in server mode (SSO server).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

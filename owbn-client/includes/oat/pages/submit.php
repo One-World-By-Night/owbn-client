@@ -2,9 +2,7 @@
 
 /**
  * OAT Client - Submit Page Controller
- * location: includes/oat/pages/submit.php
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

@@ -2,19 +2,12 @@
 
 /**
  * OWBN-Client Registration
- * location: includes/core/client-register.php
  * Registers client instance and connection modes.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
 
-/**
- * Get normalized client ID from prefix.
- *
- * @return string Lowercase hyphenated client ID
- */
 function owc_get_client_id(): string
 {
     return strtolower(str_replace('_', '-', OWC_PREFIX));

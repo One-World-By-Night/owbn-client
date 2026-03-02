@@ -6,8 +6,6 @@
  * Elementor widget for displaying individual coordinator fields.
  * Useful for Elementor Theme Builder dynamic templates.
  *
- * location: includes/elementor/class-coordinator-field-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
@@ -225,9 +223,6 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		echo owc_render_coordinator_field($coordinator, $field, $show_label);
 	}
 
-	/**
-	 * Get field options for dropdown.
-	 */
 	private function get_field_options(): array
 	{
 		return [

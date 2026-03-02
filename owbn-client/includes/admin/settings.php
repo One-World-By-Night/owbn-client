@@ -6,7 +6,6 @@
  *
  * Tab registry, settings registration, cache-clear hook, and tab router.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
@@ -34,15 +33,7 @@ function owc_sanitize_remote_url( $url ) {
     return $url;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TAB REGISTRY
-// ══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Get all settings tabs.
- *
- * @return array Tab slug => config array.
- */
 function owc_get_settings_tabs() {
     return array(
         'general'      => array(
@@ -96,9 +87,6 @@ function owc_get_settings_tabs() {
     );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// REGISTER SETTINGS
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action('admin_init', function () {
     $group = owc_get_client_id() . '_owc_settings';
@@ -319,9 +307,6 @@ add_action('admin_init', function () {
     ]);
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
-// AUTO-CLEAR CACHES ON SETTINGS CHANGE
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action( 'updated_option', function ( $option, $old_value, $new_value ) {
     if ( $old_value === $new_value ) {
@@ -349,9 +334,6 @@ add_action( 'updated_option', function ( $option, $old_value, $new_value ) {
     }
 }, 10, 3 );
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RENDER SETTINGS PAGE (TAB ROUTER)
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_render_settings_page()
 {

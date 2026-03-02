@@ -2,12 +2,10 @@
 
 /**
  * OWBN Gateway - OAT Route Registration
- * location: includes/gateway/routes-oat.php
  *
  * Registers all /owbn/v1/oat/* REST routes.
  * Self-guarded: only registers when OAT plugin is active and gateway is enabled.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

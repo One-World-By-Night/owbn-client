@@ -5,14 +5,10 @@
  * Reusable pickers for chronicle and coordinator selection,
  * filtered by the current user's ASC roles.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CHRONICLE PICKER
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render a chronicle picker <select> filtered by user's ASC roles.
@@ -139,9 +135,6 @@ function owc_asc_render_chronicle_picker( $args ) {
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// COORDINATOR PICKER
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render a coordinator picker <select> filtered by user's ASC roles.
@@ -247,9 +240,6 @@ function owc_asc_render_coordinator_picker( $args ) {
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INTERNAL HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get deduplicated entity entries the current user has roles on.

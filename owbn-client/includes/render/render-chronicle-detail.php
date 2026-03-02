@@ -2,9 +2,6 @@
 
 /**
  * OWBN-Client Chronicle Detail Render
- * location: includes/render/render-chronicle-detail.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

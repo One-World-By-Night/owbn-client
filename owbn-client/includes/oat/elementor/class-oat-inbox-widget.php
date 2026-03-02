@@ -6,8 +6,6 @@
  * Elementor widget for displaying a filterable, sortable list of OAT entries
  * relevant to the current user. Replaces the admin Inbox page.
  *
- * location: includes/oat/elementor/class-oat-inbox-widget.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

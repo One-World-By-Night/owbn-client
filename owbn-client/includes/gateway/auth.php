@@ -2,11 +2,9 @@
 
 /**
  * OWBN Gateway - Authentication
- * location: includes/gateway/auth.php
  *
  * Centralized auth: API key, WP application password, domain whitelist.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

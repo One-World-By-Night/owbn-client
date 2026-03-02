@@ -2,7 +2,6 @@
 
 /**
  * OWBN Gateway - OAT Read Handlers
- * location: includes/gateway/handlers-oat.php
  *
  * Handles read-only OAT gateway endpoints: inbox, entries, entry detail,
  * domains, and regulation rules search.
@@ -10,14 +9,10 @@
  * All handlers call OAT models directly (local mode only — these handlers
  * only load on archivist.owbn.net where OAT is installed).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Build a user display name map from an array of user IDs.
@@ -66,9 +61,6 @@ function owbn_gateway_oat_serialize_entry( $entry ) {
     );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INBOX
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/inbox
@@ -170,9 +162,6 @@ function owbn_gateway_oat_inbox( $request ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ENTRIES LIST
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/entries
@@ -236,9 +225,6 @@ function owbn_gateway_oat_entries( $request ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ENTRY DETAIL
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/entry/{id}
@@ -463,9 +449,6 @@ function owbn_gateway_oat_get_available_actions( $entry, $user_id ) {
     return array_values( array_unique( $actions ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// DOMAINS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/domains
@@ -493,9 +476,6 @@ function owbn_gateway_oat_domains( $request ) {
     return owbn_gateway_respond( $domains );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RULES SEARCH
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle POST /owbn/v1/oat/form-fields

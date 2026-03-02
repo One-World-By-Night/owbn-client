@@ -12,9 +12,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COLUMN REGISTRATION
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Add the ASC Roles column.
@@ -25,9 +22,6 @@ function owc_asc_add_users_column( $columns ) {
 }
 add_filter( 'manage_users_columns', 'owc_asc_add_users_column' );
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COLUMN RENDERING
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render the ASC Roles column for each user row.
@@ -122,9 +116,6 @@ function owc_asc_render_users_column( $output, $column_name, $user_id ) {
 }
 add_filter( 'manage_users_custom_column', 'owc_asc_render_users_column', 10, 3 );
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// DATA LOADING — local vs remote
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Batch-load all user roles for the current page of users.
@@ -220,9 +211,6 @@ function _owc_asc_batch_load_roles_remote() {
 	return $grouped;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// FILTER UI
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render the ASC role filter dropdown above the Users table.
@@ -310,9 +298,6 @@ function _owc_asc_get_all_known_paths() {
 	return array_keys( $all );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// FILTER QUERY
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Modify the Users query to filter by ASC role.
@@ -425,9 +410,6 @@ function _owc_asc_filter_remote( $query, $role_filter ) {
 	$query->query_where .= " AND {$wpdb->users}.ID IN ({$ids})";
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// PER-USER REFRESH
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Handle the per-user refresh action (non-AJAX, simple GET).
@@ -457,9 +439,6 @@ function owc_asc_handle_user_refresh() {
 }
 add_action( 'admin_init', 'owc_asc_handle_user_refresh' );
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// BULK REFRESH
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Add "Refresh ASC Roles" to the bulk actions dropdown.
@@ -515,9 +494,6 @@ function owc_asc_bulk_refresh_notice() {
 }
 add_action( 'admin_notices', 'owc_asc_bulk_refresh_notice' );
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// STYLES
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Inline styles for the ASC roles column.

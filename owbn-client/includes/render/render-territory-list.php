@@ -2,11 +2,8 @@
 
 /**
  * OWBN-Client Render Territory List
- * location: includes/render/render-territory-list.php
  * Client-side paginated, sortable, searchable territory listing with modal detail.
  * 
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

@@ -2,50 +2,26 @@
 
 /**
  * OWBN-Client Rewrite Rules
- * location: includes/core/rewrites.php
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SLUG HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Get chronicles base slug.
- *
- * @return string
- */
 function owc_get_chronicles_slug(): string
 {
     return sanitize_title(get_option(owc_option_name('chronicles_slug'), 'chronicle'));
 }
 
-/**
- * Get coordinators base slug.
- *
- * @return string
- */
 function owc_get_coordinators_slug(): string
 {
     return sanitize_title(get_option(owc_option_name('coordinators_slug'), 'coordinator'));
 }
 
-/**
- * Get territories base slug.
- *
- * @return string
- */
 function owc_get_territories_slug(): string
 {
     return sanitize_title(get_option(owc_option_name('territories_slug'), 'territory'));
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// REGISTER REWRITE RULES
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action('init', 'owc_register_rewrite_rules');
 
@@ -116,9 +92,6 @@ function owc_register_rewrite_rules()
     }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// REGISTER QUERY VARS
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_filter('query_vars', 'owc_register_query_vars');
 
@@ -131,9 +104,6 @@ function owc_register_query_vars(array $vars): array
     return $vars;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// FLUSH REWRITE RULES ON OPTION CHANGE
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action('update_option_' . owc_option_name('enable_chronicles'), 'owc_schedule_rewrite_flush');
 add_action('update_option_' . owc_option_name('enable_coordinators'), 'owc_schedule_rewrite_flush');
@@ -157,9 +127,6 @@ function owc_maybe_flush_rewrites()
     }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ACTIVATION HOOK - Must be called from main plugin file
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_activate()
 {

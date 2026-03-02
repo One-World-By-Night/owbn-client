@@ -8,8 +8,6 @@
  *   [owc-chronicle-field field="hst_info" slug="mckn"]
  *   [owc-chronicle-field field="session_list" label="false"]
  * 
- * @package OWBN-Client
-
  */
 
 /**
@@ -40,9 +38,6 @@
 
 defined('ABSPATH') || exit;
 
-/**
- * Get chronicle data with per-request caching.
- */
 function owc_get_chronicle_data(?string $slug = null): ?array
 {
     static $cache = [];

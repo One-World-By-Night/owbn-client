@@ -1,7 +1,6 @@
 <?php
 /**
  * OAT Client - Entry Detail Template
- * location: includes/oat/templates/entry-detail.php
  *
  * Variables available (all arrays from api.php):
  *   $entry             array  Entry record.
@@ -23,7 +22,6 @@
  *   $created           bool   Whether entry was just created (show success notice).
  *   $entry_id          int    Entry ID.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

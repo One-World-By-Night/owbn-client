@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying territory detail page.
  *
- * location: includes/elementor/class-territory-detail-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

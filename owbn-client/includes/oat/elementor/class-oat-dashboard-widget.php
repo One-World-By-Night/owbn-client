@@ -6,8 +6,6 @@
  * Elementor widget showing a summary of the current user's OAT activity:
  * pending count, submissions count, watching count, and quick action links.
  *
- * location: includes/oat/elementor/class-oat-dashboard-widget.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

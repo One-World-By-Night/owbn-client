@@ -6,8 +6,6 @@
  * Registers OAT widgets, category, and frontend assets with Elementor.
  * Completely separate from the existing OWC_Elementor_Loader in includes/elementor/.
  *
- * location: includes/oat/elementor/loader.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -157,9 +155,6 @@ class OWC_OAT_Elementor_Loader
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// PAGE AUTO-CREATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Create OAT frontend pages on first load if they don't exist.

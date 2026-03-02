@@ -2,12 +2,9 @@
 
 /**
  * OWBN-Client Render Territory Box
- * location: includes/render/render-territory-box.php
  * Embedded territory list for chronicle/coordinator detail pages.
  * Client-side pagination and sorting.
  * 
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;
@@ -213,11 +210,6 @@ function owc_render_territory_box(array $territories, string $context = '', stri
     return ob_get_clean();
 }
 
-/**
- * Get all slug types for JS.
- *
- * @return array ['slug' => 'chronicle'|'coordinator']
- */
 function owc_get_all_slug_types(): array
 {
     $types = [];

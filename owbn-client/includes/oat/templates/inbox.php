@@ -1,7 +1,6 @@
 <?php
 /**
  * OAT Client - Inbox Template
- * location: includes/oat/templates/inbox.php
  *
  * Variables available:
  *   $assignments   array  Pending assignment items.
@@ -11,7 +10,6 @@
  *   $domains       array  Domain list ({ slug, label }).
  *   $domain_filter string Active domain filter.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

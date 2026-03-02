@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying chronicle detail page.
  *
- * location: includes/elementor/class-chronicle-detail-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

@@ -5,8 +5,6 @@
  *
  * Elementor widget for displaying a list of coordinators grouped by type.
  *
- * location: includes/elementor/class-coordinator-list-widget.php
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
@@ -575,9 +573,6 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		return ob_get_clean();
 	}
 
-	/**
-	 * Get pages for dropdown.
-	 */
 	private function get_pages_options(): array
 	{
 		$pages = get_pages(['sort_column' => 'post_title']);

@@ -2,20 +2,15 @@
 
 /**
  * OAT Client API
- * location: includes/oat/api.php
  *
  * Local/remote mode switching for OAT data access.
  * Local mode: calls OAT models directly (archivist.owbn.net).
  * Remote mode: HTTP POST to OAT gateway endpoints.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// MODE DETECTION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Check if OAT should use local mode.
@@ -28,9 +23,6 @@ function owc_oat_is_local() {
     return owc_get_mode( 'oat' ) === 'local' && class_exists( 'OAT_Entry' );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TIMESTAMP FORMATTING
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Format a Unix timestamp or datetime string for display.
@@ -107,9 +99,6 @@ function owc_oat_format_remote_timestamps( $data ) {
     return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// REMOTE REQUEST HELPER
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Make a remote OAT gateway request.
@@ -176,15 +165,7 @@ function owc_oat_request( $endpoint, $body = array() ) {
     return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// DOMAINS
-// ══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Get all OAT domains.
- *
- * @return array List of { slug, label } objects.
- */
 function owc_oat_get_domains() {
     if ( owc_oat_is_local() ) {
         $domains = OAT_Domain_Registry::get_all();
@@ -201,9 +182,6 @@ function owc_oat_get_domains() {
     return owc_oat_request( 'domains' );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INBOX
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get the current user's inbox data.
@@ -335,9 +313,6 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
     return is_wp_error( $result ) ? $result : owc_oat_format_remote_timestamps( $result );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ENTRIES LIST
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get paginated entry list.
@@ -421,9 +396,6 @@ function owc_oat_get_entries( $args = array() ) {
     return $result;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ENTRY DETAIL
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get full entry detail bundle.
@@ -610,9 +582,6 @@ function owc_oat_get_entry( $entry_id ) {
     return is_wp_error( $result ) ? $result : owc_oat_format_remote_timestamps( $result );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SUBMIT
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Submit a new OAT entry.
@@ -711,9 +680,6 @@ function owc_oat_submit( $data ) {
     return owc_oat_request( 'submit', $data );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ACTION
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Execute a workflow action on an entry.
@@ -760,9 +726,6 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
     return owc_oat_request( 'action', $body );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// WATCH
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Toggle watch on an entry.
@@ -800,9 +763,6 @@ function owc_oat_toggle_watch( $entry_id, $watch_action = 'add' ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RULES SEARCH
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Search regulation rules for autocomplete.
@@ -845,9 +805,6 @@ function owc_oat_search_rules( $term, $limit = 20 ) {
     ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// FORM FIELDS (DB-driven, per domain + context)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get form field definitions for a domain + context.
@@ -926,9 +883,6 @@ function owc_oat_get_domain_fields( $domain_slug ) {
     return owc_oat_get_form_fields( $domain_slug, 'submit' );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Compute available actions for a user on an entry.
@@ -1229,9 +1183,6 @@ function owc_oat_set_regulation_meta( $entry_id, $rule_ids ) {
     }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// DASHBOARD COUNTS (new — used by OAT Dashboard Elementor widget)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get entry counts for a user's dashboard.
@@ -1284,9 +1235,6 @@ function owc_oat_get_dashboard_counts( $user_id ) {
     return isset( $response['counts'] ) ? $response['counts'] : $response;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// RECENT ACTIVITY (new — used by OAT Activity Feed Elementor widget)
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get recent timeline activity visible to a user.

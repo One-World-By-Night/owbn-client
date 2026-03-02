@@ -5,7 +5,6 @@
  * Provides shared accessSchema-client functionality for all OWBN plugins.
  * Self-guarded: only loads when ASC is enabled in settings.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

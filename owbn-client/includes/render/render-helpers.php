@@ -2,18 +2,12 @@
 
 /**
  * OWBN-Client Render Helpers
- * location: includes/render/render-helpers.php
  * Reusable display components for frontend rendering.
  * 
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// USER/STAFF DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render a staff member block.
@@ -84,9 +78,6 @@ function owc_render_ast_list(array $ast_list): string
     return ob_get_clean();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SESSION DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render session list.
@@ -157,9 +148,6 @@ function owc_render_session_item(array $session): string
     return ob_get_clean();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LOCATION DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Format location parts into display string.
@@ -242,9 +230,6 @@ function owc_render_location_list(array $locations, string $type = 'game_site'):
     return ob_get_clean();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LINKS DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render document links list.
@@ -343,9 +328,6 @@ function owc_render_email_lists(array $lists): string
     return ob_get_clean();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INFO DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render info item (label + value pair).
@@ -440,9 +422,6 @@ function owc_render_player_lists(array $lists): string
     return ob_get_clean();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TERRITORY DISPLAY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Determine slug type from cached CC data.

@@ -2,12 +2,10 @@
 
 /**
  * OWBN-Client Vote History Render
- * location: includes/render/render-vote-history.php
  *
  * Table styling mirrors wp-voting-plugin's wpvp-vote-table so vote history
  * looks consistent whether viewed on council (producer) or chronicles (consumer).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

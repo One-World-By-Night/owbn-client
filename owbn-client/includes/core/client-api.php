@@ -2,19 +2,12 @@
 
 /**
  * OWBN-Client API Functions
- * location: includes/core/client-api.php
  * Handles remote and local API calls to fetch chronicle/coordinator/territory data.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
 
-/**
- * Get cache TTL in seconds.
- *
- * @return int
- */
 function owc_get_cache_ttl(): int
 {
     return (int) get_option(owc_option_name('cache_ttl'), 3600);
@@ -164,9 +157,6 @@ function owc_remote_request(string $url, string $api_key, array $body = [])
     return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LOCAL FETCH FUNCTIONS - LISTS (Direct DB queries, no API)
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_get_local_chronicles()
 {
@@ -265,9 +255,6 @@ function owc_get_local_territories()
     }, $posts);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LOCAL FETCH FUNCTIONS - DETAILS (Direct DB queries, no API)
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_get_local_chronicle_detail(string $slug)
 {
@@ -450,9 +437,6 @@ function owc_get_local_territories_by_slug(string $slug)
     return $results;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CACHED FETCH FUNCTIONS - LISTS
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_get_chronicles(bool $force_refresh = false)
 {
@@ -559,9 +543,6 @@ function owc_get_territories(bool $force_refresh = false)
     return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CACHED FETCH FUNCTIONS - DETAILS
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_get_chronicle_detail(string $slug)
 {
@@ -679,9 +660,6 @@ function owc_get_territories_by_slug(string $slug)
     return owc_remote_request($base . 'territories/by-slug/' . rawurlencode($slug), $key);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CACHED FETCH FUNCTIONS - VOTE HISTORY
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Fetch vote history for an entity (chronicle or coordinator).
@@ -732,9 +710,6 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
     return $data;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CACHE MANAGEMENT
-// ══════════════════════════════════════════════════════════════════════════════
 
 function owc_refresh_all_caches()
 {

@@ -9,9 +9,6 @@
 
 defined('ABSPATH') || exit;
 
-/**
- * Get country list with special territory codes.
- */
 function owc_tm_get_country_list(): array
 {
     // Special codes first
@@ -230,18 +227,12 @@ function owc_tm_get_country_list(): array
     ];
 }
 
-/**
- * Get country name from ISO code.
- */
 function owc_tm_get_country_name(string $code): string
 {
     $countries = owc_tm_get_country_list();
     return $countries[$code] ?? $code;
 }
 
-/**
- * Get country names from array of ISO codes.
- */
 function owc_tm_get_country_names(array $codes): array
 {
     return array_map('owc_tm_get_country_name', $codes);

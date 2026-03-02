@@ -2,11 +2,8 @@
 
 /**
  * OWBN-Client Render Territory Detail
- * location: includes/render/render-territory-detail.php
  * Full detail view for single territory.
  * 
- * @package OWBN-Client
-
  */
 
 defined('ABSPATH') || exit;

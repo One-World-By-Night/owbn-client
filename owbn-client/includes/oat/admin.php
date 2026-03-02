@@ -2,19 +2,14 @@
 
 /**
  * OAT Client Admin
- * location: includes/oat/admin.php
  *
  * Registers admin menu items and enqueues OAT assets.
  * Menu uses 'read' capability — real authorization is server-side.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// MENU REGISTRATION
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action( 'admin_menu', 'owc_oat_register_menus' );
 
@@ -70,9 +65,6 @@ function owc_oat_register_menus() {
     );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// PAGE RENDER CALLBACKS
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Render the inbox page.
@@ -104,9 +96,6 @@ function owc_oat_render_entry() {
     owc_oat_page_entry();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ASSET ENQUEUE
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action( 'admin_enqueue_scripts', 'owc_oat_enqueue_assets' );
 

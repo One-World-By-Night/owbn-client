@@ -6,8 +6,6 @@
  * Elementor widget showing a chronological feed of recent OAT timeline events
  * visible to the current user. Supports auto-refresh.
  *
- * location: includes/oat/elementor/class-oat-activity-widget.php
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

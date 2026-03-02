@@ -2,7 +2,6 @@
 
 /**
  * OWBNClient Admin Init
- * location: includes/admin/init.php
  * @package OWBNClient
 
  */

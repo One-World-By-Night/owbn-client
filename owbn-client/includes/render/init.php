@@ -2,7 +2,6 @@
 
 /**
  * OWBNClient Render Init
- * location: includes/render/init.php
  * @package OWBNClient
 
  */

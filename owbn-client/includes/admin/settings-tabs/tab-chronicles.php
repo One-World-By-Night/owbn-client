@@ -1,13 +1,11 @@
 <?php
 /**
  * Settings Tab: Chronicles
- * location: includes/admin/settings-tabs/tab-chronicles.php
  *
  * Variables available from the orchestrator:
  *   $group     string  Settings group name.
  *   $page_url  string  Base settings page URL.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

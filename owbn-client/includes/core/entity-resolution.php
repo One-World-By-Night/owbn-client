@@ -6,14 +6,10 @@
  * and coordinators. Builds on owc_get_chronicles() / owc_get_coordinators()
  * and includes fallback handling for legacy/unattributed ASC slugs.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INTERNAL CACHE
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * In-memory entity maps, built once per request.
@@ -147,9 +143,6 @@ function _owc_entity_ensure_cache( $type ) {
 	}
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// PUBLIC API
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Get the title for a slug.

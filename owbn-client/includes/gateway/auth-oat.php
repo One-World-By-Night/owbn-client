@@ -2,7 +2,6 @@
 
 /**
  * OWBN Gateway - OAT Authentication
- * location: includes/gateway/auth-oat.php
  *
  * Chains standard gateway API key auth with user identity resolution
  * via x-oat-user-email header. Includes JIT (Just-In-Time) user
@@ -10,7 +9,6 @@
  *
  * Only loaded when OAT plugin is active (class_exists('OAT_Entry')).
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

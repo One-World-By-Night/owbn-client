@@ -2,12 +2,10 @@
 
 /**
  * OAT Client AJAX Handlers
- * location: includes/oat/ajax.php
  *
  * AJAX endpoints for OAT client pages. All calls proxy through
  * the api.php layer which handles local/remote mode switching.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

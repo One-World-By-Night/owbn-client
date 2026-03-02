@@ -5,14 +5,10 @@
  * Quick search across cached data sources for the settings page.
  * All searches read from existing transient caches — no new remote fetches.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// AJAX HANDLERS
-// ══════════════════════════════════════════════════════════════════════════════
 
 add_action( 'wp_ajax_owc_search_chronicles', 'owc_ajax_search_chronicles' );
 add_action( 'wp_ajax_owc_search_coordinators', 'owc_ajax_search_coordinators' );
@@ -95,9 +91,6 @@ function owc_ajax_search_asc_roles() {
 	wp_send_json( owc_asc_role_search( $term, 15 ) );
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SEARCH UTILITIES
-// ══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Search territories by title, owner, or location.

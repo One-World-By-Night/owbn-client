@@ -2,11 +2,9 @@
 
 /**
  * OWBN Gateway - Route Registration
- * location: includes/gateway/routes.php
  *
  * Registers all owbn/v1/ REST routes. Only fires when gateway is enabled.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

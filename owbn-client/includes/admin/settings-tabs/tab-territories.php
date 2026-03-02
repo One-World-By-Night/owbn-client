@@ -1,13 +1,11 @@
 <?php
 /**
  * Settings Tab: Territories
- * location: includes/admin/settings-tabs/tab-territories.php
  *
  * Variables available from the orchestrator:
  *   $group     string  Settings group name.
  *   $page_url  string  Base settings page URL.
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

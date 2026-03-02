@@ -2,12 +2,10 @@
 
 /**
  * OWBN Gateway - Init / Loader
- * location: includes/gateway/init.php
  *
  * Wires the gateway into the plugin boot sequence.
  * Skips all registration if the gateway is not enabled.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;

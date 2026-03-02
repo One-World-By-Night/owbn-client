@@ -1,7 +1,6 @@
 <?php
 /**
  * OAT Client - Submit Form Template
- * location: includes/oat/templates/submit-form.php
  *
  * Variables available:
  *   $domains         array  Domain list ({ slug, label }).
@@ -10,7 +9,6 @@
  *   $error           string Error message (if any).
  *   $success         string Success message (if any).
  *
- * @package OWBN-Client
  */
 
 defined( 'ABSPATH' ) || exit;

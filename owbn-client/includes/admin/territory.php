@@ -6,7 +6,6 @@
  * Shows data source, cache status, record count, and gateway registration
  * for the Territories data type. Provides cache clear/refresh actions.
  *
- * @package OWBN-Client
  */
 
 defined('ABSPATH') || exit;
