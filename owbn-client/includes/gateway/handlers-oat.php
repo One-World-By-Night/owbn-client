@@ -534,3 +534,42 @@ function owbn_gateway_oat_rules_search( $request ) {
 
     return owbn_gateway_respond( $results );
 }
+
+/**
+ * Handle POST /owbn/v1/oat/rules
+ *
+ * Returns all active regulation rules for client-side caching.
+ * Clients cache this via transient and use it to resolve coordinator
+ * display when the OAT toolkit is not installed locally.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function owbn_gateway_oat_rules_list( $request ) {
+    if ( ! class_exists( 'OAT_Regulation_Rule' ) ) {
+        return owbn_gateway_respond( array() );
+    }
+
+    $rules = OAT_Regulation_Rule::all( array(
+        'active'   => 1,
+        'per_page' => 5000,
+        'offset'   => 0,
+    ) );
+
+    $out = array();
+    foreach ( $rules as $rule ) {
+        $out[] = array(
+            'id'          => (int) $rule->id,
+            'genre'       => $rule->genre,
+            'category'    => $rule->category,
+            'subcategory' => $rule->subcategory,
+            'condition'   => $rule->condition_name,
+            'pc_level'    => $rule->pc_level,
+            'npc_level'   => $rule->npc_level,
+            'coordinator' => $rule->controlling_coordinator,
+            'elevation'   => (int) $rule->elevation,
+        );
+    }
+
+    return owbn_gateway_respond( $out );
+}

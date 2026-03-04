@@ -296,6 +296,7 @@ $chronicles_cache   = get_transient( 'owc_chronicles_cache' );
 $coordinators_cache = get_transient( 'owc_coordinators_cache' );
 $territories_cache  = get_transient( 'owc_territories_cache' );
 $asc_roles_cache    = get_transient( 'owc_asc_roles_all' );
+$oat_rules_cache    = get_transient( 'owc_oat_rules_cache' );
 
 $territory_cpt_count = 0;
 if ( $tm_active ) {
@@ -442,6 +443,20 @@ $elementor_active = did_action( 'elementor/loaded' );
             ?>
         </td>
     </tr>
+    <?php if ( $oat_enabled && $oat_mode === 'remote' ) : ?>
+    <tr>
+        <td><strong><?php esc_html_e( 'OAT Rules Cache', 'owbn-client' ); ?></strong></td>
+        <td colspan="2">
+            <?php
+            if ( is_array( $oat_rules_cache ) ) {
+                printf( esc_html__( '%d rules cached', 'owbn-client' ), count( $oat_rules_cache ) );
+            } else {
+                esc_html_e( 'Not cached — will fetch on first use', 'owbn-client' );
+            }
+            ?>
+        </td>
+    </tr>
+    <?php endif; ?>
     <tr>
         <td><strong><?php esc_html_e( 'accessSchema', 'owbn-client' ); ?></strong></td>
         <td>

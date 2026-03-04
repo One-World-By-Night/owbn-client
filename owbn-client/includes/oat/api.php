@@ -1333,3 +1333,77 @@ function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
     }
     return isset( $response['events'] ) ? $response['events'] : $response;
 }
+
+/**
+ * Get all active regulation rules, with transient caching.
+ *
+ * In local mode (OAT toolkit active), queries the DB directly.
+ * In remote mode, fetches from archivist via /oat/rules and caches
+ * the result in a transient for efficient client-side use.
+ *
+ * @param bool $force_refresh Skip the transient cache when true.
+ * @return array Array of rule arrays (id, genre, category, subcategory,
+ *               condition, pc_level, npc_level, coordinator, elevation).
+ */
+function owc_oat_get_regulation_rules( $force_refresh = false ) {
+    $cache_key = 'owc_oat_rules_cache';
+
+    if ( ! $force_refresh ) {
+        $cached = get_transient( $cache_key );
+        if ( false !== $cached ) {
+            return $cached;
+        }
+    }
+
+    if ( owc_oat_is_local() ) {
+        if ( ! class_exists( 'OAT_Regulation_Rule' ) ) {
+            return array();
+        }
+        $rows = OAT_Regulation_Rule::all( array( 'active' => 1, 'per_page' => 5000 ) );
+        $data = array();
+        foreach ( $rows as $rule ) {
+            $data[ (int) $rule->id ] = array(
+                'id'          => (int) $rule->id,
+                'genre'       => $rule->genre,
+                'category'    => $rule->category,
+                'subcategory' => $rule->subcategory,
+                'condition'   => $rule->condition_name,
+                'pc_level'    => $rule->pc_level,
+                'npc_level'   => $rule->npc_level,
+                'coordinator' => $rule->controlling_coordinator,
+                'elevation'   => (int) $rule->elevation,
+            );
+        }
+    } else {
+        $response = owc_oat_request( 'rules', array() );
+        if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+            return array();
+        }
+        $data = array();
+        foreach ( $response as $rule ) {
+            $id = isset( $rule['id'] ) ? (int) $rule['id'] : 0;
+            if ( $id ) {
+                $data[ $id ] = $rule;
+            }
+        }
+    }
+
+    $ttl = defined( 'OWC_CACHE_TTL' ) ? (int) OWC_CACHE_TTL : 3600;
+    if ( $ttl > 0 ) {
+        set_transient( $cache_key, $data, $ttl );
+    }
+
+    return $data;
+}
+
+/**
+ * Find a single regulation rule by ID, using the cached rule list.
+ *
+ * @param int $id Rule ID.
+ * @return array|null Rule data array or null if not found.
+ */
+function owc_oat_find_cached_rule( $id ) {
+    $id    = (int) $id;
+    $rules = owc_oat_get_regulation_rules();
+    return isset( $rules[ $id ] ) ? $rules[ $id ] : null;
+}

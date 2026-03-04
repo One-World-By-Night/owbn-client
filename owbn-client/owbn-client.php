@@ -68,7 +68,7 @@ if (!defined($prefix . 'URL')) {
     define($prefix . 'URL', plugin_dir_url(__FILE__));
 }
 if (!defined($prefix . 'VERSION')) {
-    define($prefix . 'VERSION', '4.9.2');
+    define($prefix . 'VERSION', '4.10.0');
 }
 if (!defined($prefix . 'TEXTDOMAIN')) {
     define($prefix . 'TEXTDOMAIN', 'owbn-client');

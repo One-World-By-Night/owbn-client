@@ -94,4 +94,11 @@ function owbn_gateway_register_oat_routes() {
         'callback'            => 'owbn_gateway_oat_form_fields',
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
+
+    // Rules list: all active regulation rules (for client-side caching)
+    register_rest_route( $namespace, '/oat/rules', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_rules_list',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
 }

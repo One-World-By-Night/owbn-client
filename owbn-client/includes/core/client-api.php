@@ -736,6 +736,11 @@ function owc_refresh_all_caches()
         }
     }
 
+    // OAT regulation rules cache.
+    if ( function_exists( 'owc_oat_get_regulation_rules' ) ) {
+        owc_oat_get_regulation_rules( true );
+    }
+
     // Rebuild entity resolution index on top of refreshed data.
     if ( function_exists( 'owc_entity_refresh' ) ) {
         owc_entity_refresh();
@@ -756,6 +761,7 @@ function owc_clear_all_caches(): void
     delete_transient('owc_coordinators_cache');
     delete_transient('owc_territories_cache');
     delete_transient('owc_asc_roles_all');
+    delete_transient('owc_oat_rules_cache');
 
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_chronicle_%'");
     $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_owc_chronicle_%'");

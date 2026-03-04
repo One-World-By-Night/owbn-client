@@ -471,21 +471,41 @@ function owc_oat_ajax_get_coordinators_for_rules() {
     $highest = 0;
 
     foreach ( $rule_ids as $rid ) {
-        if ( ! $rid || ! class_exists( 'OAT_Regulation_Rule' ) ) {
+        if ( ! $rid ) {
             continue;
         }
-        $rule = OAT_Regulation_Rule::find( $rid );
-        if ( ! $rule || empty( $rule->genre ) ) {
+
+        // Resolve rule data: prefer local DB (archivist), fall back to remote cache.
+        $genre     = '';
+        $pc_level  = '';
+        $npc_level = '';
+
+        if ( class_exists( 'OAT_Regulation_Rule' ) ) {
+            $rule = OAT_Regulation_Rule::find( $rid );
+            if ( ! $rule || empty( $rule->genre ) ) {
+                continue;
+            }
+            $genre     = $rule->genre;
+            $pc_level  = $rule->pc_level;
+            $npc_level = $rule->npc_level;
+        } elseif ( function_exists( 'owc_oat_find_cached_rule' ) ) {
+            $rule = owc_oat_find_cached_rule( $rid );
+            if ( ! $rule || empty( $rule['coordinator'] ) ) {
+                continue;
+            }
+            $genre     = $rule['coordinator'];
+            $pc_level  = isset( $rule['pc_level'] ) ? $rule['pc_level'] : '';
+            $npc_level = isset( $rule['npc_level'] ) ? $rule['npc_level'] : '';
+        } else {
             continue;
         }
 
         // D3: Use pc_level or npc_level based on character type.
-        $level = ( 'npc' === $pc_npc && ! empty( $rule->npc_level ) ) ? $rule->npc_level : $rule->pc_level;
+        $level = ( 'npc' === $pc_npc && ! empty( $npc_level ) ) ? $npc_level : $pc_level;
         if ( $level && isset( $priority[ $level ] ) && $priority[ $level ] > $highest ) {
             $highest = $priority[ $level ];
         }
 
-        $genre = $rule->genre;
         if ( isset( $seen[ $genre ] ) ) {
             continue;
         }
