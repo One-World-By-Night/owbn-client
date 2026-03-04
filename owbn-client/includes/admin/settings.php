@@ -35,53 +35,62 @@ function owc_sanitize_remote_url( $url ) {
 
 
 function owc_get_settings_tabs() {
+    $base = owc_get_client_id() . '_owc';
     return array(
         'general'      => array(
             'label'     => __( 'General', 'owbn-client' ),
             'icon'      => 'dashicons-admin-settings',
             'always_on' => true,
+            'group'     => $base . '_general',
             'partial'   => __DIR__ . '/settings-tabs/tab-general.php',
         ),
         'chronicles'   => array(
             'label'      => __( 'Chronicles', 'owbn-client' ),
             'icon'       => 'dashicons-book-alt',
             'enable_key' => 'enable_chronicles',
+            'group'      => $base . '_chronicles',
             'partial'    => __DIR__ . '/settings-tabs/tab-chronicles.php',
         ),
         'coordinators' => array(
             'label'      => __( 'Coordinators', 'owbn-client' ),
             'icon'       => 'dashicons-groups',
             'enable_key' => 'enable_coordinators',
+            'group'      => $base . '_coordinators',
             'partial'    => __DIR__ . '/settings-tabs/tab-coordinators.php',
         ),
         'territories'  => array(
             'label'      => __( 'Territories', 'owbn-client' ),
             'icon'       => 'dashicons-location-alt',
             'enable_key' => 'enable_territories',
+            'group'      => $base . '_territories',
             'partial'    => __DIR__ . '/settings-tabs/tab-territories.php',
         ),
         'vote-history' => array(
             'label'      => __( 'Vote History', 'owbn-client' ),
             'icon'       => 'dashicons-chart-bar',
             'enable_key' => 'enable_vote_history',
+            'group'      => $base . '_votes',
             'partial'    => __DIR__ . '/settings-tabs/tab-vote-history.php',
         ),
         'player-id'    => array(
             'label'      => __( 'Player ID', 'owbn-client' ),
             'icon'       => 'dashicons-id-alt',
             'enable_key' => 'enable_player_id',
+            'group'      => $base . '_player_id',
             'partial'    => __DIR__ . '/settings-tabs/tab-player-id.php',
         ),
         'oat'          => array(
             'label'      => __( 'OAT', 'owbn-client' ),
             'icon'       => 'dashicons-archive',
             'enable_key' => 'enable_oat',
+            'group'      => $base . '_oat',
             'partial'    => __DIR__ . '/settings-tabs/tab-oat.php',
         ),
         'accessschema' => array(
             'label'      => __( 'accessSchema', 'owbn-client' ),
             'icon'       => 'dashicons-shield',
             'enable_key' => 'asc_enabled',
+            'group'      => $base . '_asc',
             'partial'    => __DIR__ . '/settings-tabs/tab-accessschema.php',
         ),
     );
@@ -89,19 +98,25 @@ function owc_get_settings_tabs() {
 
 
 add_action('admin_init', function () {
-    $group = owc_get_client_id() . '_owc_settings';
+    $tabs = owc_get_settings_tabs();
 
-    // Gateway (producer-side)
-    register_setting($group, 'owbn_gateway_enabled', [
+    $mode_sanitize = function ($value) {
+        return in_array($value, ['local', 'remote'], true) ? $value : 'local';
+    };
+
+    // ── General tab ──────────────────────────────────────────────────────
+    $g = $tabs['general']['group'];
+
+    register_setting($g, 'owbn_gateway_enabled', [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-    register_setting($group, 'owbn_gateway_api_key', [
+    register_setting($g, 'owbn_gateway_api_key', [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
-    register_setting($group, 'owbn_gateway_auth_methods', [
+    register_setting($g, 'owbn_gateway_auth_methods', [
         'type'              => 'array',
         'default'           => ['api_key'],
         'sanitize_callback' => function ($value) {
@@ -112,7 +127,7 @@ add_action('admin_init', function () {
             return array_values(array_intersect($value, $allowed));
         },
     ]);
-    register_setting($group, 'owbn_gateway_domain_whitelist', [
+    register_setting($g, 'owbn_gateway_domain_whitelist', [
         'type'              => 'array',
         'default'           => [],
         'sanitize_callback' => function ($value) {
@@ -131,176 +146,205 @@ add_action('admin_init', function () {
             return $domains;
         },
     ]);
-    register_setting($group, 'owbn_gateway_logging_enabled', [
+    register_setting($g, 'owbn_gateway_logging_enabled', [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-
-    // SSO gateway (for JIT user provisioning)
-    register_setting($group, 'owbn_gateway_sso_url', [
+    register_setting($g, 'owbn_gateway_sso_url', [
         'type'              => 'string',
         'sanitize_callback' => 'esc_url_raw',
     ]);
-    register_setting($group, 'owbn_gateway_sso_api_key', [
+    register_setting($g, 'owbn_gateway_sso_api_key', [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
-
-    // Default remote gateway (consumer-side fallback)
-    register_setting($group, owc_option_name('remote_url'), [
+    register_setting($g, owc_option_name('remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
-    register_setting($group, owc_option_name('remote_api_key'), [
+    register_setting($g, owc_option_name('remote_api_key'), [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
-
-    // Feature enable flags
-    register_setting($group, owc_option_name('enable_chronicles'), [
+    register_setting($g, owc_option_name('enable_chronicles'), [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-    register_setting($group, owc_option_name('enable_coordinators'), [
+    register_setting($g, owc_option_name('enable_coordinators'), [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-    register_setting($group, owc_option_name('enable_territories'), [
+    register_setting($g, owc_option_name('enable_territories'), [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-
-    // Per-type mode + remote overrides
-    $mode_sanitize = function ($value) {
-        return in_array($value, ['local', 'remote'], true) ? $value : 'local';
-    };
-    foreach (['chronicles', 'coordinators', 'territories'] as $dtype) {
-        register_setting($group, owc_option_name($dtype . '_mode'), [
-            'type'              => 'string',
-            'default'           => 'local',
-            'sanitize_callback' => $mode_sanitize,
-        ]);
-        register_setting($group, owc_option_name($dtype . '_remote_url'), [
-            'type'              => 'string',
-            'sanitize_callback' => 'owc_sanitize_remote_url',
-        ]);
-        register_setting($group, owc_option_name($dtype . '_remote_api_key'), [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-        ]);
-    }
-
-    // Page settings
-    register_setting($group, owc_option_name('chronicles_list_page'), [
-        'type'              => 'integer',
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-    register_setting($group, owc_option_name('chronicles_detail_page'), [
-        'type'              => 'integer',
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-    register_setting($group, owc_option_name('coordinators_list_page'), [
-        'type'              => 'integer',
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-    register_setting($group, owc_option_name('coordinators_detail_page'), [
-        'type'              => 'integer',
-        'default'           => 0,
-        'sanitize_callback' => 'absint',
-    ]);
-
-    // Vote History
-    register_setting($group, owc_option_name('enable_vote_history'), [
+    register_setting($g, owc_option_name('enable_vote_history'), [
         'type'              => 'boolean',
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
-    register_setting($group, owc_option_name('votes_mode'), [
+    register_setting($g, owc_option_name('enable_player_id'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($g, owc_option_name('enable_oat'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($g, owc_option_name('asc_enabled'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
+    register_setting($g, owc_option_name('cache_ttl'), [
+        'type'              => 'integer',
+        'default'           => 3600,
+        'sanitize_callback' => 'absint',
+    ]);
+
+    // ── Chronicles tab ───────────────────────────────────────────────────
+    $g = $tabs['chronicles']['group'];
+
+    register_setting($g, owc_option_name('chronicles_mode'), [
         'type'              => 'string',
         'default'           => 'local',
         'sanitize_callback' => $mode_sanitize,
     ]);
-    register_setting($group, owc_option_name('votes_remote_url'), [
+    register_setting($g, owc_option_name('chronicles_remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
-    register_setting($group, owc_option_name('votes_remote_api_key'), [
+    register_setting($g, owc_option_name('chronicles_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    register_setting($g, owc_option_name('chronicles_list_page'), [
+        'type'              => 'integer',
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+    ]);
+    register_setting($g, owc_option_name('chronicles_detail_page'), [
+        'type'              => 'integer',
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+    ]);
+
+    // ── Coordinators tab ─────────────────────────────────────────────────
+    $g = $tabs['coordinators']['group'];
+
+    register_setting($g, owc_option_name('coordinators_mode'), [
+        'type'              => 'string',
+        'default'           => 'local',
+        'sanitize_callback' => $mode_sanitize,
+    ]);
+    register_setting($g, owc_option_name('coordinators_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
+    ]);
+    register_setting($g, owc_option_name('coordinators_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    register_setting($g, owc_option_name('coordinators_list_page'), [
+        'type'              => 'integer',
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+    ]);
+    register_setting($g, owc_option_name('coordinators_detail_page'), [
+        'type'              => 'integer',
+        'default'           => 0,
+        'sanitize_callback' => 'absint',
+    ]);
+
+    // ── Territories tab ──────────────────────────────────────────────────
+    $g = $tabs['territories']['group'];
+
+    register_setting($g, owc_option_name('territories_mode'), [
+        'type'              => 'string',
+        'default'           => 'local',
+        'sanitize_callback' => $mode_sanitize,
+    ]);
+    register_setting($g, owc_option_name('territories_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
+    ]);
+    register_setting($g, owc_option_name('territories_remote_api_key'), [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
 
-    // Player ID
-    register_setting($group, owc_option_name('enable_player_id'), [
-        'type'              => 'boolean',
-        'default'           => false,
-        'sanitize_callback' => 'rest_sanitize_boolean',
+    // ── Vote History tab ─────────────────────────────────────────────────
+    $g = $tabs['vote-history']['group'];
+
+    register_setting($g, owc_option_name('votes_mode'), [
+        'type'              => 'string',
+        'default'           => 'local',
+        'sanitize_callback' => $mode_sanitize,
     ]);
-    register_setting($group, owc_option_name('player_id_mode'), [
+    register_setting($g, owc_option_name('votes_remote_url'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'owc_sanitize_remote_url',
+    ]);
+    register_setting($g, owc_option_name('votes_remote_api_key'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+
+    // ── Player ID tab ────────────────────────────────────────────────────
+    $g = $tabs['player-id']['group'];
+
+    register_setting($g, owc_option_name('player_id_mode'), [
         'type'              => 'string',
         'default'           => 'client',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
-    register_setting($group, owc_option_name('player_id_sso_url'), [
+    register_setting($g, owc_option_name('player_id_sso_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'esc_url_raw',
     ]);
 
-    // OAT (Archivist Toolkit)
-    register_setting($group, owc_option_name('enable_oat'), [
-        'type'              => 'boolean',
-        'default'           => false,
-        'sanitize_callback' => 'rest_sanitize_boolean',
-    ]);
-    register_setting($group, owc_option_name('oat_mode'), [
+    // ── OAT tab ──────────────────────────────────────────────────────────
+    $g = $tabs['oat']['group'];
+
+    register_setting($g, owc_option_name('oat_mode'), [
         'type'              => 'string',
         'default'           => 'local',
         'sanitize_callback' => $mode_sanitize,
     ]);
-    register_setting($group, owc_option_name('oat_remote_url'), [
+    register_setting($g, owc_option_name('oat_remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
-    register_setting($group, owc_option_name('oat_remote_api_key'), [
+    register_setting($g, owc_option_name('oat_remote_api_key'), [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
 
-    // accessSchema (centralized ASC client)
-    register_setting($group, owc_option_name('asc_enabled'), [
-        'type'              => 'boolean',
-        'default'           => false,
-        'sanitize_callback' => 'rest_sanitize_boolean',
-    ]);
-    register_setting($group, owc_option_name('asc_mode'), [
+    // ── accessSchema tab ─────────────────────────────────────────────────
+    $g = $tabs['accessschema']['group'];
+
+    register_setting($g, owc_option_name('asc_mode'), [
         'type'              => 'string',
         'default'           => 'remote',
         'sanitize_callback' => function ($value) {
             return in_array($value, ['local', 'remote'], true) ? $value : 'remote';
         },
     ]);
-    register_setting($group, owc_option_name('asc_remote_url'), [
+    register_setting($g, owc_option_name('asc_remote_url'), [
         'type'              => 'string',
         'sanitize_callback' => 'owc_sanitize_remote_url',
     ]);
-    register_setting($group, owc_option_name('asc_remote_api_key'), [
+    register_setting($g, owc_option_name('asc_remote_api_key'), [
         'type'              => 'string',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
-    register_setting($group, owc_option_name('asc_cache_ttl'), [
-        'type'              => 'integer',
-        'default'           => 3600,
-        'sanitize_callback' => 'absint',
-    ]);
-
-    // Cache
-    register_setting($group, owc_option_name('cache_ttl'), [
+    register_setting($g, owc_option_name('asc_cache_ttl'), [
         'type'              => 'integer',
         'default'           => 3600,
         'sanitize_callback' => 'absint',
@@ -368,7 +412,6 @@ function owc_render_settings_page()
     }
 
     $client_id  = owc_get_client_id();
-    $group      = $client_id . '_owc_settings';
     $tabs       = owc_get_settings_tabs();
     $active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 
@@ -430,6 +473,7 @@ function owc_render_settings_page()
                         esc_html__( 'Go to General Settings', 'owbn-client' )
                     );
                 } else {
+                    $group = $tab_config['group'];
                     include $tab_config['partial'];
                 }
                 ?>
