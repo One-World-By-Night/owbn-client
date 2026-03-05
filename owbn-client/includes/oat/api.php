@@ -800,7 +800,7 @@ function owc_oat_search_rules( $term, $limit = 20 ) {
     }
 
     return owc_oat_request( 'rules/search', array(
-        'term'  => $term,
+        'q'     => $term,
         'limit' => $limit,
     ) );
 }

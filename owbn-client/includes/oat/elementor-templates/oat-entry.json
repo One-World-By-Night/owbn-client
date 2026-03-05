@@ -4,36 +4,33 @@
   "type": "page",
   "content": [
     {
-      "id": "oat_entry_1",
-      "elType": "container",
-      "settings": {
-        "content_width": "full",
-        "padding": {
-          "unit": "px",
-          "top": "20",
-          "right": "20",
-          "bottom": "20",
-          "left": "20",
-          "isLinked": false
-        }
-      },
+      "id": "2b3c4d5",
+      "elType": "section",
+      "settings": {},
       "elements": [
         {
-          "id": "oat_entry_w1",
-          "elType": "widget",
-          "widgetType": "owc_oat_entry",
-          "settings": {
-            "entry_source": "url_param",
-            "url_param_name": "oat_entry",
-            "fixed_entry_id": 0,
-            "show_meta": "yes",
-            "show_rules": "yes",
-            "show_assignees": "yes",
-            "show_timeline": "yes",
-            "timeline_default": "expanded",
-            "show_actions": "yes"
-          },
-          "elements": []
+          "id": "3b4c5d6",
+          "elType": "column",
+          "settings": {"_column_size": 100},
+          "elements": [
+            {
+              "id": "4b5c6d7",
+              "elType": "widget",
+              "widgetType": "owc_oat_entry",
+              "settings": {
+                "entry_source": "url_param",
+                "url_param_name": "oat_entry",
+                "fixed_entry_id": 0,
+                "show_meta": "yes",
+                "show_rules": "yes",
+                "show_assignees": "yes",
+                "show_timeline": "yes",
+                "timeline_default": "expanded",
+                "show_actions": "yes"
+              },
+              "elements": []
+            }
+          ]
         }
       ]
     }

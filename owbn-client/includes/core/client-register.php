@@ -132,6 +132,7 @@ function owc_resolve_asc_path(string $path, $fields = null, bool $with_suffix = 
             $data = owc_get_chronicle_detail($slug);
             break;
         case 'coordinator':
+        case 'exec':
             $data = owc_get_coordinator_detail($slug);
             break;
         default:

@@ -532,7 +532,31 @@ function owbn_gateway_oat_rules_search( $request ) {
 
     $results = OAT_Regulation_Rule::search( $q, $genre );
 
-    return owbn_gateway_respond( $results );
+    // Format for jQuery UI autocomplete (needs id + label + value).
+    $out = array();
+    foreach ( $results as $rule ) {
+        $label = sprintf(
+            '%s — %s — %s',
+            $rule->genre,
+            $rule->category,
+            $rule->condition_name ? $rule->condition_name : $rule->subcategory
+        );
+        $out[] = array(
+            'id'          => (int) $rule->id,
+            'label'       => $label,
+            'value'       => $label,
+            'genre'       => $rule->genre,
+            'category'    => $rule->category,
+            'subcategory' => $rule->subcategory,
+            'condition'   => $rule->condition_name,
+            'pc_level'    => $rule->pc_level,
+            'npc_level'   => $rule->npc_level,
+            'coordinator' => $rule->controlling_coordinator,
+            'elevation'   => (int) $rule->elevation,
+        );
+    }
+
+    return owbn_gateway_respond( $out );
 }
 
 /**

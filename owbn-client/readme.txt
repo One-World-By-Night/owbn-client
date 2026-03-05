@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.10.1
+Stable tag: 4.10.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,16 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.10.3 =
+* Fixed regulation rules search returning empty on remote OAT sites (parameter mismatch: client sent "term", gateway expected "q")
+* Fixed gateway rules/search endpoint returning raw objects instead of formatted autocomplete data (added label/value fields)
+* Fixed Elementor page templates using container format incompatible with sites without Flexbox Container enabled (converted to section/column)
+* Added exec coordinator type to ASC path resolver (exec roles now link to coordinator detail pages)
+* Fixed duplicate ASC Roles column on sites running both server and client plugins
+
+= 4.10.2 =
+* Added admin voting role fallback for AccessSchema users with admin privileges
 
 = 4.10.1 =
 * Fixed settings save wiping other tabs' values (split shared settings group into per-tab groups)
