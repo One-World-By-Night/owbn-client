@@ -17,6 +17,10 @@ defined( 'ABSPATH' ) || exit;
  * Add the ASC Roles column.
  */
 function owc_asc_add_users_column( $columns ) {
+	// Server plugin already provides this column when running locally.
+	if ( isset( $columns['accessschema_asc_roles'] ) ) {
+		return $columns;
+	}
 	$columns['owc_asc_roles'] = __( 'ASC Roles', 'owbn-client' );
 	return $columns;
 }
