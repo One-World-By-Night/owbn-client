@@ -14,6 +14,7 @@ add_action( 'wp_ajax_owc_oat_search_rules', 'owc_oat_ajax_search_rules' );
 add_action( 'wp_ajax_owc_oat_process_action', 'owc_oat_ajax_process_action' );
 add_action( 'wp_ajax_owc_oat_toggle_watch', 'owc_oat_ajax_toggle_watch' );
 add_action( 'wp_ajax_owc_oat_get_domain_fields', 'owc_oat_ajax_get_domain_fields' );
+add_action( 'wp_ajax_owc_oat_get_domain_forms', 'owc_oat_ajax_get_domain_forms' );
 add_action( 'wp_ajax_owc_oat_search_characters', 'owc_oat_ajax_search_characters' );
 add_action( 'wp_ajax_owc_oat_create_character', 'owc_oat_ajax_create_character' );
 add_action( 'wp_ajax_owc_oat_lookup_hst', 'owc_oat_ajax_lookup_hst' );
@@ -119,12 +120,15 @@ function owc_oat_ajax_toggle_watch() {
 function owc_oat_ajax_get_domain_fields() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
-    $domain = isset( $_REQUEST['domain'] ) ? sanitize_text_field( $_REQUEST['domain'] ) : '';
-    if ( empty( $domain ) ) {
-        wp_send_json_error( 'Missing domain.' );
+    $domain    = isset( $_REQUEST['domain'] ) ? sanitize_text_field( $_REQUEST['domain'] ) : '';
+    $form_slug = isset( $_REQUEST['form_slug'] ) ? sanitize_text_field( $_REQUEST['form_slug'] ) : '';
+
+    if ( empty( $domain ) && empty( $form_slug ) ) {
+        wp_send_json_error( 'Missing domain or form_slug.' );
     }
 
-    $fields = owc_oat_get_domain_fields( $domain );
+    $slug   = $form_slug ? $form_slug : $domain;
+    $fields = owc_oat_get_form_fields( $slug, 'submit' );
 
     if ( is_wp_error( $fields ) ) {
         wp_send_json_error( $fields->get_error_message() );
@@ -134,18 +138,26 @@ function owc_oat_ajax_get_domain_fields() {
         wp_send_json_success( array( 'html' => '' ) );
     }
 
-    // Render fields to HTML string.
     ob_start();
     owc_oat_render_fields( $fields );
-    // Flush TinyMCE init JS that wp_editor() queued internally.
-    // During AJAX, admin_print_footer_scripts never fires, so the
-    // tinyMCEPreInit.mceInit settings are lost unless we output them here.
     if ( class_exists( '_WP_Editors', false ) ) {
         _WP_Editors::editor_js();
     }
     $html = ob_get_clean();
 
     wp_send_json_success( array( 'html' => $html ) );
+}
+
+function owc_oat_ajax_get_domain_forms() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $domain_slug = isset( $_REQUEST['domain_slug'] ) ? sanitize_text_field( $_REQUEST['domain_slug'] ) : '';
+    if ( empty( $domain_slug ) ) {
+        wp_send_json_error( 'Missing domain_slug.' );
+    }
+
+    $forms = owc_oat_get_forms_for_domain( $domain_slug );
+    wp_send_json_success( $forms );
 }
 
 /**
@@ -546,15 +558,15 @@ function owc_oat_ajax_submit_entry_frontend() {
         wp_send_json_error( __( 'You must be logged in to submit.', 'owbn-client' ) );
     }
 
-    $domain = isset( $_POST['oat_domain'] ) ? sanitize_key( $_POST['oat_domain'] ) : '';
+    $domain    = isset( $_POST['oat_domain'] ) ? sanitize_key( $_POST['oat_domain'] ) : '';
+    $form_slug = isset( $_POST['oat_form_slug'] ) ? sanitize_key( $_POST['oat_form_slug'] ) : '';
+    $note      = isset( $_POST['oat_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['oat_note'] ) ) : '';
+
     if ( ! $domain ) {
         wp_send_json_error( __( 'Please select a domain.', 'owbn-client' ) );
     }
 
-    $note = isset( $_POST['oat_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['oat_note'] ) ) : '';
-
-    // Strip framework fields — everything remaining is domain meta.
-    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_note' );
+    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug', 'oat_note' );
     $meta = array();
     foreach ( $_POST as $key => $value ) {
         if ( in_array( $key, $skip, true ) ) {
@@ -568,7 +580,16 @@ function owc_oat_ajax_submit_entry_frontend() {
         }
     }
 
-    $result = owc_oat_submit( $domain, $meta, $note );
+    $data = array(
+        'domain' => $domain,
+        'note'   => $note,
+        'meta'   => $meta,
+    );
+    if ( $form_slug ) {
+        $data['form_slug'] = $form_slug;
+    }
+
+    $result = owc_oat_submit( $data );
 
     if ( is_wp_error( $result ) ) {
         wp_send_json_error( $result->get_error_message() );

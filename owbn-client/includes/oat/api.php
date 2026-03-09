@@ -182,6 +182,30 @@ function owc_oat_get_domains() {
     return owc_oat_request( 'domains' );
 }
 
+function owc_oat_get_forms_for_domain( $domain_slug ) {
+    if ( owc_oat_is_local() ) {
+        if ( ! class_exists( 'OAT_Domain_Registry' ) ) {
+            return array();
+        }
+        $forms = OAT_Domain_Registry::get_forms( $domain_slug );
+        $out = array();
+        foreach ( $forms as $form ) {
+            $out[] = array(
+                'id'    => (int) $form->id,
+                'slug'  => $form->slug,
+                'label' => $form->label,
+            );
+        }
+        return $out;
+    }
+
+    $result = owc_oat_request( 'domain-forms', array( 'domain' => $domain_slug ) );
+    if ( is_wp_error( $result ) ) {
+        return array();
+    }
+    return isset( $result['forms'] ) ? $result['forms'] : ( is_array( $result ) ? $result : array() );
+}
+
 
 /**
  * Get the current user's inbox data.
@@ -606,7 +630,6 @@ function owc_oat_submit( $data ) {
             return new WP_Error( 'oat_invalid_domain', 'Invalid domain: ' . $domain_slug );
         }
 
-        // Build entry data.
         $entry_data = array(
             'domain'        => $domain_slug,
             'status'        => 'pending',
@@ -614,6 +637,9 @@ function owc_oat_submit( $data ) {
             'originator_id' => $user_id,
         );
 
+        if ( ! empty( $data['form_slug'] ) ) {
+            $entry_data['form_slug'] = sanitize_text_field( $data['form_slug'] );
+        }
         if ( ! empty( $data['chronicle_slug'] ) ) {
             $entry_data['chronicle_slug'] = sanitize_text_field( $data['chronicle_slug'] );
         }

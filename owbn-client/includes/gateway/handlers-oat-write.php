@@ -59,7 +59,6 @@ function owbn_gateway_oat_submit( $request ) {
         }
     }
 
-    // Build entry data.
     $entry_data = array(
         'domain'       => $domain,
         'status'       => 'pending',
@@ -67,6 +66,9 @@ function owbn_gateway_oat_submit( $request ) {
         'originator_id' => $user_id,
     );
 
+    if ( isset( $body['form_slug'] ) && $body['form_slug'] !== '' ) {
+        $entry_data['form_slug'] = sanitize_text_field( $body['form_slug'] );
+    }
     if ( isset( $body['chronicle_slug'] ) && $body['chronicle_slug'] !== '' ) {
         $entry_data['chronicle_slug'] = sanitize_text_field( $body['chronicle_slug'] );
     }

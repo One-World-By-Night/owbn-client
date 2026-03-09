@@ -88,7 +88,12 @@ function owbn_gateway_register_oat_routes() {
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
 
-    // Form fields: field definitions per domain + context
+    register_rest_route( $namespace, '/oat/domain-forms', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_domain_forms',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
     register_rest_route( $namespace, '/oat/form-fields', array(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'owbn_gateway_oat_form_fields',

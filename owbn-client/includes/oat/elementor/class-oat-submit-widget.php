@@ -217,7 +217,6 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				class="oat-frontend-form"
 				data-redirect="<?php echo esc_attr( $redirect ); ?>">
 
-				<!-- Domain selector (hidden in fixed mode) -->
 				<?php if ( 'selector' === $domain_mode ) : ?>
 					<div class="oat-field-row">
 						<label class="oat-field-label" for="oat-domain-select">
@@ -237,7 +236,16 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					<input type="hidden" name="oat_domain" value="<?php echo esc_attr( $selected_slug ); ?>">
 				<?php endif; ?>
 
-				<!-- Domain-specific fields (AJAX-loaded or pre-rendered for fixed mode) -->
+				<div id="oat-form-picker-row" class="oat-field-row" style="display:none;">
+					<label class="oat-field-label" for="oat-form-select">
+						<?php esc_html_e( 'Form', 'owbn-client' ); ?>
+						<span class="oat-required">*</span>
+					</label>
+					<select id="oat-form-select" name="oat_form_slug">
+						<option value=""><?php esc_html_e( 'Select a form…', 'owbn-client' ); ?></option>
+					</select>
+				</div>
+
 				<div id="oat-domain-fields-container">
 					<?php if ( ! empty( $domain_fields ) ) : ?>
 						<?php owc_oat_render_fields( $domain_fields ); ?>
@@ -269,31 +277,65 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		(function($) {
 			'use strict';
 
-			// Domain field loading via AJAX.
-			$('#oat-domain-select').on('change', function() {
-				var domain = $(this).val();
-				if (!domain) {
-					$('#oat-domain-fields-container').empty();
-					return;
-				}
-				$('#oat-domain-fields-container').html('<p style="color:#646970;padding:10px 0;"><?php echo esc_js( __( 'Loading fields…', 'owbn-client' ) ); ?></p>');
-				$.post(owc_oat_ajax.url, {
-					action: 'owc_oat_get_domain_fields',
-					nonce:  owc_oat_ajax.nonce,
-					domain: domain
-				}, function(response) {
+			function loadFields(params) {
+				var $container = $('#oat-domain-fields-container');
+				$container.html('<p style="color:#646970;padding:10px 0;"><?php echo esc_js( __( 'Loading fields…', 'owbn-client' ) ); ?></p>');
+				params.action = 'owc_oat_get_domain_fields';
+				params.nonce  = owc_oat_ajax.nonce;
+				$.post(owc_oat_ajax.url, params, function(response) {
 					if (response.success && response.data && response.data.html) {
-						$('#oat-domain-fields-container').html(response.data.html);
-						$(document).trigger('oat-fields-loaded', [$('#oat-domain-fields-container')]);
+						$container.html(response.data.html);
+						$(document).trigger('oat-fields-loaded', [$container]);
 					} else {
-						$('#oat-domain-fields-container').html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Could not load fields for this domain.', 'owbn-client' ) ); ?></p>');
+						$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Could not load fields for this domain.', 'owbn-client' ) ); ?></p>');
 					}
 				}).fail(function() {
-					$('#oat-domain-fields-container').html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-client' ) ); ?></p>');
+					$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-client' ) ); ?></p>');
+				});
+			}
+
+			$('#oat-domain-select').on('change', function() {
+				var domain = $(this).val();
+				$('#oat-domain-fields-container').empty();
+				$('#oat-form-picker-row').hide();
+				$('#oat-form-select').html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+
+				if (!domain) { return; }
+
+				$.post(owc_oat_ajax.url, {
+					action: 'owc_oat_get_domain_forms',
+					nonce:  owc_oat_ajax.nonce,
+					domain_slug: domain
+				}, function(response) {
+					var forms = (response.success && response.data) ? response.data : [];
+					if (forms.length > 1) {
+						var $sel = $('#oat-form-select');
+						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+						$.each(forms, function(i, f) {
+							$sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
+						});
+						$('#oat-form-picker-row').show();
+					} else if (forms.length === 1) {
+						$('#oat-form-select').html('<option value="' + forms[0].slug + '">' + forms[0].label + '</option>');
+						$('#oat-form-picker-row').hide();
+						loadFields({ form_slug: forms[0].slug, domain: domain });
+					} else {
+						$('#oat-form-picker-row').hide();
+						loadFields({ domain: domain });
+					}
+				}).fail(function() {
+					loadFields({ domain: domain });
 				});
 			});
 
-			// Form submission via AJAX.
+			$('#oat-form-select').on('change', function() {
+				var formSlug = $(this).val();
+				var domain   = $('#oat-domain-select').val() || $('input[name="oat_domain"]').val();
+				$('#oat-domain-fields-container').empty();
+				if (!formSlug) { return; }
+				loadFields({ form_slug: formSlug, domain: domain });
+			});
+
 			$('#oat-frontend-submit-form').on('submit', function(e) {
 				e.preventDefault();
 				var $form = $(this);
@@ -303,7 +345,6 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				$btn.prop('disabled', true).text('<?php echo esc_js( __( 'Submitting…', 'owbn-client' ) ); ?>');
 				$feedback.html('');
 
-				// Collect form data.
 				var formData = $form.serializeArray();
 				formData.push({ name: 'action', value: 'owc_oat_submit_entry_frontend' });
 				formData.push({ name: 'nonce',  value: owc_oat_ajax.nonce });

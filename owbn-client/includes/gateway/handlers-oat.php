@@ -489,9 +489,33 @@ function owbn_gateway_oat_domains( $request ) {
  * @return WP_REST_Response
  */
 function owbn_gateway_oat_form_fields( $request ) {
-    $body    = $request->get_json_params();
-    $domain  = isset( $body['domain'] ) ? sanitize_text_field( $body['domain'] ) : '';
-    $context = isset( $body['context'] ) ? sanitize_text_field( $body['context'] ) : 'submit';
+    $body      = $request->get_json_params();
+    $domain    = isset( $body['domain'] ) ? sanitize_text_field( $body['domain'] ) : '';
+    $form_slug = isset( $body['form_slug'] ) ? sanitize_text_field( $body['form_slug'] ) : '';
+    $context   = isset( $body['context'] ) ? sanitize_text_field( $body['context'] ) : 'submit';
+
+    $slug = $form_slug ? $form_slug : $domain;
+
+    if ( '' === $slug ) {
+        return owbn_gateway_respond( new WP_Error(
+            'oat_missing_domain',
+            'domain or form_slug parameter is required.',
+            array( 'status' => 400 )
+        ) );
+    }
+
+    if ( ! class_exists( 'OAT_Form_Field' ) ) {
+        return owbn_gateway_respond( array( 'fields' => array() ) );
+    }
+
+    $fields = OAT_Form_Field::get_fields( $slug, $context );
+
+    return owbn_gateway_respond( array( 'fields' => $fields ) );
+}
+
+function owbn_gateway_oat_domain_forms( $request ) {
+    $body   = $request->get_json_params();
+    $domain = isset( $body['domain'] ) ? sanitize_text_field( $body['domain'] ) : '';
 
     if ( '' === $domain ) {
         return owbn_gateway_respond( new WP_Error(
@@ -501,13 +525,21 @@ function owbn_gateway_oat_form_fields( $request ) {
         ) );
     }
 
-    if ( ! class_exists( 'OAT_Form_Field' ) ) {
-        return owbn_gateway_respond( array( 'fields' => array() ) );
+    if ( ! class_exists( 'OAT_Domain_Registry' ) ) {
+        return owbn_gateway_respond( array( 'forms' => array() ) );
     }
 
-    $fields = OAT_Form_Field::get_fields( $domain, $context );
+    $forms = OAT_Domain_Registry::get_forms( $domain );
+    $out   = array();
+    foreach ( $forms as $form ) {
+        $out[] = array(
+            'id'    => (int) $form->id,
+            'slug'  => $form->slug,
+            'label' => $form->label,
+        );
+    }
 
-    return owbn_gateway_respond( array( 'fields' => $fields ) );
+    return owbn_gateway_respond( array( 'forms' => $out ) );
 }
 
 /**

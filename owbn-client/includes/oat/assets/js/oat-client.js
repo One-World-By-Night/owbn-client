@@ -1,30 +1,16 @@
 (function($) {
     'use strict';
 
-    // Domain selector → AJAX load rendered form fields.
-    $('#oat_domain').on('change', function() {
-        var domain = $(this).val();
+    function oatLoadFields(params) {
         var $container = $('#owc-oat-domain-fields');
-
-        if (!domain) {
-            $container.empty();
-            return;
-        }
-
         $container.html('<p>Loading fields...</p>');
-
-        $.get(owc_oat_ajax.url, {
-            action: 'owc_oat_get_domain_fields',
-            nonce: owc_oat_ajax.nonce,
-            domain: domain
-        }, function(response) {
+        params.action = 'owc_oat_get_domain_fields';
+        params.nonce  = owc_oat_ajax.nonce;
+        $.get(owc_oat_ajax.url, params, function(response) {
             if (response.success && response.data && response.data.html !== undefined) {
                 $container.html(response.data.html);
-                // Re-initialize conditional field logic for new fields.
                 initConditionalFields();
-                // Re-initialize TinyMCE editors for htmlarea fields.
                 initEditors();
-                // Notify other scripts (rule picker, character picker, etc.).
                 $(document).trigger('oat-fields-loaded');
             } else {
                 $container.html('<p>No fields defined for this domain.</p>');
@@ -32,6 +18,50 @@
         }).fail(function() {
             $container.html('<p style="color:red;">Failed to load fields.</p>');
         });
+    }
+
+    $('#oat_domain').on('change', function() {
+        var domain = $(this).val();
+        var $container = $('#owc-oat-domain-fields');
+        var $formRow = $('#oat-form-picker-row');
+        var $formSel = $('#oat-form-select');
+
+        $container.empty();
+        if ($formRow.length) { $formRow.hide(); }
+
+        if (!domain) { return; }
+
+        $.get(owc_oat_ajax.url, {
+            action: 'owc_oat_get_domain_forms',
+            nonce: owc_oat_ajax.nonce,
+            domain_slug: domain
+        }, function(response) {
+            var forms = (response.success && response.data) ? response.data : [];
+            if (forms.length > 1 && $formRow.length) {
+                $formSel.html('<option value="">Select a form…</option>');
+                $.each(forms, function(i, f) {
+                    $formSel.append('<option value="' + f.slug + '">' + f.label + '</option>');
+                });
+                $formRow.show();
+            } else if (forms.length === 1) {
+                if ($formSel.length) {
+                    $formSel.html('<option value="' + forms[0].slug + '">' + forms[0].label + '</option>');
+                }
+                oatLoadFields({ form_slug: forms[0].slug, domain: domain });
+            } else {
+                oatLoadFields({ domain: domain });
+            }
+        }).fail(function() {
+            oatLoadFields({ domain: domain });
+        });
+    });
+
+    $('#oat-form-select').on('change', function() {
+        var formSlug = $(this).val();
+        var domain   = $('#oat_domain').val();
+        $('#owc-oat-domain-fields').empty();
+        if (!formSlug) { return; }
+        oatLoadFields({ form_slug: formSlug, domain: domain });
     });
 
     // AJAX action handler for entry detail actions.
