@@ -1433,3 +1433,160 @@ function owc_oat_find_cached_rule( $id ) {
     $rules = owc_oat_get_regulation_rules();
     return isset( $rules[ $id ] ) ? $rules[ $id ] : null;
 }
+
+
+// ── Registry Visibility API ─────────────────────────────────────────
+
+
+/**
+ * Fetch scoped registry for current user.
+ *
+ * Optional filters: chronicle slugs, genre slugs (comma-separated or arrays).
+ *
+ * @param array $args Optional 'chronicle' and/or 'genre' (string or array).
+ * @return array|WP_Error
+ */
+function owc_oat_get_registry( $args = array() ) {
+    if ( owc_oat_is_local() ) {
+        $user_id = get_current_user_id();
+
+        $chronicles = isset( $args['chronicle'] ) ? (array) $args['chronicle'] : array();
+        $genres     = isset( $args['genre'] ) ? (array) $args['genre'] : array();
+
+        if ( $chronicles || $genres ) {
+            $characters = array();
+            foreach ( $chronicles as $slug ) {
+                foreach ( OAT_Registry::get_characters_for_chronicle( $slug ) as $c ) {
+                    $characters[ $c->id ] = $c;
+                }
+            }
+            foreach ( $genres as $genre ) {
+                foreach ( OAT_Registry::get_characters_for_coordinator( $genre ) as $c ) {
+                    $characters[ $c->id ] = $c;
+                }
+            }
+            $characters = array_values( $characters );
+            foreach ( $characters as $char ) {
+                $char->entry_counts = OAT_Registry::get_entry_counts_by_domain( (int) $char->id );
+            }
+            return array( 'characters' => $characters, 'count' => count( $characters ) );
+        }
+
+        $characters = OAT_Registry::get_scoped_registry( $user_id );
+        return array( 'characters' => $characters, 'count' => count( $characters ) );
+    }
+
+    $params = array();
+    if ( ! empty( $args['chronicle'] ) ) {
+        $params['chronicle'] = is_array( $args['chronicle'] ) ? implode( ',', $args['chronicle'] ) : $args['chronicle'];
+    }
+    if ( ! empty( $args['genre'] ) ) {
+        $params['genre'] = is_array( $args['genre'] ) ? implode( ',', $args['genre'] ) : $args['genre'];
+    }
+
+    return owc_oat_request( 'registry', $params );
+}
+
+/**
+ * Fetch registry entries for one character.
+ *
+ * @param int $character_id
+ * @return array|WP_Error
+ */
+function owc_oat_get_character_registry( $character_id ) {
+    if ( owc_oat_is_local() ) {
+        $character = OAT_Character::find( $character_id );
+        if ( ! $character ) {
+            return new WP_Error( 'not_found', 'Character not found.' );
+        }
+
+        $entries = OAT_Registry::get_registry_entries( $character_id );
+        $grants  = OAT_Registry_Access::find_by_character( $character_id );
+
+        return array(
+            'character' => $character,
+            'grants'    => $grants,
+            'entries'   => $entries,
+        );
+    }
+
+    return owc_oat_request( 'registry/character/' . (int) $character_id );
+}
+
+/**
+ * Fetch public registry fields for one character.
+ *
+ * @param int $character_id
+ * @return array|WP_Error
+ */
+function owc_oat_get_public_registry( $character_id ) {
+    if ( owc_oat_is_local() ) {
+        $character = OAT_Character::find( $character_id );
+        if ( ! $character ) {
+            return new WP_Error( 'not_found', 'Character not found.' );
+        }
+
+        return array(
+            'character_id'   => $character_id,
+            'character_name' => $character->character_name,
+            'public_fields'  => OAT_Registry::get_public_registry( $character_id ),
+        );
+    }
+
+    return owc_oat_request( 'registry/public/' . (int) $character_id );
+}
+
+/**
+ * Create an explicit grant for a character.
+ *
+ * @param int         $character_id
+ * @param string      $grant_type  'chronicle' or 'coordinator'.
+ * @param string      $grant_value Chronicle slug or genre slug.
+ * @param int|null    $expires_at  Unix timestamp or null for permanent.
+ * @return array|WP_Error
+ */
+function owc_oat_grant_access( $character_id, $grant_type, $grant_value, $expires_at = null ) {
+    if ( owc_oat_is_local() ) {
+        $grant_id = OAT_Registry_Access::ensure_grant(
+            $character_id,
+            $grant_type,
+            $grant_value,
+            get_current_user_id()
+        );
+
+        if ( $expires_at && $grant_id ) {
+            global $wpdb;
+            $wpdb->update(
+                $wpdb->prefix . 'oat_registry_access',
+                array( 'expires_at' => $expires_at ),
+                array( 'id' => $grant_id ),
+                array( '%d' ),
+                array( '%d' )
+            );
+        }
+
+        return array( 'success' => true, 'grant_id' => $grant_id );
+    }
+
+    return owc_oat_request( 'registry/grant', array(
+        'character_id' => $character_id,
+        'grant_type'   => $grant_type,
+        'grant_value'  => $grant_value,
+        'expires_at'   => $expires_at ?: 0,
+    ) );
+}
+
+/**
+ * Expire (revoke) a grant.
+ *
+ * @param int $grant_id
+ * @return array|WP_Error
+ */
+function owc_oat_revoke_access( $grant_id ) {
+    if ( owc_oat_is_local() ) {
+        OAT_Registry_Access::expire( $grant_id );
+        return array( 'success' => true );
+    }
+
+    return owc_oat_request( 'registry/grant/' . (int) $grant_id, array( '_method' => 'DELETE' ) );
+}

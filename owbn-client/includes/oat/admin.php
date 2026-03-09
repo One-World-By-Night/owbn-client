@@ -54,6 +54,15 @@ function owc_oat_register_menus() {
         'owc_oat_render_submit'
     );
 
+    add_submenu_page(
+        $parent,
+        'Registry',
+        'Registry',
+        'read',
+        'owc-oat-registry',
+        'owc_oat_render_registry'
+    );
+
     // Hidden page: entry detail (no menu item, accessed via link).
     add_submenu_page(
         null,
@@ -62,6 +71,16 @@ function owc_oat_register_menus() {
         'read',
         'owc-oat-entry',
         'owc_oat_render_entry'
+    );
+
+    // Hidden page: registry character detail (no menu item, accessed via link).
+    add_submenu_page(
+        null,
+        'Character Registry',
+        'Character Registry',
+        'read',
+        'owc-oat-registry-character',
+        'owc_oat_render_registry_character'
     );
 }
 
@@ -94,6 +113,26 @@ function owc_oat_render_submit() {
 function owc_oat_render_entry() {
     require_once __DIR__ . '/pages/entry.php';
     owc_oat_page_entry();
+}
+
+/**
+ * Render the registry page.
+ *
+ * @return void
+ */
+function owc_oat_render_registry() {
+    require_once __DIR__ . '/pages/registry.php';
+    owc_oat_page_registry();
+}
+
+/**
+ * Render the registry character detail page.
+ *
+ * @return void
+ */
+function owc_oat_render_registry_character() {
+    require_once __DIR__ . '/pages/registry-character.php';
+    owc_oat_page_registry_character();
 }
 
 
