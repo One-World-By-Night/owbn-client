@@ -81,15 +81,6 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 			'condition'   => array( 'domain_mode' => 'fixed' ),
 		) );
 
-		$this->add_control( 'show_note', array(
-			'label'        => __( 'Show Note Field', 'owbn-client' ),
-			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
-			'return_value' => 'yes',
-			'default'      => 'yes',
-		) );
-
 		$this->add_control( 'submit_button_text', array(
 			'label'   => __( 'Submit Button Text', 'owbn-client' ),
 			'type'    => Controls_Manager::TEXT,
@@ -191,7 +182,6 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		$settings    = $this->get_settings_for_display();
 		$domain_mode = $settings['domain_mode'] ?: 'selector';
 		$fixed_slug  = sanitize_key( $settings['fixed_domain'] ?: '' );
-		$show_note   = ( $settings['show_note'] ?? 'yes' ) === 'yes';
 		$btn_text    = $settings['submit_button_text'] ?: __( 'Submit Request', 'owbn-client' );
 		$redirect    = esc_url( $settings['redirect_url'] ?: '/oat-entry/' );
 
@@ -252,18 +242,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					<?php endif; ?>
 				</div>
 
-				<!-- Note field -->
-				<?php if ( $show_note ) : ?>
-					<div class="oat-field-row">
-						<label class="oat-field-label" for="oat-note">
-							<?php esc_html_e( 'Note', 'owbn-client' ); ?>
-						</label>
-						<textarea id="oat-note" name="oat_note" rows="3"
-							placeholder="<?php esc_attr_e( 'Optional note with your submission', 'owbn-client' ); ?>"></textarea>
-					</div>
-				<?php endif; ?>
-
-				<!-- Submit -->
+					<!-- Submit -->
 				<div class="oat-field-row">
 					<button type="submit" class="oat-submit-btn" id="oat-submit-btn">
 						<?php echo esc_html( $btn_text ); ?>

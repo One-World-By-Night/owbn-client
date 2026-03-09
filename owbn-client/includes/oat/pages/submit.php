@@ -50,7 +50,7 @@ function owc_oat_page_submit() {
             $submit_data = array(
                 'domain' => $domain_slug,
                 'meta'   => $meta,
-                'note'   => isset( $_POST['oat_note'] ) ? sanitize_textarea_field( $_POST['oat_note'] ) : '',
+                'note'   => '',
                 'rules'  => array(),
             );
 

@@ -49,13 +49,6 @@ defined( 'ABSPATH' ) || exit;
             ?>
         </div>
 
-        <table class="form-table">
-            <tr>
-                <th><label for="oat_note">Note</label></th>
-                <td><textarea name="oat_note" id="oat_note" rows="3" class="large-text" placeholder="Optional note with your submission"></textarea></td>
-            </tr>
-        </table>
-
         <?php submit_button( 'Submit Entry' ); ?>
     </form>
 </div>

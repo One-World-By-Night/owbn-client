@@ -560,13 +560,12 @@ function owc_oat_ajax_submit_entry_frontend() {
 
     $domain    = isset( $_POST['oat_domain'] ) ? sanitize_key( $_POST['oat_domain'] ) : '';
     $form_slug = isset( $_POST['oat_form_slug'] ) ? sanitize_key( $_POST['oat_form_slug'] ) : '';
-    $note      = isset( $_POST['oat_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['oat_note'] ) ) : '';
 
     if ( ! $domain ) {
         wp_send_json_error( __( 'Please select a domain.', 'owbn-client' ) );
     }
 
-    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug', 'oat_note' );
+    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug' );
     $meta = array();
     foreach ( $_POST as $key => $value ) {
         if ( in_array( $key, $skip, true ) ) {
@@ -582,7 +581,6 @@ function owc_oat_ajax_submit_entry_frontend() {
 
     $data = array(
         'domain' => $domain,
-        'note'   => $note,
         'meta'   => $meta,
     );
     if ( $form_slug ) {
