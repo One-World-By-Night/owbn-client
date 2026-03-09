@@ -102,7 +102,11 @@ function owc_oat_build_registry_sections( $characters ) {
     }
 
     if ( function_exists( 'owc_asc_get_user_roles' ) ) {
-        $asc_roles = owc_asc_get_user_roles( get_current_user_id() );
+        $current_user = wp_get_current_user();
+        $asc_response = $current_user && $current_user->ID
+            ? owc_asc_get_user_roles( 'oat', $current_user->user_email )
+            : array();
+        $asc_roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
         if ( is_array( $asc_roles ) ) {
             foreach ( $asc_roles as $role ) {
                 if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {

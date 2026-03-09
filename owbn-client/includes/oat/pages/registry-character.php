@@ -150,7 +150,12 @@ function owc_oat_can_manage_grants() {
         return false;
     }
 
-    $roles = owc_asc_get_user_roles( get_current_user_id() );
+    $current_user = wp_get_current_user();
+    if ( ! $current_user || ! $current_user->ID ) {
+        return false;
+    }
+    $asc_response = owc_asc_get_user_roles( 'oat', $current_user->user_email );
+    $roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
     if ( ! is_array( $roles ) ) {
         return false;
     }

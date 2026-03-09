@@ -103,6 +103,13 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 			'default' => '/oat-inbox/',
 		) );
 
+		$this->add_control( 'registry_page_url', array(
+			'label'       => __( 'Registry Page URL', 'owbn-client' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => '',
+			'description' => __( 'Leave blank to link to wp-admin Registry page.', 'owbn-client' ),
+		) );
+
 		$this->end_controls_section();
 
 		// ── Style Tab ─────────────────────────────────────────────────────
@@ -209,6 +216,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		$show_watching    = ( $settings['show_watching'] ?? 'yes' ) === 'yes';
 		$submit_url       = $settings['submit_page_url'] ?: '/oat-submit/';
 		$inbox_url        = $settings['inbox_page_url'] ?: '/oat-inbox/';
+		$registry_url     = $settings['registry_page_url'] ?? '/oat-registry/';
 
 		// Fetch counts.
 		$user_id = get_current_user_id();
@@ -263,6 +271,9 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 			</a>
 			<a href="<?php echo esc_url( $inbox_url ); ?>" class="oat-btn oat-btn-secondary">
 				<?php esc_html_e( 'View Inbox', 'owbn-client' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $registry_url ); ?>" class="oat-btn oat-btn-secondary">
+				<?php esc_html_e( 'Registry', 'owbn-client' ); ?>
 			</a>
 		</div>
 		<?php
