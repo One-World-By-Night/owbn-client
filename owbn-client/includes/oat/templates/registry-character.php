@@ -8,17 +8,24 @@
  *   $active_grants   array  Currently active grants.
  *   $expired_grants  array  Expired/future grants.
  *   $can_manage      bool   Whether current user can add/revoke grants.
- *   $character_id    int    Character ID.
- *   $notice          string Notice type from POST action.
+ *   $can_edit          bool   Whether current user can edit this character.
+ *   $npc_role_options  array  NPC role options derived from current user's ASC roles.
+ *   $character_id      int    Character ID.
+ *   $notice            string Notice type from POST action.
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$char_name    = isset( $character['character_name'] ) ? $character['character_name'] : '(unknown)';
-$chronicle    = isset( $character['chronicle_slug'] ) ? $character['chronicle_slug'] : '';
-$creature     = isset( $character['creature_type'] ) ? $character['creature_type'] : '';
-$pc_npc       = isset( $character['pc_npc'] ) ? strtoupper( $character['pc_npc'] ) : '';
-$char_status  = isset( $character['status'] ) ? $character['status'] : '';
+$char_name       = isset( $character['character_name'] ) ? $character['character_name'] : '(unknown)';
+$chronicle       = isset( $character['chronicle_slug'] ) ? $character['chronicle_slug'] : '';
+$creature        = isset( $character['creature_type'] ) ? $character['creature_type'] : '';
+$creature_sub    = isset( $character['creature_sub_type'] ) ? $character['creature_sub_type'] : '';
+$pc_npc          = isset( $character['pc_npc'] ) ? $character['pc_npc'] : '';
+$char_status     = isset( $character['status'] ) ? $character['status'] : '';
+$player_email    = isset( $character['player_email'] ) ? $character['player_email'] : '';
+$player_name     = isset( $character['player_name'] ) ? $character['player_name'] : '';
+$npc_coordinator = isset( $character['npc_coordinator'] ) ? $character['npc_coordinator'] : '';
+$npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : '';
 ?>
 <div class="wrap">
     <h1><?php echo esc_html( $char_name ); ?> — Registry</h1>
@@ -29,12 +36,98 @@ $char_status  = isset( $character['status'] ) ? $character['status'] : '';
 
     <?php settings_errors( 'owc_oat_registry' ); ?>
 
-    <table class="form-table">
-        <tr><th>Chronicle</th><td><?php echo esc_html( $chronicle ); ?></td></tr>
-        <tr><th>Creature Type</th><td><?php echo esc_html( $creature ); ?></td></tr>
-        <tr><th>PC/NPC</th><td><?php echo esc_html( $pc_npc ); ?></td></tr>
-        <tr><th>Status</th><td><?php echo esc_html( ucfirst( $char_status ) ); ?></td></tr>
-    </table>
+    <?php if ( ! empty( $can_edit ) ) : ?>
+        <!-- ── Editable Character Info ───────────────────────────────── -->
+        <form method="post">
+            <?php wp_nonce_field( 'owc_oat_update_character' ); ?>
+            <table class="form-table">
+                <tr>
+                    <th><label for="character_name">Character Name</label></th>
+                    <td><input type="text" name="character_name" id="character_name" value="<?php echo esc_attr( $char_name ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="player_name">Player Name</label></th>
+                    <td><input type="text" name="player_name" id="player_name" value="<?php echo esc_attr( $player_name ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="player_email">Player Email</label></th>
+                    <td><input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="chronicle_slug">Chronicle</label></th>
+                    <td><input type="text" name="chronicle_slug" id="chronicle_slug" value="<?php echo esc_attr( $chronicle ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="creature_type">Creature Type</label></th>
+                    <td><input type="text" name="creature_type" id="creature_type" value="<?php echo esc_attr( $creature ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="creature_sub_type">Creature Sub-Type</label></th>
+                    <td><input type="text" name="creature_sub_type" id="creature_sub_type" value="<?php echo esc_attr( $creature_sub ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="pc_npc">PC/NPC</label></th>
+                    <td>
+                        <select name="pc_npc" id="pc_npc">
+                            <option value="pc" <?php selected( $pc_npc, 'pc' ); ?>>PC</option>
+                            <option value="npc" <?php selected( $pc_npc, 'npc' ); ?>>NPC</option>
+                        </select>
+                    </td>
+                </tr>
+                <?php if ( ! empty( $npc_role_options ) ) : ?>
+                <tr id="npc-role-picker-row" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
+                    <th><label for="npc_role_picker">NPC Owner</label></th>
+                    <td>
+                        <select id="npc_role_picker">
+                            <option value="">— Select role —</option>
+                            <?php foreach ( $npc_role_options as $i => $opt ) : ?>
+                                <option value="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $opt['name'] . ' (' . $opt['email'] . ')' ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="description">Auto-fill NPC owner fields from your roles.</p>
+                    </td>
+                </tr>
+                <?php endif; ?>
+                <tr>
+                    <th><label for="status">Status</label></th>
+                    <td>
+                        <select name="status" id="status">
+                            <option value="active" <?php selected( $char_status, 'active' ); ?>>Active</option>
+                            <option value="inactive" <?php selected( $char_status, 'inactive' ); ?>>Inactive</option>
+                            <option value="dead" <?php selected( $char_status, 'dead' ); ?>>Dead</option>
+                            <option value="shelved" <?php selected( $char_status, 'shelved' ); ?>>Shelved</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="npc_coordinator">NPC Coordinator</label></th>
+                    <td>
+                        <input type="text" name="npc_coordinator" id="npc_coordinator" value="<?php echo esc_attr( $npc_coordinator ); ?>" class="regular-text">
+                        <p class="description">Coordinator genre that controls this NPC (e.g. "assamite").</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="npc_type">NPC Type</label></th>
+                    <td>
+                        <input type="text" name="npc_type" id="npc_type" value="<?php echo esc_attr( $npc_type ); ?>" class="regular-text">
+                        <p class="description">e.g. "chronicle", "coordinator", "shared"</p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Update Character', 'primary', 'owc_oat_update_character' ); ?>
+        </form>
+    <?php else : ?>
+        <!-- ── Read-Only Character Info ──────────────────────────────── -->
+        <table class="form-table">
+            <tr><th>Chronicle</th><td><?php echo esc_html( $chronicle ); ?></td></tr>
+            <tr><th>Creature Type</th><td><?php echo esc_html( $creature ); ?></td></tr>
+            <tr><th>PC/NPC</th><td><?php echo esc_html( strtoupper( $pc_npc ) ); ?></td></tr>
+            <tr><th>Status</th><td><?php echo esc_html( ucfirst( $char_status ) ); ?></td></tr>
+            <?php if ( $player_name ) : ?>
+                <tr><th>Player</th><td><?php echo esc_html( $player_name ); ?></td></tr>
+            <?php endif; ?>
+        </table>
+    <?php endif; ?>
 
     <hr>
 
@@ -196,3 +289,51 @@ $char_status  = isset( $character['status'] ) ? $character['status'] : '';
         </table>
     <?php endif; ?>
 </div>
+
+<?php if ( ! empty( $can_edit ) && ! empty( $npc_role_options ) ) : ?>
+<script>
+(function() {
+    var npcRoleOptions = <?php echo wp_json_encode( $npc_role_options ); ?>;
+    var pcNpcSelect    = document.getElementById('pc_npc');
+    var pickerRow      = document.getElementById('npc-role-picker-row');
+    var rolePicker     = document.getElementById('npc_role_picker');
+
+    if ( ! pcNpcSelect || ! pickerRow || ! rolePicker ) return;
+
+    pcNpcSelect.addEventListener('change', function() {
+        if ( this.value === 'npc' ) {
+            pickerRow.style.display = '';
+            if ( npcRoleOptions.length === 1 ) {
+                rolePicker.value = '0';
+                applyRole( npcRoleOptions[0] );
+            }
+        } else {
+            pickerRow.style.display = 'none';
+            rolePicker.value = '';
+        }
+    });
+
+    rolePicker.addEventListener('change', function() {
+        var idx = this.value;
+        if ( idx !== '' && npcRoleOptions[ idx ] ) {
+            applyRole( npcRoleOptions[ idx ] );
+        }
+    });
+
+    function applyRole( opt ) {
+        setVal('player_email', opt.email);
+        setVal('player_name', opt.name);
+        setVal('npc_coordinator', opt.npc_coordinator);
+        setVal('npc_type', opt.npc_type);
+        if ( opt.chronicle_slug ) {
+            setVal('chronicle_slug', opt.chronicle_slug);
+        }
+    }
+
+    function setVal( id, value ) {
+        var el = document.getElementById( id );
+        if ( el ) el.value = value;
+    }
+})();
+</script>
+<?php endif; ?>

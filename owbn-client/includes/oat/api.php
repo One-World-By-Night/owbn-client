@@ -1577,6 +1577,33 @@ function owc_oat_grant_access( $character_id, $grant_type, $grant_value, $expire
 }
 
 /**
+ * Update a character's fields.
+ *
+ * @param int   $character_id
+ * @param array $data Associative array of fields to update.
+ * @return array|WP_Error
+ */
+function owc_oat_update_character( $character_id, $data ) {
+    if ( owc_oat_is_local() ) {
+        $character = OAT_Character::find( $character_id );
+        if ( ! $character ) {
+            return new WP_Error( 'not_found', 'Character not found.' );
+        }
+
+        $result = OAT_Character::update( $character_id, $data );
+        if ( ! $result ) {
+            return new WP_Error( 'update_failed', 'Character update failed.' );
+        }
+
+        return array( 'success' => true, 'character' => (array) OAT_Character::find( $character_id ) );
+    }
+
+    $body         = $data;
+    $body['_method'] = 'PUT';
+    return owc_oat_request( 'registry/character/' . (int) $character_id, $body );
+}
+
+/**
  * Expire (revoke) a grant.
  *
  * @param int $grant_id
