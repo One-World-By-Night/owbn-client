@@ -325,7 +325,7 @@ function owc_render_coordinator_territories(array $coordinator): string
         return '';
     }
 
-    $territories = owc_fetch_territories_by_slug($slug);
+    $territories = owc_fetch_territories_by_slug('coordinator/' . $slug);
 
     if (empty($territories) || isset($territories['error'])) {
         return '';

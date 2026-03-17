@@ -643,7 +643,7 @@ function owc_get_territory_detail(int $id)
     return $data;
 }
 
-function owc_get_territories_by_slug(string $slug)
+function owc_get_territories_by_slug(string $typed_slug)
 {
     if (!owc_territories_enabled()) {
         return [];
@@ -652,12 +652,17 @@ function owc_get_territories_by_slug(string $slug)
     $mode = owc_get_mode('territories');
 
     if ($mode === 'local') {
-        return owc_get_local_territories_by_slug($slug);
+        return owc_get_local_territories_by_slug($typed_slug);
     }
+
+    // typed_slug is 'chronicle/web' or 'coordinator/web' — split for the two-segment route
+    $parts = explode('/', $typed_slug, 2);
+    $type  = $parts[0] ?? '';
+    $slug  = $parts[1] ?? '';
 
     $base = owc_get_remote_base('territories');
     $key  = owc_get_remote_key('territories');
-    return owc_remote_request($base . 'territories/by-slug/' . rawurlencode($slug), $key);
+    return owc_remote_request($base . 'territories/by-slug/' . rawurlencode($type) . '/' . rawurlencode($slug), $key);
 }
 
 

@@ -394,7 +394,7 @@ function owc_render_chronicle_territories(array $chronicle): string
         return '';
     }
 
-    $territories = owc_fetch_territories_by_slug($slug);
+    $territories = owc_fetch_territories_by_slug('chronicle/' . $slug);
 
     if (empty($territories) || isset($territories['error'])) {
         return '';

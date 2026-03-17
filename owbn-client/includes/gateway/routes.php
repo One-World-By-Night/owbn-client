@@ -68,12 +68,16 @@ function owbn_gateway_register_routes() {
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
 
-    // Territories by slug — registered before /{id} to avoid regex conflict
-    register_rest_route( $namespace, '/territories/by-slug/(?P<slug>[a-z0-9\-]+)', array(
+    // Territories by typed slug — chronicle/{slug} or coordinator/{slug}
+    register_rest_route( $namespace, '/territories/by-slug/(?P<type>chronicle|coordinator)/(?P<slug>[a-z0-9\-]+)', array(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'owbn_gateway_territories_by_slug',
         'permission_callback' => 'owbn_gateway_authenticate',
         'args'                => array(
+            'type' => array(
+                'required'          => true,
+                'sanitize_callback' => 'sanitize_key',
+            ),
             'slug' => array(
                 'required'          => true,
                 'sanitize_callback' => 'sanitize_title',

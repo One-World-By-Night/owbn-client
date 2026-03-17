@@ -178,19 +178,21 @@ function owbn_gateway_detail_territory( $request ) {
 }
 
 /**
- * Handle POST /owbn/v1/territories/by-slug/{slug}
+ * Handle POST /owbn/v1/territories/by-slug/{type}/{slug}
  *
  * @param WP_REST_Request $request
  * @return WP_REST_Response
  */
 function owbn_gateway_territories_by_slug( $request ) {
+    $type = $request->get_param( 'type' );
     $slug = $request->get_param( 'slug' );
+    $typed_slug = $type . '/' . $slug;
     $mode = owc_get_mode( 'territories' );
 
     if ( $mode === 'local' ) {
-        $data = owc_get_local_territories_by_slug( $slug );
+        $data = owc_get_local_territories_by_slug( $typed_slug );
     } else {
-        $data = owbn_gateway_remote_fetch( 'territories', 'territories/by-slug/' . rawurlencode( $slug ) );
+        $data = owbn_gateway_remote_fetch( 'territories', 'territories/by-slug/' . rawurlencode( $type ) . '/' . rawurlencode( $slug ) );
     }
 
     return owbn_gateway_respond( $data );
