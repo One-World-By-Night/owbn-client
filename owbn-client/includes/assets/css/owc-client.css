@@ -668,6 +668,43 @@ body:has(.owc-coordinator-detail) {
   color: #666;
 }
 
+/* Pagination */
+.owc-vote-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 8px 0;
+}
+
+.owc-vote-page-btn {
+  padding: 6px 14px;
+  border: 1px solid #dcdcde;
+  border-radius: 3px;
+  background: #f6f7f7;
+  color: #2271b1;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.owc-vote-page-btn:hover:not(:disabled) {
+  background: #2271b1;
+  color: #fff;
+}
+
+.owc-vote-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.owc-vote-page-info {
+  font-size: 13px;
+  color: #50575e;
+}
+
 /* Footer link */
 .owc-vote-history-footer {
   margin-top: 1em;

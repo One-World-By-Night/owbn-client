@@ -35,9 +35,14 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
     $votes           = $data['votes'];
     $vote_record_url = !empty($data['vote_record_url']) ? $data['vote_record_url'] : '';
 
+    $per_page    = apply_filters('owc_vote_history_per_page', 15);
+    $total_votes = count($votes);
+    $total_pages = (int) ceil($total_votes / $per_page);
+    $page_id     = 'owc-vh-' . substr(md5($entity_type . $entity_slug), 0, 8);
+
     ob_start();
 ?>
-    <div id="owc-vote-history" class="owc-vote-history">
+    <div id="owc-vote-history" class="owc-vote-history" data-page-id="<?php echo esc_attr($page_id); ?>">
         <h2><?php esc_html_e('Vote History', 'owbn-client'); ?></h2>
         <table class="owc-vote-table">
             <thead>
@@ -50,8 +55,8 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($votes as $vote) : ?>
-                    <tr>
+                <?php foreach ($votes as $i => $vote) : ?>
+                    <tr class="owc-vote-row" data-row="<?php echo (int) $i; ?>"<?php if ($i >= $per_page) echo ' style="display:none;"'; ?>>
                         <td class="owc-vote-table__title" data-label="<?php esc_attr_e('Title', 'owbn-client'); ?>">
                             <?php if (!empty($vote['vote_url'])) : ?>
                                 <a href="<?php echo esc_url($vote['vote_url']); ?>" target="_blank" rel="noopener" class="owc-vote-table__link"><?php echo esc_html($vote['title']); ?></a>
@@ -75,6 +80,15 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <?php if ($total_pages > 1) : ?>
+            <div class="owc-vote-pagination" data-per-page="<?php echo (int) $per_page; ?>" data-total="<?php echo (int) $total_votes; ?>">
+                <button type="button" class="owc-vote-page-btn" data-dir="prev" disabled>&laquo; <?php esc_html_e('Prev', 'owbn-client'); ?></button>
+                <span class="owc-vote-page-info">
+                    <?php printf(esc_html__('Page %1$s of %2$s', 'owbn-client'), '<span class="owc-vote-page-cur">1</span>', '<span>' . (int) $total_pages . '</span>'); ?>
+                </span>
+                <button type="button" class="owc-vote-page-btn" data-dir="next"><?php esc_html_e('Next', 'owbn-client'); ?> &raquo;</button>
+            </div>
+        <?php endif; ?>
         <?php if ($vote_record_url) : ?>
             <p class="owc-vote-history-footer">
                 <?php
@@ -88,6 +102,34 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
             </p>
         <?php endif; ?>
     </div>
+    <?php if ($total_pages > 1) : ?>
+    <script>
+    (function(){
+        var wrap = document.getElementById('owc-vote-history');
+        if (!wrap) return;
+        var rows = wrap.querySelectorAll('.owc-vote-row');
+        var pag = wrap.querySelector('.owc-vote-pagination');
+        if (!pag) return;
+        var perPage = parseInt(pag.dataset.perPage, 10);
+        var total = parseInt(pag.dataset.total, 10);
+        var pages = Math.ceil(total / perPage);
+        var cur = 1;
+        var btns = pag.querySelectorAll('.owc-vote-page-btn');
+        var info = pag.querySelector('.owc-vote-page-cur');
+        function show() {
+            var start = (cur - 1) * perPage, end = start + perPage;
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = (i >= start && i < end) ? '' : 'none';
+            }
+            info.textContent = cur;
+            btns[0].disabled = (cur <= 1);
+            btns[1].disabled = (cur >= pages);
+        }
+        btns[0].addEventListener('click', function(){ if(cur>1){cur--;show();} });
+        btns[1].addEventListener('click', function(){ if(cur<pages){cur++;show();} });
+    })();
+    </script>
+    <?php endif; ?>
 <?php
     return ob_get_clean();
 }
