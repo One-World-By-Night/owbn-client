@@ -23,7 +23,7 @@
  *   hst_info, cm_info, ast_list
  * 
  * Locations:
- *   ooc_locations, ic_location_list, game_site_list
+ *   ooc_locations, game_site_list
  * 
  * Sessions:
  *   session_list
@@ -113,7 +113,6 @@ function owc_render_chronicle_field(array $chronicle, string $field, bool $show_
 
         // Locations
         'ooc_locations'          => 'owc_chron_field_ooc_locations',
-        'ic_location_list'       => 'owc_chron_field_ic_locations',
         'game_site_list'         => 'owc_chron_field_game_sites',
 
         // Sessions
@@ -181,7 +180,6 @@ function owc_chron_field_wrapper(string $field, string $content, bool $show_labe
 
         // Locations
         'ooc_locations'          => __('Location', 'owbn-client'),
-        'ic_location_list'       => __('IC Locations', 'owbn-client'),
         'game_site_list'         => __('Game Sites', 'owbn-client'),
 
         // Sessions
@@ -368,18 +366,6 @@ function owc_chron_field_ooc_locations(array $c, string $f): string
         if ($parts) {
             $items[] = esc_html(implode(', ', $parts));
         }
-    }
-    return implode('<br>', $items);
-}
-
-function owc_chron_field_ic_locations(array $c, string $f): string
-{
-    $list = array_filter($c['ic_location_list'] ?? [], fn($l) => !empty($l['name']));
-    if (empty($list)) return '';
-
-    $items = [];
-    foreach ($list as $loc) {
-        $items[] = esc_html($loc['name']);
     }
     return implode('<br>', $items);
 }

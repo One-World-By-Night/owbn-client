@@ -80,7 +80,7 @@ Display individual fields from a chronicle or coordinator record:
 * **Basic:** title, chronicle_slug, slug, genres, game_type, active_player_count, web_url
 * **Content:** content, description, premise, game_theme, game_mood, traveler_info
 * **Staff:** hst_info, cm_info, ast_list
-* **Locations:** ooc_locations, ic_location_list, game_site_list
+* **Locations:** ooc_locations, game_site_list
 * **Sessions:** session_list
 * **Links:** document_links, social_urls, email_lists, player_lists
 * **Metadata:** chronicle_region, chronicle_start_date, chronicle_probationary, chronicle_satellite, chronicle_parent

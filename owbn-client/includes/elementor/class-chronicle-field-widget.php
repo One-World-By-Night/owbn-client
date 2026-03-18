@@ -248,7 +248,6 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 
 			// Locations
 			'ooc_locations'          => __('Location (OOC)', 'owbn-client'),
-			'ic_location_list'       => __('IC Locations', 'owbn-client'),
 			'game_site_list'         => __('Game Sites', 'owbn-client'),
 
 			// Sessions

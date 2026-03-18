@@ -306,7 +306,6 @@ function owc_get_local_chronicle_detail(string $slug)
         'chronicle_parent_title' => $parent_title,
         'chronicle_parent'       => $parent_slug,
         'ooc_locations'          => get_post_meta($id, 'ooc_locations', true) ?: [],
-        'ic_locations'           => get_post_meta($id, 'ic_locations', true) ?: [],
         'premise'                => get_post_meta($id, 'premise', true),
         'game_theme'             => get_post_meta($id, 'game_theme', true),
         'game_mood'              => get_post_meta($id, 'game_mood', true),
