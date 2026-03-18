@@ -63,11 +63,13 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="text"
+                <input type="password"
                     name="owbn_gateway_api_key"
                     id="owbn_gateway_api_key"
-                    value="<?php echo esc_attr( $gw_api_key ); ?>"
-                    class="regular-text code" />
+                    value=""
+                    placeholder="<?php echo $gw_api_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    class="regular-text code"
+                    autocomplete="new-password" />
                 <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
                     <?php esc_html_e( 'Generate', 'owbn-client' ); ?>
                 </button>
@@ -133,10 +135,12 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'SSO API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="text"
+                <input type="password"
                     name="owbn_gateway_sso_api_key"
-                    value="<?php echo esc_attr( $gw_sso_key ); ?>"
-                    class="regular-text code" />
+                    value=""
+                    placeholder="<?php echo $gw_sso_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    class="regular-text code"
+                    autocomplete="new-password" />
                 <p class="description"><?php esc_html_e( 'API key for the SSO server gateway.', 'owbn-client' ); ?></p>
             </td>
         </tr>
@@ -182,10 +186,12 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
         <tr>
             <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="text"
+                <input type="password"
                     name="<?php echo esc_attr( owc_option_name( 'remote_api_key' ) ); ?>"
-                    value="<?php echo esc_attr( $remote_api_key ); ?>"
-                    class="regular-text code" />
+                    value=""
+                    placeholder="<?php echo $remote_api_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    class="regular-text code"
+                    autocomplete="new-password" />
                 <p class="description"><?php esc_html_e( 'API key for the default remote gateway.', 'owbn-client' ); ?></p>
             </td>
         </tr>

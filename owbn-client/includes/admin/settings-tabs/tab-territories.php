@@ -57,11 +57,12 @@ $remote_key = get_option( owc_option_name( 'territories_remote_api_key' ), '' );
         <tr class="owc-territories-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'API Key Override', 'owbn-client' ); ?></th>
             <td>
-                <input type="text"
+                <input type="password"
                     name="<?php echo esc_attr( owc_option_name( 'territories_remote_api_key' ) ); ?>"
-                    value="<?php echo esc_attr( $remote_key ); ?>"
+                    value=""
+                    placeholder="<?php echo $remote_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
                     class="regular-text code"
-                    placeholder="<?php esc_attr_e( 'Leave empty to use default key', 'owbn-client' ); ?>" />
+                    autocomplete="new-password" />
             </td>
         </tr>
     </table>
