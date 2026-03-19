@@ -28,6 +28,9 @@ $remote_api_key = get_option( owc_option_name( 'remote_api_key' ), '' );
 
 // Cache TTL.
 $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
+
+// Change notification email.
+$notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
 ?>
 
 <h2><?php esc_html_e( 'General Settings', 'owbn-client' ); ?></h2>
@@ -263,6 +266,20 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
                     class="small-text"
                     min="0" />
                 <p class="description"><?php esc_html_e( '0 = no caching. Default: 3600 (1 hour)', 'owbn-client' ); ?></p>
+            </td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <!-- ── Change Notifications ──────────────────────────────────────── -->
+    <h3>Change Notifications</h3>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">Notification Email</th>
+            <td>
+                <input type="email" name="<?php echo esc_attr( owc_option_name( 'change_notify_email' ) ); ?>" value="<?php echo esc_attr( $notify_email ); ?>" class="regular-text" placeholder="monitor@owbn.net" />
+                <p class="description">Send an email to this address when chronicle or coordinator data changes. Leave blank to disable.</p>
             </td>
         </tr>
     </table>

@@ -21,6 +21,9 @@ require_once __DIR__ . '/helpers/init.php';
 // Admin (settings page, enqueue)
 require_once __DIR__ . '/admin/init.php';
 
+// Notifications (change notification emails)
+require_once __DIR__ . '/notifications/change-notify.php';
+
 // Hooks (filters, actions)
 require_once __DIR__ . '/hooks/init.php';
 

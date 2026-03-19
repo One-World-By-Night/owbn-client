@@ -25,10 +25,10 @@ if ( ! defined( 'OWC_ASC_CACHE_TS_KEY' ) ) {
 }
 
 /**
- * Default cache TTL in seconds (1 hour).
+ * Default cache TTL in seconds (15 minutes).
  */
 if ( ! defined( 'OWC_ASC_CACHE_TTL' ) ) {
-	define( 'OWC_ASC_CACHE_TTL', 3600 );
+	define( 'OWC_ASC_CACHE_TTL', 900 );
 }
 
 /**

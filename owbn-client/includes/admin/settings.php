@@ -219,6 +219,10 @@ add_action('admin_init', function () {
         'default'           => 3600,
         'sanitize_callback' => 'absint',
     ]);
+    register_setting($g, owc_option_name('change_notify_email'), [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_email',
+    ]);
 
     // ── Chronicles tab ───────────────────────────────────────────────────
     $g = $tabs['chronicles']['group'];
