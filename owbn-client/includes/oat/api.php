@@ -190,6 +190,10 @@ function owc_oat_get_forms_for_domain( $domain_slug ) {
         $forms = OAT_Domain_Registry::get_forms( $domain_slug );
         $out = array();
         foreach ( $forms as $form ) {
+            // Check form-level access restrictions
+            if ( ! owc_oat_user_can_access_form( $form->slug ) ) {
+                continue;
+            }
             $out[] = array(
                 'id'    => (int) $form->id,
                 'slug'  => $form->slug,
@@ -204,6 +208,55 @@ function owc_oat_get_forms_for_domain( $domain_slug ) {
         return array();
     }
     return isset( $result['forms'] ) ? $result['forms'] : ( is_array( $result ) ? $result : array() );
+}
+
+/**
+ * Check if the current user can access a specific form.
+ *
+ * Forms can define access rules via the owc_oat_form_access_rules filter.
+ * Default: all forms are accessible.
+ *
+ * @param string $form_slug The form slug.
+ * @return bool
+ */
+function owc_oat_user_can_access_form( $form_slug ) {
+    // ca_manage_satellites: only HST/CM of non-probationary, non-satellite chronicles
+    if ( $form_slug === 'ca_manage_satellites' ) {
+        if ( current_user_can( 'manage_options' ) ) {
+            return true;
+        }
+        if ( ! function_exists( '_owc_asc_get_user_entity_entries' ) ) {
+            return false;
+        }
+        $entries = _owc_asc_get_user_entity_entries( 'chronicle', array( 'HST', 'CM' ) );
+        if ( empty( $entries ) ) {
+            return false;
+        }
+        // Check if any of the user's chronicles are non-probationary and non-satellite
+        $chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+        if ( is_wp_error( $chronicles ) || ! is_array( $chronicles ) ) {
+            return false;
+        }
+        $chron_lookup = array();
+        foreach ( $chronicles as $c ) {
+            $chron_lookup[ $c['slug'] ] = $c;
+        }
+        foreach ( $entries as $entry ) {
+            $slug = $entry['slug'];
+            if ( ! isset( $chron_lookup[ $slug ] ) ) {
+                continue;
+            }
+            $c = $chron_lookup[ $slug ];
+            $is_probationary = ! empty( $c['chronicle_probationary'] ) && $c['chronicle_probationary'] !== '0';
+            $is_satellite = ! empty( $c['chronicle_satellite'] ) && $c['chronicle_satellite'] !== '0';
+            if ( ! $is_probationary && ! $is_satellite ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    return true;
 }
 
 
