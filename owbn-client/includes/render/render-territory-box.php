@@ -127,13 +127,15 @@ function owc_render_territory_box(array $territories, string $context = '', stri
             }
 
             function buildSlugLink(slug) {
-                const type = slugTypes[slug] || '';
+                const info = slugTypes[slug] || {};
+                const type = info.type || '';
+                const title = info.title || slug;
                 if (type === 'chronicle' && chroniclesDetailUrl) {
-                    return `<a href="${chroniclesDetailUrl}?slug=${encodeURIComponent(slug)}">${escHtml(slug)}</a>`;
+                    return `<a href="${chroniclesDetailUrl}?slug=${encodeURIComponent(slug)}" target="_blank">${escHtml(title)}</a>`;
                 } else if (type === 'coordinator' && coordinatorsDetailUrl) {
-                    return `<a href="${coordinatorsDetailUrl}?slug=${encodeURIComponent(slug)}">${escHtml(slug)}</a>`;
+                    return `<a href="${coordinatorsDetailUrl}?slug=${encodeURIComponent(slug)}" target="_blank">${escHtml(title)}</a>`;
                 }
-                return escHtml(slug);
+                return escHtml(title);
             }
 
             function showDetail(id) {
@@ -218,7 +220,10 @@ function owc_get_all_slug_types(): array
     if (!isset($chronicles['error']) && is_array($chronicles)) {
         foreach ($chronicles as $c) {
             if (!empty($c['slug'])) {
-                $types[$c['slug']] = 'chronicle';
+                $types[$c['slug']] = [
+                    'type'  => 'chronicle',
+                    'title' => $c['title'] ?? $c['slug'],
+                ];
             }
         }
     }
@@ -227,7 +232,10 @@ function owc_get_all_slug_types(): array
     if (!isset($coordinators['error']) && is_array($coordinators)) {
         foreach ($coordinators as $c) {
             if (!empty($c['slug'])) {
-                $types[$c['slug']] = 'coordinator';
+                $types[$c['slug']] = [
+                    'type'  => 'coordinator',
+                    'title' => $c['title'] ?? $c['slug'],
+                ];
             }
         }
     }
