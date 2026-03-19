@@ -150,7 +150,13 @@ function owc_format_staff_entry( $row ) {
     if ( $email && function_exists( 'owc_asc_get_user_roles' ) ) {
         $asc_roles = owc_asc_get_user_roles( 'owbn-cc', $email );
         if ( ! is_wp_error( $asc_roles ) && ! empty( $asc_roles['roles'] ) ) {
-            $paths = array_column( $asc_roles['roles'], 'full_path' );
+            $roles_list = $asc_roles['roles'];
+            // Handle both string arrays and object arrays
+            $paths = [];
+            foreach ( $roles_list as $r ) {
+                $paths[] = is_array( $r ) ? ( $r['full_path'] ?? '' ) : (string) $r;
+            }
+            $paths = array_filter( $paths );
             if ( ! empty( $paths ) ) {
                 $base .= ' {' . implode( ', ', $paths ) . '}';
             }
