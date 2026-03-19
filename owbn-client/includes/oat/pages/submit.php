@@ -103,12 +103,15 @@ function owc_oat_page_submit() {
         $selected_domain = sanitize_text_field( $_GET['domain'] );
     }
 
-    // If a domain is selected, get its form fields.
+    // If a domain is selected, get its form fields (skip if multi-form — JS handles it).
     $domain_fields = array();
     if ( $selected_domain ) {
-        $fields = owc_oat_get_form_fields( $selected_domain, 'submit' );
-        if ( ! is_wp_error( $fields ) ) {
-            $domain_fields = $fields;
+        $domain_forms = class_exists( 'OAT_Domain_Registry' ) ? OAT_Domain_Registry::get_forms( $selected_domain ) : array();
+        if ( count( $domain_forms ) <= 1 ) {
+            $fields = owc_oat_get_form_fields( $selected_domain, 'submit' );
+            if ( ! is_wp_error( $fields ) ) {
+                $domain_fields = $fields;
+            }
         }
     }
 

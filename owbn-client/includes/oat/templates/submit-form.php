@@ -38,6 +38,14 @@ defined( 'ABSPATH' ) || exit;
                     </select>
                 </td>
             </tr>
+            <tr id="oat-form-picker-row" style="display:none;">
+                <th><label for="oat_form_slug">Form</label></th>
+                <td>
+                    <select name="oat_form_slug" id="oat_form_slug">
+                        <option value="">Select a form...</option>
+                    </select>
+                </td>
+            </tr>
         </table>
 
         <!-- Domain-specific fields rendered by server (AJAX or page reload) -->
@@ -52,3 +60,76 @@ defined( 'ABSPATH' ) || exit;
         <?php submit_button( 'Submit Entry' ); ?>
     </form>
 </div>
+
+<script>
+jQuery(function($) {
+    function loadFields(params) {
+        var $container = $('#owc-oat-domain-fields');
+        $container.html('<p>Loading fields...</p>');
+        params.action = 'owc_oat_get_domain_fields';
+        params.nonce = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '';
+        var url = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.url : ajaxurl;
+        $.post(url, params, function(response) {
+            if (response.success && response.data && response.data.html) {
+                $container.html(response.data.html);
+                $(document).trigger('oat-fields-loaded', [$container]);
+            } else {
+                $container.html('<p>Could not load fields.</p>');
+            }
+        });
+    }
+
+    function checkFormsAndLoad(domain) {
+        $('#owc-oat-domain-fields').empty();
+        $('#oat-form-picker-row').hide();
+        $('#oat_form_slug').html('<option value="">Select a form...</option>');
+
+        if (!domain) return;
+
+        var url = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.url : ajaxurl;
+        var nonce = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '';
+
+        $.post(url, {
+            action: 'owc_oat_get_domain_forms',
+            nonce: nonce,
+            domain_slug: domain
+        }, function(response) {
+            var forms = (response.success && response.data) ? response.data : [];
+            if (forms.length > 1) {
+                var $sel = $('#oat_form_slug');
+                $sel.html('<option value="">Select a form...</option>');
+                $.each(forms, function(i, f) {
+                    $sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
+                });
+                $('#oat-form-picker-row').show();
+            } else if (forms.length === 1) {
+                $('#oat_form_slug').html('<option value="' + forms[0].slug + '">' + forms[0].label + '</option>');
+                loadFields({ form_slug: forms[0].slug, domain: domain });
+            } else {
+                loadFields({ domain: domain });
+            }
+        }).fail(function() {
+            loadFields({ domain: domain });
+        });
+    }
+
+    $('#oat_domain').on('change', function() {
+        checkFormsAndLoad($(this).val());
+    });
+
+    $('#oat_form_slug').on('change', function() {
+        var formSlug = $(this).val();
+        var domain = $('#oat_domain').val();
+        $('#owc-oat-domain-fields').empty();
+        if (formSlug) {
+            loadFields({ form_slug: formSlug, domain: domain });
+        }
+    });
+
+    // If domain is pre-selected on page load, check for forms
+    var preselected = $('#oat_domain').val();
+    if (preselected) {
+        checkFormsAndLoad(preselected);
+    }
+});
+</script>
