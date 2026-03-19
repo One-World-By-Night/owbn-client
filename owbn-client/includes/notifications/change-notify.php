@@ -126,11 +126,13 @@ function owc_format_change_value( $value ) {
 function owc_format_staff_entry( $row ) {
     $name = ! empty( $row['display_name'] ) ? $row['display_name'] : '';
     $login = '';
+    $email = '';
 
     if ( ! empty( $row['user'] ) ) {
         $user = get_user_by( 'id', $row['user'] );
         if ( $user ) {
             $login = $user->user_login;
+            $email = $user->user_email;
             if ( empty( $name ) ) {
                 $name = $user->display_name;
             }
@@ -142,6 +144,18 @@ function owc_format_staff_entry( $row ) {
     }
 
     $role = ! empty( $row['role'] ) ? " [{$row['role']}]" : '';
+    $base = $login ? "{$name} ({$login}){$role}" : "{$name}{$role}";
 
-    return $login ? "{$name} ({$login}){$role}" : "{$name}{$role}";
+    // Append accessSchema roles if available
+    if ( $email && function_exists( 'owc_asc_get_user_roles' ) ) {
+        $asc_roles = owc_asc_get_user_roles( 'owbn-cc', $email );
+        if ( ! is_wp_error( $asc_roles ) && ! empty( $asc_roles['roles'] ) ) {
+            $paths = array_column( $asc_roles['roles'], 'full_path' );
+            if ( ! empty( $paths ) ) {
+                $base .= ' {' . implode( ', ', $paths ) . '}';
+            }
+        }
+    }
+
+    return $base;
 }
