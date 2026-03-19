@@ -341,6 +341,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 					'value'      => $value,
 					'roles'      => $chron_roles,
 					'auto_props' => isset( $attrs['auto_props'] ) ? $attrs['auto_props'] : array(),
+					'filter'     => isset( $attrs['filter'] ) ? $attrs['filter'] : array(),
 					'required'   => $required,
 				) );
 			} else {
@@ -352,6 +353,31 @@ function owc_oat_render_field( $field, $value = '' ) {
 			}
 			if ( $filter_by_chron ) {
 				echo '</div>';
+			}
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
+		case 'satellite_picker':
+			$depends_on = isset( $attrs['depends_on'] ) ? $attrs['depends_on'] : '';
+			echo '<tr class="oat-field"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			if ( function_exists( 'owc_render_satellite_picker' ) ) {
+				owc_render_satellite_picker( array(
+					'name'       => $name,
+					'id'         => $id,
+					'value'      => $value,
+					'depends_on' => $depends_on,
+					'required'   => $required,
+				) );
+			} else {
+				printf(
+					'<input type="text" id="%s" name="%s" value="%s" placeholder="Satellite chronicle slug"%s />',
+					$id, $name, esc_attr( $value ), $req_attr
+				);
 			}
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';

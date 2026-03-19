@@ -35,8 +35,40 @@ function owc_asc_render_chronicle_picker( $args ) {
 
 	$req_attr = $required ? ' required="required"' : '';
 
+	$filter = isset( $args['filter'] ) && is_array( $args['filter'] ) ? $args['filter'] : array();
+
 	// Get user's authorized chronicles.
 	$entries = _owc_asc_get_user_entity_entries( 'chronicle', $roles );
+
+	// Apply chronicle-level filters (probationary, satellite).
+	if ( ! empty( $filter ) && ! empty( $entries ) ) {
+		$all_chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+		if ( is_array( $all_chronicles ) && ! isset( $all_chronicles['error'] ) ) {
+			$chron_lookup = array();
+			foreach ( $all_chronicles as $c ) {
+				$chron_lookup[ $c['slug'] ] = $c;
+			}
+			$entries = array_filter( $entries, function( $entry ) use ( $filter, $chron_lookup ) {
+				$slug = $entry['slug'];
+				if ( ! isset( $chron_lookup[ $slug ] ) ) {
+					return true;
+				}
+				$c = $chron_lookup[ $slug ];
+				if ( isset( $filter['probationary'] ) && $filter['probationary'] === false ) {
+					if ( ! empty( $c['chronicle_probationary'] ) && $c['chronicle_probationary'] !== '0' ) {
+						return false;
+					}
+				}
+				if ( isset( $filter['satellite'] ) && $filter['satellite'] === false ) {
+					if ( ! empty( $c['chronicle_satellite'] ) && $c['chronicle_satellite'] !== '0' ) {
+						return false;
+					}
+				}
+				return true;
+			} );
+			$entries = array_values( $entries );
+		}
+	}
 
 	if ( empty( $entries ) ) {
 		echo '<p class="description"><em>No authorized chronicles found.</em></p>';
@@ -397,6 +429,115 @@ function _owc_asc_get_all_entity_entries( $entity_type ) {
 	} );
 
 	return $entries;
+}
+
+/**
+ * Render a satellite chronicle picker.
+ *
+ * Pre-loads all satellite chronicles grouped by parent slug.
+ * JavaScript updates the dropdown when the parent chronicle field changes.
+ *
+ * @param array $args {
+ *     @type string $name       Input name attribute.
+ *     @type string $id         Input id attribute.
+ *     @type string $value      Currently selected satellite slug.
+ *     @type string $depends_on Field key of the parent chronicle picker.
+ *     @type bool   $required   Whether selection is required.
+ * }
+ */
+function owc_render_satellite_picker( $args ) {
+	$name       = $args['name'] ?? '';
+	$id         = $args['id'] ?? '';
+	$value      = $args['value'] ?? '';
+	$depends_on = $args['depends_on'] ?? '';
+	$required   = ! empty( $args['required'] );
+	$req_attr   = $required ? ' required' : '';
+
+	// Fetch all chronicles and group satellites by parent
+	$chronicles  = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+	$satellites_by_parent = array();
+
+	if ( is_array( $chronicles ) && ! isset( $chronicles['error'] ) ) {
+		foreach ( $chronicles as $c ) {
+			$is_sat = ! empty( $c['chronicle_satellite'] ) && $c['chronicle_satellite'] !== '0';
+			$parent = $c['chronicle_parent'] ?? '';
+			if ( $is_sat && ! empty( $parent ) ) {
+				if ( ! isset( $satellites_by_parent[ $parent ] ) ) {
+					$satellites_by_parent[ $parent ] = array();
+				}
+				$satellites_by_parent[ $parent ][] = array(
+					'slug'  => $c['slug'],
+					'title' => $c['title'],
+				);
+			}
+		}
+	}
+
+	// Sort satellites by title within each parent
+	foreach ( $satellites_by_parent as &$sats ) {
+		usort( $sats, function( $a, $b ) {
+			return strcasecmp( $a['title'], $b['title'] );
+		} );
+	}
+	unset( $sats );
+
+	$data_json = wp_json_encode( $satellites_by_parent );
+
+	printf(
+		'<div class="oat-satellite-picker-wrap" data-depends-on="%s" data-satellites="%s">',
+		esc_attr( $depends_on ),
+		esc_attr( $data_json )
+	);
+	printf(
+		'<select id="%s" name="%s"%s><option value="">-- Select Satellite --</option></select>',
+		esc_attr( $id ),
+		esc_attr( $name ),
+		$req_attr
+	);
+	echo '</div>';
+
+	// Inline JS to update dropdown when parent changes
+	?>
+	<script>
+	(function() {
+		var wrap = document.querySelector('.oat-satellite-picker-wrap[data-depends-on="<?php echo esc_js( $depends_on ); ?>"]');
+		if (!wrap) return;
+		var select = wrap.querySelector('select');
+		var data = JSON.parse(wrap.getAttribute('data-satellites') || '{}');
+		var currentValue = <?php echo wp_json_encode( $value ); ?>;
+		var dependsOn = wrap.getAttribute('data-depends-on');
+
+		function updateSatellites(parentSlug) {
+			var sats = data[parentSlug] || [];
+			select.innerHTML = '<option value="">-- Select Satellite --</option>';
+			if (sats.length === 0) {
+				select.innerHTML = '<option value="">(no satellites found)</option>';
+				return;
+			}
+			sats.forEach(function(s) {
+				var opt = document.createElement('option');
+				opt.value = s.slug;
+				opt.textContent = s.title;
+				if (s.slug === currentValue) opt.selected = true;
+				select.appendChild(opt);
+			});
+		}
+
+		// Find the parent picker field
+		var parentField = document.querySelector('[name="oat_meta_' + dependsOn + '"]');
+		if (parentField) {
+			parentField.addEventListener('change', function() {
+				currentValue = '';
+				updateSatellites(this.value);
+			});
+			// Initial population
+			if (parentField.value) {
+				updateSatellites(parentField.value);
+			}
+		}
+	})();
+	</script>
+	<?php
 }
 
 /**

@@ -185,6 +185,7 @@ function owc_get_local_chronicles()
             'game_type'              => get_post_meta($id, 'game_type', true),
             'chronicle_probationary' => get_post_meta($id, 'chronicle_probationary', true),
             'chronicle_satellite'    => get_post_meta($id, 'chronicle_satellite', true),
+            'chronicle_parent'       => get_post_meta($id, 'chronicle_parent', true),
             'ooc_locations'          => get_post_meta($id, 'ooc_locations', true) ?: [],
         ];
     }, $posts);
