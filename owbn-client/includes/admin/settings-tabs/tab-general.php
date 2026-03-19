@@ -66,12 +66,13 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="password"
+                <input type="text"
                     name="owbn_gateway_api_key"
                     id="owbn_gateway_api_key"
-                    value=""
-                    placeholder="<?php echo $gw_api_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    value="<?php echo $gw_api_key ? esc_attr( str_repeat( '●', 12 ) . substr( $gw_api_key, -4 ) ) : ''; ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
                     class="regular-text code"
+                    onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
                 <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
                     <?php esc_html_e( 'Generate', 'owbn-client' ); ?>
@@ -138,11 +139,12 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'SSO API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="password"
+                <input type="text"
                     name="owbn_gateway_sso_api_key"
-                    value=""
-                    placeholder="<?php echo $gw_sso_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    value="<?php echo $gw_sso_key ? esc_attr( str_repeat( '●', 12 ) . substr( $gw_sso_key, -4 ) ) : ''; ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
                     class="regular-text code"
+                    onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
                 <p class="description"><?php esc_html_e( 'API key for the SSO server gateway.', 'owbn-client' ); ?></p>
             </td>
@@ -189,11 +191,12 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
         <tr>
             <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="password"
+                <input type="text"
                     name="<?php echo esc_attr( owc_option_name( 'remote_api_key' ) ); ?>"
-                    value=""
-                    placeholder="<?php echo $remote_api_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    value="<?php echo $remote_api_key ? esc_attr( str_repeat( '●', 12 ) . substr( $remote_api_key, -4 ) ) : ''; ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
                     class="regular-text code"
+                    onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
                 <p class="description"><?php esc_html_e( 'API key for the default remote gateway.', 'owbn-client' ); ?></p>
             </td>
@@ -278,8 +281,8 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
         <tr>
             <th scope="row">Notification Email</th>
             <td>
-                <input type="email" name="<?php echo esc_attr( owc_option_name( 'change_notify_email' ) ); ?>" value="<?php echo esc_attr( $notify_email ); ?>" class="regular-text" placeholder="monitor@owbn.net" />
-                <p class="description">Send an email to this address when chronicle or coordinator data changes. Leave blank to disable.</p>
+                <input type="text" name="<?php echo esc_attr( owc_option_name( 'change_notify_email' ) ); ?>" value="<?php echo esc_attr( $notify_email ); ?>" class="regular-text" placeholder="web@owbn.net, admin@owbn.net" />
+                <p class="description">Comma-separated list of email addresses to notify when chronicle or coordinator data changes. Leave blank to disable.</p>
             </td>
         </tr>
     </table>

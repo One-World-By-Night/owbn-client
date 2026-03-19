@@ -221,7 +221,12 @@ add_action('admin_init', function () {
     ]);
     register_setting($g, owc_option_name('change_notify_email'), [
         'type'              => 'string',
-        'sanitize_callback' => 'sanitize_email',
+        'sanitize_callback' => function( $val ) {
+            // Support comma-separated emails
+            $emails = array_map( 'trim', explode( ',', $val ) );
+            $valid  = array_filter( $emails, 'is_email' );
+            return implode( ', ', $valid );
+        },
     ]);
 
     // ── Chronicles tab ───────────────────────────────────────────────────

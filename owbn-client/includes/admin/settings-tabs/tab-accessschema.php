@@ -59,11 +59,12 @@ $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
         <tr class="owc-asc-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
             <td>
-                <input type="password"
+                <input type="text"
                     name="<?php echo esc_attr( owc_option_name( 'asc_remote_api_key' ) ); ?>"
-                    value=""
-                    placeholder="<?php echo $remote_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    value="<?php echo $remote_key ? esc_attr( str_repeat( '●', 12 ) . substr( $remote_key, -4 ) ) : ''; ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
                     class="regular-text code"
+                    onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
                 <p class="description"><?php esc_html_e( 'API key for the accessSchema server.', 'owbn-client' ); ?></p>
             </td>

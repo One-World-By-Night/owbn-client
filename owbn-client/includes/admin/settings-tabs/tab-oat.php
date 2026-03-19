@@ -47,22 +47,25 @@ $remote_key = get_option( owc_option_name( 'oat_remote_api_key' ), '' );
         <tr class="owc-oat-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'Remote URL Override', 'owbn-client' ); ?></th>
             <td>
+                <?php $default_url = get_option( owc_option_name( 'remote_url' ), '' ); ?>
                 <input type="url"
                     name="<?php echo esc_attr( owc_option_name( 'oat_remote_url' ) ); ?>"
                     value="<?php echo esc_url( $remote_url ); ?>"
                     class="regular-text"
-                    placeholder="<?php esc_attr_e( 'Leave empty to use default remote', 'owbn-client' ); ?>" />
+                    placeholder="<?php echo esc_attr( $default_url ? $default_url . ' (default)' : 'No default set' ); ?>" />
                 <p class="description"><?php esc_html_e( 'Only set if OAT data comes from a different gateway than the default remote URL.', 'owbn-client' ); ?></p>
             </td>
         </tr>
         <tr class="owc-oat-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'API Key Override', 'owbn-client' ); ?></th>
             <td>
-                <input type="password"
+                <?php $default_key = get_option( owc_option_name( 'remote_api_key' ), '' ); ?>
+                <input type="text"
                     name="<?php echo esc_attr( owc_option_name( 'oat_remote_api_key' ) ); ?>"
-                    value=""
-                    placeholder="<?php echo $remote_key ? esc_attr__( 'Saved — leave blank to keep', 'owbn-client' ) : esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    value="<?php echo $remote_key ? esc_attr( str_repeat( '●', 12 ) . substr( $remote_key, -4 ) ) : ''; ?>"
+                    placeholder="<?php echo esc_attr( $default_key ? str_repeat( '●', 12 ) . substr( $default_key, -4 ) . ' (default)' : 'Enter API key' ); ?>"
                     class="regular-text code"
+                    onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
             </td>
         </tr>

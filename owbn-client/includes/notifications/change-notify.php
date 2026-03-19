@@ -20,8 +20,14 @@ defined( 'ABSPATH' ) || exit;
  * @return bool Whether the email was sent
  */
 function owc_send_change_notification( $entity_type, $entity_title, $slug, $changes, $changed_by, $post_id, $pending = false ) {
-    $to = get_option( owc_option_name( 'change_notify_email' ), '' );
-    if ( empty( $to ) || ! is_email( $to ) ) {
+    $to_raw = get_option( owc_option_name( 'change_notify_email' ), '' );
+    if ( empty( $to_raw ) ) {
+        return false;
+    }
+
+    // Support comma-separated list of emails
+    $to = array_filter( array_map( 'trim', explode( ',', $to_raw ) ), 'is_email' );
+    if ( empty( $to ) ) {
         return false;
     }
 
@@ -95,37 +101,47 @@ function owc_format_change_value( $value ) {
 
     // user_info type: { user: "123", display_name: "John", email: "john@example.com" }
     if ( isset( $value['user'] ) ) {
-        $parts = array();
-        if ( ! empty( $value['display_name'] ) ) {
-            $parts[] = $value['display_name'];
-        }
-        if ( ! empty( $value['email'] ) ) {
-            $parts[] = $value['email'];
-        }
-        if ( empty( $parts ) && ! empty( $value['user'] ) ) {
-            $user = get_user_by( 'id', $value['user'] );
-            if ( $user ) {
-                $parts[] = $user->display_name;
-                $parts[] = $user->user_email;
-            }
-        }
-        return implode( ' — ', $parts ) ?: '(unset)';
+        return owc_format_staff_entry( $value );
     }
 
     // ast_group type: array of rows with user info
     if ( isset( $value[0] ) && is_array( $value[0] ) ) {
-        $names = array();
+        $entries = array();
         foreach ( $value as $row ) {
-            if ( ! empty( $row['display_name'] ) ) {
-                $names[] = $row['display_name'];
-            } elseif ( ! empty( $row['user'] ) ) {
-                $user = get_user_by( 'id', $row['user'] );
-                $names[] = $user ? $user->display_name : "User #{$row['user']}";
-            }
+            $entries[] = owc_format_staff_entry( $row );
         }
-        return implode( ', ', $names ) ?: '(empty list)';
+        return implode( ', ', array_filter( $entries ) ) ?: '(empty list)';
     }
 
     // Generic array
     return implode( ', ', array_filter( array_map( 'strval', $value ) ) ) ?: '(empty)';
+}
+
+/**
+ * Format a single staff entry showing display name and linked account.
+ *
+ * @param array $row Staff data row with optional user, display_name, role keys.
+ * @return string Formatted string like "Sheryl W. (sswestleigh)" or "Sheryl W."
+ */
+function owc_format_staff_entry( $row ) {
+    $name = ! empty( $row['display_name'] ) ? $row['display_name'] : '';
+    $login = '';
+
+    if ( ! empty( $row['user'] ) ) {
+        $user = get_user_by( 'id', $row['user'] );
+        if ( $user ) {
+            $login = $user->user_login;
+            if ( empty( $name ) ) {
+                $name = $user->display_name;
+            }
+        }
+    }
+
+    if ( empty( $name ) ) {
+        return $login ? "({$login})" : '';
+    }
+
+    $role = ! empty( $row['role'] ) ? " [{$row['role']}]" : '';
+
+    return $login ? "{$name} ({$login}){$role}" : "{$name}{$role}";
 }
