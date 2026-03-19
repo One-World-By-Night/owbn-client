@@ -196,7 +196,11 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 		if ( 'fixed' === $domain_mode && $fixed_slug ) {
 			$selected_slug = $fixed_slug;
-			$domain_fields = function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $fixed_slug, 'submit' ) : array();
+			// Only pre-load fields if domain has a single form (multi-form domains use JS picker)
+			$domain_forms = OAT_Domain_Registry::get_forms( $fixed_slug );
+			if ( count( $domain_forms ) <= 1 ) {
+				$domain_fields = function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $fixed_slug, 'submit' ) : array();
+			}
 		}
 
 		?>
@@ -342,6 +346,27 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					$btn.prop('disabled', false).text(<?php echo wp_json_encode( $btn_text ); ?>);
 				});
 			});
+
+			// For fixed/pre-selected domains: check for multiple forms on load.
+			var fixedDomain = $('input[name="oat_domain"]').val();
+			if (fixedDomain) {
+				$.post(owc_oat_ajax.url, {
+					action: 'owc_oat_get_domain_forms',
+					nonce:  owc_oat_ajax.nonce,
+					domain_slug: fixedDomain
+				}, function(response) {
+					var forms = (response.success && response.data) ? response.data : [];
+					if (forms.length > 1) {
+						var $sel = $('#oat-form-select');
+						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+						$.each(forms, function(i, f) {
+							$sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
+						});
+						$('#oat-form-picker-row').show();
+						$('#oat-domain-fields-container').empty();
+					}
+				});
+			}
 
 		})(jQuery);
 		</script>
