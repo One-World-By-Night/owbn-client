@@ -54,13 +54,6 @@ function owc_send_change_notification( $entity_type, $entity_title, $slug, $chan
     $html .= '<p><strong>Changed by:</strong> ' . esc_html( $changed_by ) . '<br>';
     $html .= '<strong>Date:</strong> ' . esc_html( current_time( 'Y-m-d H:i T' ) ) . '</p>';
 
-    $html .= '<table style="border-collapse: collapse; width: 100%; margin-top: 12px;">';
-    $html .= '<thead><tr>';
-    $html .= '<th style="text-align: left; padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5;">Field</th>';
-    $html .= '<th style="text-align: left; padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5;">Before</th>';
-    $html .= '<th style="text-align: left; padding: 8px 12px; border: 1px solid #ddd; background: #f5f5f5;">After</th>';
-    $html .= '</tr></thead><tbody>';
-
     foreach ( $changes as $field_label => $diff ) {
         $before = isset( $diff['before'] ) ? $diff['before'] : '';
         $after  = isset( $diff['after'] ) ? $diff['after'] : '';
@@ -73,14 +66,13 @@ function owc_send_change_notification( $entity_type, $entity_title, $slug, $chan
             $after = owc_format_change_value( $after );
         }
 
-        $html .= '<tr>';
-        $html .= '<td style="padding: 8px 12px; border: 1px solid #ddd; font-weight: bold; white-space: nowrap;">' . esc_html( $field_label ) . '</td>';
-        $html .= '<td style="padding: 8px 12px; border: 1px solid #ddd; color: #999;">' . esc_html( $before ?: '(empty)' ) . '</td>';
-        $html .= '<td style="padding: 8px 12px; border: 1px solid #ddd;">' . esc_html( $after ?: '(empty)' ) . '</td>';
-        $html .= '</tr>';
+        $html .= '<p style="margin: 12px 0 4px;"><strong>' . esc_html( $field_label ) . '</strong></p>';
+        $html .= '<ul style="margin: 0; padding-left: 20px;">';
+        $html .= '<li style="color: #999;">Before: ' . esc_html( $before ?: '(empty)' ) . '</li>';
+        $html .= '<li>After: ' . esc_html( $after ?: '(empty)' ) . '</li>';
+        $html .= '</ul>';
     }
 
-    $html .= '</tbody></table>';
     $html .= '</div>';
 
     $headers = array( 'Content-Type: text/html; charset=UTF-8' );
