@@ -303,6 +303,18 @@ function owc_render_coordinator_hosting_chronicle(array $coordinator): string
     $base_url = $detail_page_id ? get_permalink($detail_page_id) : '';
     $url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
+    // Find House Rules from chronicle's document_links
+    $house_rules_url = '';
+    if (is_array($chronicle) && !empty($chronicle['document_links'])) {
+        foreach ($chronicle['document_links'] as $doc) {
+            $doc_title = $doc['title'] ?? '';
+            if (stripos($doc_title, 'house rules') !== false && !empty($doc['url'])) {
+                $house_rules_url = $doc['url'];
+                break;
+            }
+        }
+    }
+
     ob_start();
 ?>
     <div class="owc-coordinator-hosting-chronicle owc-info-box">
@@ -310,6 +322,11 @@ function owc_render_coordinator_hosting_chronicle(array $coordinator): string
         <div class="owc-hosting-link">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
+        <?php if ($house_rules_url) : ?>
+            <div class="owc-hosting-house-rules">
+                <a href="<?php echo esc_url($house_rules_url); ?>" target="_blank" rel="noopener"><?php esc_html_e('House Rules', 'owbn-client'); ?></a>
+            </div>
+        <?php endif; ?>
     </div>
 <?php
     return ob_get_clean();
