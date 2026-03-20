@@ -350,17 +350,12 @@ function owc_get_local_coordinator_detail(string $slug)
     $post = $posts[0];
     $id = $post->ID;
 
-    $office_desc = get_post_meta($id, 'office_description', true);
-    // Fall back to post_content if office_description is empty
-    $description = !empty($office_desc) ? $office_desc : $post->post_content;
-
     return [
         'id'                  => $id,
         'title'               => $post->post_title,
         'slug'                => get_post_meta($id, 'coordinator_slug', true),
         'content'             => $post->post_content,
-        'description'         => $description,
-        'office_description'  => $description,
+        'office_description'  => get_post_meta($id, 'office_description', true),
         'coordinator_title'   => get_post_meta($id, 'coordinator_title', true),
         'coordinator_type'    => get_post_meta($id, 'coordinator_type', true),
         'hosting_chronicle'   => get_post_meta($id, 'hosting_chronicle', true),
