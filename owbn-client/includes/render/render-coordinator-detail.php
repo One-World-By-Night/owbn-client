@@ -80,15 +80,25 @@ function owc_render_coordinator_header(array $coordinator): string
  */
 function owc_render_coordinator_description(array $coordinator): string
 {
-    $description = $coordinator['office_description'] ?? '';
-    if (empty(trim($description))) {
+    $content = $coordinator['content'] ?? '';
+    $office  = $coordinator['office_description'] ?? '';
+
+    if (empty(trim($content)) && empty(trim($office))) {
         return '';
     }
 
     ob_start();
 ?>
     <div class="owc-coordinator-description">
-        <div class="owc-content"><?php echo wp_kses_post($description); ?></div>
+        <?php if (!empty(trim($content))) : ?>
+            <div class="owc-content"><?php echo wp_kses_post($content); ?></div>
+        <?php endif; ?>
+        <?php if (!empty(trim($office))) : ?>
+            <div class="owc-office-description">
+                <h4><?php esc_html_e('Office Description', 'owbn-client'); ?></h4>
+                <div class="owc-content"><?php echo wp_kses_post($office); ?></div>
+            </div>
+        <?php endif; ?>
     </div>
 <?php
     return ob_get_clean();
