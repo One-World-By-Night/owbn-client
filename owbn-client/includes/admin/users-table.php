@@ -85,10 +85,16 @@ function owc_asc_render_users_column( $output, $column_name, $user_id ) {
 		);
 	}
 
-	$html      = '<div class="owc-asc-role-list">';
-	$cat_index = 0;
+	$category_colors = array(
+		'player'      => 'owc-asc-cat-player',
+		'chronicle'   => 'owc-asc-cat-chronicle',
+		'coordinator' => 'owc-asc-cat-coordinator',
+		'exec'        => 'owc-asc-cat-exec',
+	);
+
+	$html = '<div class="owc-asc-role-list">';
 	foreach ( $grouped as $category => $roles ) {
-		$color_class = 'owc-asc-cat-' . ( $cat_index % 5 );
+		$color_class = isset( $category_colors[ $category ] ) ? $category_colors[ $category ] : 'owc-asc-cat-other';
 
 		$html .= sprintf(
 			'<div class="owc-asc-role-group %s">',
@@ -111,7 +117,6 @@ function owc_asc_render_users_column( $output, $column_name, $user_id ) {
 		}
 
 		$html .= '</div>';
-		++$cat_index;
 	}
 	$html .= '</div>';
 	$html .= $refresh_link;
@@ -517,11 +522,11 @@ function owc_asc_users_table_styles( $hook ) {
 		.owc-asc-refresh-link { text-decoration: none; font-size: 14px; vertical-align: middle; }
 		.owc-asc-refresh-link:hover { color: #0073aa; }
 
-		.owc-asc-cat-0 { background: #e8f0fe; color: #1a4d8f; }
-		.owc-asc-cat-1 { background: #fce8e6; color: #8f1a1a; }
-		.owc-asc-cat-2 { background: #e6f4ea; color: #1a6b2a; }
-		.owc-asc-cat-3 { background: #fef7e0; color: #7a5e00; }
-		.owc-asc-cat-4 { background: #f3e8fd; color: #5b1a8f; }
+		.owc-asc-cat-player { background: #e8f0fe; color: #1a4d8f; }
+		.owc-asc-cat-chronicle { background: #e6f4ea; color: #1a6b2a; }
+		.owc-asc-cat-coordinator { background: #f3e8fd; color: #5b1a8f; }
+		.owc-asc-cat-exec { background: #fef7e0; color: #7a5e00; }
+		.owc-asc-cat-other { background: #fce8e6; color: #8f1a1a; }
 
 		.column-owc_asc_roles { width: 280px; }
 	';
