@@ -34,6 +34,10 @@ class OWC_Elementor_Loader
 
 		// Register widgets
 		add_action('elementor/widgets/register', [__CLASS__, 'register_widgets']);
+
+		// AccessSchema visibility conditions on ALL widgets
+		require_once __DIR__ . '/class-asc-visibility.php';
+		OWC_ASC_Elementor_Visibility::init();
 	}
 
 	/**
