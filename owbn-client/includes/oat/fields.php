@@ -409,6 +409,34 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</td></tr>';
 			return;
 
+		case 'entity_picker':
+			echo '<tr class="oat-field"' . $cond_attrs . '>';
+			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
+			echo '<td>';
+			if ( function_exists( 'owc_asc_render_entity_picker' ) ) {
+				owc_asc_render_entity_picker( array(
+					'name'              => $name,
+					'id'                => $id,
+					'value'             => $value,
+					'chronicle_roles'   => isset( $attrs['chronicle_roles'] ) ? $attrs['chronicle_roles'] : array( '*' ),
+					'coordinator_roles' => isset( $attrs['coordinator_roles'] ) ? $attrs['coordinator_roles'] : array( '*' ),
+					'auto_props'        => isset( $attrs['auto_props'] ) ? $attrs['auto_props'] : array(),
+					'filter'            => isset( $attrs['filter'] ) ? $attrs['filter'] : array(),
+					'show_role'         => ! empty( $attrs['show_role'] ),
+					'required'          => $required,
+				) );
+			} else {
+				printf(
+					'<input type="text" id="%s" name="%s" value="%s" placeholder="chronicle/slug or coordinator/slug"%s />',
+					$id, $name, esc_attr( $value ), $req_attr
+				);
+			}
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</td></tr>';
+			return;
+
 		case 'rule_picker':
 			echo '<tr class="oat-field"' . $cond_attrs . '>';
 			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
@@ -784,6 +812,20 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			}
 			break;
 
+		case 'entity_picker':
+			if ( $value && function_exists( 'owc_entity_get_title' ) ) {
+				$parts = explode( '/', $value, 2 );
+				if ( count( $parts ) === 2 ) {
+					$title = owc_entity_get_title( $parts[0], $parts[1] );
+					echo esc_html( $title ? $title . ' (' . $value . ')' : $value );
+				} else {
+					echo esc_html( $value );
+				}
+			} else {
+				echo esc_html( $value );
+			}
+			break;
+
 		case 'rule_picker':
 			$rule_ids = is_array( $value ) ? $value : ( is_string( $value ) ? json_decode( $value, true ) : array() );
 			if ( is_array( $rule_ids ) && ! empty( $rule_ids ) && class_exists( 'OAT_Regulation_Rule' ) ) {
@@ -967,6 +1009,7 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 			}
 			return $uuid;
 
+		case 'entity_picker':
 		case 'dependent_lookup':
 		case 'user_picker':
 		case 'coordinator_display':

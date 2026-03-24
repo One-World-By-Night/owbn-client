@@ -69,6 +69,8 @@ class OWC_OAT_Elementor_Loader
 			'class-oat-entry-widget.php'     => 'OWC_OAT_Entry_Widget',
 			'class-oat-submit-widget.php'    => 'OWC_OAT_Submit_Widget',
 			'class-oat-activity-widget.php'  => 'OWC_OAT_Activity_Widget',
+			'class-oat-registry-widget.php'        => 'OWC_OAT_Registry_Widget',
+			'class-oat-registry-detail-widget.php' => 'OWC_OAT_Registry_Detail_Widget',
 		);
 
 		foreach ( $widgets as $file => $class ) {
@@ -176,6 +178,7 @@ function owc_oat_create_pages()
 		'oat_page_inbox'     => array( 'title' => 'OAT Inbox',     'slug' => 'oat-inbox' ),
 		'oat_page_submit'    => array( 'title' => 'OAT Submit',    'slug' => 'oat-submit' ),
 		'oat_page_entry'     => array( 'title' => 'OAT Entry',     'slug' => 'oat-entry' ),
+		'oat_page_registry'  => array( 'title' => 'OAT Registry',  'slug' => 'oat-registry' ),
 	);
 
 	foreach ( $pages as $option_key => $page ) {

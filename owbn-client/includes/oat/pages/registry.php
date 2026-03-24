@@ -49,8 +49,10 @@ function owc_oat_page_registry() {
             $c = (array) $c;
         }
         // Tag ownership: REST API includes is_owner; local mode has wp_user_id.
+        // NPCs are never "owned" by a player — they belong to chronicle/coordinator.
         if ( ! isset( $c['is_owner'] ) ) {
-            $c['is_owner'] = isset( $c['wp_user_id'] ) && (int) $c['wp_user_id'] === $user_id;
+            $is_npc = isset( $c['pc_npc'] ) && $c['pc_npc'] === 'npc';
+            $c['is_owner'] = ! $is_npc && isset( $c['wp_user_id'] ) && (int) $c['wp_user_id'] === $user_id;
         }
         // Normalize entry_counts.
         if ( isset( $c['entry_counts'] ) && is_object( $c['entry_counts'] ) ) {
@@ -77,7 +79,77 @@ function owc_oat_build_registry_sections( $characters ) {
     $sections = array();
     $seen_ids = array();
 
-    // Section 1: My Characters.
+    // Determine user's role context.
+    $my_chronicle_slugs = array();
+    $my_genre_roles     = array(); // genre => 'coordinator' or 'sub-coordinator'
+    $is_archivist       = current_user_can( 'manage_options' );
+
+    if ( function_exists( 'owc_asc_get_user_roles' ) ) {
+        $current_user = wp_get_current_user();
+        $asc_response = $current_user && $current_user->ID
+            ? owc_asc_get_user_roles( 'oat', $current_user->user_email )
+            : array();
+        $asc_roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
+        if ( is_array( $asc_roles ) ) {
+            foreach ( $asc_roles as $role ) {
+                if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
+                    $my_chronicle_slugs[] = $m[1];
+                }
+                if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {
+                    $genre = $m[1];
+                    $level = strtolower( $m[2] );
+                    if ( ! isset( $my_genre_roles[ $genre ] ) || $level === 'coordinator' ) {
+                        $my_genre_roles[ $genre ] = $level;
+                    }
+                }
+                if ( preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin)/coordinator$#i', $role ) ) {
+                    $is_archivist = true;
+                }
+            }
+        }
+    }
+    $my_chronicle_slugs = array_unique( $my_chronicle_slugs );
+
+    // Build the full set of chronicle slugs and coordinator genres from character data.
+    $all_chronicle_slugs = array();
+    $all_coord_genres    = array();
+    foreach ( $characters as $c ) {
+        $slug = $c['chronicle_slug'] ?? '';
+        if ( $slug ) {
+            $all_chronicle_slugs[ $slug ] = true;
+        }
+        $npc_coord = $c['npc_coordinator'] ?? '';
+        if ( $npc_coord ) {
+            $all_coord_genres[ $npc_coord ] = true;
+        }
+    }
+
+    // Determine which sections to show.
+    if ( $is_archivist ) {
+        $show_chronicle_slugs = array_keys( $all_chronicle_slugs );
+        $show_coord_genres    = $all_coord_genres;
+    } else {
+        $show_chronicle_slugs = $my_chronicle_slugs;
+        $show_coord_genres    = $my_genre_roles;
+    }
+    sort( $show_chronicle_slugs );
+
+    // Sort coordinator genres: coordinator > sub-coordinator, then alphabetical.
+    $sorted_genres = array();
+    foreach ( $show_coord_genres as $genre => $level ) {
+        if ( $is_archivist ) {
+            $level = 'coordinator';
+        }
+        $sorted_genres[] = array( 'genre' => $genre, 'level' => $level );
+    }
+    usort( $sorted_genres, function( $a, $b ) {
+        if ( $a['level'] !== $b['level'] ) {
+            return $a['level'] === 'coordinator' ? -1 : 1;
+        }
+        return strcasecmp( $a['genre'], $b['genre'] );
+    } );
+
+    // Section 1: My Characters (PCs only).
     $mine = array_filter( $characters, function( $c ) {
         return ! empty( $c['is_owner'] );
     } );
@@ -92,81 +164,61 @@ function owc_oat_build_registry_sections( $characters ) {
         }
     }
 
-    // Determine user's role sections from ASC roles.
-    $chronicle_slugs = array();
-    $genre_slugs     = array();
-    $is_archivist    = false;
-
-    if ( current_user_can( 'manage_options' ) ) {
-        $is_archivist = true;
-    }
-
-    if ( function_exists( 'owc_asc_get_user_roles' ) ) {
-        $current_user = wp_get_current_user();
-        $asc_response = $current_user && $current_user->ID
-            ? owc_asc_get_user_roles( 'oat', $current_user->user_email )
-            : array();
-        $asc_roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
-        if ( is_array( $asc_roles ) ) {
-            foreach ( $asc_roles as $role ) {
-                if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
-                    $chronicle_slugs[] = $m[1];
-                }
-                if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {
-                    $genre_slugs[] = $m[1];
-                }
-                if ( preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin)/coordinator$#i', $role ) ) {
-                    $is_archivist = true;
-                }
+    // Helper: resolve entity title from slug.
+    $resolve_title = function( $type, $slug ) {
+        if ( function_exists( 'owc_entity_get_title' ) ) {
+            $title = owc_entity_get_title( $type, $slug );
+            if ( $title ) {
+                return $title;
             }
         }
-    }
-    $chronicle_slugs = array_unique( $chronicle_slugs );
-    $genre_slugs     = array_unique( $genre_slugs );
+        return ucfirst( $slug );
+    };
 
-    // Section 2+: Chronicle sections.
-    foreach ( $chronicle_slugs as $slug ) {
-        $chronicle_chars = array();
+    // Section 2+: Chronicle sections (by chronicle_slug).
+    foreach ( $show_chronicle_slugs as $slug ) {
+        $chars = array();
         foreach ( $characters as $c ) {
             if ( isset( $seen_ids[ $c['id'] ] ) ) {
                 continue;
             }
-            $c_slug = isset( $c['chronicle_slug'] ) ? $c['chronicle_slug'] : '';
-            if ( $c_slug === $slug ) {
-                $chronicle_chars[] = $c;
+            if ( ( $c['chronicle_slug'] ?? '' ) === $slug ) {
+                $chars[] = $c;
                 $seen_ids[ $c['id'] ] = true;
             }
         }
-        if ( ! empty( $chronicle_chars ) ) {
+        if ( ! empty( $chars ) ) {
             $sections[] = array(
-                'label'      => 'Chronicle: ' . strtoupper( $slug ),
+                'label'      => 'Chronicle: ' . $resolve_title( 'chronicle', $slug ),
                 'key'        => 'chronicle-' . $slug,
-                'characters' => $chronicle_chars,
+                'characters' => $chars,
             );
         }
     }
 
-    // Section 3+: Coordinator genre sections.
-    foreach ( $genre_slugs as $genre ) {
-        $genre_chars = array();
+    // Section 3+: Coordinator sections (by npc_coordinator).
+    foreach ( $sorted_genres as $entry ) {
+        $genre = $entry['genre'];
+        $chars = array();
         foreach ( $characters as $c ) {
             if ( isset( $seen_ids[ $c['id'] ] ) ) {
                 continue;
             }
-            $genre_chars[] = $c;
-            $seen_ids[ $c['id'] ] = true;
+            if ( ( $c['npc_coordinator'] ?? '' ) === $genre ) {
+                $chars[] = $c;
+                $seen_ids[ $c['id'] ] = true;
+            }
         }
-        // For coordinator view: all remaining characters are in their genre scope.
-        if ( ! empty( $genre_chars ) ) {
+        if ( ! empty( $chars ) ) {
             $sections[] = array(
-                'label'      => 'Coordinator: ' . ucfirst( $genre ),
+                'label'      => 'Coordinator: ' . $resolve_title( 'coordinator', $genre ),
                 'key'        => 'coordinator-' . $genre,
-                'characters' => $genre_chars,
+                'characters' => $chars,
             );
         }
     }
 
-    // Catch-all: any characters not yet sectioned (archivist or mixed-role overlap).
+    // Catch-all.
     $remaining = array();
     foreach ( $characters as $c ) {
         if ( ! isset( $seen_ids[ $c['id'] ] ) ) {
@@ -174,9 +226,8 @@ function owc_oat_build_registry_sections( $characters ) {
         }
     }
     if ( ! empty( $remaining ) ) {
-        $label = $is_archivist ? 'All Characters' : 'Other Characters';
         $sections[] = array(
-            'label'      => $label,
+            'label'      => 'Other Characters',
             'key'        => 'other',
             'characters' => $remaining,
         );

@@ -216,7 +216,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		$show_watching    = ( $settings['show_watching'] ?? 'yes' ) === 'yes';
 		$submit_url       = $settings['submit_page_url'] ?: '/oat-submit/';
 		$inbox_url        = $settings['inbox_page_url'] ?: '/oat-inbox/';
-		$registry_url     = $settings['registry_page_url'] ?? '/oat-registry/';
+		$registry_url     = $settings['registry_page_url'] ?: '/oat-registry/';
 
 		// Fetch counts.
 		$user_id = get_current_user_id();

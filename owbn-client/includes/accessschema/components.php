@@ -432,6 +432,184 @@ function _owc_asc_get_all_entity_entries( $entity_type ) {
 }
 
 /**
+ * Render a unified entity picker (chronicles + coordinators).
+ *
+ * Uses typed slug values: chronicle/{slug}, coordinator/{slug}.
+ * Grouped display with optgroup headers.
+ *
+ * @param array $args {
+ *     @type string $name             Input name attribute.
+ *     @type string $id               Input id attribute.
+ *     @type string $value            Currently selected typed slug.
+ *     @type array  $chronicle_roles  Role suffixes for chronicles. Empty = skip chronicles.
+ *     @type array  $coordinator_roles Role suffixes for coordinators. Empty = skip coordinators.
+ *     @type array  $auto_props       Map of meta_key => source for auto-populated hidden fields.
+ *     @type bool   $show_role        Show role suffix in option labels.
+ *     @type bool   $required         Whether this field is required.
+ *     @type array  $filter           Chronicle-level filters (probationary, satellite).
+ * }
+ */
+function owc_asc_render_entity_picker( $args ) {
+	$name       = $args['name'] ?? '';
+	$id         = $args['id'] ?? $name;
+	$value      = $args['value'] ?? '';
+	$show_role  = ! empty( $args['show_role'] );
+	$required   = ! empty( $args['required'] );
+	$auto_props = isset( $args['auto_props'] ) && is_array( $args['auto_props'] ) ? $args['auto_props'] : array();
+	$req_attr   = $required ? ' required="required"' : '';
+
+	$chron_roles = isset( $args['chronicle_roles'] ) && is_array( $args['chronicle_roles'] ) ? $args['chronicle_roles'] : array( '*' );
+	$coord_roles = isset( $args['coordinator_roles'] ) && is_array( $args['coordinator_roles'] ) ? $args['coordinator_roles'] : array( '*' );
+	$filter      = isset( $args['filter'] ) && is_array( $args['filter'] ) ? $args['filter'] : array();
+
+	$chronicle_entries   = array();
+	$coordinator_entries = array();
+
+	if ( ! empty( $chron_roles ) ) {
+		$chronicle_entries = _owc_asc_get_user_entity_entries( 'chronicle', $chron_roles );
+
+		if ( ! empty( $filter ) && ! empty( $chronicle_entries ) ) {
+			$all_chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+			if ( is_array( $all_chronicles ) && ! isset( $all_chronicles['error'] ) ) {
+				$lookup = array();
+				foreach ( $all_chronicles as $c ) {
+					$lookup[ $c['slug'] ] = $c;
+				}
+				$chronicle_entries = array_filter( $chronicle_entries, function( $entry ) use ( $filter, $lookup ) {
+					$slug = $entry['slug'];
+					if ( ! isset( $lookup[ $slug ] ) ) {
+						return true;
+					}
+					$c = $lookup[ $slug ];
+					if ( isset( $filter['probationary'] ) && $filter['probationary'] === false ) {
+						if ( ! empty( $c['chronicle_probationary'] ) && $c['chronicle_probationary'] !== '0' ) {
+							return false;
+						}
+					}
+					if ( isset( $filter['satellite'] ) && $filter['satellite'] === false ) {
+						if ( ! empty( $c['chronicle_satellite'] ) && $c['chronicle_satellite'] !== '0' ) {
+							return false;
+						}
+					}
+					return true;
+				} );
+				$chronicle_entries = array_values( $chronicle_entries );
+			}
+		}
+	}
+
+	if ( ! empty( $coord_roles ) ) {
+		$coordinator_entries = _owc_asc_get_user_entity_entries( 'coordinator', $coord_roles );
+	}
+
+	$total = count( $chronicle_entries ) + count( $coordinator_entries );
+
+	if ( $total === 0 ) {
+		echo '<p class="description"><em>No authorized chronicles or coordinators found.</em></p>';
+		printf( '<input type="hidden" name="%s" id="%s" value="" />', esc_attr( $name ), esc_attr( $id ) );
+		foreach ( $auto_props as $prop_key => $prop_source ) {
+			printf( '<input type="hidden" name="oat_meta_%s" id="oat_meta_%s" value="" />', esc_attr( $prop_key ), esc_attr( $prop_key ) );
+		}
+		return;
+	}
+
+	// Build unified entries with typed slugs.
+	$all_entries = array();
+	foreach ( $chronicle_entries as $e ) {
+		$label = $e['title'];
+		if ( $show_role && ! empty( $e['role_label'] ) ) {
+			$label .= ' — ' . $e['role_label'];
+		}
+		$all_entries[] = array(
+			'value' => 'chronicle/' . $e['slug'],
+			'label' => $label,
+			'group' => 'Chronicles',
+		);
+	}
+	foreach ( $coordinator_entries as $e ) {
+		$label = $e['title'];
+		if ( $show_role && ! empty( $e['role_label'] ) ) {
+			$label .= ' — ' . $e['role_label'];
+		}
+		$all_entries[] = array(
+			'value' => 'coordinator/' . $e['slug'],
+			'label' => $label,
+			'group' => 'Coordinators',
+		);
+	}
+
+	if ( $total > 20 ) {
+		// Autocomplete mode.
+		$pre_label = '';
+		foreach ( $all_entries as $entry ) {
+			if ( $value === $entry['value'] ) {
+				$pre_label = $entry['label'];
+			}
+		}
+
+		printf(
+			'<div class="oat-entity-autocomplete-wrap" data-entries=\'%s\'>',
+			esc_attr( wp_json_encode( $all_entries ) )
+		);
+		printf(
+			'<input type="text" id="%s_search" class="oat-entity-search regular-text" placeholder="%s" autocomplete="off"%s />',
+			esc_attr( $id ),
+			esc_attr__( 'Type to search chronicles & coordinators...', 'owbn-client' ),
+			( '' !== $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<div class="oat-entity-selected"%s>',
+			( '' === $pre_label ) ? ' style="display:none;"' : ''
+		);
+		printf(
+			'<span class="oat-entity-selected-name">%s</span> ',
+			esc_html( $pre_label )
+		);
+		echo '<button type="button" class="button-link oat-entity-clear">(clear)</button>';
+		echo '</div>';
+		printf(
+			'<input type="hidden" name="%s" id="%s" value="%s" />',
+			esc_attr( $name ), esc_attr( $id ), esc_attr( $value )
+		);
+		echo '</div>';
+	} else {
+		// Standard grouped select.
+		printf( '<select id="%s" name="%s"%s>', esc_attr( $id ), esc_attr( $name ), $req_attr );
+		echo '<option value="">-- Select --</option>';
+
+		$current_group = '';
+		foreach ( $all_entries as $entry ) {
+			if ( $entry['group'] !== $current_group ) {
+				if ( $current_group !== '' ) {
+					echo '</optgroup>';
+				}
+				echo '<optgroup label="' . esc_attr( $entry['group'] ) . '">';
+				$current_group = $entry['group'];
+			}
+			printf(
+				'<option value="%s"%s>%s</option>',
+				esc_attr( $entry['value'] ),
+				selected( $value, $entry['value'], false ),
+				esc_html( $entry['label'] )
+			);
+		}
+		if ( $current_group !== '' ) {
+			echo '</optgroup>';
+		}
+		echo '</select>';
+	}
+
+	foreach ( $auto_props as $prop_key => $prop_source ) {
+		$prop_value = _owc_asc_resolve_auto_prop_source( $prop_source );
+		printf(
+			'<input type="hidden" name="oat_meta_%s" id="oat_meta_%s" value="%s" />',
+			esc_attr( $prop_key ), esc_attr( $prop_key ), esc_attr( $prop_value )
+		);
+	}
+}
+
+
+/**
  * Render a satellite chronicle picker.
  *
  * Pre-loads all satellite chronicles grouped by parent slug.

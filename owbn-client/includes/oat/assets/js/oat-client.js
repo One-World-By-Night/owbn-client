@@ -279,6 +279,54 @@
     }
     initCoordinatorAutocomplete();
 
+    // Unified entity picker (chronicles + coordinators).
+    function initEntityAutocomplete() {
+        $('.oat-entity-autocomplete-wrap').each(function() {
+            var $wrap = $(this);
+            if ($wrap.data('acInit')) return;
+            $wrap.data('acInit', true);
+
+            var entries = $wrap.data('entries') || [];
+            var $search = $wrap.find('.oat-entity-search');
+            var $selected = $wrap.find('.oat-entity-selected');
+            var $selectedName = $wrap.find('.oat-entity-selected-name');
+            var $hidden = $wrap.find('input[type="hidden"]');
+
+            $search.autocomplete({
+                source: function(request, response) {
+                    var term = request.term.toLowerCase();
+                    var matches = [];
+                    for (var i = 0; i < entries.length; i++) {
+                        if (entries[i].label.toLowerCase().indexOf(term) !== -1 ||
+                            entries[i].value.toLowerCase().indexOf(term) !== -1) {
+                            matches.push({
+                                value: entries[i].value,
+                                label: (entries[i].group ? '[' + entries[i].group.charAt(0) + '] ' : '') + entries[i].label
+                            });
+                            if (matches.length >= 20) break;
+                        }
+                    }
+                    response(matches);
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $hidden.val(ui.item.value).trigger('change');
+                    $selectedName.text(ui.item.label);
+                    $search.hide().val('');
+                    $selected.show();
+                }
+            });
+
+            $wrap.on('click', '.oat-entity-clear', function() {
+                $hidden.val('').trigger('change');
+                $selected.hide();
+                $search.show().val('').focus();
+            });
+        });
+    }
+    initEntityAutocomplete();
+
     // P4b: Chronicle picker filtering by submitter_role.
     function initChronicleRoleFilter() {
         $('.oat-chronicle-filter-wrap').each(function() {
@@ -643,6 +691,7 @@
         initConditionalFields();
         initChronicleAutocomplete();
         initCoordinatorAutocomplete();
+        initEntityAutocomplete();
         initChronicleRoleFilter();
         initCharacterPickers();
         initUserPickers();
