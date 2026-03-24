@@ -115,7 +115,7 @@ function owc_oat_build_registry_sections( $characters ) {
                 if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {
                     $genre_slugs[] = $m[1];
                 }
-                if ( preg_match( '#^exec/(archivist|ahc1|ahc2|web)/coordinator$#i', $role ) ) {
+                if ( preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin)/coordinator$#i', $role ) ) {
                     $is_archivist = true;
                 }
             }
