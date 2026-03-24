@@ -855,16 +855,16 @@ function owc_oat_search_rules( $term, $limit = 20 ) {
         $results = OAT_Regulation_Rule::search( $term );
         $out = array();
         foreach ( $results as $rule ) {
-            $label = sprintf(
-                '%s — %s — %s',
-                $rule->genre,
-                $rule->category,
-                $rule->condition_name ? $rule->condition_name : $rule->subcategory
-            );
+            $ref   = isset( $rule->section_ref ) && $rule->section_ref ? $rule->section_ref : '';
+            $name  = $rule->condition_name ? $rule->condition_name : $rule->subcategory;
+            $label = $ref
+                ? sprintf( '[%s] %s — %s — %s', $ref, $rule->genre, $rule->category, $name )
+                : sprintf( '%s — %s — %s', $rule->genre, $rule->category, $name );
             $out[] = array(
                 'id'          => (int) $rule->id,
                 'label'       => $label,
                 'value'       => $label,
+                'section_ref' => $ref,
                 'genre'       => $rule->genre,
                 'category'    => $rule->category,
                 'subcategory' => $rule->subcategory,
