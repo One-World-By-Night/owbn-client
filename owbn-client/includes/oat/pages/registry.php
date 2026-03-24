@@ -122,6 +122,13 @@ function owc_oat_build_registry_sections( $characters ) {
         if ( $npc_coord ) {
             $all_coord_genres[ $npc_coord ] = true;
         }
+        // Also include coordinator grants (PCs approved through a coordinator).
+        $coord_grants = $c['coordinator_grants'] ?? array();
+        if ( is_array( $coord_grants ) ) {
+            foreach ( $coord_grants as $genre ) {
+                $all_coord_genres[ $genre ] = true;
+            }
+        }
     }
 
     // Determine which sections to show.
@@ -204,7 +211,14 @@ function owc_oat_build_registry_sections( $characters ) {
             if ( isset( $seen_ids[ $c['id'] ] ) ) {
                 continue;
             }
-            if ( ( $c['npc_coordinator'] ?? '' ) === $genre ) {
+            $matches = ( $c['npc_coordinator'] ?? '' ) === $genre;
+            if ( ! $matches ) {
+                $coord_grants = $c['coordinator_grants'] ?? array();
+                if ( is_array( $coord_grants ) && in_array( $genre, $coord_grants, true ) ) {
+                    $matches = true;
+                }
+            }
+            if ( $matches ) {
                 $chars[] = $c;
                 $seen_ids[ $c['id'] ] = true;
             }
