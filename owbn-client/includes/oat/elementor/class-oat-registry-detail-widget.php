@@ -122,32 +122,41 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 		$can_edit        = owc_oat_can_edit_character( $character, $active_grants );
 		$npc_role_options = $can_edit ? owc_oat_get_npc_role_options() : array();
 
-		// Determine edit scope: which fields this user can edit.
-		// archivist/admin = everything, staff = subset, coordinator = subset, player = nothing
+		// Determine edit scope and grant revocation rights.
 		$edit_scope = 'none';
+		$can_revoke = current_user_can( 'manage_options' );
+		$user_asc_roles = array();
+
 		if ( current_user_can( 'manage_options' ) ) {
 			$edit_scope = 'archivist';
-		} elseif ( $can_edit && function_exists( 'owc_asc_get_user_roles' ) ) {
+			$can_revoke = true;
+		}
+
+		if ( function_exists( 'owc_asc_get_user_roles' ) ) {
 			$user = wp_get_current_user();
 			$asc_resp = $user && $user->ID ? owc_asc_get_user_roles( 'oat', $user->user_email ) : array();
-			$roles = ( ! is_wp_error( $asc_resp ) && isset( $asc_resp['roles'] ) ) ? $asc_resp['roles'] : array();
-			foreach ( $roles as $r ) {
+			$user_asc_roles = ( ! is_wp_error( $asc_resp ) && isset( $asc_resp['roles'] ) ) ? $asc_resp['roles'] : array();
+		}
+
+		if ( $edit_scope === 'none' && $can_edit && is_array( $user_asc_roles ) ) {
+			foreach ( $user_asc_roles as $r ) {
 				if ( preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin)/coordinator$#i', $r ) ) {
 					$edit_scope = 'archivist';
+					$can_revoke = true;
 					break;
 				}
 			}
-			if ( $edit_scope === 'none' ) {
+			if ( $edit_scope === 'none' && is_array( $user_asc_roles ) ) {
 				$chron_slug = $character['chronicle_slug'] ?? '';
-				foreach ( $roles as $r ) {
+				foreach ( $user_asc_roles as $r ) {
 					if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $r, $m ) && $m[1] === $chron_slug ) {
 						$edit_scope = 'staff';
 						break;
 					}
 				}
 			}
-			if ( $edit_scope === 'none' ) {
-				foreach ( $roles as $r ) {
+			if ( $edit_scope === 'none' && is_array( $user_asc_roles ) ) {
+				foreach ( $user_asc_roles as $r ) {
 					if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $r ) ) {
 						$edit_scope = 'coordinator';
 						break;
@@ -234,7 +243,36 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				$field_row( 'Character Name', 'character_name', $char_name );
 				$field_row( 'Player Name', 'player_name', $player_name );
 				$field_row( 'Player Email', 'player_email', $player_email, 'email' );
-				$field_row( 'Chronicle', 'chronicle_slug', $chronicle );
+				?>
+
+				<!-- Chronicle: entity picker for editable, text for read-only -->
+				<tr>
+					<td style="padding:4px 8px;font-weight:bold;width:160px;">Chronicle</td>
+					<td style="padding:4px 8px;">
+					<?php if ( $editable['chronicle_slug'] && $any_editable && function_exists( 'owc_asc_render_entity_picker' ) ) :
+						$is_npc_char = $pc_npc === 'npc';
+						$typed_slug = $chronicle ? 'chronicle/' . strtolower( $chronicle ) : '';
+						owc_asc_render_entity_picker( array(
+							'name'              => 'chronicle_slug_typed',
+							'id'                => 'chronicle_slug_typed',
+							'value'             => $typed_slug,
+							'chronicle_roles'   => array( '*' ),
+							'coordinator_roles' => $is_npc_char ? array( '*' ) : array(),
+							'required'          => false,
+						) );
+					elseif ( $editable['chronicle_slug'] && $any_editable ) : ?>
+						<input type="text" name="chronicle_slug" id="chronicle_slug" value="<?php echo esc_attr( $chronicle ); ?>" style="width:100%;max-width:400px;">
+					<?php else :
+						$chron_title = '';
+						if ( $chronicle && function_exists( 'owc_entity_get_title' ) ) {
+							$chron_title = owc_entity_get_title( 'chronicle', $chronicle );
+						}
+						echo esc_html( $chron_title ?: strtoupper( $chronicle ) ?: '—' );
+					endif; ?>
+					</td>
+				</tr>
+
+				<?php
 				$field_row( 'Creature Type', 'creature_type', $creature );
 				$field_row( 'Sub-Type', 'creature_sub_type', $creature_sub );
 				$field_row( 'PC/NPC', 'pc_npc', $pc_npc, 'select', array( 'pc' => 'PC', 'npc' => 'NPC' ) );
@@ -244,6 +282,34 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				$field_row( 'NPC Coordinator', 'npc_coordinator', $npc_coordinator );
 				$field_row( 'NPC Type', 'npc_type', $npc_type );
 				?>
+
+				<!-- Player linkage (PCs only, archivist only) -->
+				<?php if ( $pc_npc === 'pc' && $edit_scope === 'archivist' ) :
+					$linked_user = $character['wp_user_id'] ?? 0;
+					$linked_name = '';
+					if ( $linked_user ) {
+						$lu = get_userdata( (int) $linked_user );
+						$linked_name = $lu ? $lu->display_name . ' (' . $lu->user_email . ')' : '#' . $linked_user;
+					}
+				?>
+				<tr>
+					<td style="padding:4px 8px;font-weight:bold;">Linked Player</td>
+					<td style="padding:4px 8px;">
+						<?php if ( $linked_user && $linked_name ) : ?>
+							<span><?php echo esc_html( $linked_name ); ?></span>
+							<input type="hidden" name="wp_user_id" value="<?php echo (int) $linked_user; ?>">
+						<?php else : ?>
+							<input type="text" id="player_search" placeholder="Search by name or email..." autocomplete="off" style="width:100%;max-width:400px;">
+							<input type="hidden" name="wp_user_id" id="wp_user_id" value="0">
+							<div id="player_search_result" style="display:none;margin-top:4px;">
+								<span id="player_search_name"></span>
+								<button type="button" onclick="document.getElementById('wp_user_id').value='0';this.parentElement.style.display='none';document.getElementById('player_search').style.display='';" class="button-link">(clear)</button>
+							</div>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<?php endif; ?>
+
 				<?php if ( ! empty( $npc_role_options ) && $any_editable ) : ?>
 				<tr id="npc-role-picker-row" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
 					<td style="padding:4px 8px;font-weight:bold;width:160px;">NPC Owner</td>
@@ -277,7 +343,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Value</th>
 						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Created</th>
 						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Expires</th>
-						<?php if ( $can_manage ) : ?><th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Action</th><?php endif; ?>
+						<?php if ( $can_revoke ) : ?><th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Action</th><?php endif; ?>
 					</tr></thead>
 					<tbody>
 					<?php foreach ( $active_grants as $g ) : ?>
@@ -286,7 +352,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( $g['grant_value'] ?? '' ); ?></td>
 							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( $fmt( $g['created_at'] ?? '' ) ); ?></td>
 							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo ( $g['expires_at'] ?? '' ) ? esc_html( $fmt( $g['expires_at'] ) ) : '<em>never</em>'; ?></td>
-							<?php if ( $can_manage ) : ?>
+							<?php if ( $can_revoke ) : ?>
 							<td style="padding:6px 8px;border-bottom:1px solid #eee;">
 								<form method="post" style="display:inline;">
 									<?php wp_nonce_field( 'owc_oat_revoke_grant' ); ?>
@@ -305,13 +371,31 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<h4>Add Grant</h4>
 			<form method="post" style="margin-bottom:20px;">
 				<?php wp_nonce_field( 'owc_oat_create_grant' ); ?>
-				<select name="grant_type" style="margin-right:8px;">
-					<option value="chronicle">Chronicle</option>
-					<option value="coordinator">Coordinator</option>
-				</select>
-				<input type="text" name="grant_value" placeholder="slug or genre" required style="margin-right:8px;width:200px;">
-				<input type="date" name="expires_at" style="margin-right:8px;" title="Expires (blank = never)">
-				<button type="submit" name="owc_oat_create_grant" value="1" class="oat-btn oat-btn-secondary">Add</button>
+				<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+					<div style="flex:1;min-width:250px;">
+						<?php
+						if ( function_exists( 'owc_asc_render_entity_picker' ) ) {
+							owc_asc_render_entity_picker( array(
+								'name'              => 'grant_entity',
+								'id'                => 'grant_entity',
+								'value'             => '',
+								'chronicle_roles'   => array( '*' ),
+								'coordinator_roles' => array( '*' ),
+								'required'          => true,
+							) );
+						} else {
+							echo '<input type="text" name="grant_entity" placeholder="chronicle/slug or coordinator/slug" required style="width:100%;">';
+						}
+						?>
+					</div>
+					<div>
+						<label style="font-size:0.85em;">Expires<br>
+						<input type="date" name="expires_at" title="Leave blank for no expiry"></label>
+					</div>
+					<div>
+						<button type="submit" name="owc_oat_create_grant" value="1" class="oat-btn oat-btn-secondary">Add Grant</button>
+					</div>
+				</div>
 			</form>
 			<?php endif; ?>
 
@@ -436,6 +520,43 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			});
 		})();
 		</script>
-		<?php endif;
+		<?php endif; ?>
+
+		<?php if ( $pc_npc === 'pc' && $edit_scope === 'archivist' && empty( $character['wp_user_id'] ) ) : ?>
+		<script>
+		(function() {
+			var searchEl = document.getElementById('player_search');
+			if (!searchEl) return;
+			var hiddenEl = document.getElementById('wp_user_id');
+			var resultEl = document.getElementById('player_search_result');
+			var nameEl   = document.getElementById('player_search_name');
+			var timer    = null;
+
+			searchEl.addEventListener('input', function() {
+				clearTimeout(timer);
+				var term = this.value.trim();
+				if (term.length < 2) return;
+				timer = setTimeout(function() {
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '<?php echo admin_url( "admin-ajax.php" ); ?>');
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.onload = function() {
+						if (xhr.status !== 200) return;
+						var data = JSON.parse(xhr.responseText);
+						if (!data.success || !data.data || !data.data.length) return;
+						// Show first match
+						var u = data.data[0];
+						hiddenEl.value = u.id;
+						nameEl.textContent = u.display_name + ' (' + u.email + ')';
+						resultEl.style.display = '';
+						searchEl.style.display = 'none';
+					};
+					xhr.send('action=owc_oat_search_users&nonce=<?php echo wp_create_nonce( 'owc_oat_nonce' ); ?>&term=' + encodeURIComponent(term));
+				}, 300);
+			});
+		})();
+		</script>
+		<?php
+		endif;
 	}
 }

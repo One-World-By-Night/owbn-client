@@ -92,12 +92,20 @@ function owc_oat_handle_grant_actions( $character_id ) {
     if ( ! empty( $_POST['owc_oat_create_grant'] ) ) {
         check_admin_referer( 'owc_oat_create_grant' );
 
-        $grant_type  = sanitize_text_field( $_POST['grant_type'] );
-        $grant_value = sanitize_text_field( $_POST['grant_value'] );
+        // Support both old format (grant_type + grant_value) and new (grant_entity typed slug).
+        $grant_entity = sanitize_text_field( $_POST['grant_entity'] ?? '' );
+        if ( $grant_entity && strpos( $grant_entity, '/' ) !== false ) {
+            $parts = explode( '/', $grant_entity, 2 );
+            $grant_type  = $parts[0];
+            $grant_value = $parts[1];
+        } else {
+            $grant_type  = sanitize_text_field( $_POST['grant_type'] ?? '' );
+            $grant_value = sanitize_text_field( $_POST['grant_value'] ?? $grant_entity );
+        }
         $expires_at  = ! empty( $_POST['expires_at'] ) ? strtotime( sanitize_text_field( $_POST['expires_at'] ) ) : null;
 
         if ( ! in_array( $grant_type, array( 'chronicle', 'coordinator' ), true ) ) {
-            add_settings_error( 'owc_oat_registry', 'invalid_type', 'Invalid grant type.', 'error' );
+            add_settings_error( 'owc_oat_registry', 'invalid_type', 'Invalid grant type. Use chronicle/slug or coordinator/slug format.', 'error' );
             return 'error';
         }
         if ( empty( $grant_value ) ) {
@@ -123,8 +131,25 @@ function owc_oat_handle_grant_actions( $character_id ) {
         $fields = array(
             'character_name', 'player_email', 'player_name',
             'chronicle_slug', 'pc_npc', 'creature_type', 'creature_sub_type',
-            'status', 'npc_coordinator', 'npc_type',
+            'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
         );
+
+        // Handle entity picker for chronicle_slug (typed slug → plain slug + npc_type).
+        if ( isset( $_POST['chronicle_slug_typed'] ) && $_POST['chronicle_slug_typed'] !== '' ) {
+            $typed = sanitize_text_field( $_POST['chronicle_slug_typed'] );
+            if ( strpos( $typed, '/' ) !== false ) {
+                $parts = explode( '/', $typed, 2 );
+                $_POST['chronicle_slug'] = $parts[1];
+                if ( $parts[0] === 'coordinator' ) {
+                    $_POST['npc_coordinator'] = $parts[1];
+                    $_POST['npc_type'] = 'coordinator';
+                } else {
+                    $_POST['npc_type'] = 'chronicle';
+                }
+            } else {
+                $_POST['chronicle_slug'] = $typed;
+            }
+        }
 
         $update = array();
         foreach ( $fields as $f ) {
