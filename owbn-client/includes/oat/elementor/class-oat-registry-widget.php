@@ -48,8 +48,26 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			'description' => __( 'Leave blank to link to wp-admin character detail.', 'owbn-client' ),
 		) );
 
+		$this->add_control( 'scope', array(
+			'label'   => __( 'Scope', 'owbn-client' ),
+			'type'    => Controls_Manager::SELECT,
+			'default' => 'all',
+			'options' => array(
+				'all'          => __( 'All (full registry)', 'owbn-client' ),
+				'mine'         => __( 'My Characters only', 'owbn-client' ),
+				'chronicles'   => __( 'My Chronicles only', 'owbn-client' ),
+				'coordinators' => __( 'My Coordinator roles only', 'owbn-client' ),
+			),
+		) );
+
 		$this->add_control( 'show_search', array(
 			'label'   => __( 'Show Search', 'owbn-client' ),
+			'type'    => Controls_Manager::SWITCHER,
+			'default' => 'yes',
+		) );
+
+		$this->add_control( 'show_section_filter', array(
+			'label'   => __( 'Show Section Filter', 'owbn-client' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => 'yes',
 		) );
@@ -97,9 +115,11 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			return;
 		}
 
-		$settings    = $this->get_settings_for_display();
-		$show_search = ( $settings['show_search'] ?? 'yes' ) === 'yes';
-		$detail_base = $settings['character_detail_url'] ?: '/oat-registry-detail/';
+		$settings           = $this->get_settings_for_display();
+		$show_search        = ( $settings['show_search'] ?? 'yes' ) === 'yes';
+		$show_section_filter = ( $settings['show_section_filter'] ?? 'yes' ) === 'yes';
+		$detail_base        = $settings['character_detail_url'] ?: '/oat-registry-detail/';
+		$scope              = $settings['scope'] ?? 'all';
 
 		$args   = array();
 		$result = owc_oat_get_registry( $args );
@@ -123,6 +143,9 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			if ( isset( $c['entry_counts'] ) && is_object( $c['entry_counts'] ) ) {
 				$c['entry_counts'] = (array) $c['entry_counts'];
 			}
+			if ( isset( $c['coordinator_grants'] ) && is_object( $c['coordinator_grants'] ) ) {
+				$c['coordinator_grants'] = (array) $c['coordinator_grants'];
+			}
 			return $c;
 		}, $characters );
 
@@ -131,7 +154,29 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		}
 
 		$sections    = owc_oat_build_registry_sections( $characters );
-		$total_count = count( $characters );
+
+		// Filter sections by scope setting.
+		if ( $scope !== 'all' ) {
+			$sections = array_filter( $sections, function( $s ) use ( $scope ) {
+				$key = $s['key'] ?? '';
+				if ( $scope === 'mine' ) {
+					return $key === 'mine';
+				}
+				if ( $scope === 'chronicles' ) {
+					return strpos( $key, 'chronicle-' ) === 0;
+				}
+				if ( $scope === 'coordinators' ) {
+					return strpos( $key, 'coordinator-' ) === 0;
+				}
+				return true;
+			} );
+			$sections = array_values( $sections );
+		}
+
+		$total_count = 0;
+		foreach ( $sections as $s ) {
+			$total_count += count( $s['characters'] );
+		}
 
 		?>
 		<style>
@@ -143,20 +188,58 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		<div class="oat-registry-widget">
 			<div class="oat-registry-header">
 				<h3><?php printf( esc_html__( 'Registry (%d characters)', 'owbn-client' ), $total_count ); ?></h3>
-				<?php if ( $show_search ) : ?>
-					<input type="text" class="oat-registry-search" placeholder="<?php esc_attr_e( 'Search characters...', 'owbn-client' ); ?>">
-				<?php endif; ?>
+				<div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;">
+					<?php if ( $show_section_filter && count( $sections ) > 3 ) : ?>
+						<input type="text" class="oat-registry-section-filter" placeholder="<?php esc_attr_e( 'Filter sections...', 'owbn-client' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
+					<?php endif; ?>
+					<?php if ( $show_search ) : ?>
+						<input type="text" class="oat-registry-search" placeholder="<?php esc_attr_e( 'Search characters...', 'owbn-client' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
+					<?php endif; ?>
+				</div>
 			</div>
 
 			<?php if ( empty( $sections ) ) : ?>
 				<p><?php esc_html_e( 'No characters found.', 'owbn-client' ); ?></p>
 			<?php endif; ?>
 
-			<?php foreach ( $sections as $section ) : ?>
-				<div class="oat-registry-section">
-					<div class="oat-registry-section-header collapsed" onclick="this.classList.toggle('collapsed');this.nextElementSibling.classList.toggle('oat-collapsed');" style="cursor:pointer;padding:8px 12px;margin-top:12px;border:1px solid #ddd;border-radius:4px;background:#f7f7f7;">
-						<strong><?php echo esc_html( $section['label'] ); ?></strong>
-						<span style="float:right;"><?php echo count( $section['characters'] ); ?></span>
+			<?php
+			// Build JSON data for all sections — rendered by JS, not PHP.
+			$sections_json = array();
+			foreach ( $sections as $si => $section ) {
+			$chars_json = array();
+				foreach ( $section['characters'] as $char ) {
+					$entry_total = $char['entry_counts'] ?? 0;
+					if ( is_array( $entry_total ) ) { $entry_total = array_sum( $entry_total ); }
+					$c_slug = $char['chronicle_slug'] ?? '';
+					$c_title = '';
+					if ( $c_slug && function_exists( 'owc_entity_get_title' ) ) {
+						$c_title = owc_entity_get_title( 'chronicle', $c_slug );
+					}
+					$chars_json[] = array(
+						'id'         => $char['id'] ?? 0,
+						'name'       => $char['character_name'] ?? '(unnamed)',
+						'slug'       => strtoupper( $c_slug ),
+						'slug_title' => $c_title ?: strtoupper( $c_slug ),
+						'creature'   => $char['creature_type'] ?? '',
+						'pc_npc'     => strtoupper( $char['pc_npc'] ?? '' ),
+						'status'     => ucfirst( $char['status'] ?? '' ),
+						'entries'    => (int) $entry_total,
+					);
+				}
+				$sections_json[] = array(
+					'key'    => $section['key'],
+					'label'  => $section['label'],
+					'count'  => count( $section['characters'] ),
+					'chars'  => $chars_json,
+				);
+			}
+		?>
+
+			<?php foreach ( $sections_json as $si => $sj ) : ?>
+				<div class="oat-registry-section" data-section-label="<?php echo esc_attr( strtolower( $sj['label'] ) ); ?>" data-section-idx="<?php echo $si; ?>">
+					<div class="oat-registry-section-header collapsed" style="cursor:pointer;padding:8px 12px;margin-top:12px;border:1px solid #ddd;border-radius:4px;background:#f7f7f7;">
+						<strong><?php echo esc_html( $sj['label'] ); ?></strong>
+						<span style="float:right;"><?php echo $sj['count']; ?></span>
 					</div>
 					<div class="oat-registry-section-body oat-collapsed">
 						<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">
@@ -170,44 +253,116 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 									<th style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>
 								</tr>
 							</thead>
-							<tbody>
-								<?php foreach ( $section['characters'] as $char ) :
-									$counts = isset( $char['entry_counts'] ) && is_array( $char['entry_counts'] ) ? $char['entry_counts'] : array();
-									$entry_total = array_sum( $counts );
-									$char_id = $char['id'] ?? 0;
-									$char_url = $detail_base
-										? $detail_base . '?character_id=' . $char_id
-										: admin_url( 'admin.php?page=owc-oat-registry-character&character_id=' . $char_id );
-								?>
-								<tr class="oat-registry-row" data-name="<?php echo esc_attr( strtolower( $char['character_name'] ?? '' ) ); ?>" data-chronicle="<?php echo esc_attr( strtolower( $char['chronicle_slug'] ?? '' ) ); ?>">
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;">
-										<a href="<?php echo esc_url( $char_url ); ?>"><?php echo esc_html( $char['character_name'] ?? '(unnamed)' ); ?></a>
-									</td>
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( strtoupper( $char['chronicle_slug'] ?? '' ) ); ?></td>
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( $char['creature_type'] ?? '' ); ?></td>
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( strtoupper( $char['pc_npc'] ?? '' ) ); ?></td>
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( ucfirst( $char['status'] ?? '' ) ); ?></td>
-									<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;"><?php echo (int) $entry_total; ?></td>
-								</tr>
-								<?php endforeach; ?>
-							</tbody>
+							<tbody></tbody>
 						</table>
 					</div>
 				</div>
 			<?php endforeach; ?>
+
+			<script type="application/json" class="oat-registry-data"><?php echo wp_json_encode( $sections_json ); ?></script>
 		</div>
 		<script>
 		(function(){
-			var search = document.querySelector('.oat-registry-search');
-			if (!search) return;
-			search.addEventListener('input', function() {
-				var term = this.value.toLowerCase();
-				document.querySelectorAll('.oat-registry-row').forEach(function(row) {
-					var name = row.getAttribute('data-name') || '';
-					var chron = row.getAttribute('data-chronicle') || '';
-					row.style.display = (name.indexOf(term) !== -1 || chron.indexOf(term) !== -1) ? '' : 'none';
+			var dataEl = document.querySelector('.oat-registry-data');
+			if (!dataEl) return;
+			var sections = JSON.parse(dataEl.textContent);
+			var detailBase = <?php echo wp_json_encode( $detail_base ); ?>;
+			var loaded = {};
+
+			function renderRows(sectionEl, idx) {
+				if (loaded[idx]) return;
+				loaded[idx] = true;
+				var chars = sections[idx].chars;
+				var tbody = sectionEl.querySelector('tbody');
+				var html = '';
+				for (var i = 0; i < chars.length; i++) {
+					var c = chars[i];
+					var url = detailBase + '?character_id=' + c.id;
+					html += '<tr class="oat-registry-row" data-name="' + c.name.toLowerCase() + '" data-chronicle="' + (c.slug||'').toLowerCase() + '">'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '">' + c.name + '</a></td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;" title="' + (c.slug_title||'') + '">' + (c.slug||'') + '</td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.creature||'') + '</td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.pc_npc||'') + '</td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.status||'') + '</td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">' + c.entries + '</td>'
+						+ '</tr>';
+				}
+				tbody.innerHTML = html;
+			}
+
+			// Click header to expand — render rows on first expand.
+			document.querySelectorAll('.oat-registry-section-header').forEach(function(header) {
+				header.addEventListener('click', function() {
+					this.classList.toggle('collapsed');
+					var body = this.nextElementSibling;
+					body.classList.toggle('oat-collapsed');
+					var section = this.parentElement;
+					var idx = parseInt(section.getAttribute('data-section-idx'));
+					if (!isNaN(idx)) renderRows(section, idx);
 				});
 			});
+
+			// Background-fill all sections after page load.
+			var bgIdx = 0;
+			function bgFill() {
+				if (bgIdx >= sections.length) return;
+				var el = document.querySelector('[data-section-idx="' + bgIdx + '"]');
+				if (el) renderRows(el, bgIdx);
+				bgIdx++;
+				requestAnimationFrame(bgFill);
+			}
+			setTimeout(bgFill, 500);
+
+			// Section filter.
+			var sectionFilter = document.querySelector('.oat-registry-section-filter');
+			if (sectionFilter) {
+				sectionFilter.addEventListener('input', function() {
+					var term = this.value.toLowerCase();
+					document.querySelectorAll('.oat-registry-section').forEach(function(section) {
+						var label = section.getAttribute('data-section-label') || '';
+						section.style.display = (!term || label.indexOf(term) !== -1) ? '' : 'none';
+					});
+				});
+			}
+
+			// Character search.
+			var search = document.querySelector('.oat-registry-search');
+			if (search) {
+				search.addEventListener('input', function() {
+					var term = this.value.toLowerCase();
+					// Ensure all sections are rendered first.
+					for (var i = 0; i < sections.length; i++) {
+						var el = document.querySelector('[data-section-idx="' + i + '"]');
+						if (el) renderRows(el, i);
+					}
+					document.querySelectorAll('.oat-registry-section').forEach(function(section) {
+						var rows = section.querySelectorAll('.oat-registry-row');
+						var visible = 0;
+						rows.forEach(function(row) {
+							var name = row.getAttribute('data-name') || '';
+							var chron = row.getAttribute('data-chronicle') || '';
+							var match = !term || name.indexOf(term) !== -1 || chron.indexOf(term) !== -1;
+							row.style.display = match ? '' : 'none';
+							if (match) visible++;
+						});
+						if (!term) {
+							section.style.display = '';
+							var body = section.querySelector('.oat-registry-section-body');
+							var header = section.querySelector('.oat-registry-section-header');
+							if (body) body.classList.add('oat-collapsed');
+							if (header) header.classList.add('collapsed');
+						} else if (visible > 0) {
+							section.style.display = '';
+							var body = section.querySelector('.oat-registry-section-body');
+							var header = section.querySelector('.oat-registry-section-header');
+							if (body) body.classList.remove('oat-collapsed');
+							if (header) header.classList.remove('collapsed');
+						} else {
+							section.style.display = 'none';
+						}
+					});
+				});
+			}
 		})();
 		</script>
 		<?php

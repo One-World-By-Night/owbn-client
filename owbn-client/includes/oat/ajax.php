@@ -22,6 +22,7 @@ add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
 add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coordinators_for_rules' );
 add_action( 'wp_ajax_owc_oat_submit_entry_frontend', 'owc_oat_ajax_submit_entry_frontend' );
 add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_activity' );
+add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
 
 /**
  * AJAX: Search regulation rules for autocomplete.

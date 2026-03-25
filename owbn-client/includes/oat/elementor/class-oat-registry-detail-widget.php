@@ -159,8 +159,8 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 		// Field editability per role.
 		$editable = array(
 			'character_name'   => in_array( $edit_scope, array( 'staff', 'coordinator', 'archivist' ), true ),
-			'player_name'      => in_array( $edit_scope, array( 'staff', 'archivist' ), true ),
-			'player_email'     => in_array( $edit_scope, array( 'staff', 'archivist' ), true ),
+			'player_name'      => $edit_scope === 'archivist',
+			'player_email'     => $edit_scope === 'archivist',
 			'chronicle_slug'   => $edit_scope === 'archivist',
 			'creature_type'    => $edit_scope === 'archivist',
 			'creature_sub_type' => $edit_scope === 'archivist',
@@ -346,29 +346,72 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<?php if ( empty( $entries ) ) : ?>
 				<p>No approved entries for this character.</p>
 			<?php else : ?>
-				<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">
-					<thead><tr>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;width:60px;">ID</th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Domain</th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Form</th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Created</th>
-					</tr></thead>
-					<tbody>
-					<?php foreach ( $entries as $e ) :
-						$e_id  = (int)( $e['id'] ?? 0 );
-						$e_url = $entry_url . '?entry_id=' . $e_id;
-					?>
-						<tr>
-							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="<?php echo esc_url( $e_url ); ?>">#<?php echo $e_id; ?></a></td>
-							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( $e['domain'] ?? '' ); ?></td>
-							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( str_replace( '_', ' ', $e['form_slug'] ?? '' ) ); ?></td>
-							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $e['status'] ?? '' ) ) ); ?></td>
-							<td style="padding:6px 8px;border-bottom:1px solid #eee;"><?php echo esc_html( $fmt( $e['created_at'] ?? '' ) ); ?></td>
-						</tr>
-					<?php endforeach; ?>
-					</tbody>
-				</table>
+				<?php foreach ( $entries as $e ) :
+					$e_id      = (int)( $e['id'] ?? 0 );
+					$e_coord   = $e['coordinator_genre'] ?? '';
+					$e_status  = ucfirst( str_replace( '_', ' ', $e['status'] ?? '' ) );
+					$e_domain  = $e['domain'] ?? '';
+					$e_form    = str_replace( '_', ' ', $e['form_slug'] ?? '' );
+					$e_created = $fmt( $e['created_at'] ?? '' );
+
+					// Get entry meta for detail
+					$e_meta = array();
+					if ( is_array( $e ) && isset( $e['meta'] ) ) {
+						$e_meta = is_array( $e['meta'] ) ? $e['meta'] : array();
+					} elseif ( class_exists( 'OAT_Entry_Meta' ) ) {
+						$raw_meta = OAT_Entry_Meta::get_all( $e_id );
+						if ( is_array( $raw_meta ) ) {
+							foreach ( $raw_meta as $m ) {
+								$mk = is_object( $m ) ? $m->meta_key : ( $m['meta_key'] ?? '' );
+								$mv = is_object( $m ) ? $m->meta_value : ( $m['meta_value'] ?? '' );
+								if ( $mk && strpos( $mk, '_oat_' ) !== 0 ) {
+									$e_meta[ $mk ] = $mv;
+								}
+							}
+						}
+					}
+
+					$item_desc = $e_meta['item_description'] ?? '';
+					$reg_level = $e_meta['regulation_level'] ?? '';
+					$header_label = $item_desc ?: $e_form;
+					if ( $e_coord ) {
+						$header_label .= ' — ' . ucfirst( $e_coord );
+					}
+				?>
+				<div style="margin-bottom:4px;">
+					<div onclick="var b=this.nextElementSibling;var a=this.querySelector('.oat-arrow');if(b.style.display==='none'){b.style.display='';a.textContent='\u25BC';}else{b.style.display='none';a.textContent='\u25B6';}" style="cursor:pointer;padding:6px 10px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9;font-size:0.9em;user-select:none;display:flex;align-items:flex-start;gap:6px;">
+						<span class="oat-arrow" style="flex-shrink:0;font-size:0.8em;margin-top:2px;">&#9654;</span>
+						<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;"><strong><?php echo esc_html( $header_label ); ?></strong></span>
+						<span style="flex-shrink:0;color:#888;white-space:nowrap;margin-left:8px;"><?php echo esc_html( $e_status ); ?> — <?php echo esc_html( $e_created ); ?></span>
+					</div>
+					<div style="display:none;padding:8px 12px;border:1px solid #eee;border-top:0;background:#fafafa;">
+						<table style="width:100%;border-collapse:collapse;font-size:0.9em;">
+							<tr><td style="padding:3px 8px;font-weight:bold;width:140px;">Entry ID</td><td style="padding:3px 8px;">#<?php echo $e_id; ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;">Domain</td><td style="padding:3px 8px;"><?php echo esc_html( $e_domain ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;">Form</td><td style="padding:3px 8px;"><?php echo esc_html( $e_form ); ?></td></tr>
+							<?php if ( $e_coord ) : ?>
+								<tr><td style="padding:3px 8px;font-weight:bold;">Approving Authority</td><td style="padding:3px 8px;"><?php echo esc_html( ucfirst( $e_coord ) ); ?></td></tr>
+							<?php endif; ?>
+							<?php if ( $reg_level ) : ?>
+								<tr><td style="padding:3px 8px;font-weight:bold;">Regulation Level</td><td style="padding:3px 8px;"><?php echo esc_html( $reg_level ); ?></td></tr>
+							<?php endif; ?>
+							<?php if ( $item_desc ) : ?>
+								<tr><td style="padding:3px 8px;font-weight:bold;">Item</td><td style="padding:3px 8px;"><?php echo esc_html( $item_desc ); ?></td></tr>
+							<?php endif; ?>
+							<tr><td style="padding:3px 8px;font-weight:bold;">Status</td><td style="padding:3px 8px;"><?php echo esc_html( $e_status ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;">Created</td><td style="padding:3px 8px;"><?php echo esc_html( $e_created ); ?></td></tr>
+							<?php
+							// Show any other meta
+							$skip_keys = array( 'item_description', 'regulation_level', 'drupal_ru_id', 'drupal_subtype_id', 'action_type' );
+							foreach ( $e_meta as $mk => $mv ) {
+								if ( in_array( $mk, $skip_keys, true ) || ! $mv ) continue;
+							?>
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $mk ) ) ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $mv ); ?></td></tr>
+							<?php } ?>
+						</table>
+					</div>
+				</div>
+				<?php endforeach; ?>
 			<?php endif; ?>
 		</div>
 

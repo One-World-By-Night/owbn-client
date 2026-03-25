@@ -166,7 +166,7 @@ function owc_get_local_chronicles()
 
     $posts = get_posts([
         'post_type'      => 'owbn_chronicle',
-        'post_status'    => 'publish',
+        'post_status'    => array( 'publish', 'decommissioned' ),
         'posts_per_page' => -1,
     ]);
 
@@ -180,6 +180,7 @@ function owc_get_local_chronicles()
             'id'                     => $id,
             'title'                  => $p->post_title,
             'slug'                   => get_post_meta($id, 'chronicle_slug', true) ?: $p->post_name,
+            'status'                 => $p->post_status,
             'chronicle_region'       => get_post_meta($id, 'chronicle_region', true),
             'genres'                 => get_post_meta($id, 'genres', true) ?: [],
             'game_type'              => get_post_meta($id, 'game_type', true),

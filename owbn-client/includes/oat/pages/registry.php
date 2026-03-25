@@ -171,15 +171,23 @@ function owc_oat_build_registry_sections( $characters ) {
         }
     }
 
-    // Helper: resolve entity title from slug.
+    // Helper: resolve entity title + status from slug.
     $resolve_title = function( $type, $slug ) {
         if ( function_exists( 'owc_entity_get_title' ) ) {
             $title = owc_entity_get_title( $type, $slug );
             if ( $title ) {
+                // Check if decommissioned via cache
+                global $owc_entity_cache;
+                $entry = isset( $owc_entity_cache[ $type ]['slug_to_entry'][ strtolower( $slug ) ] )
+                    ? $owc_entity_cache[ $type ]['slug_to_entry'][ strtolower( $slug ) ]
+                    : null;
+                if ( $entry && isset( $entry['status'] ) && $entry['status'] === 'decommissioned' ) {
+                    return $title . ' [Decommissioned]';
+                }
                 return $title;
             }
         }
-        return ucfirst( $slug );
+        return ucfirst( $slug ) . ' [Decommissioned]';
     };
 
     // Section 2+: Chronicle sections (by chronicle_slug).

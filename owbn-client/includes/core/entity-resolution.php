@@ -42,14 +42,16 @@ function _owc_entity_build_cache( $type ) {
 		if ( is_array( $items ) ) {
 			foreach ( $items as $item ) {
 				$item = (array) $item;
-				$slug  = isset( $item['slug'] ) ? (string) $item['slug'] : '';
-				$title = isset( $item['title'] ) ? (string) $item['title'] : '';
+				$slug   = isset( $item['slug'] ) ? (string) $item['slug'] : '';
+				$title  = isset( $item['title'] ) ? (string) $item['title'] : '';
+				$status = isset( $item['status'] ) ? (string) $item['status'] : 'publish';
 				if ( '' === $slug ) {
 					continue;
 				}
 				$slug_to_entry[ $slug ] = array(
 					'title'  => $title,
 					'source' => 'post',
+					'status' => $status,
 				);
 				if ( '' !== $title ) {
 					$title_to_slug[ strtolower( $title ) ] = $slug;
