@@ -252,8 +252,6 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<table style="width:100%;border-collapse:collapse;">
 				<?php
 				$field_row( __( 'Character Name', 'owbn-client' ), 'character_name', $char_name );
-				$field_row( __( 'Player Name', 'owbn-client' ), 'player_name', $player_name );
-				$field_row( __( 'Player Email', 'owbn-client' ), 'player_email', $player_email, 'email' );
 				?>
 
 				<!-- Chronicle: entity picker for editable, text for read-only -->
@@ -290,12 +288,15 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				$field_row( __( 'Status', 'owbn-client' ), 'status', $char_status, 'select', array(
 					'active' => __( 'Active', 'owbn-client' ), 'inactive' => __( 'Inactive', 'owbn-client' ), 'dead' => __( 'Dead', 'owbn-client' ), 'shelved' => __( 'Shelved', 'owbn-client' ),
 				) );
-				$field_row( __( 'NPC Coordinator', 'owbn-client' ), 'npc_coordinator', $npc_coordinator );
-				$field_row( __( 'NPC Type', 'owbn-client' ), 'npc_type', $npc_type );
 				?>
 
-				<!-- Player linkage (PCs only, archivist only) -->
-				<?php if ( $pc_npc === 'pc' && $edit_scope === 'archivist' ) :
+				<!-- PC-only fields -->
+				<tbody class="oat-pc-fields" style="<?php echo $pc_npc !== 'pc' ? 'display:none;' : ''; ?>">
+				<?php
+				$field_row( __( 'Player Name', 'owbn-client' ), 'player_name', $player_name );
+				$field_row( __( 'Player Email', 'owbn-client' ), 'player_email', $player_email, 'email' );
+				?>
+				<?php if ( $edit_scope === 'archivist' ) :
 					$linked_user = $character['wp_user_id'] ?? 0;
 					$linked_name = '';
 					if ( $linked_user ) {
@@ -314,19 +315,26 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 							<input type="hidden" name="wp_user_id" id="wp_user_id" value="0">
 							<div id="player_search_result" style="display:none;margin-top:4px;">
 								<span id="player_search_name"></span>
-								<button type="button" onclick="document.getElementById('wp_user_id').value='0';this.parentElement.style.display='none';document.getElementById('player_search').style.display='';" class="button-link">(clear)</button>
+								<button type="button" onclick="document.getElementById('wp_user_id').value='0';this.parentElement.style.display='none';document.getElementById('player_search').style.display='';" class="button-link">(<?php esc_html_e( 'clear', 'owbn-client' ); ?>)</button>
 							</div>
 						<?php endif; ?>
 					</td>
 				</tr>
 				<?php endif; ?>
+				</tbody>
 
+				<!-- NPC-only fields -->
+				<tbody class="oat-npc-fields" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
+				<?php
+				$field_row( __( 'NPC Coordinator', 'owbn-client' ), 'npc_coordinator', $npc_coordinator );
+				$field_row( __( 'NPC Type', 'owbn-client' ), 'npc_type', $npc_type );
+				?>
 				<?php if ( ! empty( $npc_role_options ) && $any_editable ) : ?>
-				<tr id="npc-role-picker-row" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
+				<tr id="npc-role-picker-row">
 					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'NPC Owner', 'owbn-client' ); ?></td>
 					<td style="padding:4px 8px;">
 						<select id="npc_role_picker">
-							<option value="">— Auto-fill from role —</option>
+							<option value=""><?php esc_html_e( '— Auto-fill from role —', 'owbn-client' ); ?></option>
 							<?php foreach ( $npc_role_options as $i => $opt ) : ?>
 								<option value="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $opt['name'] . ' (' . $opt['email'] . ')' ); ?></option>
 							<?php endforeach; ?>
@@ -334,6 +342,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					</td>
 				</tr>
 				<?php endif; ?>
+				</tbody>
 			</table>
 
 			<?php if ( $any_editable ) : ?>
@@ -510,25 +519,33 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<?php endif; ?>
 		</div>
 
-		<?php if ( $can_edit && ! empty( $npc_role_options ) ) : ?>
+		<?php if ( $any_editable ) : ?>
 		<script>
 		(function() {
-			var opts = <?php echo wp_json_encode( $npc_role_options ); ?>;
-			var sel  = document.getElementById('pc_npc');
-			var row  = document.getElementById('npc-role-picker-row');
-			var pick = document.getElementById('npc_role_picker');
-			if (!sel || !row || !pick) return;
-			sel.addEventListener('change', function() {
-				row.style.display = this.value === 'npc' ? '' : 'none';
-			});
-			pick.addEventListener('change', function() {
-				var o = opts[this.value];
-				if (!o) return;
-				['player_email','player_name','npc_coordinator','npc_type','chronicle_slug'].forEach(function(f) {
-					var el = document.getElementById(f);
-					if (el && o[f] !== undefined) el.value = o[f];
+			var sel = document.getElementById('pc_npc');
+			var pcFields  = document.querySelector('.oat-pc-fields');
+			var npcFields = document.querySelector('.oat-npc-fields');
+			if (sel && pcFields && npcFields) {
+				sel.addEventListener('change', function() {
+					var isNpc = this.value === 'npc';
+					pcFields.style.display  = isNpc ? 'none' : '';
+					npcFields.style.display = isNpc ? '' : 'none';
 				});
-			});
+			}
+			<?php if ( ! empty( $npc_role_options ) ) : ?>
+			var opts = <?php echo wp_json_encode( $npc_role_options ); ?>;
+			var pick = document.getElementById('npc_role_picker');
+			if (pick) {
+				pick.addEventListener('change', function() {
+					var o = opts[this.value];
+					if (!o) return;
+					['player_email','player_name','npc_coordinator','npc_type','chronicle_slug'].forEach(function(f) {
+						var el = document.getElementById(f);
+						if (el && o[f] !== undefined) el.value = o[f];
+					});
+				});
+			}
+			<?php endif; ?>
 		})();
 		</script>
 		<?php endif; ?>
