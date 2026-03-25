@@ -27,42 +27,20 @@ defined('ABSPATH') || exit;
  */
 function owbn_gateway_oat_registry( $request ) {
     $user_id = (int) $request->get_param( '_oat_user_id' );
-    $body    = $request->get_json_params();
 
-    $chronicle_param = isset( $body['chronicle'] ) ? sanitize_text_field( $body['chronicle'] ) : '';
-    $genre_param     = isset( $body['genre'] ) ? sanitize_text_field( $body['genre'] ) : '';
+    // Remote clients only get the user's own characters.
+    // Full scoped registry (all chronicles/coordinators) is local-only on archivist.
+    $characters = OAT_Registry::get_characters_for_player( $user_id );
 
-    $chronicles = $chronicle_param ? array_filter( array_map( 'trim', explode( ',', $chronicle_param ) ) ) : array();
-    $genres     = $genre_param ? array_filter( array_map( 'trim', explode( ',', $genre_param ) ) ) : array();
-
-    if ( $chronicles || $genres ) {
-        $characters = array();
-        foreach ( $chronicles as $slug ) {
-            foreach ( OAT_Registry::get_characters_for_chronicle( $slug ) as $c ) {
-                $characters[ $c->id ] = $c;
-            }
-        }
-        foreach ( $genres as $genre ) {
-            foreach ( OAT_Registry::get_characters_for_coordinator( $genre ) as $c ) {
-                $characters[ $c->id ] = $c;
-            }
-        }
-        $characters = array_values( $characters );
-        foreach ( $characters as $char ) {
-            $char->entry_counts = OAT_Registry::get_entry_counts_by_domain( (int) $char->id );
-        }
-        return owbn_gateway_respond( array(
-            'characters' => owbn_gateway_oat_format_characters( $characters ),
-            'count'      => count( $characters ),
-        ) );
+    // Attach entry counts.
+    foreach ( $characters as $char ) {
+        $char->entry_counts = OAT_Registry::get_entry_counts_by_domain( (int) $char->id );
     }
-
-    // Default: full scoped registry.
-    $characters = OAT_Registry::get_scoped_registry( $user_id );
 
     return owbn_gateway_respond( array(
         'characters' => owbn_gateway_oat_format_characters( $characters ),
         'count'      => count( $characters ),
+        'scope'      => 'my_characters',
     ) );
 }
 

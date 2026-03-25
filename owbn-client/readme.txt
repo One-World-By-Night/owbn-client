@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.19.0
+Stable tag: 4.19.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,11 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.19.1 =
+* Fix: Remote registry gateway returns only user's own characters (not full 10K scoped registry)
+* Fix: Coordinator edit scope requires matching grant on the character
+* Fix: character_name editable only by chronicle staff + archivist/web/wp admin
 
 = 4.19.0 =
 * Add V2 remote REST APIs: registry + ccHub gateway endpoints for cross-site OAT data access

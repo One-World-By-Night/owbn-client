@@ -1499,9 +1499,10 @@ function owc_oat_find_cached_rule( $id ) {
 /**
  * Fetch scoped registry for current user.
  *
- * Optional filters: chronicle slugs, genre slugs (comma-separated or arrays).
+ * Local mode: full scoped registry (own + chronicle + coordinator characters).
+ * Remote mode: own characters only (My Characters).
  *
- * @param array $args Optional 'chronicle' and/or 'genre' (string or array).
+ * @param array $args Optional 'chronicle' and/or 'genre' (string or array, local mode only).
  * @return array|WP_Error
  */
 function owc_oat_get_registry( $args = array() ) {

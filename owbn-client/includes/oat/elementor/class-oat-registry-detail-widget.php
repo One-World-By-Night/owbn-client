@@ -156,10 +156,21 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				}
 			}
 			if ( $edit_scope === 'none' && is_array( $user_asc_roles ) ) {
+				// Build set of coordinator genres that have grants on this character.
+				$char_coord_genres = array();
+				foreach ( $active_grants as $g ) {
+					$gt = is_array( $g ) ? ( $g['grant_type'] ?? '' ) : ( $g->grant_type ?? '' );
+					$gv = is_array( $g ) ? ( $g['grant_value'] ?? '' ) : ( $g->grant_value ?? '' );
+					if ( $gt === 'coordinator' ) {
+						$char_coord_genres[] = strtolower( $gv );
+					}
+				}
 				foreach ( $user_asc_roles as $r ) {
-					if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $r ) ) {
-						$edit_scope = 'coordinator';
-						break;
+					if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $r, $m ) ) {
+						if ( in_array( strtolower( $m[1] ), $char_coord_genres, true ) ) {
+							$edit_scope = 'coordinator';
+							break;
+						}
 					}
 				}
 			}
@@ -167,7 +178,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 		// Field editability per role.
 		$editable = array(
-			'character_name'   => in_array( $edit_scope, array( 'staff', 'coordinator', 'archivist' ), true ),
+			'character_name'   => in_array( $edit_scope, array( 'staff', 'archivist' ), true ),
 			'player_name'      => $edit_scope === 'archivist',
 			'player_email'     => $edit_scope === 'archivist',
 			'chronicle_slug'   => $edit_scope === 'archivist',
