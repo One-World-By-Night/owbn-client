@@ -325,22 +325,37 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 				<!-- NPC-only fields -->
 				<tbody class="oat-npc-fields" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
-				<?php
-				$field_row( __( 'NPC Coordinator', 'owbn-client' ), 'npc_coordinator', $npc_coordinator );
-				$field_row( __( 'NPC Type', 'owbn-client' ), 'npc_type', $npc_type );
-				?>
-				<?php if ( ! empty( $npc_role_options ) && $any_editable ) : ?>
-				<tr id="npc-role-picker-row">
+				<?php if ( $any_editable && function_exists( 'owc_asc_render_entity_picker' ) ) : ?>
+				<tr>
 					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'NPC Owner', 'owbn-client' ); ?></td>
 					<td style="padding:4px 8px;">
-						<select id="npc_role_picker">
-							<option value=""><?php esc_html_e( '— Auto-fill from role —', 'owbn-client' ); ?></option>
-							<?php foreach ( $npc_role_options as $i => $opt ) : ?>
-								<option value="<?php echo esc_attr( $i ); ?>"><?php echo esc_html( $opt['name'] . ' (' . $opt['email'] . ')' ); ?></option>
-							<?php endforeach; ?>
-						</select>
+						<?php
+						$npc_typed = '';
+						if ( $npc_coordinator ) {
+							$npc_typed = 'coordinator/' . strtolower( $npc_coordinator );
+						} elseif ( $chronicle ) {
+							$npc_typed = 'chronicle/' . strtolower( $chronicle );
+						}
+						owc_asc_render_entity_picker( array(
+							'name'              => 'npc_owner_typed',
+							'id'                => 'npc_owner_typed',
+							'value'             => $npc_typed,
+							'chronicle_roles'   => array( '*' ),
+							'coordinator_roles' => array( '*' ),
+							'required'          => false,
+						) );
+						?>
+						<input type="hidden" name="npc_coordinator" id="npc_coordinator" value="<?php echo esc_attr( $npc_coordinator ); ?>">
+						<input type="hidden" name="npc_type" id="npc_type" value="<?php echo esc_attr( $npc_type ); ?>">
 					</td>
 				</tr>
+				<?php else : ?>
+					<?php if ( $npc_coordinator ) : ?>
+					<tr>
+						<td style="padding:4px 8px;font-weight:bold;"><?php esc_html_e( 'NPC Owner', 'owbn-client' ); ?></td>
+						<td style="padding:4px 8px;"><?php echo esc_html( ucfirst( $npc_coordinator ) . ( $npc_type ? ' (' . $npc_type . ')' : '' ) ); ?></td>
+					</tr>
+					<?php endif; ?>
 				<?php endif; ?>
 				</tbody>
 			</table>
@@ -532,20 +547,26 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					npcFields.style.display = isNpc ? '' : 'none';
 				});
 			}
-			<?php if ( ! empty( $npc_role_options ) ) : ?>
-			var opts = <?php echo wp_json_encode( $npc_role_options ); ?>;
-			var pick = document.getElementById('npc_role_picker');
-			if (pick) {
-				pick.addEventListener('change', function() {
-					var o = opts[this.value];
-					if (!o) return;
-					['player_email','player_name','npc_coordinator','npc_type','chronicle_slug'].forEach(function(f) {
-						var el = document.getElementById(f);
-						if (el && o[f] !== undefined) el.value = o[f];
-					});
-				});
+			// Parse entity picker value → set hidden npc_coordinator/npc_type.
+			var npcOwner = document.getElementById('npc_owner_typed');
+			var npcCoord = document.getElementById('npc_coordinator');
+			var npcType  = document.getElementById('npc_type');
+			if (npcOwner && npcCoord && npcType) {
+				var syncNpc = function() {
+					var val = npcOwner.value || '';
+					var parts = val.split('/');
+					if (parts.length === 2) {
+						npcType.value = parts[0];
+						npcCoord.value = parts[1];
+					}
+				};
+				npcOwner.addEventListener('change', syncNpc);
+				// Also listen for autocomplete hidden input changes.
+				var observer = new MutationObserver(syncNpc);
+				observer.observe(npcOwner, { attributes: true, attributeFilter: ['value'] });
+				// Fallback: check periodically for autocomplete selection.
+				npcOwner.closest('form')?.addEventListener('submit', syncNpc);
 			}
-			<?php endif; ?>
 		})();
 		</script>
 		<?php endif; ?>
