@@ -188,13 +188,14 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		<div class="oat-registry-widget">
 			<div class="oat-registry-header">
 				<h3><?php printf( esc_html__( 'Registry (%d characters)', 'owbn-client' ), $total_count ); ?></h3>
-				<div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;">
+				<div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;align-items:center;">
 					<?php if ( $show_section_filter && count( $sections ) > 3 ) : ?>
 						<input type="text" class="oat-registry-section-filter" placeholder="<?php esc_attr_e( 'Filter sections...', 'owbn-client' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
 					<?php endif; ?>
 					<?php if ( $show_search ) : ?>
 						<input type="text" class="oat-registry-search" placeholder="<?php esc_attr_e( 'Search characters...', 'owbn-client' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
 					<?php endif; ?>
+					<button type="button" class="oat-registry-clear" style="padding:4px 12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">Clear</button>
 				</div>
 			</div>
 
@@ -245,12 +246,12 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 						<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">
 							<thead>
 								<tr>
-									<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>
-									<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>
-									<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>
-									<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>
-									<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>
-									<th style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>
+									<th data-sort="0" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Character</th>
+									<th data-sort="1" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Chronicle</th>
+									<th data-sort="2" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Type</th>
+									<th data-sort="3" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">PC/NPC</th>
+									<th data-sort="4" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Status</th>
+									<th data-sort="5" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Entries</th>
 								</tr>
 							</thead>
 							<tbody></tbody>
@@ -279,7 +280,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 					var c = chars[i];
 					var url = detailBase + '?character_id=' + c.id;
 					html += '<tr class="oat-registry-row" data-name="' + c.name.toLowerCase() + '" data-chronicle="' + (c.slug||'').toLowerCase() + '">'
-						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '">' + c.name + '</a></td>'
+						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '" target="_blank">' + c.name + '</a></td>'
 						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;" title="' + (c.slug_title||'') + '">' + (c.slug||'') + '</td>'
 						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.creature||'') + '</td>'
 						+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.pc_npc||'') + '</td>'
@@ -363,6 +364,51 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 					});
 				});
 			}
+
+			// Clear button.
+			var clearBtn = document.querySelector('.oat-registry-clear');
+			if (clearBtn) {
+				clearBtn.addEventListener('click', function() {
+					if (sectionFilter) sectionFilter.value = '';
+					if (search) search.value = '';
+					document.querySelectorAll('.oat-registry-section').forEach(function(section) {
+						section.style.display = '';
+						var body = section.querySelector('.oat-registry-section-body');
+						var header = section.querySelector('.oat-registry-section-header');
+						if (body) body.classList.add('oat-collapsed');
+						if (header) header.classList.add('collapsed');
+						section.querySelectorAll('.oat-registry-row').forEach(function(row) {
+							row.style.display = '';
+						});
+					});
+				});
+			}
+
+			// Column sorting within sections.
+			document.querySelectorAll('th[data-sort]').forEach(function(th) {
+				th.addEventListener('click', function() {
+					var col = parseInt(this.getAttribute('data-sort'));
+					var table = this.closest('table');
+					var tbody = table.querySelector('tbody');
+					var rows = Array.from(tbody.querySelectorAll('tr'));
+					var asc = this.getAttribute('data-asc') !== 'true';
+					this.setAttribute('data-asc', asc);
+
+					rows.sort(function(a, b) {
+						var aVal = a.cells[col] ? a.cells[col].textContent.trim().toLowerCase() : '';
+						var bVal = b.cells[col] ? b.cells[col].textContent.trim().toLowerCase() : '';
+						// Numeric sort for entries column
+						if (col === 5) {
+							return asc ? (parseInt(aVal)||0) - (parseInt(bVal)||0) : (parseInt(bVal)||0) - (parseInt(aVal)||0);
+						}
+						if (aVal < bVal) return asc ? -1 : 1;
+						if (aVal > bVal) return asc ? 1 : -1;
+						return 0;
+					});
+
+					rows.forEach(function(row) { tbody.appendChild(row); });
+				});
+			});
 		})();
 		</script>
 		<?php

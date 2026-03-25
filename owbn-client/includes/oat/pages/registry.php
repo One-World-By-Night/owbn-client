@@ -190,7 +190,26 @@ function owc_oat_build_registry_sections( $characters ) {
         return ucfirst( $slug ) . ' [Decommissioned]';
     };
 
-    // Section 2+: Chronicle sections (by chronicle_slug).
+    // Helper: check if a chronicle slug is decommissioned.
+    $is_decommissioned = function( $slug ) {
+        global $owc_entity_cache;
+        $entry = isset( $owc_entity_cache['chronicle']['slug_to_entry'][ strtolower( $slug ) ] )
+            ? $owc_entity_cache['chronicle']['slug_to_entry'][ strtolower( $slug ) ]
+            : null;
+        if ( $entry && isset( $entry['status'] ) && $entry['status'] === 'decommissioned' ) {
+            return true;
+        }
+        // No entry at all = also decommissioned
+        if ( ! $entry ) {
+            return true;
+        }
+        return false;
+    };
+
+    // Build chronicle sections — split into active and decommissioned.
+    $active_chronicle_sections = array();
+    $decom_chronicle_sections  = array();
+
     foreach ( $show_chronicle_slugs as $slug ) {
         $chars = array();
         foreach ( $characters as $c ) {
@@ -203,15 +222,25 @@ function owc_oat_build_registry_sections( $characters ) {
             }
         }
         if ( ! empty( $chars ) ) {
-            $sections[] = array(
+            $section = array(
                 'label'      => 'Chronicle: ' . $resolve_title( 'chronicle', $slug ),
                 'key'        => 'chronicle-' . $slug,
                 'characters' => $chars,
             );
+            if ( $is_decommissioned( $slug ) ) {
+                $decom_chronicle_sections[] = $section;
+            } else {
+                $active_chronicle_sections[] = $section;
+            }
         }
     }
 
-    // Section 3+: Coordinator sections (by npc_coordinator).
+    // Add active chronicles.
+    foreach ( $active_chronicle_sections as $s ) {
+        $sections[] = $s;
+    }
+
+    // Coordinator sections.
     foreach ( $sorted_genres as $entry ) {
         $genre = $entry['genre'];
         $chars = array();
@@ -240,7 +269,7 @@ function owc_oat_build_registry_sections( $characters ) {
         }
     }
 
-    // Catch-all.
+    // Catch-all (Other Characters).
     $remaining = array();
     foreach ( $characters as $c ) {
         if ( ! isset( $seen_ids[ $c['id'] ] ) ) {
@@ -253,6 +282,11 @@ function owc_oat_build_registry_sections( $characters ) {
             'key'        => 'other',
             'characters' => $remaining,
         );
+    }
+
+    // Decommissioned chronicles last.
+    foreach ( $decom_chronicle_sections as $s ) {
+        $sections[] = $s;
     }
 
     return $sections;

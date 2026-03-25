@@ -23,6 +23,8 @@ add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coor
 add_action( 'wp_ajax_owc_oat_submit_entry_frontend', 'owc_oat_ajax_submit_entry_frontend' );
 add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_activity' );
 add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
+add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
+add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
 /**
  * AJAX: Search regulation rules for autocomplete.
@@ -628,4 +630,40 @@ function owc_oat_ajax_get_recent_activity() {
     }
 
     wp_send_json_success( array( 'items' => $items ) );
+}
+
+/**
+ * AJAX: Get a single custom content entry for the ccHub modal.
+ */
+function owc_cchub_ajax_get_entry() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $entry_id = absint( $_REQUEST['entry_id'] ?? 0 );
+    if ( ! $entry_id ) {
+        wp_send_json_error( 'No entry ID.' );
+    }
+
+    global $wpdb;
+    $entries = $wpdb->prefix . 'oat_entries';
+    $meta    = $wpdb->prefix . 'oat_entry_meta';
+
+    $entry = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content'", $entry_id ) );
+    if ( ! $entry ) {
+        wp_send_json_error( 'Entry not found.' );
+    }
+
+    $meta_rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$meta} WHERE entry_id = %d", $entry_id ) );
+    $data = array(
+        'id'               => (int) $entry->id,
+        'coordinator_genre' => $entry->coordinator_genre,
+        'chronicle_slug'   => $entry->chronicle_slug,
+    );
+    foreach ( $meta_rows as $m ) {
+        if ( strpos( $m->meta_key, '_oat_' ) === 0 || $m->meta_key === 'drupal_cc_id' ) {
+            continue;
+        }
+        $data[ $m->meta_key ] = $m->meta_value;
+    }
+
+    wp_send_json_success( $data );
 }
