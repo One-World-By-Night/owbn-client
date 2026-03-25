@@ -34,17 +34,37 @@ function owc_oat_is_local() {
  * @return string URL with language prefix if applicable.
  */
 function owc_oat_localize_url( $url ) {
-    // TranslatePress uses URL slugs like /pt/, /es/, /fr/ etc.
-    // Detect from REQUEST_URI.
-    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
-    if ( preg_match( '#^/([a-z]{2}(?:-[a-z]{2})?)/#i', $request_uri, $m ) ) {
-        $lang = $m[1];
-        // Don't prepend if the URL already has the prefix or if it's the default language.
-        $default_lang = apply_filters( 'owc_oat_default_language', 'en' );
-        if ( $lang !== $default_lang && strpos( $url, '/' . $lang . '/' ) !== 0 ) {
-            $url = '/' . $lang . rtrim( $url, '/' ) . '/';
+    // Detect language prefix from multiple sources.
+    $lang = '';
+
+    // 1. TranslatePress global.
+    global $TRP_LANGUAGE;
+    if ( ! empty( $TRP_LANGUAGE ) && class_exists( 'TRP_Translate_Press' ) ) {
+        $trp      = TRP_Translate_Press::get_trp_instance();
+        $settings = $trp->get_component( 'settings' )->get_settings();
+        $default  = $settings['default-language'] ?? 'en_US';
+        if ( $TRP_LANGUAGE !== $default ) {
+            // Map locale to URL slug (e.g. pt_BR -> pt).
+            $slugs = $settings['url-slugs'] ?? array();
+            $lang  = isset( $slugs[ $TRP_LANGUAGE ] ) ? $slugs[ $TRP_LANGUAGE ] : '';
         }
     }
+
+    // 2. Fallback: detect from REQUEST_URI.
+    if ( ! $lang ) {
+        $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+        if ( preg_match( '#^/([a-z]{2}(?:-[a-z]{2})?)/#i', $request_uri, $m ) ) {
+            $default_lang = apply_filters( 'owc_oat_default_language', 'en' );
+            if ( $m[1] !== $default_lang ) {
+                $lang = $m[1];
+            }
+        }
+    }
+
+    if ( $lang && strpos( $url, '/' . $lang . '/' ) !== 0 ) {
+        $url = '/' . $lang . rtrim( $url, '/' ) . '/';
+    }
+
     return $url;
 }
 
