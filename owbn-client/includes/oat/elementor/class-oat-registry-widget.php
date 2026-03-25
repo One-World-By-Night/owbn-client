@@ -119,6 +119,8 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		$show_search        = ( $settings['show_search'] ?? 'yes' ) === 'yes';
 		$show_section_filter = ( $settings['show_section_filter'] ?? 'yes' ) === 'yes';
 		$detail_base        = $settings['character_detail_url'] ?: '/oat-registry-detail/';
+		// Preserve TranslatePress language prefix for links opened in new tabs.
+		$detail_base = owc_oat_localize_url( $detail_base );
 		$scope              = $settings['scope'] ?? 'all';
 
 		$args   = array();

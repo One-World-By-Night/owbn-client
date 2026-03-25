@@ -831,7 +831,8 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			if ( function_exists( 'owc_entity_get_title' ) && $value ) {
 				$title = owc_entity_get_title( 'chronicle', $value );
 				$display = $title ? $title : $value;
-				$url = '/chronicle-detail/?slug=' . rawurlencode( $value );
+				$base = function_exists( 'owc_oat_localize_url' ) ? owc_oat_localize_url( '/chronicle-detail/' ) : '/chronicle-detail/';
+				$url = $base . '?slug=' . rawurlencode( $value );
 				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $display ) . ' &#x29C9;</a>';
 			} else {
 				echo esc_html( $value );
@@ -842,7 +843,8 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			if ( function_exists( 'owc_entity_get_title' ) && $value ) {
 				$title = owc_entity_get_title( 'coordinator', $value );
 				$display = $title ? $title : $value;
-				$url = '/coordinator-detail/?slug=' . rawurlencode( $value );
+				$base = function_exists( 'owc_oat_localize_url' ) ? owc_oat_localize_url( '/coordinator-detail/' ) : '/coordinator-detail/';
+				$url = $base . '?slug=' . rawurlencode( $value );
 				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $display ) . ' &#x29C9;</a>';
 			} else {
 				echo esc_html( $value );
@@ -920,7 +922,9 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 				$char_display = $value;
 			}
 			if ( $char_link_id ) {
-				$url = '/oat-registry-detail/?character_id=' . $char_link_id;
+				$url = function_exists( 'owc_oat_localize_url' )
+					? owc_oat_localize_url( '/oat-registry-detail/' ) . '?character_id=' . $char_link_id
+					: '/oat-registry-detail/?character_id=' . $char_link_id;
 				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $char_display ) . ' &#x29C9;</a>';
 			} else {
 				echo esc_html( $char_display );

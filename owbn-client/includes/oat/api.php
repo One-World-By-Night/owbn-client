@@ -25,6 +25,31 @@ function owc_oat_is_local() {
 
 
 /**
+ * Prepend the current TranslatePress language prefix to a root-relative URL.
+ *
+ * Detects the language prefix from the current request URI (e.g. /pt/ from /pt/oat-registry/)
+ * and prepends it to the given path so links opened in new tabs preserve the language.
+ *
+ * @param string $url Root-relative URL (e.g. /oat-registry-detail/).
+ * @return string URL with language prefix if applicable.
+ */
+function owc_oat_localize_url( $url ) {
+    // TranslatePress uses URL slugs like /pt/, /es/, /fr/ etc.
+    // Detect from REQUEST_URI.
+    $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+    if ( preg_match( '#^/([a-z]{2}(?:-[a-z]{2})?)/#i', $request_uri, $m ) ) {
+        $lang = $m[1];
+        // Don't prepend if the URL already has the prefix or if it's the default language.
+        $default_lang = apply_filters( 'owc_oat_default_language', 'en' );
+        if ( $lang !== $default_lang && strpos( $url, '/' . $lang . '/' ) !== 0 ) {
+            $url = '/' . $lang . rtrim( $url, '/' ) . '/';
+        }
+    }
+    return $url;
+}
+
+
+/**
  * Format a Unix timestamp or datetime string for display.
  *
  * @param mixed $value Unix timestamp or datetime string.

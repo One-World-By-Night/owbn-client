@@ -106,6 +106,7 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 				var pageInfo = document.querySelector('.cchub-page-info');
 				var ajaxUrl = '<?php echo admin_url( "admin-ajax.php" ); ?>';
 				var nonce = '<?php echo wp_create_nonce( "owc_oat_nonce" ); ?>';
+				var langPrefix = '<?php echo function_exists( "owc_oat_localize_url" ) ? esc_js( rtrim( owc_oat_localize_url( "/" ), "/" ) ) : ""; ?>';
 
 				function renderPage() {
 					var start = page * perPage;
@@ -185,8 +186,8 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 						if (d.content_type) html += '<tr><td style="padding:3px 8px;font-weight:bold;width:150px;">Category</td><td>' + d.content_type + '</td></tr>';
 						if (d.blood_magic_category) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Tradition</td><td>' + d.blood_magic_category + '</td></tr>';
 						if (d.xp_cost) html += '<tr><td style="padding:3px 8px;font-weight:bold;">XP Cost</td><td>' + d.xp_cost + '</td></tr>';
-						if (d.coordinator_genre) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Coordinator</td><td><a href="/coordinator-detail/?slug=' + d.coordinator_genre + '" target="_blank" style="text-decoration:underline;">' + (d.coordinator_title||d.coordinator_genre) + ' &#x29C9;</a></td></tr>';
-						if (d.chronicle_slug) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source Chronicle</td><td><a href="/chronicle-detail/?slug=' + d.chronicle_slug + '" target="_blank" style="text-decoration:underline;">' + (d.chronicle_title||d.chronicle_slug) + ' &#x29C9;</a></td></tr>';
+						if (d.coordinator_genre) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Coordinator</td><td><a href="' + langPrefix + '/coordinator-detail/?slug=' + d.coordinator_genre + '" target="_blank" style="text-decoration:underline;">' + (d.coordinator_title||d.coordinator_genre) + ' &#x29C9;</a></td></tr>';
+						if (d.chronicle_slug) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source Chronicle</td><td><a href="' + langPrefix + '/chronicle-detail/?slug=' + d.chronicle_slug + '" target="_blank" style="text-decoration:underline;">' + (d.chronicle_title||d.chronicle_slug) + ' &#x29C9;</a></td></tr>';
 						if (d.source_hst) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source HST</td><td>' + d.source_hst + '</td></tr>';
 						if (d.archival_date) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Archival Date</td><td>' + d.archival_date + '</td></tr>';
 						html += '</table>';
