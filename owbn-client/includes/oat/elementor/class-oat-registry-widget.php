@@ -246,12 +246,12 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 						<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">
 							<thead>
 								<tr>
-									<th data-sort="0" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Character</th>
-									<th data-sort="1" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Chronicle</th>
-									<th data-sort="2" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Type</th>
-									<th data-sort="3" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">PC/NPC</th>
-									<th data-sort="4" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Status</th>
-									<th data-sort="5" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;">Entries</th>
+									<th data-sort="0" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'Character', 'owbn-client' ); ?></th>
+									<th data-sort="1" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'Chronicle', 'owbn-client' ); ?></th>
+									<th data-sort="2" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'Type', 'owbn-client' ); ?></th>
+									<th data-sort="3" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'PC/NPC', 'owbn-client' ); ?></th>
+									<th data-sort="4" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'Status', 'owbn-client' ); ?></th>
+									<th data-sort="5" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;cursor:pointer;user-select:none;"><?php esc_html_e( 'Entries', 'owbn-client' ); ?></th>
 								</tr>
 							</thead>
 							<tbody></tbody>
