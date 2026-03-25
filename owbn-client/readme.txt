@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.11.0
+Stable tag: 4.19.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,20 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.19.0 =
+* Add V2 remote REST APIs: registry + ccHub gateway endpoints for cross-site OAT data access
+* Add ccHub wrapper functions (categories, browse, entry) with local/remote mode switching
+* Refactor ccHub widgets to use API wrappers instead of direct DB queries
+* Add form_slug to entry serialization for correct per-form field rendering
+* Add entry detail hydration: resolve character_name, chronicle, coordinator from linked records
+* Add "Changes Requested" banner on entries sent back for revision
+* Add originator resubmit action with editable form fields
+* Add clickable links (with new-tab indicator) for character, chronicle, coordinator in entry detail
+* Replace all table-based form rendering with div-based stacked layout
+* Add mobile-responsive stacked field layout at all screen sizes
+* Hide empty fields and orphaned section headings in readonly view
+* Fix: OWC_VERSION constant now matches plugin header version
 
 = 4.10.3 =
 * Fixed regulation rules search returning empty on remote OAT sites (parameter mismatch: client sent "term", gateway expected "q")

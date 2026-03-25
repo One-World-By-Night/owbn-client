@@ -181,9 +181,13 @@ function owc_oat_create_pages()
 		'oat_page_submit'    => array( 'title' => 'OAT Submit',    'slug' => 'oat-submit' ),
 		'oat_page_entry'     => array( 'title' => 'OAT Entry',     'slug' => 'oat-entry' ),
 		'oat_page_registry'  => array( 'title' => 'OAT Registry',  'slug' => 'oat-registry' ),
-		'cchub_page_home'    => array( 'title' => 'ccHub',         'slug' => 'cchub' ),
-		'cchub_page_browse'  => array( 'title' => 'ccHub Browse',  'slug' => 'cchub-browse' ),
 	);
+
+	// ccHub pages only on sites with local OAT data (archivist).
+	if ( class_exists( 'OAT_Entry_Meta' ) ) {
+		$pages['cchub_page_home']   = array( 'title' => 'ccHub',        'slug' => 'cchub' );
+		$pages['cchub_page_browse'] = array( 'title' => 'ccHub Browse', 'slug' => 'cchub-browse' );
+	}
 
 	foreach ( $pages as $option_key => $page ) {
 		$existing = get_option( $option_key );

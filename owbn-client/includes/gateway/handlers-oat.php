@@ -50,6 +50,7 @@ function owbn_gateway_oat_serialize_entry( $entry ) {
     return array(
         'id'                 => (int) $entry->id,
         'domain'             => $entry->domain,
+        'form_slug'          => isset( $entry->form_slug ) ? $entry->form_slug : '',
         'status'             => $entry->status,
         'current_step'       => $entry->current_step,
         'originator_id'      => (int) $entry->originator_id,
@@ -417,6 +418,10 @@ function owbn_gateway_oat_get_available_actions( $entry, $user_id ) {
     if ( $is_originator ) {
         $actions[] = 'cancel';
         $actions[] = 'bump';
+        // Originator can resubmit when entry is sent back to submit step.
+        if ( $entry->current_step === 'submit' && $entry->status === 'pending' ) {
+            $actions[] = 'submit';
+        }
     }
 
     // Assignee actions (review step).

@@ -106,4 +106,101 @@ function owbn_gateway_register_oat_routes() {
         'callback'            => 'owbn_gateway_oat_rules_list',
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
+
+    // ── Registry routes (API key + user email) ──────────────────────────
+
+    // Scoped registry for authenticated user.
+    register_rest_route( $namespace, '/oat/registry', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Character detail + entries + grants.
+    register_rest_route( $namespace, '/oat/registry/character/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_character',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
+
+    // Public registry fields for a character.
+    register_rest_route( $namespace, '/oat/registry/public/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_public',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
+
+    // Create grant.
+    register_rest_route( $namespace, '/oat/registry/grant', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_grant',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Revoke grant.
+    register_rest_route( $namespace, '/oat/registry/grant/(?P<id>\d+)/revoke', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_revoke',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
+
+    // Update character fields.
+    register_rest_route( $namespace, '/oat/registry/character/(?P<id>\d+)/update', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_update_character',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
+
+    // ── ccHub routes (server-scoped, API key only) ──────────────────────
+
+    // Category listing with counts.
+    register_rest_route( $namespace, '/oat/cchub/categories', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_cchub_categories',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    // Browse entries by content type.
+    register_rest_route( $namespace, '/oat/cchub/browse', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_cchub_browse',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    // Single entry detail.
+    register_rest_route( $namespace, '/oat/cchub/entry/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_cchub_entry',
+        'permission_callback' => 'owbn_gateway_authenticate',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
 }

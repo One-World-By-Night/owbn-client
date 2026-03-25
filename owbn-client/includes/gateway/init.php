@@ -31,6 +31,7 @@ if ( class_exists( 'OAT_Entry' ) ) {
     require_once __DIR__ . '/routes-oat.php';
     require_once __DIR__ . '/handlers-oat.php';
     require_once __DIR__ . '/handlers-oat-write.php';
+    require_once __DIR__ . '/handlers-oat-registry.php';
 }
 
 // CORS headers on all owbn/v1/ responses (priority 15)

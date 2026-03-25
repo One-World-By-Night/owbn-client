@@ -631,6 +631,7 @@ function owc_oat_get_entry( $entry_id ) {
             'entry'             => array(
                 'id'              => (int) $entry->id,
                 'domain'          => $entry->domain,
+                'form_slug'       => isset( $entry->form_slug ) ? $entry->form_slug : '',
                 'status'          => $entry->status,
                 'current_step'    => $entry->current_step,
                 'originator_id'   => (int) $entry->originator_id,
@@ -1011,6 +1012,10 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
     if ( (int) $entry->originator_id === $user_id ) {
         $actions[] = 'cancel';
         $actions[] = 'bump';
+        // Originator can resubmit when entry is sent back to submit step.
+        if ( $entry->current_step === 'submit' && $entry->status === 'pending' ) {
+            $actions[] = 'submit';
+        }
     }
 
     if ( class_exists( 'OAT_Authorization' ) && OAT_Authorization::check( OAT_Constants::CAP_EXEC_OVERSIGHT ) ) {
@@ -1651,9 +1656,7 @@ function owc_oat_update_character( $character_id, $data ) {
         return array( 'success' => true, 'character' => (array) OAT_Character::find( $character_id ) );
     }
 
-    $body         = $data;
-    $body['_method'] = 'PUT';
-    return owc_oat_request( 'registry/character/' . (int) $character_id, $body );
+    return owc_oat_request( 'registry/character/' . (int) $character_id . '/update', $data );
 }
 
 /**
@@ -1668,5 +1671,161 @@ function owc_oat_revoke_access( $grant_id ) {
         return array( 'success' => true );
     }
 
-    return owc_oat_request( 'registry/grant/' . (int) $grant_id, array( '_method' => 'DELETE' ) );
+    return owc_oat_request( 'registry/grant/' . (int) $grant_id . '/revoke' );
+}
+
+
+// ── ccHub Custom Content API ─────────────────────────────────────────
+
+
+/**
+ * Fetch ccHub content type categories with counts.
+ *
+ * @return array|WP_Error
+ */
+function owc_oat_get_cchub_categories() {
+    if ( owc_oat_is_local() ) {
+        global $wpdb;
+        $entries = $wpdb->prefix . 'oat_entries';
+        $meta    = $wpdb->prefix . 'oat_entry_meta';
+
+        $rows = $wpdb->get_results( "
+            SELECT m.meta_value as content_type, COUNT(DISTINCT e.id) as cnt
+            FROM {$entries} e
+            JOIN {$meta} m ON e.id = m.entry_id AND m.meta_key = 'content_type'
+            WHERE e.domain = 'custom_content' AND e.status = 'approved'
+            AND m.meta_value != ''
+            GROUP BY m.meta_value
+            ORDER BY m.meta_value ASC
+        " );
+
+        $out = array();
+        foreach ( $rows as $cat ) {
+            $out[] = array(
+                'content_type' => $cat->content_type,
+                'count'        => (int) $cat->cnt,
+            );
+        }
+        return $out;
+    }
+
+    return owc_oat_request( 'cchub/categories' );
+}
+
+
+/**
+ * Fetch ccHub browse data for a content type.
+ *
+ * Returns lightweight rows for table display (id, name, type, bm_cat, xp, coord, chron).
+ *
+ * @param string $type Content type filter (empty = all).
+ * @return array|WP_Error
+ */
+function owc_oat_get_cchub_browse( $type = '' ) {
+    if ( owc_oat_is_local() ) {
+        global $wpdb;
+        $entries = $wpdb->prefix . 'oat_entries';
+        $meta    = $wpdb->prefix . 'oat_entry_meta';
+
+        $where     = "e.domain = 'custom_content' AND e.status = 'approved'";
+        $join_type = '';
+        if ( $type ) {
+            $join_type = $wpdb->prepare(
+                "JOIN {$meta} mt ON e.id = mt.entry_id AND mt.meta_key = 'content_type' AND mt.meta_value = %s",
+                $type
+            );
+        }
+
+        $sql = "
+            SELECT e.id, e.coordinator_genre, e.chronicle_slug,
+                mn.meta_value as content_name,
+                mx.meta_value as xp_cost,
+                mct.meta_value as content_type,
+                mbm.meta_value as bm_category
+            FROM {$entries} e
+            {$join_type}
+            LEFT JOIN {$meta} mn ON e.id = mn.entry_id AND mn.meta_key = 'content_name'
+            LEFT JOIN {$meta} mx ON e.id = mx.entry_id AND mx.meta_key = 'xp_cost'
+            LEFT JOIN {$meta} mct ON e.id = mct.entry_id AND mct.meta_key = 'content_type'
+            LEFT JOIN {$meta} mbm ON e.id = mbm.entry_id AND mbm.meta_key = 'blood_magic_category'
+            WHERE {$where}
+            ORDER BY mn.meta_value ASC
+        ";
+        $rows = $wpdb->get_results( $sql );
+
+        $items = array();
+        foreach ( $rows as $r ) {
+            $items[] = array(
+                'id'     => (int) $r->id,
+                'name'   => $r->content_name ?: '(unnamed)',
+                'type'   => $r->content_type ?: '',
+                'bm_cat' => $r->bm_category ?: '',
+                'xp'     => $r->xp_cost ?: '',
+                'coord'  => $r->coordinator_genre ? ucfirst( $r->coordinator_genre ) : '',
+                'chron'  => strtoupper( $r->chronicle_slug ?: '' ),
+            );
+        }
+        return $items;
+    }
+
+    $body = array();
+    if ( $type ) {
+        $body['type'] = $type;
+    }
+    return owc_oat_request( 'cchub/browse', $body );
+}
+
+
+/**
+ * Fetch a single ccHub entry with all meta and resolved titles.
+ *
+ * @param int $entry_id
+ * @return array|WP_Error
+ */
+function owc_oat_get_cchub_entry( $entry_id ) {
+    if ( owc_oat_is_local() ) {
+        global $wpdb;
+        $entries = $wpdb->prefix . 'oat_entries';
+        $meta    = $wpdb->prefix . 'oat_entry_meta';
+
+        $entry = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content'",
+            $entry_id
+        ) );
+
+        if ( ! $entry ) {
+            return new WP_Error( 'not_found', 'Entry not found.' );
+        }
+
+        $meta_rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT meta_key, meta_value FROM {$meta} WHERE entry_id = %d",
+            $entry_id
+        ) );
+
+        $coord_slug  = $entry->coordinator_genre ?: '';
+        $chron_slug  = $entry->chronicle_slug ?: '';
+        $coord_title = '';
+        $chron_title = '';
+        if ( function_exists( 'owc_entity_get_title' ) ) {
+            if ( $coord_slug ) { $coord_title = owc_entity_get_title( 'coordinator', $coord_slug ); }
+            if ( $chron_slug ) { $chron_title = owc_entity_get_title( 'chronicle', $chron_slug ); }
+        }
+
+        $data = array(
+            'id'                => (int) $entry->id,
+            'coordinator_genre' => $coord_slug,
+            'coordinator_title' => $coord_title ?: ucfirst( $coord_slug ),
+            'chronicle_slug'    => $chron_slug,
+            'chronicle_title'   => $chron_title ?: strtoupper( $chron_slug ),
+        );
+        foreach ( $meta_rows as $m ) {
+            if ( strpos( $m->meta_key, '_oat_' ) === 0 || $m->meta_key === 'drupal_cc_id' ) {
+                continue;
+            }
+            $data[ $m->meta_key ] = $m->meta_value;
+        }
+        return $data;
+    }
+
+    return owc_oat_request( 'cchub/entry/' . (int) $entry_id );
 }

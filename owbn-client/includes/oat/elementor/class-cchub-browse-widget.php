@@ -46,49 +46,13 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 		$cat_url   = $settings['categories_url'] ?: '/cchub/';
 		$type      = isset( $_GET['type'] ) ? sanitize_text_field( $_GET['type'] ) : '';
 
-		global $wpdb;
-		$entries = $wpdb->prefix . 'oat_entries';
-		$meta    = $wpdb->prefix . 'oat_entry_meta';
+		// Fetch via API wrapper (supports local + remote mode).
+		$items = function_exists( 'owc_oat_get_cchub_browse' )
+			? owc_oat_get_cchub_browse( $type )
+			: array();
 
-		// Build query
-		$where = "e.domain = 'custom_content' AND e.status = 'approved'";
-		$join_type = '';
-		if ( $type ) {
-			$join_type = $wpdb->prepare(
-				"JOIN {$meta} mt ON e.id = mt.entry_id AND mt.meta_key = 'content_type' AND mt.meta_value = %s",
-				$type
-			);
-		}
-
-		$sql = "
-			SELECT e.id, e.coordinator_genre, e.chronicle_slug,
-				mn.meta_value as content_name,
-				mx.meta_value as xp_cost,
-				mct.meta_value as content_type,
-				mbm.meta_value as bm_category
-			FROM {$entries} e
-			{$join_type}
-			LEFT JOIN {$meta} mn ON e.id = mn.entry_id AND mn.meta_key = 'content_name'
-			LEFT JOIN {$meta} mx ON e.id = mx.entry_id AND mx.meta_key = 'xp_cost'
-			LEFT JOIN {$meta} mct ON e.id = mct.entry_id AND mct.meta_key = 'content_type'
-			LEFT JOIN {$meta} mbm ON e.id = mbm.entry_id AND mbm.meta_key = 'blood_magic_category'
-			WHERE {$where}
-			ORDER BY mn.meta_value ASC
-		";
-		$rows = $wpdb->get_results( $sql );
-
-		// Build JSON for client-side pagination/search/modal
-		$items = array();
-		foreach ( $rows as $r ) {
-			$items[] = array(
-				'id'       => (int) $r->id,
-				'name'     => $r->content_name ?: '(unnamed)',
-				'type'     => $r->content_type ?: '',
-				'bm_cat'   => $r->bm_category ?: '',
-				'xp'       => $r->xp_cost ?: '',
-				'coord'    => $r->coordinator_genre ? ucfirst( $r->coordinator_genre ) : '',
-				'chron'    => strtoupper( $r->chronicle_slug ?: '' ),
-			);
+		if ( is_wp_error( $items ) ) {
+			$items = array();
 		}
 
 		$is_bm = strpos( strtolower( $type ), 'blood magic' ) !== false;
@@ -221,8 +185,8 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 						if (d.content_type) html += '<tr><td style="padding:3px 8px;font-weight:bold;width:150px;">Category</td><td>' + d.content_type + '</td></tr>';
 						if (d.blood_magic_category) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Tradition</td><td>' + d.blood_magic_category + '</td></tr>';
 						if (d.xp_cost) html += '<tr><td style="padding:3px 8px;font-weight:bold;">XP Cost</td><td>' + d.xp_cost + '</td></tr>';
-						if (d.coordinator_genre) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Coordinator</td><td>' + d.coordinator_genre + '</td></tr>';
-						if (d.chronicle_slug) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source Chronicle</td><td>' + d.chronicle_slug + '</td></tr>';
+						if (d.coordinator_genre) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Coordinator</td><td><a href="/coordinator-detail/?slug=' + d.coordinator_genre + '" target="_blank" style="text-decoration:underline;">' + (d.coordinator_title||d.coordinator_genre) + ' &#x29C9;</a></td></tr>';
+						if (d.chronicle_slug) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source Chronicle</td><td><a href="/chronicle-detail/?slug=' + d.chronicle_slug + '" target="_blank" style="text-decoration:underline;">' + (d.chronicle_title||d.chronicle_slug) + ' &#x29C9;</a></td></tr>';
 						if (d.source_hst) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Source HST</td><td>' + d.source_hst + '</td></tr>';
 						if (d.archival_date) html += '<tr><td style="padding:3px 8px;font-weight:bold;">Archival Date</td><td>' + d.archival_date + '</td></tr>';
 						html += '</table>';

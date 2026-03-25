@@ -25,7 +25,7 @@ function owc_oat_render_fields( $fields, $values = array() ) {
 	// Collect hidden fields to render outside the table.
 	$hidden_fields = array();
 
-	echo '<table class="form-table oat-form-fields">';
+	echo '<div class="oat-form-fields">';
 	foreach ( $fields as $field ) {
 		$key  = isset( $field['key'] ) ? $field['key'] : '';
 		$type = isset( $field['type'] ) ? $field['type'] : 'text';
@@ -38,9 +38,9 @@ function owc_oat_render_fields( $fields, $values = array() ) {
 		$value = isset( $values[ $key ] ) ? $values[ $key ] : ( isset( $field['default'] ) ? $field['default'] : '' );
 		owc_oat_render_field( $field, $value );
 	}
-	echo '</table>';
+	echo '</div>';
 
-	// Render hidden/auto_prop fields after the table.
+	// Render hidden/auto_prop fields after the form.
 	foreach ( $hidden_fields as $field ) {
 		$key   = isset( $field['key'] ) ? $field['key'] : '';
 		$value = isset( $values[ $key ] ) ? $values[ $key ] : ( isset( $field['default'] ) ? $field['default'] : '' );
@@ -96,12 +96,12 @@ function owc_oat_render_field( $field, $value = '' ) {
 
 	switch ( $type ) {
 		case 'heading':
-			echo '<tr class="oat-field oat-field-heading"' . $cond_attrs . '>';
-			echo '<td colspan="2"><h3>' . esc_html( $label ) . '</h3>';
+			echo '<div class="oat-field oat-field-heading"' . $cond_attrs . '>';
+			echo '<h3>' . esc_html( $label ) . '</h3>';
 			if ( $help_text ) {
 				echo '<p>' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div>';
 			return;
 
 		case 'hidden':
@@ -128,9 +128,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 		case 'time':
 		case 'datetime':
 			$input_type = ( 'datetime' === $type ) ? 'datetime-local' : $type;
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			printf(
 				'<input type="%s" id="%s" name="%s" value="%s" placeholder="%s"%s%s%s />',
 				esc_attr( $input_type ), $id, $name, esc_attr( $value ),
@@ -139,14 +139,14 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'textarea':
 			$rows = isset( $attrs['rows'] ) ? (int) $attrs['rows'] : 4;
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			printf(
 				'<textarea id="%s" name="%s" rows="%d" placeholder="%s"%s>%s</textarea>',
 				$id, $name, $rows, $placeholder, $req_attr, esc_textarea( $value )
@@ -154,15 +154,15 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'htmlarea':
 			$rows  = isset( $attrs['rows'] ) ? (int) $attrs['rows'] : 6;
 			$media = isset( $attrs['media'] ) ? (bool) $attrs['media'] : false;
-			echo '<tr class="oat-field oat-field-htmlarea"' . $cond_attrs . '>';
-			echo '<th><label>' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-htmlarea"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label>' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			wp_editor( $value, $id, array(
 				'textarea_name' => $name,
 				'textarea_rows' => $rows,
@@ -173,7 +173,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'select':
@@ -209,9 +209,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 				}
 			}
 			$cascading_from = isset( $attrs['cascading_from'] ) ? $attrs['cascading_from'] : '';
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 
 			if ( $cascading_from ) {
 				// D1: Cascading select — options_json is hierarchical: {parent: {group: [item, ...]}}.
@@ -252,13 +252,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'radio':
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th>' . esc_html( $label ) . $req_star . '</th>';
-			echo '<td><fieldset>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . $req_star . '</div>';
+			echo '<div class="oat-field-content"><fieldset>';
 			foreach ( $options as $opt_val => $opt_label ) {
 				printf(
 					'<label><input type="radio" name="%s" value="%s"%s /> %s</label><br>',
@@ -271,19 +271,19 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'checkbox':
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th>' . esc_html( $label ) . '</th>';
-			echo '<td><label>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . '</div>';
+			echo '<div class="oat-field-content"><label>';
 			printf(
 				'<input type="checkbox" name="%s" value="1"%s /> %s',
 				$name, checked( $value, '1', false ),
 				esc_html( $help_text ? $help_text : $label )
 			);
-			echo '</label></td></tr>';
+			echo '</label></div></div>';
 			return;
 
 		case 'checkboxes':
@@ -291,9 +291,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( ! is_array( $selected ) ) {
 				$selected = array();
 			}
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th>' . esc_html( $label ) . $req_star . '</th>';
-			echo '<td><fieldset>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . $req_star . '</div>';
+			echo '<div class="oat-field-content"><fieldset>';
 			foreach ( $options as $opt_val => $opt_label ) {
 				printf(
 					'<label><input type="checkbox" name="%s[]" value="%s"%s /> %s</label><br>',
@@ -302,7 +302,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 					esc_html( $opt_label )
 				);
 			}
-			echo '</fieldset></td></tr>';
+			echo '</fieldset></div></div>';
 			return;
 
 		case 'chronicle_picker':
@@ -315,9 +315,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 				$chron_roles = array( '*' );
 			}
 
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			if ( $filter_by_chron ) {
 				echo '<div class="oat-chronicle-filter-wrap" data-filter-by="' . esc_attr( $filter_by_chron ) . '" data-role-scopes="' . esc_attr( wp_json_encode( $role_scopes_chron ) ) . '">';
 			}
@@ -357,14 +357,14 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'satellite_picker':
 			$depends_on = isset( $attrs['depends_on'] ) ? $attrs['depends_on'] : '';
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			if ( function_exists( 'owc_render_satellite_picker' ) ) {
 				owc_render_satellite_picker( array(
 					'name'       => $name,
@@ -382,13 +382,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'coordinator_picker':
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			if ( function_exists( 'owc_asc_render_coordinator_picker' ) ) {
 				owc_asc_render_coordinator_picker( array(
 					'name'     => $name,
@@ -406,13 +406,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'entity_picker':
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			if ( function_exists( 'owc_asc_render_entity_picker' ) ) {
 				owc_asc_render_entity_picker( array(
 					'name'              => $name,
@@ -434,13 +434,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'rule_picker':
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			echo '<div class="oat-rule-picker-wrap">';
 			echo '<input type="text" id="' . $id . '_search" class="oat-rule-search" placeholder="Search regulation rules..." autocomplete="off" />';
 			echo '<div id="' . $id . '_selected" class="oat-rule-selected"></div>';
@@ -451,7 +451,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'signature':
@@ -473,9 +473,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			$role_attr  = $signed_by_role ? ' data-signed-by-role="' . esc_attr( $signed_by_role ) . '"' : '';
 			$steps_attr = ! empty( $for_steps ) ? ' data-for-steps="' . esc_attr( wp_json_encode( $for_steps ) ) . '"' : '';
 
-			echo '<tr class="oat-field oat-field-signature"' . $cond_attrs . '>';
-			echo '<th>' . esc_html( $label ) . $req_star . '</th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-signature"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . $req_star . '</div>';
+			echo '<div class="oat-field-content">';
 			echo '<div class="oat-signature-wrap"' . $role_attr . $steps_attr . '>';
 			printf( '<input type="text" value="%s" class="regular-text oat-sig-name" readonly="readonly" tabindex="-1" />', esc_attr( $sig_name ) );
 			echo '<label style="display:block;margin-top:4px;">';
@@ -496,16 +496,16 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'character_picker':
 			// Composite: autocomplete search + create-new panel (D-056).
 			// Options hold creature taxonomy JSON (D-057).
 			$taxonomy_json = ! empty( $options ) ? wp_json_encode( $options ) : '{}';
-			echo '<tr class="oat-field oat-field-character-picker"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-character-picker"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			$filter_by = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
 			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . '>';
 			// Search input.
@@ -567,16 +567,16 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'user_picker':
 			// Autocomplete search against WP users, with free-text fallback.
 			$store_id_in = isset( $attrs['store_id_in'] ) ? $attrs['store_id_in'] : '';
 			$fallback    = isset( $attrs['fallback'] ) ? $attrs['fallback'] : 'free_text';
-			echo '<tr class="oat-field oat-field-user-picker"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-user-picker"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			echo '<div class="oat-user-picker" data-field-id="' . esc_attr( $id ) . '" data-store-id-in="' . esc_attr( $store_id_in ) . '" data-fallback="' . esc_attr( $fallback ) . '">';
 			// Search input.
 			printf(
@@ -609,14 +609,14 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'coordinator_display':
 			// Read-only display of coordinator(s) derived from selected regulation rules.
-			echo '<tr class="oat-field oat-field-coordinator-display"' . $cond_attrs . '>';
-			echo '<th>' . esc_html( $label ) . '</th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-coordinator-display"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . '</div>';
+			echo '<div class="oat-field-content">';
 			echo '<div class="oat-coordinator-display" data-field-id="' . esc_attr( $id ) . '">';
 			echo '<span class="oat-coordinator-names">';
 			if ( $value ) {
@@ -630,15 +630,15 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'template_selector':
 			// Dropdown of pre-canned templates that populate a target htmlarea.
 			$target_field = isset( $attrs['target_field'] ) ? $attrs['target_field'] : '';
-			echo '<tr class="oat-field oat-field-template-selector"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-template-selector"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			echo '<select id="' . $id . '" name="' . $name . '" class="oat-template-selector" data-target-field="' . esc_attr( $target_field ) . '"' . $req_attr . '>';
 			echo '<option value="">' . esc_html__( '-- Select Template --', 'owbn-client' ) . '</option>';
 			foreach ( $options as $opt_val => $opt_label_or_content ) {
@@ -663,7 +663,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		case 'dependent_lookup':
@@ -673,9 +673,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			$lookup     = isset( $attrs['lookup'] ) ? $attrs['lookup'] : '';
 			$role_path  = isset( $attrs['role_path'] ) ? $attrs['role_path'] : '';
 			$fallback   = isset( $attrs['fallback'] ) ? $attrs['fallback'] : 'editable';
-			echo '<tr class="oat-field oat-field-dependent-lookup"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field oat-field-dependent-lookup"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			printf(
 				'<div class="oat-dependent-lookup-wrap" data-depends-on="%s" data-lookup="%s" data-role-path="%s" data-fallback="%s">',
 				esc_attr( $depends_on ),
@@ -692,19 +692,19 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
 			}
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 
 		default:
 			// Unknown type — render as text.
-			echo '<tr class="oat-field"' . $cond_attrs . '>';
-			echo '<th><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></th>';
-			echo '<td>';
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
 			printf(
 				'<input type="text" id="%s" name="%s" value="%s" placeholder="%s"%s />',
 				$id, $name, esc_attr( $value ), $placeholder, $req_attr
 			);
-			echo '</td></tr>';
+			echo '</div></div>';
 			return;
 	}
 }
@@ -722,18 +722,47 @@ function owc_oat_render_fields_readonly( $fields, $values = array() ) {
 		return;
 	}
 
-	echo '<table class="form-table oat-form-fields-readonly">';
-	foreach ( $fields as $field ) {
+	// Pre-scan: determine which headings have visible (non-empty) fields after them.
+	$visible = array();
+	$current_heading_idx = -1;
+	foreach ( $fields as $idx => $field ) {
+		$type = isset( $field['type'] ) ? $field['type'] : 'text';
+		if ( 'heading' === $type ) {
+			$current_heading_idx = $idx;
+			continue;
+		}
+		if ( 'hidden' === $type || 'auto_prop' === $type ) {
+			continue;
+		}
+		$key   = isset( $field['key'] ) ? $field['key'] : '';
+		$value = isset( $values[ $key ] ) ? $values[ $key ] : '';
+		if ( '' !== $value && null !== $value ) {
+			$visible[ $idx ] = true;
+			if ( $current_heading_idx >= 0 ) {
+				$visible[ $current_heading_idx ] = true;
+			}
+		}
+	}
+
+	echo '<div class="oat-fields-readonly">';
+	foreach ( $fields as $idx => $field ) {
 		$type = isset( $field['type'] ) ? $field['type'] : 'text';
 		if ( 'hidden' === $type || 'auto_prop' === $type ) {
+			continue;
+		}
+		if ( ! isset( $visible[ $idx ] ) ) {
 			continue;
 		}
 
 		$key   = isset( $field['key'] ) ? $field['key'] : '';
 		$value = isset( $values[ $key ] ) ? $values[ $key ] : '';
+		// Pass hydrated character_id for linking.
+		if ( 'character_name' === $key && ! empty( $values['_hydrated_character_id'] ) ) {
+			$field['_character_id'] = (int) $values['_hydrated_character_id'];
+		}
 		owc_oat_render_field_readonly( $field, $value );
 	}
-	echo '</table>';
+	echo '</div>';
 }
 
 /**
@@ -749,9 +778,7 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 	$options = isset( $field['options'] ) && is_array( $field['options'] ) ? $field['options'] : array();
 
 	if ( 'heading' === $type ) {
-		echo '<tr class="oat-field oat-field-heading">';
-		echo '<td colspan="2"><h3>' . esc_html( $label ) . '</h3></td>';
-		echo '</tr>';
+		echo '<div class="oat-ro-heading"><h3>' . esc_html( $label ) . '</h3></div>';
 		return;
 	}
 
@@ -759,9 +786,15 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 		return;
 	}
 
-	echo '<tr class="oat-field">';
-	echo '<th>' . esc_html( $label ) . '</th>';
-	echo '<td>';
+	$help = isset( $field['help_text'] ) && $field['help_text'] ? $field['help_text'] : '';
+
+	echo '<div class="oat-ro-field">';
+	echo '<div class="oat-ro-label">' . esc_html( $label );
+	if ( $help ) {
+		echo '<span class="oat-ro-help">' . esc_html( $help ) . '</span>';
+	}
+	echo '</div>';
+	echo '<div class="oat-ro-value">';
 
 	switch ( $type ) {
 		case 'htmlarea':
@@ -797,7 +830,9 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 		case 'chronicle_picker':
 			if ( function_exists( 'owc_entity_get_title' ) && $value ) {
 				$title = owc_entity_get_title( 'chronicle', $value );
-				echo esc_html( $title ? $title : $value );
+				$display = $title ? $title : $value;
+				$url = '/chronicle-detail/?slug=' . rawurlencode( $value );
+				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $display ) . ' &#x29C9;</a>';
 			} else {
 				echo esc_html( $value );
 			}
@@ -806,7 +841,9 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 		case 'coordinator_picker':
 			if ( function_exists( 'owc_entity_get_title' ) && $value ) {
 				$title = owc_entity_get_title( 'coordinator', $value );
-				echo esc_html( $title ? $title : $value );
+				$display = $title ? $title : $value;
+				$url = '/coordinator-detail/?slug=' . rawurlencode( $value );
+				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $display ) . ' &#x29C9;</a>';
 			} else {
 				echo esc_html( $value );
 			}
@@ -864,23 +901,29 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			break;
 
 		case 'character_picker':
-			// Show character name from UUID lookup.
+			$char_display = '';
+			$char_link_id = isset( $field['_character_id'] ) ? (int) $field['_character_id'] : 0;
 			if ( $value && class_exists( 'OAT_Character' ) ) {
 				$char = OAT_Character::find_by_uuid( $value );
 				if ( $char ) {
-					$display = esc_html( $char->character_name );
+					$char_display = $char->character_name;
+					$char_link_id = (int) $char->id;
 					if ( $char->chronicle_slug ) {
 						$chron_title = function_exists( 'owc_entity_get_title' )
 							? owc_entity_get_title( 'chronicle', $char->chronicle_slug )
 							: '';
-						$display .= ' <span style="color:#666;">(' . esc_html( $chron_title ? $chron_title : $char->chronicle_slug ) . ')</span>';
+						$char_display .= ' (' . ( $chron_title ? $chron_title : $char->chronicle_slug ) . ')';
 					}
-					echo $display;
-				} else {
-					echo esc_html( $value );
 				}
+			}
+			if ( ! $char_display ) {
+				$char_display = $value;
+			}
+			if ( $char_link_id ) {
+				$url = '/oat-registry-detail/?character_id=' . $char_link_id;
+				echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $char_display ) . ' &#x29C9;</a>';
 			} else {
-				echo esc_html( $value );
+				echo esc_html( $char_display );
 			}
 			break;
 
@@ -907,7 +950,7 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			break;
 	}
 
-	echo '</td></tr>';
+	echo '</div></div>';
 }
 
 

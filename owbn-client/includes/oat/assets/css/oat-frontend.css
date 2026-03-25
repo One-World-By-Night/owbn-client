@@ -11,6 +11,7 @@
 .oat-inbox-widget,
 .oat-submit-widget,
 .oat-entry-detail,
+.oat-entry-widget,
 .oat-activity-widget,
 .oat-frontend-form {
 	max-width: 960px;
@@ -396,6 +397,39 @@
 
 /* ── Form Fields (frontend context) ───────────────────────────────────────── */
 
+.oat-form-fields .oat-field {
+	margin-bottom: 16px;
+}
+
+.oat-form-fields .oat-field-label {
+	display: block;
+	font-size: 14px;
+	font-weight: 700;
+	color: #1d2327;
+	margin-bottom: 4px;
+}
+
+.oat-form-fields .oat-field-label label {
+	font-weight: inherit;
+}
+
+.oat-form-fields .oat-field-content {
+	display: block;
+}
+
+.oat-form-fields .oat-field-heading {
+	margin: 20px 0 8px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-form-fields .oat-field-heading h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
 .oat-frontend-form .oat-field-row {
 	margin-bottom: 16px;
 }
@@ -454,6 +488,70 @@
 	font-size: 13px;
 	margin-top: 4px;
 }
+
+/* ── Read-only form fields (entry detail) ─────────────────────────────────── */
+
+/* ── Read-only field display (div-based, stacked) ─────────────────────────── */
+
+.oat-fields-readonly {
+	margin: 0;
+	padding: 0;
+}
+
+.oat-ro-field {
+	padding: 8px 16px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.oat-ro-field:last-child {
+	border-bottom: none;
+}
+
+.oat-ro-label {
+	font-weight: 700;
+	font-size: 14px;
+	color: #1d2327;
+	margin-bottom: 2px;
+}
+
+.oat-ro-help {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	font-weight: normal;
+	margin-top: 1px;
+}
+
+.oat-ro-value {
+	font-size: 14px;
+	color: #3c434a;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+.oat-ro-value a {
+	color: #2271b1;
+}
+
+.oat-ro-heading {
+	padding: 16px 16px 4px;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-ro-heading h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Narrow screens: single-column meta grid */
+@media (max-width: 768px) {
+	.oat-entry-meta-grid {
+		grid-template-columns: 1fr !important;
+	}
+}
+
 
 /* Submit button */
 .oat-submit-btn {

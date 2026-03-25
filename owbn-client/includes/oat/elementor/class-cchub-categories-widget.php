@@ -42,41 +42,33 @@ class OWC_CCHub_Categories_Widget extends Widget_Base {
 		$browse_url  = $settings['browse_url'] ?: '/cchub/browse/';
 		$show_counts = ( $settings['show_counts'] ?? 'yes' ) === 'yes';
 
-		// Query categories from oat_entries
-		global $wpdb;
-		$entries = $wpdb->prefix . 'oat_entries';
-		$meta    = $wpdb->prefix . 'oat_entry_meta';
+		// Query categories via API wrapper (supports local + remote mode).
+		$categories = function_exists( 'owc_oat_get_cchub_categories' )
+			? owc_oat_get_cchub_categories()
+			: array();
 
-		$categories = $wpdb->get_results( "
-			SELECT m.meta_value as content_type, COUNT(DISTINCT e.id) as cnt
-			FROM {$entries} e
-			JOIN {$meta} m ON e.id = m.entry_id AND m.meta_key = 'content_type'
-			WHERE e.domain = 'custom_content' AND e.status = 'approved'
-			AND m.meta_value != ''
-			GROUP BY m.meta_value
-			ORDER BY m.meta_value ASC
-		" );
-
-		if ( empty( $categories ) ) {
+		if ( is_wp_error( $categories ) || empty( $categories ) ) {
 			echo '<p>No custom content found.</p>';
 			return;
 		}
 
 		$total = 0;
-		foreach ( $categories as $c ) { $total += (int) $c->cnt; }
+		foreach ( $categories as $c ) { $total += (int) ( is_array( $c ) ? $c['count'] : $c->cnt ); }
 
 		?>
 		<div class="cchub-categories">
 			<h3>Custom Content Database <?php if ( $show_counts ) : ?><span style="color:#888;">(<?php echo $total; ?> items)</span><?php endif; ?></h3>
 			<ul style="list-style:none;padding:0;margin:0;">
 				<?php foreach ( $categories as $cat ) :
-					$url = $browse_url . '?type=' . rawurlencode( $cat->content_type );
+					$cat_type  = is_array( $cat ) ? $cat['content_type'] : $cat->content_type;
+					$cat_count = is_array( $cat ) ? (int) $cat['count'] : (int) $cat->cnt;
+					$url = $browse_url . '?type=' . rawurlencode( $cat_type );
 				?>
 					<li style="padding:6px 0;border-bottom:1px solid #eee;">
 						<a href="<?php echo esc_url( $url ); ?>" style="text-decoration:none;display:flex;justify-content:space-between;">
-							<span><?php echo esc_html( $cat->content_type ); ?></span>
+							<span><?php echo esc_html( $cat_type ); ?></span>
 							<?php if ( $show_counts ) : ?>
-								<span style="color:#888;">(<?php echo (int) $cat->cnt; ?>)</span>
+								<span style="color:#888;">(<?php echo $cat_count; ?>)</span>
 							<?php endif; ?>
 						</a>
 					</li>

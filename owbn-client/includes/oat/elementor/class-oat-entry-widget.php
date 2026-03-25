@@ -320,10 +320,15 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$user_map          = isset( $bundle['user_map'] ) ? $bundle['user_map'] : array();
 		$relationships     = isset( $bundle['relationships'] ) ? $bundle['relationships'] : array( 'children' => array(), 'parents' => array() );
 
+		// Hydrate meta from entry-level fields so form rendering finds them.
+		$meta = $this->hydrate_meta_from_entry( $meta, $entry, $rules );
+
 		// Fetch form fields for read-only rendering.
+		// Prefer form_slug (specific form) over domain (merges all forms).
 		$domain_slug   = isset( $entry['domain'] ) ? $entry['domain'] : '';
-		$domain_fields = $domain_slug && function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $domain_slug, 'submit' ) : array();
-		$review_fields = $domain_slug && function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $domain_slug, 'review' ) : array();
+		$form_slug     = isset( $entry['form_slug'] ) && $entry['form_slug'] ? $entry['form_slug'] : $domain_slug;
+		$domain_fields = $form_slug && function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $form_slug, 'submit' ) : array();
+		$review_fields = $form_slug && function_exists( 'owc_oat_get_form_fields' ) ? owc_oat_get_form_fields( $form_slug, 'review' ) : array();
 		$current_step  = isset( $entry['current_step'] ) ? $entry['current_step'] : '';
 
 		$show_meta      = ( $settings['show_meta'] ?? 'yes' ) === 'yes';
@@ -340,6 +345,8 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching ); ?>
 
+			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map ); ?>
+
 			<?php echo $this->render_meta_grid( $entry, $user_map ); ?>
 
 			<?php if ( $show_meta ) : ?>
@@ -355,7 +362,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			<?php endif; ?>
 
 			<?php if ( $show_actions && ! empty( $available_actions ) ) : ?>
-				<?php echo $this->render_actions( $entry, $available_actions, $bbp_eligible, $review_fields, $meta, $current_step ); ?>
+				<?php echo $this->render_actions( $entry, $available_actions, $bbp_eligible, $review_fields, $meta, $current_step, $domain_fields ); ?>
 			<?php endif; ?>
 
 			<?php if ( $show_assignees && ! empty( $assignees ) ) : ?>
@@ -373,6 +380,149 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	}
 
 	// ── Private Render Helpers ────────────────────────────────────────────────
+
+	/**
+	 * Hydrate meta array with data from entry-level fields and related records.
+	 *
+	 * Migrated entries store character_id and chronicle_slug on the entry row,
+	 * not in meta. This bridges the gap so form field rendering finds the data.
+	 *
+	 * @param array $meta  Entry meta key/value map.
+	 * @param array $entry Entry data.
+	 * @param array $rules Linked regulation rules.
+	 * @return array Augmented meta.
+	 */
+	private function hydrate_meta_from_entry( $meta, $entry, $rules )
+	{
+		// Chronicle slug — entry row → meta.
+		if ( empty( $meta['chronicle_slug'] ) && ! empty( $entry['chronicle_slug'] ) ) {
+			$meta['chronicle_slug'] = $entry['chronicle_slug'];
+		}
+
+		// Character name — resolve from character_id if not already in meta.
+		if ( empty( $meta['character_name'] ) && ! empty( $entry['character_id'] ) ) {
+			$char_id = (int) $entry['character_id'];
+			if ( $char_id > 0 && class_exists( 'OAT_Character' ) ) {
+				$char = OAT_Character::find( $char_id );
+				if ( $char ) {
+					$meta['character_name'] = $char->character_name;
+					// Store character_id for linking.
+					$meta['_hydrated_character_id'] = $char_id;
+				}
+			} elseif ( $char_id > 0 && function_exists( 'owc_oat_get_character_registry' ) ) {
+				$char_data = owc_oat_get_character_registry( $char_id );
+				if ( ! is_wp_error( $char_data ) && ! empty( $char_data['character'] ) ) {
+					$c = $char_data['character'];
+					$meta['character_name'] = is_array( $c ) ? ( $c['character_name'] ?? '' ) : ( $c->character_name ?? '' );
+					$meta['_hydrated_character_id'] = $char_id;
+				}
+			}
+		}
+
+		// Character status — resolve from character record.
+		if ( empty( $meta['ru_sub_status'] ) && ! empty( $entry['character_id'] ) ) {
+			$char_id = (int) $entry['character_id'];
+			if ( $char_id > 0 && class_exists( 'OAT_Character' ) ) {
+				$char = isset( $char ) ? $char : OAT_Character::find( $char_id );
+				if ( $char && ! empty( $char->status ) ) {
+					$meta['ru_sub_status'] = $char->status;
+				}
+			}
+		}
+
+		// Regulation rules — form field expects JSON array of rule IDs.
+		if ( empty( $meta['regulation_rules'] ) && ! empty( $rules ) ) {
+			$rule_ids = array();
+			foreach ( $rules as $r ) {
+				$rid = is_array( $r ) ? ( $r['rule_id'] ?? $r['id'] ?? 0 ) : ( $r->rule_id ?? $r->id ?? 0 );
+				if ( $rid ) {
+					$rule_ids[] = (int) $rid;
+				}
+			}
+			if ( $rule_ids ) {
+				$meta['regulation_rules'] = wp_json_encode( $rule_ids );
+			}
+		}
+
+		// Coordinator display — derive from linked rules.
+		if ( empty( $meta['coordinator_display'] ) && ! empty( $rules ) ) {
+			$coordinators = array();
+			foreach ( $rules as $r ) {
+				$coord = is_array( $r ) ? ( $r['controlling_coordinator'] ?? $r['coordinator'] ?? '' ) : ( $r->controlling_coordinator ?? $r->coordinator ?? '' );
+				if ( $coord && ! in_array( $coord, $coordinators, true ) ) {
+					$coordinators[] = $coord;
+				}
+			}
+			if ( $coordinators ) {
+				$meta['coordinator_display'] = implode( ', ', $coordinators );
+			}
+		}
+
+		// Coordinator genre from entry row.
+		if ( empty( $meta['coordinator_display'] ) && ! empty( $entry['coordinator_genre'] ) ) {
+			$meta['coordinator_display'] = ucfirst( $entry['coordinator_genre'] );
+		}
+
+		// Title fallback from item_description (migrated R&U entries).
+		if ( empty( $meta['title'] ) && ! empty( $meta['item_description'] ) ) {
+			$meta['title'] = $meta['item_description'];
+		}
+
+		// R&U status — normalize to human-readable.
+		if ( ! empty( $meta['ru_status'] ) ) {
+			$meta['ru_status'] = ucfirst( $meta['ru_status'] );
+		}
+
+		return $meta;
+	}
+
+	/**
+	 * Render a banner when changes have been requested.
+	 *
+	 * Shows the most recent request_changes note prominently at the top.
+	 */
+	private function render_changes_requested_banner( $entry, $timeline, $user_map )
+	{
+		// Only show when entry is back at submit step (sent back for changes).
+		$step = isset( $entry['current_step'] ) ? $entry['current_step'] : '';
+		if ( 'submit' !== $step || empty( $timeline ) ) {
+			return '';
+		}
+
+		// Find the most recent request_changes event.
+		$note = '';
+		$actor = '';
+		$when = '';
+		foreach ( $timeline as $t ) {
+			$action = is_array( $t ) ? ( $t['action_type'] ?? '' ) : ( $t->action_type ?? '' );
+			if ( 'request_changes' === $action ) {
+				$note  = is_array( $t ) ? ( $t['note'] ?? '' ) : ( $t->note ?? '' );
+				$actor_id = is_array( $t ) ? ( $t['actor_id'] ?? 0 ) : ( $t->actor_id ?? 0 );
+				$actor = $this->resolve_user( $actor_id, $user_map );
+				$when  = is_array( $t ) ? ( $t['created_at'] ?? '' ) : ( $t->created_at ?? '' );
+				break; // Timeline is newest-first.
+			}
+		}
+
+		if ( ! $note ) {
+			return '';
+		}
+
+		ob_start();
+		?>
+		<div class="oat-entry-section" style="background:#fff8e1;border:1px solid #f0c36d;border-radius:4px;padding:16px;margin-bottom:16px;">
+			<strong style="display:block;margin-bottom:6px;color:#7a5700;">Changes Requested</strong>
+			<div style="font-size:14px;color:#3c434a;margin-bottom:8px;"><?php echo nl2br( esc_html( $note ) ); ?></div>
+			<div style="font-size:12px;color:#646970;">
+				<?php echo esc_html( $actor ); ?>
+				<?php if ( $when ) : ?>
+					&mdash; <?php echo esc_html( $when ); ?>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 	/**
 	 * Render entry header: title, status badge, watch toggle.
@@ -463,6 +613,29 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	{
 		ob_start();
 		if ( ! empty( $meta ) ) :
+
+		// Keys to suppress from extra meta display.
+		$hidden_keys = array(
+			'title', 'description', 'drupal_ru_id', 'drupal_subtype_id',
+			'drupal_cc_id', '_oat_record_snapshot', 'action_type',
+			'regulation_level', 'requires_coord',
+		);
+
+		// Friendly labels for meta keys shown in the extra table.
+		$label_map = array(
+			'item_description' => 'Item Description',
+			'ru_status'        => 'R&U Status',
+			'regulation_level' => 'Regulation Level',
+			'action_type'      => 'Action Type',
+			'content_name'     => 'Content Name',
+			'content_type'     => 'Content Type',
+			'xp_cost'          => 'XP Cost',
+			'blood_magic_category' => 'Blood Magic Category',
+			'met_rules'        => 'MET Mechanics',
+			'archival_date'    => 'Archival Date',
+			'source_hst'       => 'Source HST',
+			'new_or_existing'  => 'New or Existing',
+		);
 		?>
 		<div class="oat-entry-section">
 			<div class="oat-entry-section-header"><?php esc_html_e( 'Details', 'owbn-client' ); ?></div>
@@ -470,17 +643,46 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 				<div class="oat-frontend-form">
 					<?php owc_oat_render_fields_readonly( $domain_fields, $meta ); ?>
 				</div>
-			<?php else : ?>
-				<table class="oat-rules-table">
-					<tbody>
-						<?php foreach ( $meta as $key => $value ) : ?>
-							<tr>
-								<th style="width:200px;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ); ?></th>
-								<td><?php echo esc_html( is_array( $value ) ? implode( ', ', $value ) : $value ); ?></td>
-							</tr>
+				<?php
+				// Show extra meta not covered by form fields.
+				$form_keys = array();
+				foreach ( $domain_fields as $f ) {
+					if ( isset( $f['key'] ) ) { $form_keys[] = $f['key']; }
+				}
+				$extra = array();
+				foreach ( $meta as $key => $value ) {
+					if ( in_array( $key, $form_keys, true ) ) { continue; }
+					if ( in_array( $key, $hidden_keys, true ) ) { continue; }
+					if ( strpos( $key, '_oat_' ) === 0 ) { continue; }
+					if ( '' === $value || null === $value ) { continue; }
+					$extra[ $key ] = $value;
+				}
+				if ( ! empty( $extra ) ) : ?>
+					<div class="oat-fields-readonly">
+						<?php foreach ( $extra as $key => $value ) :
+							$lbl = isset( $label_map[ $key ] ) ? $label_map[ $key ] : ucwords( str_replace( '_', ' ', $key ) );
+						?>
+							<div class="oat-ro-field">
+								<div class="oat-ro-label"><?php echo esc_html( $lbl ); ?></div>
+								<div class="oat-ro-value"><?php echo esc_html( is_array( $value ) ? implode( ', ', $value ) : $value ); ?></div>
+							</div>
 						<?php endforeach; ?>
-					</tbody>
-				</table>
+					</div>
+				<?php endif; ?>
+			<?php else : ?>
+				<div class="oat-fields-readonly">
+						<?php foreach ( $meta as $key => $value ) :
+							if ( in_array( $key, $hidden_keys, true ) ) { continue; }
+							if ( strpos( $key, '_oat_' ) === 0 ) { continue; }
+							if ( '' === $value || null === $value ) { continue; }
+							$lbl = isset( $label_map[ $key ] ) ? $label_map[ $key ] : ucwords( str_replace( '_', ' ', $key ) );
+						?>
+							<div class="oat-ro-field">
+								<div class="oat-ro-label"><?php echo esc_html( $lbl ); ?></div>
+								<div class="oat-ro-value"><?php echo esc_html( is_array( $value ) ? implode( ', ', $value ) : $value ); ?></div>
+							</div>
+						<?php endforeach; ?>
+				</div>
 			<?php endif; ?>
 		</div>
 		<?php
@@ -553,12 +755,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	 * Field names: action_type, note (not oat_action/oat_note as in admin template).
 	 * Nonce is read from owc_oat_ajax.nonce in JS.
 	 */
-	private function render_actions( $entry, $available_actions, $bbp_eligible, $review_fields, $meta, $current_step )
+	private function render_actions( $entry, $available_actions, $bbp_eligible, $review_fields, $meta, $current_step, $domain_fields = array() )
 	{
 		ob_start();
 		$entry_id = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
 
 		$action_labels = array(
+			'submit'           => __( 'Resubmit', 'owbn-client' ),
 			'approve'          => __( 'Approve', 'owbn-client' ),
 			'deny'             => __( 'Deny', 'owbn-client' ),
 			'request_changes'  => __( 'Request Changes', 'owbn-client' ),
@@ -599,9 +802,35 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						continue;
 					}
 					$label       = isset( $action_labels[ $action_type ] ) ? $action_labels[ $action_type ] : ucfirst( $action_type );
-					$note_req    = ( 'bump' !== $action_type );
+					$note_req    = ( 'bump' !== $action_type && 'submit' !== $action_type );
 					$btn_class   = 'oat-action-btn oat-action-btn-' . esc_attr( $action_type );
 				?>
+					<?php if ( 'submit' === $action_type ) : ?>
+						<div class="oat-action-card" style="background:#f0f7ff;border:1px solid #2271b1;">
+							<form class="oat-action-form oat-resubmit-form">
+								<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
+								<input type="hidden" name="action_type" value="submit">
+								<strong style="display:block;margin-bottom:12px;font-size:15px;color:#2271b1;">
+									<?php esc_html_e( 'Edit & Resubmit', 'owbn-client' ); ?>
+								</strong>
+								<p style="margin:0 0 12px;font-size:13px;color:#646970;">
+									<?php esc_html_e( 'Update the fields below and resubmit your entry.', 'owbn-client' ); ?>
+								</p>
+								<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields' ) ) : ?>
+									<div class="oat-frontend-form" style="margin-bottom:12px;">
+										<?php owc_oat_render_fields( $domain_fields, $meta ); ?>
+									</div>
+								<?php endif; ?>
+								<textarea name="note"
+									placeholder="<?php esc_attr_e( 'Note about changes (optional)', 'owbn-client' ); ?>"
+									rows="2"
+									style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
+								<button type="submit" class="oat-action-btn oat-action-btn-approve">
+									<?php esc_html_e( 'Resubmit', 'owbn-client' ); ?>
+								</button>
+							</form>
+						</div>
+					<?php continue; endif; ?>
 					<div class="oat-action-card">
 						<form class="oat-action-form">
 							<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">

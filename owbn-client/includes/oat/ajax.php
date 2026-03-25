@@ -643,26 +643,14 @@ function owc_cchub_ajax_get_entry() {
         wp_send_json_error( 'No entry ID.' );
     }
 
-    global $wpdb;
-    $entries = $wpdb->prefix . 'oat_entries';
-    $meta    = $wpdb->prefix . 'oat_entry_meta';
-
-    $entry = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content'", $entry_id ) );
-    if ( ! $entry ) {
-        wp_send_json_error( 'Entry not found.' );
+    if ( ! function_exists( 'owc_oat_get_cchub_entry' ) ) {
+        wp_send_json_error( 'ccHub API not available.' );
     }
 
-    $meta_rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$meta} WHERE entry_id = %d", $entry_id ) );
-    $data = array(
-        'id'               => (int) $entry->id,
-        'coordinator_genre' => $entry->coordinator_genre,
-        'chronicle_slug'   => $entry->chronicle_slug,
-    );
-    foreach ( $meta_rows as $m ) {
-        if ( strpos( $m->meta_key, '_oat_' ) === 0 || $m->meta_key === 'drupal_cc_id' ) {
-            continue;
-        }
-        $data[ $m->meta_key ] = $m->meta_value;
+    $data = owc_oat_get_cchub_entry( $entry_id );
+
+    if ( is_wp_error( $data ) ) {
+        wp_send_json_error( $data->get_error_message() );
     }
 
     wp_send_json_success( $data );
