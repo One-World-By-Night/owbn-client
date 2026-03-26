@@ -37,7 +37,12 @@ function owbn_gateway_respond( $data ) {
         );
     }
 
-    return new WP_REST_Response( $data, 200 );
+    $response = new WP_REST_Response( $data, 200 );
+    // Prevent SiteGround/nginx proxy from caching API responses.
+    $response->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
+    $response->header( 'Pragma', 'no-cache' );
+    $response->header( 'Expires', '0' );
+    return $response;
 }
 
 /**
