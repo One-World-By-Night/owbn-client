@@ -80,23 +80,33 @@ function owbn_gateway_oat_inbox( $request ) {
     $body    = $request->get_json_params();
     $domain  = isset( $body['domain'] ) ? sanitize_text_field( $body['domain'] ) : '';
 
-    // Get assignments (entries where user is a pending assignee).
+    // Get assignments (entries where user is a pending assignee), deduped by entry_id.
     $assignments = OAT_Assignee::inbox( $user_id );
     $assigned_entries = array();
     $user_ids = array();
+    $seen_entry_ids = array();
 
     foreach ( $assignments as $assignment ) {
-        $entry = OAT_Entry::find( (int) $assignment->entry_id );
+        $eid = (int) $assignment->entry_id;
+        if ( isset( $seen_entry_ids[ $eid ] ) ) {
+            continue;
+        }
+        $entry = OAT_Entry::find( $eid );
         if ( ! $entry ) {
             continue;
         }
-        // Domain filter.
         if ( $domain !== '' && $entry->domain !== $domain ) {
             continue;
         }
+        $seen_entry_ids[ $eid ] = true;
         $serialized = owbn_gateway_oat_serialize_entry( $entry );
         $serialized['assignment_step']   = $assignment->step;
         $serialized['assignment_status'] = $assignment->status;
+        $serialized['title'] = '';
+        if ( class_exists( 'OAT_Entry_Meta' ) ) {
+            $title = OAT_Entry_Meta::get( $eid, 'title' );
+            $serialized['title'] = $title ?: '';
+        }
         $assigned_entries[] = $serialized;
         $user_ids[] = (int) $entry->originator_id;
     }

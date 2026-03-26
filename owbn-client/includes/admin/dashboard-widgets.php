@@ -412,7 +412,7 @@ function owc_render_oat_inbox_widget() {
 				echo '</li>';
 				break;
 			}
-			$eid   = (int) ( $a['entry_id'] ?? 0 );
+			$eid   = (int) ( $a['entry_id'] ?? $a['id'] ?? 0 );
 			$title = $a['title'] ?? $a['domain_label'] ?? '';
 			$step  = $a['current_step'] ?? '';
 			$url   = $entry_url . '?oat_entry=' . $eid;
@@ -449,7 +449,7 @@ function owc_render_oat_inbox_widget() {
 				echo '</li>';
 				break;
 			}
-			$eid    = (int) ( $e['entry_id'] ?? 0 );
+			$eid    = (int) ( $e['entry_id'] ?? $e['id'] ?? 0 );
 			$status = ucfirst( str_replace( '_', ' ', $e['status'] ?? '' ) );
 			$domain = $e['domain_label'] ?? $e['domain'] ?? '';
 			$url    = $entry_url . '?oat_entry=' . $eid;
