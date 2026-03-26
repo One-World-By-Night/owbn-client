@@ -143,6 +143,9 @@ function owbn_gateway_oat_submit( $request ) {
     // Attach regulation rules.
     if ( isset( $body['rules'] ) && is_array( $body['rules'] ) ) {
         foreach ( $body['rules'] as $rule_id ) {
+            if ( is_array( $rule_id ) ) {
+                continue; // Skip free-text entries.
+            }
             $rule_id = (int) $rule_id;
             if ( $rule_id > 0 ) {
                 OAT_Entry_Rule::create( $entry_id, $rule_id );

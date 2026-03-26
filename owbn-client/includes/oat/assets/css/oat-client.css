@@ -155,6 +155,11 @@
     margin-left: 5px;
     font-weight: bold;
 }
+.oat-rule-tag.oat-rule-freetext {
+    background: #fff8e1;
+    border-color: #ffe082;
+    font-style: italic;
+}
 
 /* User picker (reassign/delegate) */
 .oat-user-picker {

@@ -139,11 +139,15 @@ class OWC_OAT_Elementor_Loader
 
 		// Localize nonce + AJAX URL for frontend (mirrors admin.php localization).
 		$current_user = wp_get_current_user();
+		$is_super = $current_user && $current_user->ID && function_exists( 'owc_oat_is_super_user' )
+			? owc_oat_is_super_user( $current_user->ID )
+			: false;
 		wp_localize_script( 'owc-oat-frontend', 'owc_oat_ajax', array(
 			'url'             => admin_url( 'admin-ajax.php' ),
 			'nonce'           => wp_create_nonce( 'owc_oat_nonce' ),
 			'currentUserName' => $current_user && $current_user->ID ? $current_user->display_name : '',
 			'currentUserId'   => $current_user && $current_user->ID ? $current_user->ID : 0,
+			'isSuperUser'     => $is_super ? '1' : '0',
 		) );
 
 		// Register regulation picker for submit form widget.

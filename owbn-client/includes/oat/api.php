@@ -771,6 +771,9 @@ function owc_oat_submit( $data ) {
         // Attach regulation rules.
         if ( ! empty( $data['rules'] ) && is_array( $data['rules'] ) ) {
             foreach ( $data['rules'] as $rule_id ) {
+                if ( is_array( $rule_id ) ) {
+                    continue; // Skip free-text entries.
+                }
                 $rule_id = (int) $rule_id;
                 if ( $rule_id > 0 ) {
                     OAT_Entry_Rule::create( $entry_id, $rule_id );
@@ -1061,6 +1064,12 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
         if ( $entry->current_step === 'submit' && $entry->status === 'pending' ) {
             $actions[] = 'submit';
         }
+        // Self-approve: originator at archivist step with self-approve privilege.
+        if ( $entry->current_step === 'archivist' && ! in_array( 'approve', $actions, true ) && owc_oat_can_self_approve( $user_id ) ) {
+            $actions[] = 'approve';
+            $actions[] = 'deny';
+            $actions[] = 'request_changes';
+        }
     }
 
     if ( class_exists( 'OAT_Authorization' ) && OAT_Authorization::check( OAT_Constants::CAP_EXEC_OVERSIGHT ) ) {
@@ -1138,6 +1147,51 @@ function owc_oat_is_archivist_oversight( $user_roles ) {
         }
     }
     return false;
+}
+
+/**
+ * Check if a user qualifies as a "super user" for fast-track submissions.
+ *
+ * Super users: WP Admin, exec/archivist/coordinator, exec/web/coordinator, exec/admin/coordinator.
+ *
+ * @param int $user_id WordPress user ID.
+ * @return bool
+ */
+function owc_oat_is_super_user( $user_id ) {
+    $user = get_userdata( $user_id );
+    if ( $user && $user->has_cap( 'manage_options' ) ) {
+        return true;
+    }
+    $roles = owc_oat_get_user_asc_roles( $user_id );
+    $super_roles = array(
+        'exec/archivist/coordinator',
+        'exec/web/coordinator',
+        'exec/admin/coordinator',
+    );
+    foreach ( $super_roles as $sr ) {
+        if ( in_array( $sr, $roles, true ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Check if a user can self-approve their own fast-tracked entries.
+ *
+ * Only WP Admin and exec/archivist/coordinator can self-approve.
+ * exec/web and exec/admin can fast-track but NOT self-approve.
+ *
+ * @param int $user_id WordPress user ID.
+ * @return bool
+ */
+function owc_oat_can_self_approve( $user_id ) {
+    $user = get_userdata( $user_id );
+    if ( $user && $user->has_cap( 'manage_options' ) ) {
+        return true;
+    }
+    $roles = owc_oat_get_user_asc_roles( $user_id );
+    return in_array( 'exec/archivist/coordinator', $roles, true );
 }
 
 /**
@@ -1290,6 +1344,10 @@ function owc_oat_set_regulation_meta( $entry_id, $rule_ids ) {
     $highest = 0;
 
     foreach ( $rule_ids as $rule_id ) {
+        // Skip free-text entries (super user): only linked rules affect routing.
+        if ( is_array( $rule_id ) ) {
+            continue;
+        }
         $rule = OAT_Regulation_Rule::find( (int) $rule_id );
         if ( ! $rule ) {
             continue;

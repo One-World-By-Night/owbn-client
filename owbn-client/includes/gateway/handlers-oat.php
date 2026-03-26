@@ -432,6 +432,12 @@ function owbn_gateway_oat_get_available_actions( $entry, $user_id ) {
         if ( $entry->current_step === 'submit' && $entry->status === 'pending' ) {
             $actions[] = 'submit';
         }
+        // Self-approve: originator at archivist step with self-approve privilege.
+        if ( $entry->current_step === 'archivist' && ! $is_assignee && function_exists( 'owc_oat_can_self_approve' ) && owc_oat_can_self_approve( $user_id ) ) {
+            $actions[] = 'approve';
+            $actions[] = 'deny';
+            $actions[] = 'request_changes';
+        }
     }
 
     // Assignee actions (review step).

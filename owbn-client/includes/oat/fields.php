@@ -866,22 +866,27 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 			break;
 
 		case 'rule_picker':
-			$rule_ids = is_array( $value ) ? $value : ( is_string( $value ) ? json_decode( $value, true ) : array() );
-			if ( is_array( $rule_ids ) && ! empty( $rule_ids ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+			$rule_items = is_array( $value ) ? $value : ( is_string( $value ) ? json_decode( $value, true ) : array() );
+			if ( is_array( $rule_items ) && ! empty( $rule_items ) ) {
 				echo '<ul class="oat-rule-list">';
-				foreach ( $rule_ids as $rid ) {
-					$rule = OAT_Regulation_Rule::find( (int) $rid );
-					if ( $rule ) {
-						$rlabel = sprintf( '%s — %s', $rule->genre, $rule->category );
-						if ( $rule->condition_name ) {
-							$rlabel .= ' — ' . $rule->condition_name;
+				foreach ( $rule_items as $item ) {
+					if ( is_array( $item ) && isset( $item['text'] ) ) {
+						// Free-text rule entry.
+						echo '<li><em>' . esc_html( $item['text'] ) . '</em></li>';
+					} elseif ( class_exists( 'OAT_Regulation_Rule' ) ) {
+						$rule = OAT_Regulation_Rule::find( (int) $item );
+						if ( $rule ) {
+							$rlabel = sprintf( '%s — %s', $rule->genre, $rule->category );
+							if ( $rule->condition_name ) {
+								$rlabel .= ' — ' . $rule->condition_name;
+							}
+							echo '<li>' . esc_html( $rlabel ) . '</li>';
 						}
-						echo '<li>' . esc_html( $rlabel ) . '</li>';
 					}
 				}
 				echo '</ul>';
 			} else {
-				echo esc_html( is_array( $rule_ids ) ? implode( ', ', $rule_ids ) : $value );
+				echo esc_html( is_array( $rule_items ) ? implode( ', ', $rule_items ) : $value );
 			}
 			break;
 
@@ -1022,11 +1027,21 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 			if ( is_string( $raw_value ) ) {
 				$decoded = json_decode( $raw_value, true );
 				if ( is_array( $decoded ) ) {
-					return wp_json_encode( array_map( 'absint', $decoded ) );
+					$raw_value = $decoded;
 				}
 			}
 			if ( is_array( $raw_value ) ) {
-				return wp_json_encode( array_map( 'absint', $raw_value ) );
+				$sanitized = array();
+				foreach ( $raw_value as $item ) {
+					if ( is_array( $item ) && isset( $item['text'] ) ) {
+						// Free-text rule (super user): sanitize the text.
+						$sanitized[] = array( 'text' => sanitize_text_field( $item['text'] ) );
+					} else {
+						// Numeric rule ID.
+						$sanitized[] = absint( $item );
+					}
+				}
+				return wp_json_encode( $sanitized );
 			}
 			return '[]';
 
