@@ -21,9 +21,12 @@ function owc_oat_page_submit() {
         check_admin_referer( 'owc_oat_submit' );
 
         $domain_slug = sanitize_text_field( $_POST['oat_domain'] );
+        $form_slug   = ! empty( $_POST['oat_form_slug'] ) ? sanitize_text_field( $_POST['oat_form_slug'] ) : '';
 
-        // Fetch field definitions for this domain to drive sanitization.
-        $fields = owc_oat_get_form_fields( $domain_slug, 'submit' );
+        // Fetch field definitions — prefer form-specific fields, fall back to domain.
+        $fields = $form_slug
+            ? owc_oat_get_form_fields( $form_slug, 'submit' )
+            : owc_oat_get_form_fields( $domain_slug, 'submit' );
 
         // Sanitize meta using field-aware pipeline.
         if ( ! empty( $fields ) ) {
@@ -48,10 +51,11 @@ function owc_oat_page_submit() {
         if ( empty( $error ) ) {
             // Build submission data.
             $submit_data = array(
-                'domain' => $domain_slug,
-                'meta'   => $meta,
-                'note'   => '',
-                'rules'  => array(),
+                'domain'    => $domain_slug,
+                'form_slug' => $form_slug,
+                'meta'      => $meta,
+                'note'      => '',
+                'rules'     => array(),
             );
 
             // Promote chronicle_slug and coordinator_genre from meta to entry-level fields.

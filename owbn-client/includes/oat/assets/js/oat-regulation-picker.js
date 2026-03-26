@@ -48,7 +48,7 @@
                     if (isSuperUser && request.term.length >= 2) {
                         data.push({
                             id: null,
-                            label: '\u270E Free text: ' + request.term,
+                            label: 'Add: ' + request.term,
                             value: request.term,
                             freeText: true
                         });
@@ -106,7 +106,7 @@
             $selected.empty();
 
             selectedRules.forEach(function(rule, idx) {
-                var displayLabel = rule.freeText ? '\u270E ' + rule.label : rule.label;
+                var displayLabel = rule.label;
                 var $tag = $('<span class="oat-rule-tag"></span>')
                     .text(displayLabel + ' ');
 

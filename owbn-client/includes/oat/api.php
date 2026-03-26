@@ -768,6 +768,37 @@ function owc_oat_submit( $data ) {
             }
         }
 
+        // Resolve character UUID → character_id and coordinator_genre on the entry.
+        if ( class_exists( 'OAT_Character' ) ) {
+            $char_uuid = '';
+            // Check common character field keys.
+            foreach ( array( 'character_name', 'character' ) as $ck ) {
+                if ( ! empty( $meta[ $ck ] ) ) {
+                    $char_uuid = $meta[ $ck ];
+                    break;
+                }
+            }
+            if ( $char_uuid ) {
+                $char = OAT_Character::find_by_uuid( $char_uuid );
+                if ( $char ) {
+                    $update_entry = array();
+                    if ( empty( $entry_data['character_id'] ) ) {
+                        $update_entry['character_id'] = (int) $char->id;
+                    }
+                    if ( empty( $entry_data['coordinator_genre'] ) && ! empty( $char->creature_type ) ) {
+                        $update_entry['coordinator_genre'] = strtolower( $char->creature_type );
+                    }
+                    if ( ! empty( $update_entry ) ) {
+                        OAT_Entry::update( $entry_id, $update_entry );
+                    }
+                    // Also store character_id in meta for downstream use.
+                    if ( empty( $meta['character_id'] ) ) {
+                        $meta['character_id'] = (string) $char->id;
+                    }
+                }
+            }
+        }
+
         // Attach regulation rules.
         if ( ! empty( $data['rules'] ) && is_array( $data['rules'] ) ) {
             foreach ( $data['rules'] as $rule_id ) {
@@ -862,13 +893,18 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
  * @param string $watch_action 'add' or 'remove'.
  * @return array|WP_Error { entry_id, watching }
  */
-function owc_oat_toggle_watch( $entry_id, $watch_action = 'add' ) {
+function owc_oat_toggle_watch( $entry_id, $watch_action = 'toggle' ) {
     if ( owc_oat_is_local() ) {
         $user_id = get_current_user_id();
 
         $entry = OAT_Entry::find( $entry_id );
         if ( ! $entry ) {
             return new WP_Error( 'oat_not_found', 'Entry not found.', array( 'status' => 404 ) );
+        }
+
+        // Auto-detect: if already watching, remove; otherwise add.
+        if ( $watch_action === 'toggle' ) {
+            $watch_action = OAT_Watcher::is_watching( $entry_id, $user_id ) ? 'remove' : 'add';
         }
 
         if ( $watch_action === 'remove' ) {

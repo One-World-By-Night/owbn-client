@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.22.0
+Stable tag: 4.22.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,7 +114,7 @@ The plugin uses WordPress transients to cache API responses. The default TTL is 
 
 == Changelog ==
 
-= 4.22.0 =
+= 4.22.9 =
 * Fix: Debounce action form submissions to prevent duplicate assignees/timeline
 
 = 4.20.9 =

@@ -574,7 +574,14 @@ function owc_oat_ajax_submit_entry_frontend() {
         if ( in_array( $key, $skip, true ) ) {
             continue;
         }
+        // Strip oat_meta_ prefix so keys match domain field names.
         $clean_key = sanitize_key( $key );
+        if ( strpos( $clean_key, 'oat_meta_' ) === 0 ) {
+            $clean_key = substr( $clean_key, 9 );
+        }
+        if ( '' === $clean_key ) {
+            continue;
+        }
         if ( is_array( $value ) ) {
             $meta[ $clean_key ] = array_map( 'sanitize_text_field', array_map( 'wp_unslash', $value ) );
         } else {
@@ -588,6 +595,13 @@ function owc_oat_ajax_submit_entry_frontend() {
     );
     if ( $form_slug ) {
         $data['form_slug'] = $form_slug;
+    }
+    // Promote chronicle_slug and coordinator_genre to entry-level fields.
+    if ( ! empty( $meta['chronicle_slug'] ) ) {
+        $data['chronicle_slug'] = $meta['chronicle_slug'];
+    }
+    if ( ! empty( $meta['coordinator_genre'] ) ) {
+        $data['coordinator_genre'] = $meta['coordinator_genre'];
     }
 
     $result = owc_oat_submit( $data );

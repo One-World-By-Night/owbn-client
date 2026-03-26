@@ -445,7 +445,8 @@
                                 label: d.character_name + ' (' + d.chronicle_title + ') — ' + d.player_name,
                                 value: d.character_name,
                                 uuid: d.uuid,
-                                pc_npc: d.pc_npc || 'pc'
+                                pc_npc: d.pc_npc || 'pc',
+                                chronicle_slug: d.chronicle_slug || ''
                             });
                         }
                         response(items);
@@ -454,11 +455,11 @@
                 minLength: 2,
                 select: function(event, ui) {
                     event.preventDefault();
-                    selectCharacter(ui.item.uuid, ui.item.value, ui.item.pc_npc);
+                    selectCharacter(ui.item.uuid, ui.item.value, ui.item.pc_npc, ui.item.chronicle_slug);
                 }
             });
 
-            function selectCharacter(uuid, name, pcNpc) {
+            function selectCharacter(uuid, name, pcNpc, chronicleSlug) {
                 $hidden.val(uuid).trigger('change');
                 $selName.text(name);
                 $search.hide().val('');
@@ -466,6 +467,30 @@
                 // Set pc_npc hidden meta field.
                 var $pcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
                 if ($pcNpcVal.length) $pcNpcVal.val(pcNpc || '');
+                // Auto-fill chronicle from character's home chronicle.
+                if (chronicleSlug) {
+                    var $chronHidden = $('input[type="hidden"][name="oat_meta_chronicle_slug"]');
+                    var $chronSelect = $('select[name="oat_meta_chronicle_slug"]');
+                    if ($chronSelect.length) {
+                        // Select mode: check if value exists as option.
+                        if ($chronSelect.find('option[value="' + chronicleSlug + '"]').length) {
+                            $chronSelect.val(chronicleSlug).trigger('change');
+                        } else {
+                            // Chronicle not in user's list — inject it and select.
+                            $chronSelect.append('<option value="' + chronicleSlug + '">' + chronicleSlug + '</option>');
+                            $chronSelect.val(chronicleSlug).trigger('change');
+                        }
+                    } else if ($chronHidden.length) {
+                        // Autocomplete mode: set hidden value + update display.
+                        $chronHidden.val(chronicleSlug).trigger('change');
+                        var $chronWrap = $chronHidden.closest('.oat-chronicle-autocomplete-wrap');
+                        if ($chronWrap.length) {
+                            $chronWrap.find('.oat-chronicle-search').hide();
+                            $chronWrap.find('.oat-chronicle-selected-name').text(chronicleSlug);
+                            $chronWrap.find('.oat-chronicle-selected').show();
+                        }
+                    }
+                }
             }
 
             // ── Clear selection ──

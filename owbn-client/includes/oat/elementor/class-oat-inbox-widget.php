@@ -266,7 +266,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 			<!-- Panels -->
 			<?php echo $this->render_panel( 'assigned', $assignments, $detail_base, 'assigned' === $default_tab, $per_page, true, $user_map ); ?>
 			<?php echo $this->render_panel( 'submissions', $my_entries, $detail_base, 'submissions' === $default_tab, $per_page, true, $user_map ); ?>
-			<?php echo $this->render_panel( 'watching', $watched, $detail_base, 'watching' === $default_tab, $per_page, false, $user_map ); ?>
+			<?php echo $this->render_panel( 'watching', $watched, $detail_base, 'watching' === $default_tab, $per_page, true, $user_map ); ?>
 
 		</div>
 		<?php

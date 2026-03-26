@@ -310,6 +310,14 @@ function owc_oat_render_field( $field, $value = '' ) {
 			$role_scopes_chron = isset( $attrs['role_scopes'] ) ? $attrs['role_scopes'] : array();
 			$chron_roles       = isset( $attrs['roles'] ) ? $attrs['roles'] : array();
 
+			// Super users see all chronicles and don't need required (character picker auto-fills).
+			$is_super_chron = function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( get_current_user_id() );
+			if ( $is_super_chron ) {
+				$chron_roles = array( '*' );
+				$required    = false;
+				$req_star    = '';
+			}
+
 			// When filter_by is set, always render with all chronicles (*) so JS can filter.
 			if ( $filter_by_chron && ! empty( $role_scopes_chron ) ) {
 				$chron_roles = array( '*' );
@@ -320,6 +328,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<div class="oat-field-content">';
 			if ( $filter_by_chron ) {
 				echo '<div class="oat-chronicle-filter-wrap" data-filter-by="' . esc_attr( $filter_by_chron ) . '" data-role-scopes="' . esc_attr( wp_json_encode( $role_scopes_chron ) ) . '">';
+			}
+			if ( $is_super_chron ) {
+				echo '<p class="description"><em>Auto-filled from selected character.</em></p>';
 			}
 			if ( function_exists( 'owc_asc_render_chronicle_picker' ) ) {
 				// Get user's restricted entries for non-wildcard scopes.
@@ -871,8 +882,8 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 				echo '<ul class="oat-rule-list">';
 				foreach ( $rule_items as $item ) {
 					if ( is_array( $item ) && isset( $item['text'] ) ) {
-						// Free-text rule entry.
-						echo '<li><em>' . esc_html( $item['text'] ) . '</em></li>';
+						// Free-text rule entry — same style as linked rules.
+						echo '<li>' . esc_html( $item['text'] ) . '</li>';
 					} elseif ( class_exists( 'OAT_Regulation_Rule' ) ) {
 						$rule = OAT_Regulation_Rule::find( (int) $item );
 						if ( $rule ) {
