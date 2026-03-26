@@ -45,6 +45,85 @@ function owc_pid_show_field($user) {
     <?php
 }
 
+// ── ASC Roles Display + Refresh ──────────────────────────────────────────────
+
+add_action( 'show_user_profile', 'owc_asc_profile_roles_section' );
+add_action( 'edit_user_profile', 'owc_asc_profile_roles_section' );
+
+function owc_asc_profile_roles_section( $user ) {
+	if ( ! get_option( owc_option_name( 'asc_enabled' ), false ) ) {
+		return;
+	}
+
+	// Handle refresh action.
+	$is_own_profile = ( $user->ID === get_current_user_id() );
+	$can_refresh    = $is_own_profile || current_user_can( 'manage_options' );
+	$refreshed      = false;
+
+	if ( $can_refresh && ! empty( $_GET['owc_asc_profile_refresh'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ?? '' ) ), 'owc_asc_profile_refresh_' . $user->ID ) ) {
+		if ( function_exists( 'owc_asc_cache_delete' ) ) {
+			owc_asc_cache_delete( $user->ID );
+		}
+		if ( function_exists( 'owc_asc_refresh_user_roles' ) ) {
+			owc_asc_refresh_user_roles( $user->ID );
+		}
+		$refreshed = true;
+	}
+
+	// Get roles.
+	$roles = array();
+	if ( function_exists( 'owc_asc_cache_get' ) ) {
+		$roles = owc_asc_cache_get( $user->ID );
+	}
+	if ( ! is_array( $roles ) || empty( $roles ) ) {
+		// Try fresh fetch.
+		if ( function_exists( 'owc_asc_get_user_roles' ) ) {
+			$result = owc_asc_get_user_roles( 'oat', $user->user_email );
+			if ( ! is_wp_error( $result ) && isset( $result['roles'] ) ) {
+				$roles = $result['roles'];
+			}
+		}
+	}
+
+	$refresh_url = wp_nonce_url(
+		add_query_arg( 'owc_asc_profile_refresh', '1' ),
+		'owc_asc_profile_refresh_' . $user->ID
+	);
+	?>
+	<h3><?php esc_html_e( 'AccessSchema Roles', 'owbn-client' ); ?></h3>
+	<?php if ( $refreshed ) : ?>
+		<div class="notice notice-success inline"><p><?php esc_html_e( 'Roles refreshed.', 'owbn-client' ); ?></p></div>
+	<?php endif; ?>
+	<table class="form-table">
+		<tr>
+			<th><?php esc_html_e( 'Current Roles', 'owbn-client' ); ?></th>
+			<td>
+				<?php if ( ! empty( $roles ) ) : ?>
+					<ul style="margin:0;padding:0;list-style:none;">
+						<?php foreach ( $roles as $role ) : ?>
+							<li><code><?php echo esc_html( $role ); ?></code></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php else : ?>
+					<em><?php esc_html_e( 'No roles found.', 'owbn-client' ); ?></em>
+				<?php endif; ?>
+			</td>
+		</tr>
+		<?php if ( $can_refresh ) : ?>
+		<tr>
+			<th></th>
+			<td>
+				<a href="<?php echo esc_url( $refresh_url ); ?>" class="button">
+					<?php esc_html_e( 'Refresh Roles', 'owbn-client' ); ?>
+				</a>
+				<p class="description"><?php esc_html_e( 'Clears cached roles and fetches fresh from the server.', 'owbn-client' ); ?></p>
+			</td>
+		</tr>
+		<?php endif; ?>
+	</table>
+	<?php
+}
+
 // ── Save (Server Mode Only) ──────────────────────────────────────────────────
 
 add_action('personal_options_update', 'owc_pid_save_field');
