@@ -172,14 +172,28 @@ function owc_render_my_cc_widget() {
 		echo '</ul>';
 	}
 
-	// ── Exec Roles ───────────────────────────────────────────────────
+	// ── Exec Roles (map to coordinator posts) ────────────────────────
 	if ( ! empty( $my_exec ) ) {
 		$has_content = true;
 		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Executive Team', 'owbn-client' ) . '</h4>';
 		echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
 		foreach ( $my_exec as $slug => $label ) {
-			echo '<li style="padding:4px 0;border-bottom:1px solid #f0f0f1;">';
-			echo '<code>exec/' . esc_html( $label ) . '/coordinator</code>';
+			$title = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'coordinator', $slug ) : '';
+			$display = $title ?: ucfirst( $label );
+			$view_url = '/coordinator-detail/?slug=' . rawurlencode( $slug );
+
+			echo '<li style="padding:4px 0;border-bottom:1px solid #f0f0f1;display:flex;align-items:center;justify-content:space-between;gap:8px;">';
+			echo '<span>' . esc_html( $display ) . ' <span style="color:#646970;font-size:12px;">(Exec)</span></span>';
+			echo '<span style="white-space:nowrap;">';
+			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-client' ) . '</a>';
+			if ( $coord_site ) {
+				$post_id = owc_cc_widget_get_post_id( 'coordinator', $slug );
+				if ( $post_id ) {
+					$edit_url = $coord_site . 'wp-admin/post.php?post=' . $post_id . '&action=edit';
+					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-client' ) . ' &#x29C9;</a>';
+				}
+			}
+			echo '</span>';
 			echo '</li>';
 		}
 		echo '</ul>';
@@ -297,10 +311,12 @@ function owc_render_oat_my_characters_widget() {
 		return;
 	}
 
-	$registry_url = '/oat-registry-detail/';
-	if ( function_exists( 'owc_oat_localize_url' ) ) {
-		$registry_url = owc_oat_localize_url( $registry_url );
+	// On remote OAT sites, link to archivist for registry pages.
+	$oat_site_base = '';
+	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
+		$oat_site_base = owc_cc_widget_site_url( 'oat' );
 	}
+	$registry_url = $oat_site_base . 'oat-registry-detail/';
 
 	$status_colors = array(
 		'active'   => '#00a32a',
@@ -375,15 +391,13 @@ function owc_render_oat_inbox_widget() {
 	$my_entries  = $inbox['my_entries'] ?? array();
 	$user_map    = $inbox['user_map'] ?? array();
 
-	$entry_url = '/oat-entry/';
-	if ( function_exists( 'owc_oat_localize_url' ) ) {
-		$entry_url = owc_oat_localize_url( $entry_url );
+	// On remote OAT sites, link to archivist for OAT pages.
+	$oat_site_base = '';
+	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
+		$oat_site_base = owc_cc_widget_site_url( 'oat' );
 	}
-
-	$inbox_url = '/oat-inbox/';
-	if ( function_exists( 'owc_oat_localize_url' ) ) {
-		$inbox_url = owc_oat_localize_url( $inbox_url );
-	}
+	$entry_url = $oat_site_base . 'oat-entry/';
+	$inbox_url = $oat_site_base . 'oat-inbox/';
 
 	$has_content = false;
 
