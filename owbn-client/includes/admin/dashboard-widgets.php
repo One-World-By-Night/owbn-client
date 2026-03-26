@@ -345,7 +345,7 @@ function owc_render_oat_my_characters_widget() {
 		echo '<li style="padding:6px 0;border-bottom:1px solid #f0f0f1;">';
 		echo '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">';
 		echo '<div>';
-		echo '<a href="' . esc_url( $detail_url ) . '" style="text-decoration:none;font-weight:500;">' . esc_html( $name ) . '</a>';
+		echo '<a href="' . esc_url( $detail_url ) . '" target="_blank" style="text-decoration:none;font-weight:500;">' . esc_html( $name ) . ' &#x29C9;</a>';
 		if ( $chron_title || $slug ) {
 			echo ' <span style="color:#646970;font-size:12px;">(' . esc_html( $chron_title ?: $slug ) . ')</span>';
 		}
@@ -361,6 +361,12 @@ function owc_render_oat_my_characters_widget() {
 		echo '</li>';
 	}
 	echo '</ul>';
+
+	// Footer links.
+	echo '<p style="margin:8px 0 0;display:flex;gap:12px;">';
+	echo '<a href="/oat-registry/" target="_blank">' . esc_html__( 'Full Registry', 'owbn-client' ) . ' &#x29C9;</a>';
+	echo '<a href="/oat-submit/" target="_blank">' . esc_html__( 'New Submission', 'owbn-client' ) . ' &#x29C9;</a>';
+	echo '</p>';
 }
 
 
@@ -412,7 +418,7 @@ function owc_render_oat_inbox_widget() {
 			$url   = $entry_url . '?oat_entry=' . $eid;
 
 			echo '<li style="padding:4px 0;border-bottom:1px solid #f0f0f1;display:flex;justify-content:space-between;align-items:center;gap:8px;">';
-			echo '<a href="' . esc_url( $url ) . '" style="text-decoration:none;font-size:13px;">';
+			echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:none;font-size:13px;">';
 			echo '#' . $eid . ' ' . esc_html( $title ?: $a['domain'] ?? '' );
 			echo '</a>';
 			if ( $step ) {
@@ -449,7 +455,7 @@ function owc_render_oat_inbox_widget() {
 			$url    = $entry_url . '?oat_entry=' . $eid;
 
 			echo '<li style="padding:4px 0;border-bottom:1px solid #f0f0f1;display:flex;justify-content:space-between;align-items:center;gap:8px;">';
-			echo '<a href="' . esc_url( $url ) . '" style="text-decoration:none;font-size:13px;">';
+			echo '<a href="' . esc_url( $url ) . '" target="_blank" style="text-decoration:none;font-size:13px;">';
 			echo '#' . $eid . ' ' . esc_html( $domain );
 			echo '</a>';
 			echo '<span style="font-size:11px;color:#646970;">' . esc_html( $status ) . '</span>';
@@ -464,5 +470,5 @@ function owc_render_oat_inbox_widget() {
 	}
 
 	// Link to full inbox.
-	echo '<p style="margin:8px 0 0;"><a href="' . esc_url( $inbox_url ) . '">' . esc_html__( 'View Full Inbox', 'owbn-client' ) . ' &rarr;</a></p>';
+	echo '<p style="margin:8px 0 0;"><a href="' . esc_url( $inbox_url ) . '" target="_blank">' . esc_html__( 'View Full Inbox', 'owbn-client' ) . ' &#x29C9;</a></p>';
 }
