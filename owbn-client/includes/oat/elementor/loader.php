@@ -176,11 +176,12 @@ function owc_oat_create_pages()
 	}
 
 	$pages = array(
-		'oat_page_dashboard' => array( 'title' => 'OAT Dashboard', 'slug' => 'oat-dashboard' ),
-		'oat_page_inbox'     => array( 'title' => 'OAT Inbox',     'slug' => 'oat-inbox' ),
-		'oat_page_submit'    => array( 'title' => 'OAT Submit',    'slug' => 'oat-submit' ),
-		'oat_page_entry'     => array( 'title' => 'OAT Entry',     'slug' => 'oat-entry' ),
-		'oat_page_registry'  => array( 'title' => 'OAT Registry',  'slug' => 'oat-registry' ),
+		'oat_page_dashboard'        => array( 'title' => 'OAT Dashboard',        'slug' => 'oat-dashboard' ),
+		'oat_page_inbox'            => array( 'title' => 'OAT Inbox',            'slug' => 'oat-inbox' ),
+		'oat_page_submit'           => array( 'title' => 'OAT Submit',           'slug' => 'oat-submit' ),
+		'oat_page_entry'            => array( 'title' => 'OAT Entry',            'slug' => 'oat-entry' ),
+		'oat_page_registry'         => array( 'title' => 'OAT Registry',         'slug' => 'oat-registry' ),
+		'oat_page_registry_detail'  => array( 'title' => 'OAT Registry Detail',  'slug' => 'oat-registry-detail' ),
 	);
 
 	// ccHub pages only on sites with local OAT data (archivist).
@@ -189,6 +190,7 @@ function owc_oat_create_pages()
 		$pages['cchub_page_browse'] = array( 'title' => 'ccHub Browse', 'slug' => 'cchub-browse' );
 	}
 
+	// Create any missing pages (idempotent — skips pages that already exist).
 	foreach ( $pages as $option_key => $page ) {
 		$existing = get_option( $option_key );
 		if ( $existing && get_post( $existing ) ) {
@@ -211,8 +213,6 @@ function owc_oat_create_pages()
 			update_option( $option_key, $page_id );
 		}
 	}
-
-	update_option( 'owc_oat_pages_created', true );
 }
 
 // Hook page creation to admin_init (runs once via flag).

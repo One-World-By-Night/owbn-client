@@ -311,12 +311,7 @@ function owc_render_oat_my_characters_widget() {
 		return;
 	}
 
-	// On remote OAT sites, link to archivist for registry pages.
-	$oat_site_base = '';
-	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
-		$oat_site_base = owc_cc_widget_site_url( 'oat' );
-	}
-	$registry_url = $oat_site_base . 'oat-registry-detail/';
+	$registry_url = '/oat-registry-detail/';
 
 	$status_colors = array(
 		'active'   => '#00a32a',
@@ -391,13 +386,8 @@ function owc_render_oat_inbox_widget() {
 	$my_entries  = $inbox['my_entries'] ?? array();
 	$user_map    = $inbox['user_map'] ?? array();
 
-	// On remote OAT sites, link to archivist for OAT pages.
-	$oat_site_base = '';
-	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
-		$oat_site_base = owc_cc_widget_site_url( 'oat' );
-	}
-	$entry_url = $oat_site_base . 'oat-entry/';
-	$inbox_url = $oat_site_base . 'oat-inbox/';
+	$entry_url = '/oat-entry/';
+	$inbox_url = '/oat-inbox/';
 
 	$has_content = false;
 

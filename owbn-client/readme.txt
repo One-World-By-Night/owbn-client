@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.20.4
+Stable tag: 4.20.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,9 @@ Yes. Each data type (chronicles, coordinators, territories) can be configured in
 The plugin uses WordPress transients to cache API responses. The default TTL is 3600 seconds (1 hour). You can adjust this in the plugin settings. Caches can be manually cleared or refreshed from the admin panel.
 
 == Changelog ==
+
+= 4.20.5 =
+* Fix: Add oat-registry-detail page to auto-creation, create missing OAT pages on all sites
 
 = 4.20.4 =
 * Fix: Exec roles show as coordinator entries with View/Edit links
