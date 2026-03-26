@@ -170,9 +170,12 @@
 			$(document).on('submit', '.oat-action-form', function (e) {
 				e.preventDefault();
 				var $form = $(this);
+				// Debounce: prevent duplicate submissions.
+				if ($form.data('submitting')) { return; }
+				$form.data('submitting', true);
 				var $btn = $form.find('.oat-action-btn');
 
-				$btn.prop('disabled', true);
+				$btn.prop('disabled', true).css('opacity', '0.5');
 
 				var data = {
 					action: 'owc_oat_process_action',
@@ -197,11 +200,13 @@
 					} else {
 						var msg = response.data || 'Action failed. Please try again.';
 						alert(msg);
-						$btn.prop('disabled', false);
+						$btn.prop('disabled', false).css('opacity', '');
+						$form.data('submitting', false);
 					}
 				}).fail(function () {
 					alert('Request failed. Please try again.');
-					$btn.prop('disabled', false);
+					$btn.prop('disabled', false).css('opacity', '');
+					$form.data('submitting', false);
 				});
 			});
 		},
