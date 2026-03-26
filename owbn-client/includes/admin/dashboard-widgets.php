@@ -311,7 +311,11 @@ function owc_render_oat_my_characters_widget() {
 		return;
 	}
 
-	$registry_url = '/oat-registry-detail/';
+	$oat_base = '';
+	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
+		$oat_base = owc_cc_widget_site_url( 'oat' );
+	}
+	$registry_url = $oat_base . 'oat-registry-detail/';
 
 	$status_colors = array(
 		'active'   => '#00a32a',
@@ -364,8 +368,8 @@ function owc_render_oat_my_characters_widget() {
 
 	// Footer links.
 	echo '<p style="margin:8px 0 0;display:flex;gap:12px;">';
-	echo '<a href="/oat-registry/" target="_blank">' . esc_html__( 'Full Registry', 'owbn-client' ) . ' &#x29C9;</a>';
-	echo '<a href="/oat-submit/" target="_blank">' . esc_html__( 'New Submission', 'owbn-client' ) . ' &#x29C9;</a>';
+	echo '<a href="' . esc_url( $oat_base . 'oat-registry/' ) . '" target="_blank">' . esc_html__( 'Full Registry', 'owbn-client' ) . ' &#x29C9;</a>';
+	echo '<a href="' . esc_url( $oat_base . 'oat-submit/' ) . '" target="_blank">' . esc_html__( 'New Submission', 'owbn-client' ) . ' &#x29C9;</a>';
 	echo '</p>';
 }
 
@@ -392,8 +396,13 @@ function owc_render_oat_inbox_widget() {
 	$my_entries  = $inbox['my_entries'] ?? array();
 	$user_map    = $inbox['user_map'] ?? array();
 
-	$entry_url = '/oat-entry/';
-	$inbox_url = '/oat-inbox/';
+	// OAT pages live on archivist — use remote site URL when not local.
+	$oat_base = '';
+	if ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) {
+		$oat_base = owc_cc_widget_site_url( 'oat' );
+	}
+	$entry_url = $oat_base . 'oat-entry/';
+	$inbox_url = $oat_base . 'oat-inbox/';
 
 	$has_content = false;
 
