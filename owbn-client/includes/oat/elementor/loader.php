@@ -170,11 +170,6 @@ class OWC_OAT_Elementor_Loader
  */
 function owc_oat_create_pages()
 {
-	// Only run once.
-	if ( get_option( 'owc_oat_pages_created' ) ) {
-		return;
-	}
-
 	$pages = array(
 		'oat_page_dashboard'        => array( 'title' => 'OAT Dashboard',        'slug' => 'oat-dashboard' ),
 		'oat_page_inbox'            => array( 'title' => 'OAT Inbox',            'slug' => 'oat-inbox' ),
