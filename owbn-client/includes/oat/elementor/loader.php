@@ -142,14 +142,34 @@ class OWC_OAT_Elementor_Loader
 		$is_super = $current_user && $current_user->ID && function_exists( 'owc_oat_is_super_user' )
 			? owc_oat_is_super_user( $current_user->ID )
 			: false;
+		$oat_local             = class_exists( 'OAT_Admin' );
+		$creature_taxonomy_url = '';
+		if ( ! $oat_local && function_exists( 'owc_get_remote_base' ) ) {
+			$gw_base = owc_get_remote_base( 'oat' );
+			if ( $gw_base ) {
+				$creature_taxonomy_url = $gw_base . 'oat/creature-taxonomy';
+			}
+		}
+
 		wp_localize_script( 'owc-oat-frontend', 'owc_oat_ajax', array(
-			'url'             => admin_url( 'admin-ajax.php' ),
-			'nonce'           => wp_create_nonce( 'owc_oat_nonce' ),
-			'creature_nonce'  => wp_create_nonce( 'oat_creature_picker' ),
-			'currentUserName' => $current_user && $current_user->ID ? $current_user->display_name : '',
-			'currentUserId'   => $current_user && $current_user->ID ? $current_user->ID : 0,
-			'isSuperUser'     => $is_super ? '1' : '0',
+			'url'                   => admin_url( 'admin-ajax.php' ),
+			'nonce'                 => wp_create_nonce( 'owc_oat_nonce' ),
+			'creature_nonce'        => wp_create_nonce( 'oat_creature_picker' ),
+			'creatureTaxonomyUrl'   => $creature_taxonomy_url,
+			'apiKey'                => $oat_local ? '' : ( function_exists( 'owc_get_remote_key' ) ? owc_get_remote_key( 'oat' ) : '' ),
+			'currentUserName'       => $current_user && $current_user->ID ? $current_user->display_name : '',
+			'currentUserId'         => $current_user && $current_user->ID ? $current_user->ID : 0,
+			'isSuperUser'           => $is_super ? '1' : '0',
 		) );
+
+		// Creature type picker (works local via AJAX or remote via gateway).
+		wp_register_script(
+			'owc-oat-creature-picker',
+			$base_url . 'js/oat-creature-picker.js',
+			array( 'jquery', 'owc-oat-client' ),
+			$version,
+			true
+		);
 
 		// Register regulation picker for submit form widget.
 		if ( ! wp_script_is( 'owc-oat-regulation-picker', 'registered' ) ) {

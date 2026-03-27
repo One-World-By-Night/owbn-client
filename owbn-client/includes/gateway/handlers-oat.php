@@ -650,3 +650,15 @@ function owbn_gateway_oat_rules_list( $request ) {
 
     return owbn_gateway_respond( $out );
 }
+
+/**
+ * Creature taxonomy picker data.
+ *
+ * Returns the full taxonomy tree for cascading Genre > Faction > Type > Variant selects.
+ */
+function owbn_gateway_oat_creature_taxonomy( $request ) {
+    if ( ! class_exists( 'OAT_Creature_Taxonomy' ) ) {
+        return owbn_gateway_respond( array( 'genres' => array(), 'factions' => array(), 'types' => array(), 'variants' => array() ) );
+    }
+    return owbn_gateway_respond( OAT_Creature_Taxonomy::get_picker_data() );
+}

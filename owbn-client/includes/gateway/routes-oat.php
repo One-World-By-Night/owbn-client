@@ -175,6 +175,14 @@ function owbn_gateway_register_oat_routes() {
         ),
     ) );
 
+    // ── Creature taxonomy (server-scoped, API key only) ────────────────
+
+    register_rest_route( $namespace, '/oat/creature-taxonomy', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_creature_taxonomy',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
     // ── ccHub routes (server-scoped, API key only) ──────────────────────
 
     // Category listing with counts.
