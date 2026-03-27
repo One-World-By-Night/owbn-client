@@ -145,6 +145,7 @@ class OWC_OAT_Elementor_Loader
 		wp_localize_script( 'owc-oat-frontend', 'owc_oat_ajax', array(
 			'url'             => admin_url( 'admin-ajax.php' ),
 			'nonce'           => wp_create_nonce( 'owc_oat_nonce' ),
+			'creature_nonce'  => wp_create_nonce( 'oat_creature_picker' ),
 			'currentUserName' => $current_user && $current_user->ID ? $current_user->display_name : '',
 			'currentUserId'   => $current_user && $current_user->ID ? $current_user->ID : 0,
 			'isSuperUser'     => $is_super ? '1' : '0',

@@ -448,6 +448,27 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</div></div>';
 			return;
 
+		case 'cchub_picker':
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
+			echo '<div class="oat-field-content">';
+			echo '<div class="oat-cchub-picker-wrap">';
+			printf(
+				'<input type="text" id="%s_search" class="oat-cchub-search regular-text" placeholder="%s" autocomplete="off" />',
+				$id,
+				esc_attr__( 'Search custom content by name...', 'owbn-client' )
+			);
+			echo '<div id="' . $id . '_selected" class="oat-cchub-selected"></div>';
+			// Hidden input: stores JSON with entry_id and label.
+			$cc_val = is_string( $value ) ? $value : wp_json_encode( $value ?: '' );
+			printf( '<input type="hidden" name="%s" id="%s" value="%s" class="oat-cchub-value" />', $name, $id, esc_attr( $cc_val ) );
+			echo '</div>';
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</div></div>';
+			return;
+
 		case 'rule_picker':
 			echo '<div class="oat-field"' . $cond_attrs . '>';
 			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
@@ -545,21 +566,17 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<p><label>' . esc_html__( 'Home Chronicle', 'owbn-client' ) . ' <span class="required">*</span><br>';
 			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-client' ) . '" autocomplete="off" /></label></p>';
 			echo '<input type="hidden" class="oat-cc-chronicle-slug" />';
-			// Creature Type select (top-level keys from taxonomy).
+			// Creature picker — 4-level cascading selects (Genre > Faction > Type > Variant).
+			echo '<div class="oat-cc-creature-picker" data-creature-picker>';
+			echo '<p><label>' . esc_html__( 'Genre', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<select name="creature_genre" class="oat-cc-genre" style="width:100%;"></select></label></p>';
+			echo '<p><label>' . esc_html__( 'Faction', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<select name="creature_sub_type" class="oat-cc-faction" style="width:100%;"></select></label></p>';
 			echo '<p><label>' . esc_html__( 'Creature Type', 'owbn-client' ) . ' <span class="required">*</span><br>';
-			echo '<select class="oat-cc-creature-type">';
-			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-client' ) . '</option>';
-			if ( ! empty( $options ) ) {
-				foreach ( array_keys( $options ) as $creature ) {
-					printf( '<option value="%s">%s</option>', esc_attr( $creature ), esc_html( $creature ) );
-				}
-			}
-			echo '</select></label></p>';
-			// Sub-Type select (cascading, populated by JS — D-057).
-			echo '<p><label>' . esc_html__( 'Sub-Type', 'owbn-client' ) . '<br>';
-			echo '<select class="oat-cc-sub-type" disabled="disabled">';
-			echo '<option value="">' . esc_html__( '-- Select creature type first --', 'owbn-client' ) . '</option>';
-			echo '</select></label></p>';
+			echo '<select name="creature_type" class="oat-cc-creature-type" style="width:100%;"></select></label></p>';
+			echo '<p class="oat-creature-variant-wrap"><label>' . esc_html__( 'Variant', 'owbn-client' ) . '<br>';
+			echo '<select name="creature_variant" class="oat-cc-variant" style="width:100%;"></select></label></p>';
+			echo '</div>';
 			// PC / NPC designation (D-056, required for regulation level matching).
 			echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-client' ) . ' <span class="required">*</span><br>';
 			echo '<select class="oat-cc-pc-npc">';
@@ -567,9 +584,11 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-client' ) . '</option>';
 			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-client' ) . '</option>';
 			echo '</select></label></p>';
-			// Hidden inputs for creature_type and sub_type (stored as entry meta alongside character).
+			// Hidden inputs for storing values as entry meta.
+			echo '<input type="hidden" name="oat_meta_creature_genre" class="oat-cc-genre-val" />';
 			echo '<input type="hidden" name="oat_meta_creature_type" class="oat-cc-creature-type-val" />';
 			echo '<input type="hidden" name="oat_meta_creature_sub_type" class="oat-cc-sub-type-val" />';
+			echo '<input type="hidden" name="oat_meta_creature_variant" class="oat-cc-variant-val" />';
 			echo '<input type="hidden" name="oat_meta_pc_npc" class="oat-cc-pc-npc-val" />';
 			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-client' ) . '</button>';
 			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-client' ) . '</button></p>';
@@ -809,7 +828,9 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 
 	switch ( $type ) {
 		case 'htmlarea':
-			echo wp_kses_post( $value );
+			// If content has HTML block tags, render as-is; otherwise convert newlines.
+			$has_blocks = preg_match( '/<(p|div|br|ul|ol|h[1-6])\b/i', $value );
+			echo $has_blocks ? wp_kses_post( $value ) : nl2br( wp_kses_post( $value ) );
 			break;
 
 		case 'textarea':
@@ -873,6 +894,20 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 				}
 			} else {
 				echo esc_html( $value );
+			}
+			break;
+
+		case 'cchub_picker':
+			$cc_data = is_string( $value ) ? json_decode( $value, true ) : ( is_array( $value ) ? $value : null );
+			if ( $cc_data && ! empty( $cc_data['label'] ) ) {
+				$cc_link = ! empty( $cc_data['entry_id'] ) ? esc_url( '/oat-entry/?oat_entry=' . (int) $cc_data['entry_id'] ) : '';
+				if ( $cc_link ) {
+					echo '<a href="' . $cc_link . '" target="_blank">' . esc_html( $cc_data['label'] ) . ' &#x29C9;</a>';
+				} else {
+					echo esc_html( $cc_data['label'] );
+				}
+			} else {
+				echo esc_html( $value ?: '—' );
 			}
 			break;
 
@@ -1033,6 +1068,19 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 				return wp_json_encode( array_map( 'sanitize_text_field', $raw_value ) );
 			}
 			return '[]';
+
+		case 'cchub_picker':
+			// Stores JSON: { entry_id: int, label: string }
+			if ( is_string( $raw_value ) ) {
+				$decoded = json_decode( $raw_value, true );
+				if ( is_array( $decoded ) && isset( $decoded['entry_id'] ) ) {
+					return wp_json_encode( array(
+						'entry_id' => absint( $decoded['entry_id'] ),
+						'label'    => sanitize_text_field( $decoded['label'] ?? '' ),
+					) );
+				}
+			}
+			return sanitize_text_field( $raw_value );
 
 		case 'rule_picker':
 			if ( is_string( $raw_value ) ) {

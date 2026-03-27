@@ -63,6 +63,19 @@ function owc_oat_register_menus() {
         'owc_oat_render_registry'
     );
 
+    // Reports: only on local OAT host (archivist), not remote sites.
+    if ( $oat_local ) {
+        require_once __DIR__ . '/pages/reports.php';
+        add_submenu_page(
+            $parent,
+            'Reports',
+            'Reports',
+            'read',
+            'owc-oat-reports',
+            'owc_oat_page_reports'
+        );
+    }
+
     // Hidden page: entry detail (no menu item, accessed via link).
     add_submenu_page(
         null,
@@ -174,6 +187,7 @@ function owc_oat_enqueue_assets( $hook ) {
     wp_localize_script( 'owc-oat-client', 'owc_oat_ajax', array(
         'url'             => admin_url( 'admin-ajax.php' ),
         'nonce'           => wp_create_nonce( 'owc_oat_nonce' ),
+        'creature_nonce'  => wp_create_nonce( 'oat_creature_picker' ),
         'currentUserName' => $current_user && $current_user->ID ? $current_user->display_name : '',
         'currentUserId'   => $current_user && $current_user->ID ? $current_user->ID : 0,
         'isSuperUser'     => $is_super ? '1' : '0',

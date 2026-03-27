@@ -785,8 +785,13 @@ function owc_oat_submit( $data ) {
                     if ( empty( $entry_data['character_id'] ) ) {
                         $update_entry['character_id'] = (int) $char->id;
                     }
-                    if ( empty( $entry_data['coordinator_genre'] ) && ! empty( $char->creature_type ) ) {
-                        $update_entry['coordinator_genre'] = strtolower( $char->creature_type );
+                    if ( empty( $entry_data['coordinator_genre'] ) ) {
+                        // Use explicit coordinator_genre from meta if set, otherwise derive from creature type.
+                        if ( ! empty( $meta['coordinator_genre'] ) ) {
+                            $update_entry['coordinator_genre'] = strtolower( $meta['coordinator_genre'] );
+                        } elseif ( ! empty( $char->creature_type ) ) {
+                            $update_entry['coordinator_genre'] = strtolower( $char->creature_type );
+                        }
                     }
                     if ( ! empty( $update_entry ) ) {
                         OAT_Entry::update( $entry_id, $update_entry );
@@ -803,11 +808,25 @@ function owc_oat_submit( $data ) {
         if ( ! empty( $data['rules'] ) && is_array( $data['rules'] ) ) {
             foreach ( $data['rules'] as $rule_id ) {
                 if ( is_array( $rule_id ) ) {
-                    continue; // Skip free-text entries.
+                    // Free-text rule: store as item_description if not already set.
+                    if ( isset( $rule_id['text'] ) && empty( $meta['item_description'] ) ) {
+                        $meta['item_description'] = sanitize_text_field( $rule_id['text'] );
+                        OAT_Entry_Meta::set( $entry_id, 'item_description', $meta['item_description'] );
+                    }
+                    continue;
                 }
                 $rule_id = (int) $rule_id;
                 if ( $rule_id > 0 ) {
                     OAT_Entry_Rule::create( $entry_id, $rule_id );
+                    // Auto-set item_description from the first linked rule if not already set.
+                    if ( empty( $meta['item_description'] ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+                        $rule_obj = OAT_Regulation_Rule::find( $rule_id );
+                        if ( $rule_obj ) {
+                            $parts = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
+                            $meta['item_description'] = implode( ': ', $parts );
+                            OAT_Entry_Meta::set( $entry_id, 'item_description', $meta['item_description'] );
+                        }
+                    }
                 }
             }
 
@@ -856,6 +875,56 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
         $entry = OAT_Entry::find( $entry_id );
         if ( ! $entry ) {
             return new WP_Error( 'oat_not_found', 'Entry not found.', array( 'status' => 404 ) );
+        }
+
+        // Admin Edit: save meta fields without advancing workflow.
+        if ( 'admin_edit' === $action_type ) {
+            if ( ! function_exists( 'owc_oat_is_super_user' ) || ! owc_oat_is_super_user( $user_id ) ) {
+                return new WP_Error( 'oat_forbidden', 'Admin edit requires archivist or admin privileges.' );
+            }
+            if ( empty( $note ) ) {
+                return new WP_Error( 'oat_missing_note', 'A reason for the edit is required.' );
+            }
+
+            // Collect meta from POST.
+            $updated_keys = array();
+            foreach ( $_POST as $k => $v ) {
+                if ( strpos( $k, 'oat_meta_' ) === 0 ) {
+                    $meta_key = sanitize_key( substr( $k, 9 ) );
+                    if ( $meta_key ) {
+                        $old_val = OAT_Entry_Meta::get( $entry_id, $meta_key );
+                        $new_val = wp_kses_post( $v );
+                        if ( $old_val !== $new_val ) {
+                            OAT_Entry_Meta::set( $entry_id, $meta_key, $new_val );
+                            $updated_keys[] = $meta_key;
+                        }
+                    }
+                }
+            }
+
+            // Log timeline.
+            $changes_note = $note;
+            if ( ! empty( $updated_keys ) ) {
+                $changes_note .= ' [Fields: ' . implode( ', ', $updated_keys ) . ']';
+            }
+            OAT_Timeline::append( array(
+                'entry_id'        => $entry_id,
+                'action_type'     => 'admin_edit',
+                'actor_id'        => $user_id,
+                'step'            => $entry->current_step,
+                'visibility_tier' => OAT_Constants::TIER_ARCHIVIST,
+                'note'            => $changes_note,
+            ) );
+
+            // Update entry timestamp.
+            OAT_Entry::update( $entry_id, array( 'updated_at' => time() ) );
+
+            return array(
+                'entry_id' => $entry_id,
+                'status'   => $entry->status,
+                'step'     => $entry->current_step,
+                'message'  => 'Entry updated. ' . count( $updated_keys ) . ' field(s) changed.',
+            );
         }
 
         $action_data = array_merge( $extra_data, array( 'note' => $note ) );
@@ -1068,6 +1137,10 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
                 $actions[] = 'council_override';
             }
         }
+        // Admin edit available even on terminal entries for data cleanup.
+        if ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) {
+            $actions[] = 'admin_edit';
+        }
         return $actions;
     }
 
@@ -1119,6 +1192,11 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
 
     if ( $is_assignee && class_exists( 'OAT_Authorization' ) && OAT_Authorization::check( OAT_Constants::CAP_ARCHIVIST ) ) {
         $actions[] = 'record';
+    }
+
+    // Admin edit: WP Admin or exec/archivist/coordinator can edit any entry's meta.
+    if ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) {
+        $actions[] = 'admin_edit';
     }
 
     return array_unique( $actions );

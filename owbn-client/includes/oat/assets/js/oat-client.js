@@ -540,50 +540,85 @@
                 });
             }
 
-            // ── Creature type cascade → sub-type ──
+            // ── Creature type cascade — 4-level: Genre > Faction > Type > Variant ──
+            var $ccGenre        = $wrap.find('.oat-cc-genre');
+            var $ccFaction      = $wrap.find('.oat-cc-faction');
             var $ccCreatureType = $wrap.find('.oat-cc-creature-type');
-            var $ccSubType      = $wrap.find('.oat-cc-sub-type');
+            var $ccVariant      = $wrap.find('.oat-cc-variant');
+            var $ccGenreVal     = $wrap.find('.oat-cc-genre-val');
             var $ccCreatureVal  = $wrap.find('.oat-cc-creature-type-val');
             var $ccSubTypeVal   = $wrap.find('.oat-cc-sub-type-val');
+            var $ccVariantVal   = $wrap.find('.oat-cc-variant-val');
+            var taxData         = null;
 
-            $ccCreatureType.on('change', function() {
-                var creature = $(this).val();
-                $ccCreatureVal.val(creature);
-                $ccSubType.empty();
-                $ccSubTypeVal.val('');
+            function fillSelect($sel, opts, placeholder) {
+                $sel.empty().append('<option value="">' + (placeholder || '-- Select --') + '</option>');
+                (opts || []).forEach(function(o) {
+                    $sel.append($('<option>').val(o).text(o));
+                });
+                $sel.prop('disabled', !opts || opts.length === 0);
+            }
 
-                if (!creature || !taxonomy[creature]) {
-                    $ccSubType.append('<option value="">-- Select creature type first --</option>').prop('disabled', true);
-                    return;
-                }
+            function syncHiddenVals() {
+                $ccGenreVal.val($ccGenre.val() || '');
+                $ccSubTypeVal.val($ccFaction.val() || '');
+                $ccCreatureVal.val($ccCreatureType.val() || '');
+                $ccVariantVal.val($ccVariant.val() || '');
+            }
 
-                $ccSubType.prop('disabled', false);
-                $ccSubType.append('<option value="">-- Select --</option>');
-                var subs = taxonomy[creature];
-                // subs can be an array or an object (affiliation → array of names).
-                if ($.isArray(subs)) {
-                    for (var i = 0; i < subs.length; i++) {
-                        $ccSubType.append('<option value="' + subs[i] + '">' + subs[i] + '</option>');
-                    }
+            function updateFactions() {
+                var g = $ccGenre.val();
+                fillSelect($ccFaction, g && taxData ? (taxData.factions[g] || []) : [], '-- Faction --');
+                updateTypes();
+            }
+
+            function updateTypes() {
+                var g = $ccGenre.val(), f = $ccFaction.val();
+                var key = g + '|' + f;
+                fillSelect($ccCreatureType, (g && f && taxData) ? (taxData.types[key] || []) : [], '-- Type --');
+                updateVariants();
+            }
+
+            function updateVariants() {
+                var g = $ccGenre.val(), f = $ccFaction.val(), t = $ccCreatureType.val();
+                var key = g + '|' + f + '|' + t;
+                var opts = (g && f && t && taxData) ? (taxData.variants[key] || []) : [];
+                if (opts.length) {
+                    fillSelect($ccVariant, opts, '-- Variant --');
+                    $ccVariant.closest('.oat-creature-variant-wrap').show();
                 } else {
-                    // Object: keys are affiliations/groups, values are arrays.
-                    $.each(subs, function(group, names) {
-                        if ($.isArray(names)) {
-                            var $optgroup = $('<optgroup label="' + group + '"></optgroup>');
-                            for (var j = 0; j < names.length; j++) {
-                                $optgroup.append('<option value="' + names[j] + '">' + names[j] + '</option>');
-                            }
-                            $ccSubType.append($optgroup);
-                        } else {
-                            $ccSubType.append('<option value="' + names + '">' + names + '</option>');
-                        }
+                    $ccVariant.empty().val('').prop('disabled', true);
+                    $ccVariant.closest('.oat-creature-variant-wrap').hide();
+                }
+                syncHiddenVals();
+            }
+
+            $ccGenre.on('change', function() { updateFactions(); });
+            $ccFaction.on('change', function() { updateTypes(); });
+            $ccCreatureType.on('change', function() { updateVariants(); });
+            $ccVariant.on('change', function() { syncHiddenVals(); });
+
+            // Load taxonomy data via AJAX (once, cached).
+            if (!window._oatTaxData) {
+                window._oatTaxLoading = window._oatTaxLoading || [];
+                if (window._oatTaxLoading.length === 0) {
+                    $.post(owc_oat_ajax.url, {
+                        action: 'oat_creature_taxonomy_picker',
+                        _ajax_nonce: owc_oat_ajax.creature_nonce || ''
+                    }, function(resp) {
+                        window._oatTaxData = resp.success ? resp.data : { genres: [], factions: {}, types: {}, variants: {} };
+                        window._oatTaxLoading.forEach(function(cb) { cb(window._oatTaxData); });
+                        window._oatTaxLoading = [];
                     });
                 }
-            });
-
-            $ccSubType.on('change', function() {
-                $ccSubTypeVal.val($(this).val());
-            });
+                window._oatTaxLoading.push(function(data) {
+                    taxData = data;
+                    fillSelect($ccGenre, data.genres, '-- Genre --');
+                });
+            } else {
+                taxData = window._oatTaxData;
+                fillSelect($ccGenre, taxData.genres, '-- Genre --');
+            }
 
             // ── PC/NPC select sync ──
             var $ccPcNpc    = $wrap.find('.oat-cc-pc-npc');
@@ -609,13 +644,15 @@
                     nonce: owc_oat_ajax.nonce,
                     character_name: name,
                     chronicle_slug: chronSlug || '',
-                    pc_npc: pcNpc
+                    pc_npc: pcNpc,
+                    creature_genre: $ccGenre.val() || '',
+                    creature_type: $ccCreatureType.val() || '',
+                    creature_sub_type: $ccFaction.val() || '',
+                    creature_variant: $ccVariant.val() || ''
                 }, function(response) {
                     if (response.success && response.data) {
                         selectCharacter(response.data.uuid, response.data.character_name, pcNpc);
-                        // Also set creature type/sub-type meta from panel values.
-                        $ccCreatureVal.val($ccCreatureType.val());
-                        $ccSubTypeVal.val($ccSubType.val());
+                        syncHiddenVals();
                         // Reset and hide create panel.
                         $wrap.find('.oat-character-create-panel').hide();
                         $wrap.find('.oat-cc-name').val('');
@@ -631,6 +668,61 @@
         });
     }
     initCharacterPickers();
+
+    // ccHub picker: autocomplete search for approved custom content entries.
+    function initCchubPickers() {
+        $('.oat-cchub-picker-wrap').each(function() {
+            var $wrap = $(this);
+            if ($wrap.data('ccInit')) return;
+            $wrap.data('ccInit', true);
+
+            var $search   = $wrap.find('.oat-cchub-search');
+            var $selected = $wrap.find('.oat-cchub-selected');
+            var $hidden   = $wrap.find('.oat-cchub-value');
+
+            // Load pre-selected value.
+            try {
+                var pre = JSON.parse($hidden.val() || '""');
+                if (pre && pre.label) {
+                    showSelected(pre.label, pre.entry_id);
+                }
+            } catch(e) {}
+
+            $search.autocomplete({
+                source: function(request, response) {
+                    $.getJSON(owc_oat_ajax.url, {
+                        action: 'owc_oat_search_cchub',
+                        nonce: owc_oat_ajax.nonce,
+                        term: request.term
+                    }, function(data) {
+                        response(data);
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $(this).val('');
+                    var val = { entry_id: ui.item.id, label: ui.item.label };
+                    $hidden.val(JSON.stringify(val)).trigger('change');
+                    showSelected(ui.item.label, ui.item.id);
+                }
+            });
+
+            function showSelected(label, entryId) {
+                $search.hide();
+                $selected.html(
+                    '<span class="oat-rule-tag">' + $('<span>').text(label)[0].innerHTML +
+                    ' <span class="oat-remove-rule" style="cursor:pointer;color:#8b0000;font-weight:bold;">&times;</span></span>'
+                );
+                $selected.find('.oat-remove-rule').on('click', function() {
+                    $hidden.val('').trigger('change');
+                    $selected.empty();
+                    $search.show().val('').focus();
+                });
+            }
+        });
+    }
+    initCchubPickers();
 
     // BA-001: Enable/disable signatures based on submitter_role.
     // When submitter_role changes, only the matching sig is active; others are grayed out.
@@ -725,6 +817,7 @@
         initSignatureStepControl();
         initPlayerUserAutoSet();
         initCascadingSelects();
+        initCchubPickers();
     });
 
     // Signature field: update hidden JSON when agree checkbox changes.

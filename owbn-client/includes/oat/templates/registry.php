@@ -102,7 +102,7 @@ defined( 'ABSPATH' ) || exit;
                                 if ( is_object( $entry_counts ) ) {
                                     $entry_counts = (array) $entry_counts;
                                 }
-                                $total_entries = array_sum( $entry_counts );
+                                $total_entries = is_array( $entry_counts ) ? array_sum( $entry_counts ) : (int) $entry_counts;
                                 $detail_url    = admin_url( 'admin.php?page=owc-oat-registry-character&character_id=' . $char_id );
                             ?>
                                 <tr>
@@ -113,9 +113,13 @@ defined( 'ABSPATH' ) || exit;
                                     <td><?php echo esc_html( ucfirst( $status ) ); ?></td>
                                     <td>
                                         <?php if ( $total_entries > 0 ) : ?>
-                                            <span title="<?php echo esc_attr( implode( ', ', array_map( function( $d, $c ) { return "$d: $c"; }, array_keys( $entry_counts ), $entry_counts ) ) ); ?>">
+                                            <?php if ( is_array( $entry_counts ) ) : ?>
+                                                <span title="<?php echo esc_attr( implode( ', ', array_map( function( $d, $c ) { return "$d: $c"; }, array_keys( $entry_counts ), $entry_counts ) ) ); ?>">
+                                                    <?php echo esc_html( $total_entries ); ?>
+                                                </span>
+                                            <?php else : ?>
                                                 <?php echo esc_html( $total_entries ); ?>
-                                            </span>
+                                            <?php endif; ?>
                                         <?php else : ?>
                                             0
                                         <?php endif; ?>

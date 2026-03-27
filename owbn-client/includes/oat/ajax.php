@@ -11,6 +11,7 @@
 defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_ajax_owc_oat_search_rules', 'owc_oat_ajax_search_rules' );
+add_action( 'wp_ajax_owc_oat_search_cchub', 'owc_oat_ajax_search_cchub' );
 add_action( 'wp_ajax_owc_oat_process_action', 'owc_oat_ajax_process_action' );
 add_action( 'wp_ajax_owc_oat_toggle_watch', 'owc_oat_ajax_toggle_watch' );
 add_action( 'wp_ajax_owc_oat_get_domain_fields', 'owc_oat_ajax_get_domain_fields' );
@@ -43,6 +44,54 @@ function owc_oat_ajax_search_rules() {
 
     if ( is_wp_error( $results ) ) {
         wp_send_json_error( $results->get_error_message() );
+    }
+
+    wp_send_json( $results );
+}
+
+/**
+ * AJAX: Search approved custom content entries (ccHub) for the cchub_picker field.
+ *
+ * @return void
+ */
+function owc_oat_ajax_search_cchub() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $term = isset( $_GET['term'] ) ? sanitize_text_field( $_GET['term'] ) : '';
+    if ( strlen( $term ) < 2 ) {
+        wp_send_json( array() );
+    }
+
+    global $wpdb;
+    $prefix = $wpdb->prefix;
+    $like   = '%' . $wpdb->esc_like( $term ) . '%';
+
+    $rows = $wpdb->get_results( $wpdb->prepare(
+        "SELECT e.id, m_name.meta_value AS content_name, m_type.meta_value AS content_type, e.coordinator_genre
+         FROM {$prefix}oat_entries e
+         JOIN {$prefix}oat_entry_meta m_name ON e.id = m_name.entry_id AND m_name.meta_key = 'content_name'
+         LEFT JOIN {$prefix}oat_entry_meta m_type ON e.id = m_type.entry_id AND m_type.meta_key = 'content_type'
+         WHERE e.domain = 'custom_content' AND e.status = 'approved'
+           AND m_name.meta_value LIKE %s
+         ORDER BY m_name.meta_value ASC
+         LIMIT 20",
+        $like
+    ) );
+
+    $results = array();
+    foreach ( $rows as $r ) {
+        $label = $r->content_type ? 'Custom ' . $r->content_type . ': ' . $r->content_name : $r->content_name;
+        if ( $r->coordinator_genre && function_exists( 'owc_entity_get_title' ) ) {
+            $coord_title = owc_entity_get_title( 'coordinator', $r->coordinator_genre );
+            if ( $coord_title ) {
+                $label .= ' — ' . $coord_title;
+            }
+        }
+        $results[] = array(
+            'id'    => (int) $r->id,
+            'label' => $label,
+            'value' => $r->content_name,
+        );
     }
 
     wp_send_json( $results );
@@ -97,7 +146,7 @@ function owc_oat_ajax_toggle_watch() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
     $entry_id     = isset( $_POST['entry_id'] ) ? absint( $_POST['entry_id'] ) : 0;
-    $watch_action = isset( $_POST['watch_action'] ) ? sanitize_text_field( $_POST['watch_action'] ) : 'add';
+    $watch_action = isset( $_POST['watch_action'] ) ? sanitize_text_field( $_POST['watch_action'] ) : 'toggle';
 
     if ( ! $entry_id ) {
         wp_send_json_error( 'Missing entry_id.' );
@@ -249,6 +298,11 @@ function owc_oat_ajax_create_character() {
         wp_send_json_error( 'You must be logged in.' );
     }
 
+    $creature_genre    = isset( $_POST['creature_genre'] ) ? sanitize_text_field( $_POST['creature_genre'] ) : '';
+    $creature_type     = isset( $_POST['creature_type'] ) ? sanitize_text_field( $_POST['creature_type'] ) : '';
+    $creature_sub_type = isset( $_POST['creature_sub_type'] ) ? sanitize_text_field( $_POST['creature_sub_type'] ) : '';
+    $creature_variant  = isset( $_POST['creature_variant'] ) ? sanitize_text_field( $_POST['creature_variant'] ) : '';
+
     $create_data = array(
         'character_name' => $char_name,
         'chronicle_slug' => $chronicle_slug,
@@ -258,6 +312,18 @@ function owc_oat_ajax_create_character() {
     );
     if ( in_array( $pc_npc, array( 'pc', 'npc' ), true ) ) {
         $create_data['pc_npc'] = $pc_npc;
+    }
+    if ( $creature_genre ) {
+        $create_data['creature_genre'] = $creature_genre;
+    }
+    if ( $creature_type ) {
+        $create_data['creature_type'] = $creature_type;
+    }
+    if ( $creature_sub_type ) {
+        $create_data['creature_sub_type'] = $creature_sub_type;
+    }
+    if ( $creature_variant ) {
+        $create_data['creature_variant'] = $creature_variant;
     }
 
     $id = OAT_Character::create( $create_data );
@@ -589,29 +655,84 @@ function owc_oat_ajax_submit_entry_frontend() {
         }
     }
 
-    $data = array(
-        'domain' => $domain,
-        'meta'   => $meta,
-    );
-    if ( $form_slug ) {
-        $data['form_slug'] = $form_slug;
-    }
-    // Promote chronicle_slug and coordinator_genre to entry-level fields.
-    if ( ! empty( $meta['chronicle_slug'] ) ) {
-        $data['chronicle_slug'] = $meta['chronicle_slug'];
-    }
-    if ( ! empty( $meta['coordinator_genre'] ) ) {
-        $data['coordinator_genre'] = $meta['coordinator_genre'];
+    // Parse rules from meta.
+    $parsed_rules = array();
+    foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
+        if ( ! empty( $meta[ $rk ] ) ) {
+            $decoded = is_string( $meta[ $rk ] ) ? json_decode( $meta[ $rk ], true ) : $meta[ $rk ];
+            if ( is_array( $decoded ) && ! empty( $decoded ) ) {
+                $parsed_rules = $decoded;
+            }
+            break;
+        }
     }
 
-    $result = owc_oat_submit( $data );
+    // Batch split: character_lifecycle with multiple rules → one entry per rule.
+    $is_cl    = ( 'character_lifecycle' === $domain );
+    $do_split = $is_cl && count( $parsed_rules ) > 1;
 
-    if ( is_wp_error( $result ) ) {
-        wp_send_json_error( $result->get_error_message() );
+    $batches = array();
+    if ( $do_split ) {
+        foreach ( $parsed_rules as $rule ) {
+            $entry_meta = $meta;
+            foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
+                if ( isset( $entry_meta[ $rk ] ) ) {
+                    $entry_meta[ $rk ] = wp_json_encode( array( $rule ) );
+                }
+            }
+            // Build item_description from the rule.
+            if ( is_array( $rule ) && isset( $rule['text'] ) ) {
+                $entry_meta['item_description'] = sanitize_text_field( $rule['text'] );
+            } elseif ( is_numeric( $rule ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+                $rule_obj = OAT_Regulation_Rule::find( (int) $rule );
+                if ( $rule_obj ) {
+                    $parts = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
+                    $entry_meta['item_description'] = implode( ': ', $parts );
+                }
+            }
+            $batches[] = array( 'meta' => $entry_meta, 'rules' => array( $rule ) );
+        }
+    } else {
+        $batches[] = array( 'meta' => $meta, 'rules' => $parsed_rules );
     }
 
-    $entry_id = is_array( $result ) && isset( $result['entry_id'] ) ? (int) $result['entry_id'] : (int) $result;
-    wp_send_json_success( array( 'entry_id' => $entry_id ) );
+    $created_ids = array();
+    foreach ( $batches as $batch ) {
+        $data = array(
+            'domain' => $domain,
+            'meta'   => $batch['meta'],
+            'rules'  => $batch['rules'],
+        );
+        if ( $form_slug ) {
+            $data['form_slug'] = $form_slug;
+        }
+        if ( ! empty( $batch['meta']['chronicle_slug'] ) ) {
+            $data['chronicle_slug'] = $batch['meta']['chronicle_slug'];
+        }
+        if ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
+            $data['coordinator_genre'] = $batch['meta']['coordinator_genre'];
+        }
+
+        $result = owc_oat_submit( $data );
+
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( $result->get_error_message() );
+        }
+
+        $eid = is_array( $result ) && isset( $result['entry_id'] ) ? (int) $result['entry_id'] : (int) $result;
+        $created_ids[] = $eid;
+    }
+
+    if ( count( $created_ids ) === 1 ) {
+        wp_send_json_success( array( 'entry_id' => $created_ids[0] ) );
+    } else {
+        wp_send_json_success( array(
+            'entry_id' => $created_ids[0],
+            'batch'    => true,
+            'count'    => count( $created_ids ),
+            'ids'      => $created_ids,
+        ) );
+    }
 }
 
 /**

@@ -458,6 +458,51 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			</details>
 			<?php endif; ?>
 
+			<?php
+			// Custom Content created by this character (domain = custom_content, character_id matches).
+			$created_content = array();
+			if ( class_exists( 'OAT_Entry' ) ) {
+				global $wpdb;
+				$created_content = $wpdb->get_results( $wpdb->prepare(
+					"SELECT e.id, e.status, e.coordinator_genre, e.created_at
+					 FROM {$wpdb->prefix}oat_entries e
+					 WHERE e.domain = 'custom_content' AND e.character_id = %d
+					 ORDER BY e.created_at DESC",
+					$character_id
+				) );
+			}
+			if ( ! empty( $created_content ) ) : ?>
+				<hr style="margin:20px 0;">
+				<h3><?php printf( esc_html__( 'Custom Content Created (%d)', 'owbn-client' ), count( $created_content ) ); ?></h3>
+				<ul style="margin:0;padding-left:20px;">
+					<?php foreach ( $created_content as $cc ) :
+						$cc_meta = array();
+						if ( class_exists( 'OAT_Entry_Meta' ) ) {
+							$raw = OAT_Entry_Meta::get_all( (int) $cc->id );
+							foreach ( $raw as $m ) {
+								$cc_meta[ $m->meta_key ] = $m->meta_value;
+							}
+						}
+						$cc_type = $cc_meta['content_type'] ?? '';
+						$cc_name = $cc_meta['content_name'] ?? '';
+						$cc_coord = $cc->coordinator_genre ? ucfirst( $cc->coordinator_genre ) : '';
+						$cc_label = $cc_type . ': ' . $cc_name;
+						if ( $cc_coord ) {
+							$coord_title = function_exists( 'owc_entity_get_title' )
+								? owc_entity_get_title( 'coordinator', $cc->coordinator_genre )
+								: $cc_coord;
+							$cc_label .= ' — ' . ( $coord_title ?: $cc_coord );
+						}
+						$cc_url = esc_url( trailingslashit( $entry_url ) . '?oat_entry=' . (int) $cc->id );
+					?>
+						<li style="margin-bottom:4px;">
+							<a href="<?php echo $cc_url; ?>" target="_blank"><?php echo esc_html( $cc_label ); ?> &#x29C9;</a>
+							<span style="color:#888;font-size:0.85em;margin-left:6px;"><?php echo esc_html( ucfirst( $cc->status ) ); ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+
 			<hr style="margin:20px 0;">
 
 			<!-- Registry Entries -->
@@ -492,9 +537,20 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 					$item_desc = $e_meta['item_description'] ?? '';
 					$reg_level = $e_meta['regulation_level'] ?? '';
-					$header_label = $item_desc ?: $e_form;
+
+					// Build descriptive header label.
+					if ( $e_domain === 'custom_content' ) {
+						$cc_type = $e_meta['content_type'] ?? '';
+						$cc_name = $e_meta['content_name'] ?? '';
+						$header_label = $cc_name ? 'Custom ' . $cc_type . ': ' . $cc_name : ( $cc_type ?: $e_form );
+					} else {
+						$header_label = $item_desc ?: $e_form;
+					}
 					if ( $e_coord ) {
-						$header_label .= ' — ' . ucfirst( $e_coord );
+						$coord_title = function_exists( 'owc_entity_get_title' )
+							? owc_entity_get_title( 'coordinator', $e_coord )
+							: ucfirst( $e_coord );
+						$header_label .= ' — ' . ( $coord_title ?: ucfirst( $e_coord ) );
 					}
 				?>
 				<div style="margin-bottom:4px;">
@@ -514,8 +570,54 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 							<?php if ( $reg_level ) : ?>
 								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Regulation Level', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $reg_level ); ?></td></tr>
 							<?php endif; ?>
-							<?php if ( $item_desc ) : ?>
-								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Item', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $item_desc ); ?></td></tr>
+							<?php if ( $item_desc ) :
+								// Try to find the source custom content entry to link to.
+								$item_link    = '';
+								$item_missing = false;
+								$is_custom    = ( strpos( $item_desc, 'Custom ' ) === 0 );
+
+								if ( $is_custom && class_exists( 'OAT_Entry_Meta' ) ) {
+									global $wpdb;
+									// Extract possible content names by stripping known prefixes.
+									$search_names = array();
+									// Try progressively stripping "Custom ...: " segments.
+									$remainder = $item_desc;
+									while ( preg_match( '/^(?:Custom\s+)?([^:]+):\s*(.+)$/', $remainder, $m ) ) {
+										$search_names[] = $m[2]; // everything after the first "X: "
+										$remainder = $m[2];
+									}
+									$search_names[] = $item_desc; // full string as fallback
+
+									$cc_entry_id = null;
+									foreach ( $search_names as $search_name ) {
+										$search_name = trim( $search_name );
+										if ( ! $search_name ) continue;
+										$cc_entry_id = $wpdb->get_var( $wpdb->prepare(
+											"SELECT e.id FROM {$wpdb->prefix}oat_entries e
+											 JOIN {$wpdb->prefix}oat_entry_meta m ON e.id = m.entry_id AND m.meta_key = 'content_name'
+											 WHERE e.domain = 'custom_content' AND m.meta_value = %s
+											 ORDER BY e.id DESC LIMIT 1",
+											$search_name
+										) );
+										if ( $cc_entry_id ) break;
+									}
+
+									if ( $cc_entry_id ) {
+										$item_link = esc_url( trailingslashit( $entry_url ) . '?oat_entry=' . (int) $cc_entry_id );
+									} else {
+										$item_missing = true;
+									}
+								}
+							?>
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Item', 'owbn-client' ); ?></td><td style="padding:3px 8px;">
+									<?php if ( $item_link ) : ?>
+										<a href="<?php echo $item_link; ?>" target="_blank"><?php echo esc_html( $item_desc ); ?> &#x29C9;</a>
+									<?php elseif ( $item_missing ) : ?>
+										<?php echo esc_html( $item_desc ); ?> <span style="color:#999;font-size:0.85em;">[Entry not found]</span>
+									<?php else : ?>
+										<?php echo esc_html( $item_desc ); ?>
+									<?php endif; ?>
+								</td></tr>
 							<?php endif; ?>
 							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Status', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_status ); ?></td></tr>
 							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Created', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_created ); ?></td></tr>

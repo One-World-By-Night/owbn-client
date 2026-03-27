@@ -177,6 +177,11 @@
 
 				$btn.prop('disabled', true).css('opacity', '0.5');
 
+				// Sync TinyMCE editors back to their textareas before reading values.
+				if (typeof tinyMCE !== 'undefined') {
+					tinyMCE.triggerSave();
+				}
+
 				var data = {
 					action: 'owc_oat_process_action',
 					nonce: owc_oat_ajax.nonce,

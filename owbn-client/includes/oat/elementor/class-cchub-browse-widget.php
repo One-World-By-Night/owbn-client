@@ -84,9 +84,12 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 			</table>
 
 			<!-- Modal overlay -->
-			<div class="cchub-modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;overflow-y:auto;">
-				<div class="cchub-modal" style="background:#fff;max-width:800px;margin:40px auto;border-radius:8px;padding:24px;position:relative;">
-					<button class="cchub-modal-close" style="position:absolute;top:12px;right:16px;font-size:1.5em;background:none;border:none;cursor:pointer;">&times;</button>
+			<div class="cchub-modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+				<div class="cchub-modal" style="background:#fff;max-width:960px;width:90%;margin:20px auto;border-radius:8px;padding:24px;position:relative;box-sizing:border-box;">
+					<div style="display:flex;justify-content:flex-end;gap:12px;margin-bottom:8px;">
+						<a class="cchub-modal-newtab" href="#" target="_blank" style="font-size:13px;color:#2271b1;text-decoration:none;">Open in new tab &#x29C9;</a>
+						<button class="cchub-modal-close" style="font-size:1.5em;background:none;border:none;cursor:pointer;line-height:1;">&times;</button>
+					</div>
 					<div class="cchub-modal-content"></div>
 				</div>
 			</div>
@@ -169,9 +172,21 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 				var overlay = document.querySelector('.cchub-modal-overlay');
 				var modalContent = document.querySelector('.cchub-modal-content');
 
+				function nl2br(str) {
+					if (!str) return '';
+					// If it already has HTML block tags, return as-is.
+					if (/<(p|div|br|ul|ol|h[1-6])\b/i.test(str)) return str;
+					return str.replace(/\n/g, '<br>');
+				}
+
 				function openModal(entryId) {
 					modalContent.innerHTML = '<p style="text-align:center;">Loading...</p>';
 					overlay.style.display = '';
+					// Set "open in new tab" link.
+					var newtabLink = overlay.querySelector('.cchub-modal-newtab');
+					if (newtabLink) {
+						newtabLink.href = langPrefix + '/oat-entry/?oat_entry=' + entryId;
+					}
 
 					var xhr = new XMLHttpRequest();
 					xhr.open('POST', ajaxUrl);
@@ -212,11 +227,11 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 						}
 
 						if (d.met_rules) {
-							html += '<h4>MET Mechanics</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' + d.met_rules + '</div>';
+							html += '<h4>MET Mechanics</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' + nl2br(d.met_rules) + '</div>';
 						}
 
 						if (d.summary) {
-							html += '<h4>Summary</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' + d.summary + '</div>';
+							html += '<h4>Summary</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' + nl2br(d.summary) + '</div>';
 						}
 
 						modalContent.innerHTML = html;

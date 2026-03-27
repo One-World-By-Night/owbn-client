@@ -335,7 +335,18 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				$.post(owc_oat_ajax.url, formData, function(response) {
 					if (response.success && response.data && response.data.entry_id) {
 						var redirect = $form.data('redirect') || '/oat-entry/';
-						window.location.href = redirect + '?oat_entry=' + response.data.entry_id + '&created=1';
+						if (response.data.batch && response.data.ids && response.data.ids.length > 1) {
+							var html = '<div style="background:#d7f0d7;border:1px solid #006505;border-radius:4px;padding:16px;margin:12px 0;">';
+							html += '<strong style="color:#006505;">' + response.data.count + ' entries created:</strong><ul style="margin:8px 0 0 16px;">';
+							for (var i = 0; i < response.data.ids.length; i++) {
+								html += '<li><a href="' + redirect + '?oat_entry=' + response.data.ids[i] + '" target="_blank">Entry #' + response.data.ids[i] + ' &#x29C9;</a></li>';
+							}
+							html += '</ul></div>';
+							$feedback.html(html);
+							$btn.prop('disabled', false).text(<?php echo wp_json_encode( $btn_text ); ?>);
+						} else {
+							window.location.href = redirect + '?oat_entry=' + response.data.entry_id + '&created=1';
+						}
 					} else {
 						var msg = response.data || '<?php echo esc_js( __( 'Submission failed. Please check the form and try again.', 'owbn-client' ) ); ?>';
 						$feedback.html('<div class="oat-submit-error">' + msg + '</div>');

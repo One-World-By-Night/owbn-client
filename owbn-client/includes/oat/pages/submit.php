@@ -49,46 +49,97 @@ function owc_oat_page_submit() {
         }
 
         if ( empty( $error ) ) {
-            // Build submission data.
-            $submit_data = array(
-                'domain'    => $domain_slug,
-                'form_slug' => $form_slug,
-                'meta'      => $meta,
-                'note'      => '',
-                'rules'     => array(),
-            );
-
-            // Promote chronicle_slug and coordinator_genre from meta to entry-level fields.
-            if ( ! empty( $meta['chronicle_slug'] ) ) {
-                $submit_data['chronicle_slug'] = $meta['chronicle_slug'];
-            }
-            if ( ! empty( $meta['coordinator_genre'] ) ) {
-                $submit_data['coordinator_genre'] = $meta['coordinator_genre'];
-            }
-            if ( ! empty( $_POST['oat_rule_ids'] ) ) {
-                $submit_data['rules'] = array_map( 'absint', (array) $_POST['oat_rule_ids'] );
-            }
-
-            // Extract title and description from meta for the API.
-            if ( isset( $meta['title'] ) ) {
-                $submit_data['title'] = $meta['title'];
-            }
-            if ( isset( $meta['description'] ) ) {
-                $submit_data['description'] = $meta['description'];
-            }
-
-            $result = owc_oat_submit( $submit_data );
-
-            if ( is_wp_error( $result ) ) {
-                $error = $result->get_error_message();
-            } else {
-                // Redirect to entry detail.
-                $entry_id = isset( $result['entry_id'] ) ? (int) $result['entry_id'] : 0;
-                if ( $entry_id > 0 ) {
-                    wp_redirect( admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . $entry_id . '&created=1' ) );
-                    exit;
+            // Parse rules from meta (regulation_rules or ru_rules field).
+            $rules_json = '';
+            foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
+                if ( ! empty( $meta[ $rk ] ) ) {
+                    $rules_json = $meta[ $rk ];
+                    break;
                 }
-                $success = 'Entry created successfully.';
+            }
+            $parsed_rules = array();
+            if ( $rules_json ) {
+                $decoded = is_string( $rules_json ) ? json_decode( $rules_json, true ) : $rules_json;
+                if ( is_array( $decoded ) ) {
+                    $parsed_rules = $decoded;
+                }
+            }
+            // Also check legacy oat_rule_ids POST field.
+            if ( empty( $parsed_rules ) && ! empty( $_POST['oat_rule_ids'] ) ) {
+                $parsed_rules = array_map( 'absint', (array) $_POST['oat_rule_ids'] );
+            }
+
+            // Batch split: if multiple rules on a character_lifecycle form, create one entry per rule.
+            $is_cl = ( $domain_slug === 'character_lifecycle' );
+            $do_split = $is_cl && count( $parsed_rules ) > 1;
+
+            $entries_to_create = array();
+            if ( $do_split ) {
+                foreach ( $parsed_rules as $rule ) {
+                    $entry_meta = $meta;
+                    // Set this entry's rules to just this one rule.
+                    foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
+                        if ( isset( $entry_meta[ $rk ] ) ) {
+                            $entry_meta[ $rk ] = wp_json_encode( array( $rule ) );
+                        }
+                    }
+                    // Build item_description from the rule.
+                    if ( is_array( $rule ) && isset( $rule['text'] ) ) {
+                        $entry_meta['item_description'] = sanitize_text_field( $rule['text'] );
+                    } elseif ( is_numeric( $rule ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+                        $rule_obj = OAT_Regulation_Rule::find( (int) $rule );
+                        if ( $rule_obj ) {
+                            $parts = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
+                            $entry_meta['item_description'] = implode( ': ', $parts );
+                        }
+                    }
+                    $entries_to_create[] = array( 'meta' => $entry_meta, 'rules' => array( $rule ) );
+                }
+            } else {
+                $entries_to_create[] = array( 'meta' => $meta, 'rules' => $parsed_rules );
+            }
+
+            $created_ids = array();
+            foreach ( $entries_to_create as $batch ) {
+                $submit_data = array(
+                    'domain'    => $domain_slug,
+                    'form_slug' => $form_slug,
+                    'meta'      => $batch['meta'],
+                    'note'      => '',
+                    'rules'     => $batch['rules'],
+                );
+
+                if ( ! empty( $batch['meta']['chronicle_slug'] ) ) {
+                    $submit_data['chronicle_slug'] = $batch['meta']['chronicle_slug'];
+                }
+                if ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
+                    $submit_data['coordinator_genre'] = $batch['meta']['coordinator_genre'];
+                }
+                if ( isset( $batch['meta']['title'] ) ) {
+                    $submit_data['title'] = $batch['meta']['title'];
+                }
+                if ( isset( $batch['meta']['description'] ) ) {
+                    $submit_data['description'] = $batch['meta']['description'];
+                }
+
+                $result = owc_oat_submit( $submit_data );
+
+                if ( is_wp_error( $result ) ) {
+                    $error = $result->get_error_message();
+                    break;
+                }
+                $created_ids[] = isset( $result['entry_id'] ) ? (int) $result['entry_id'] : 0;
+            }
+
+            if ( empty( $error ) ) {
+                if ( count( $created_ids ) === 1 && $created_ids[0] > 0 ) {
+                    wp_redirect( admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . $created_ids[0] . '&created=1' ) );
+                    exit;
+                } elseif ( count( $created_ids ) > 1 ) {
+                    $success = count( $created_ids ) . ' entries created successfully.';
+                } else {
+                    $success = 'Entry created successfully.';
+                }
             }
         }
     }

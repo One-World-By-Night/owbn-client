@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicle, coordinator
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.22.9
+Stable tag: 4.25.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,7 +114,11 @@ The plugin uses WordPress transients to cache API responses. The default TTL is 
 
 == Changelog ==
 
-= 4.22.9 =
+= 4.25.0 =
+* Feature: 4-level creature type picker (Genre > Faction > Type > Variant) on character create
+* Update: Creature taxonomy loaded from DB via AJAX, managed by Archivist
+
+= 4.24.2 =
 * Fix: Debounce action form submissions to prevent duplicate assignees/timeline
 
 = 4.20.9 =

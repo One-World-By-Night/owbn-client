@@ -49,7 +49,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 	public function get_script_depends()
 	{
-		return array( 'owc-oat-client', 'owc-oat-frontend' );
+		return array( 'owc-oat-client', 'owc-oat-frontend', 'owc-oat-regulation-picker' );
 	}
 
 	// ── Controls ─────────────────────────────────────────────────────────────
@@ -343,7 +343,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		?>
 		<div class="oat-entry-widget">
 
-			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching ); ?>
+			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees ); ?>
 
 			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map ); ?>
 
@@ -527,12 +527,26 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	/**
 	 * Render entry header: title, status badge, watch toggle.
 	 */
-	private function render_header( $entry, $domain_label, $step_label, $is_watching )
+	private function render_header( $entry, $domain_label, $step_label, $is_watching, $assignees = array() )
 	{
 		ob_start();
 		$status     = isset( $entry['status'] ) ? $entry['status'] : '';
 		$status_lbl = ucfirst( str_replace( '_', ' ', $status ) );
 		$entry_id   = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
+
+		// Determine if current user is an assignee — no need for Watch button.
+		$current_uid  = get_current_user_id();
+		$is_assignee  = false;
+		foreach ( $assignees as $a ) {
+			$uid = is_array( $a ) ? ( (int) ( $a['user_id'] ?? 0 ) ) : ( (int) ( $a->user_id ?? 0 ) );
+			if ( $uid === $current_uid ) {
+				$is_assignee = true;
+				break;
+			}
+		}
+		$originator_id = isset( $entry['originator_id'] ) ? (int) $entry['originator_id'] : 0;
+		$is_originator = ( $originator_id === $current_uid );
+		$show_watch    = ! $is_assignee && ! $is_originator;
 		?>
 		<div class="oat-entry-section">
 			<div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
@@ -549,11 +563,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						</span>
 					<?php endif; ?>
 				</div>
-				<button type="button"
-					class="oat-watch-btn<?php echo $is_watching ? ' watching' : ''; ?>"
-					data-entry-id="<?php echo esc_attr( $entry_id ); ?>">
-					<?php echo $is_watching ? esc_html__( 'Watching', 'owbn-client' ) : esc_html__( 'Watch', 'owbn-client' ); ?>
-				</button>
+				<?php if ( $show_watch ) : ?>
+					<button type="button"
+						class="oat-watch-btn<?php echo $is_watching ? ' watching' : ''; ?>"
+						data-entry-id="<?php echo esc_attr( $entry_id ); ?>">
+						<?php echo $is_watching ? esc_html__( 'Watching', 'owbn-client' ) : esc_html__( 'Watch', 'owbn-client' ); ?>
+					</button>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php
@@ -774,6 +790,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'record'           => __( 'Log', 'owbn-client' ),
 			'council_override' => __( 'Council Override', 'owbn-client' ),
 			'timer_extend'     => __( 'Extend Timer', 'owbn-client' ),
+			'admin_edit'       => __( 'Admin Edit', 'owbn-client' ),
 		);
 		?>
 		<div class="oat-entry-section">
@@ -827,6 +844,34 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 									style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
 								<button type="submit" class="oat-action-btn oat-action-btn-approve">
 									<?php esc_html_e( 'Resubmit', 'owbn-client' ); ?>
+								</button>
+							</form>
+						</div>
+					<?php continue; endif; ?>
+
+					<?php if ( 'admin_edit' === $action_type ) : ?>
+						<div class="oat-action-card" style="background:#fdf8f0;border:1px solid #c9920e;flex-basis:100%;max-width:none;">
+							<form class="oat-action-form oat-admin-edit-form">
+								<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
+								<input type="hidden" name="action_type" value="admin_edit">
+								<strong style="display:block;margin-bottom:12px;font-size:15px;color:#7a5700;">
+									<?php esc_html_e( 'Admin Edit', 'owbn-client' ); ?>
+								</strong>
+								<p style="margin:0 0 12px;font-size:13px;color:#646970;">
+									<?php esc_html_e( 'Edit entry fields directly. Changes are logged in the timeline.', 'owbn-client' ); ?>
+								</p>
+								<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields' ) ) : ?>
+									<div class="oat-frontend-form" style="margin-bottom:12px;">
+										<?php owc_oat_render_fields( $domain_fields, $meta ); ?>
+									</div>
+								<?php endif; ?>
+								<textarea name="note"
+									placeholder="<?php esc_attr_e( 'Reason for edit (required)', 'owbn-client' ); ?>"
+									rows="2"
+									style="width:100%;box-sizing:border-box;margin:6px 0;"
+									required></textarea>
+								<button type="submit" class="oat-action-btn" style="background:#c9920e;color:#fff;border-color:#a07608;">
+									<?php esc_html_e( 'Save Changes', 'owbn-client' ); ?>
 								</button>
 							</form>
 						</div>
