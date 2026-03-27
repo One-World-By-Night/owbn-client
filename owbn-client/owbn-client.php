@@ -14,7 +14,7 @@
 defined('ABSPATH') || exit;
 
 define('OWC_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('OWC_VERSION', '4.24.2');
+define('OWC_VERSION', '4.25.0');
 
 require_once plugin_dir_path(__FILE__) . 'includes/activation.php';
 register_activation_hook(__FILE__, 'owc_create_default_pages');

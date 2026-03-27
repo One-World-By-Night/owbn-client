@@ -902,6 +902,20 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
                 }
             }
 
+            // If character field was changed, re-resolve character_id on the entry.
+            $char_changed = array_intersect( array( 'character_name', 'character' ), $updated_keys );
+            if ( ! empty( $char_changed ) && class_exists( 'OAT_Character' ) ) {
+                $char_key      = reset( $char_changed );
+                $new_char_uuid = OAT_Entry_Meta::get( $entry_id, $char_key );
+                if ( $new_char_uuid ) {
+                    $new_char = OAT_Character::find_by_uuid( $new_char_uuid );
+                    if ( $new_char && (int) $new_char->id !== (int) $entry->character_id ) {
+                        OAT_Entry::update( $entry_id, array( 'character_id' => (int) $new_char->id ) );
+                        $updated_keys[] = 'character_id';
+                    }
+                }
+            }
+
             // Log timeline.
             $changes_note = $note;
             if ( ! empty( $updated_keys ) ) {
