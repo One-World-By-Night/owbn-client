@@ -804,6 +804,25 @@ function owc_oat_submit( $data ) {
             }
         }
 
+        // Resolve coordinator_genre and item_description from linked custom content (Learn CC).
+        if ( ! empty( $meta['learned_content'] ) && class_exists( 'OAT_Entry' ) ) {
+            $cc_data = is_string( $meta['learned_content'] ) ? json_decode( $meta['learned_content'], true ) : $meta['learned_content'];
+            if ( is_array( $cc_data ) && ! empty( $cc_data['entry_id'] ) ) {
+                $cc_entry = OAT_Entry::find( (int) $cc_data['entry_id'] );
+                if ( $cc_entry ) {
+                    // Set coordinator_genre from the CC entry if not already set.
+                    if ( ! empty( $cc_entry->coordinator_genre ) ) {
+                        OAT_Entry::update( $entry_id, array( 'coordinator_genre' => $cc_entry->coordinator_genre ) );
+                    }
+                    // Set item_description from CC item label (fixes "form name" display).
+                    if ( ! empty( $cc_data['label'] ) && empty( $meta['item_description'] ) ) {
+                        $meta['item_description'] = sanitize_text_field( $cc_data['label'] );
+                        OAT_Entry_Meta::set( $entry_id, 'item_description', $meta['item_description'] );
+                    }
+                }
+            }
+        }
+
         // Attach regulation rules.
         if ( ! empty( $data['rules'] ) && is_array( $data['rules'] ) ) {
             foreach ( $data['rules'] as $rule_id ) {
