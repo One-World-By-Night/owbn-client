@@ -45,7 +45,7 @@ function owc_oat_user_name( $uid, $map ) {
         <div class="notice notice-success"><p>Entry created successfully.</p></div>
     <?php endif; ?>
 
-    <!-- Watch Toggle -->
+    <!-- Watch Toggle + Delete -->
     <p>
         <button type="button"
                 class="button owc-oat-watch-toggle"
@@ -53,6 +53,17 @@ function owc_oat_user_name( $uid, $map ) {
                 data-watching="<?php echo $is_watching ? '1' : '0'; ?>">
             <?php echo $is_watching ? 'Unwatch' : 'Watch'; ?>
         </button>
+        <?php if ( class_exists( 'OAT_Entry' ) && OAT_Entry::can_delete( (object) $entry ) ) :
+            $delete_url = wp_nonce_url(
+                admin_url( 'admin.php?page=oat-entries&action=delete&entry_id=' . $entry['id'] ),
+                'oat_delete_entry_' . $entry['id']
+            );
+        ?>
+            <a href="<?php echo esc_url( $delete_url ); ?>" class="button" style="color:#d63638;border-color:#d63638;margin-left:8px;"
+               onclick="var v=prompt('Type DELETE to permanently remove this entry and all related data.');if(v!=='DELETE'){event.preventDefault();return false;}">
+                Delete Entry
+            </a>
+        <?php endif; ?>
     </p>
 
     <!-- Entry Header -->
