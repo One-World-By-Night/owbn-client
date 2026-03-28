@@ -167,6 +167,27 @@ function owc_oat_user_name( $uid, $map ) {
 
             <?php foreach ( $available_actions as $action_type ) :
                 if ( $action_type === 'auto_approve' ) continue;
+
+                // Admin Edit: render all domain fields as editable inputs.
+                if ( $action_type === 'admin_edit' ) : ?>
+                    <div class="oat-action-card" style="background:#fdf8f0;border:1px solid #c9920e;">
+                        <form method="post" class="owc-oat-action-form">
+                            <?php wp_nonce_field( 'owc_oat_entry_action' ); ?>
+                            <input type="hidden" name="oat_action" value="admin_edit">
+                            <input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry['id'] ); ?>">
+                            <h3 style="margin-top:0;color:#7a5700;">Admin Edit</h3>
+                            <p class="description">Edit entry fields directly. Changes are logged in the timeline.</p>
+                            <?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields' ) ) : ?>
+                                <div style="margin-bottom:12px;">
+                                    <?php owc_oat_render_fields( $domain_fields, $meta ); ?>
+                                </div>
+                            <?php endif; ?>
+                            <textarea name="oat_note" placeholder="Reason for edit (required)" rows="2" class="large-text" required></textarea>
+                            <button type="submit" class="button" style="background:#c9920e;color:#fff;border-color:#a07608;">Save Changes</button>
+                        </form>
+                    </div>
+                <?php continue; endif;
+
                 $label = isset( $action_labels[ $action_type ] ) ? $action_labels[ $action_type ] : ucfirst( $action_type );
             ?>
                 <div class="oat-action-card">

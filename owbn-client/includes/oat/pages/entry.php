@@ -50,7 +50,8 @@ function owc_oat_page_entry() {
 
     // Fetch form field definitions for rendering meta in read-only mode.
     $domain_slug   = isset( $entry['domain'] ) ? $entry['domain'] : '';
-    $domain_fields = $domain_slug ? owc_oat_get_form_fields( $domain_slug, 'submit' ) : array();
+    $form_slug     = isset( $entry['form_slug'] ) && $entry['form_slug'] ? $entry['form_slug'] : $domain_slug;
+    $domain_fields = $form_slug ? owc_oat_get_form_fields( $form_slug, 'submit' ) : array();
     // D2: Fetch review context fields for step-aware rendering in action cards.
     $review_fields = $domain_slug ? owc_oat_get_form_fields( $domain_slug, 'review' ) : array();
     $current_step  = isset( $entry['current_step'] ) ? $entry['current_step'] : '';

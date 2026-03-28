@@ -194,7 +194,12 @@
 				$form.find('[name]').each(function () {
 					var name = $(this).attr('name');
 					if (!data[name]) {
-						data[name] = $(this).val();
+						// Checkboxes: send "1" if checked, "0" if not.
+						if ($(this).is(':checkbox')) {
+							data[name] = $(this).is(':checked') ? '1' : '0';
+						} else {
+							data[name] = $(this).val();
+						}
 					}
 				});
 
