@@ -305,17 +305,6 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 				});
 			});
 
-			// Background-fill all sections after page load.
-			var bgIdx = 0;
-			function bgFill() {
-				if (bgIdx >= sections.length) return;
-				var el = document.querySelector('[data-section-idx="' + bgIdx + '"]');
-				if (el) renderRows(el, bgIdx);
-				bgIdx++;
-				requestAnimationFrame(bgFill);
-			}
-			setTimeout(bgFill, 500);
-
 			// Section filter.
 			var sectionFilter = document.querySelector('.oat-registry-section-filter');
 			if (sectionFilter) {

@@ -62,8 +62,8 @@ defined( 'ABSPATH' ) || exit;
         $key        = esc_attr( $section['key'] );
         $chars      = $section['characters'];
         $char_count = count( $chars );
-        // First section ("My Characters") defaults expanded. Others collapse if >20 characters.
-        $expanded   = ( $i === 0 ) || ( $char_count <= 20 );
+        // Only "My Characters" (first section) defaults expanded.
+        $expanded   = ( $i === 0 );
     ?>
         <div class="oat-registry-section" data-section="<?php echo $key; ?>">
             <div class="oat-registry-section-header" onclick="oatToggleSection(this)">
