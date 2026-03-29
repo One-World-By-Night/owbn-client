@@ -199,6 +199,14 @@ function owbn_gateway_register_oat_routes() {
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
 
+    // ── Settings (server-scoped, API key only) ───────────────────────────
+
+    register_rest_route( $namespace, '/oat/settings/create-roles', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_settings_create_roles',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
     // ── ccHub routes (server-scoped, API key only) ──────────────────────
 
     // Category listing with counts.

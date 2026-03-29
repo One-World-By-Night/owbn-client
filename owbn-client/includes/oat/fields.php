@@ -554,7 +554,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</div>';
 			// Hidden input: stores character UUID.
 			printf( '<input type="hidden" name="%s" id="%s" value="%s" class="oat-character-uuid" />', $name, $id, esc_attr( $value ) );
-			// Create-new toggle.
+			// Create-new toggle (only if user has character creation permission).
+			$can_create = function_exists( 'owc_oat_can_create_character' ) ? owc_oat_can_create_character() : true;
+			if ( $can_create ) :
 			echo '<p style="margin-top:6px;">';
 			echo '<button type="button" class="button button-secondary oat-character-create-toggle">';
 			echo esc_html__( 'Create New Character', 'owbn-client' );
@@ -593,6 +595,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-client' ) . '</button>';
 			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-client' ) . '</button></p>';
 			echo '</div>'; // .oat-character-create-panel
+			endif; // can_create
 			echo '</div>'; // .oat-character-picker-wrap
 			if ( $help_text ) {
 				echo '<p class="description">' . esc_html( $help_text ) . '</p>';

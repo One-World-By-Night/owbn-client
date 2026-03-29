@@ -1342,6 +1342,86 @@ function owc_oat_can_self_approve( $user_id ) {
 }
 
 /**
+ * Check if the current user can create characters.
+ *
+ * Reads the oat_character_create_roles option (locally or via gateway).
+ * If empty, all authenticated users are allowed.
+ * Patterns support * as wildcard for a slug segment.
+ *
+ * @return bool
+ */
+function owc_oat_can_create_character() {
+    if ( ! is_user_logged_in() ) {
+        return false;
+    }
+
+    // WP admin always allowed.
+    if ( current_user_can( 'manage_options' ) ) {
+        return true;
+    }
+
+    $patterns = owc_oat_get_create_role_patterns();
+
+    // Empty = allow all authenticated users.
+    if ( empty( $patterns ) ) {
+        return true;
+    }
+
+    $user_id = get_current_user_id();
+    $roles   = owc_oat_get_user_asc_roles( $user_id );
+    if ( empty( $roles ) ) {
+        return false;
+    }
+
+    foreach ( $patterns as $pattern ) {
+        $pattern = strtolower( trim( $pattern ) );
+        if ( '' === $pattern ) {
+            continue;
+        }
+        // Convert wildcard pattern to regex: * matches any single slug segment.
+        $regex = '#^' . str_replace( '\\*', '[^/]+', preg_quote( $pattern, '#' ) ) . '$#i';
+        foreach ( $roles as $role ) {
+            if ( preg_match( $regex, $role ) ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Fetch the character creation allowed role patterns.
+ *
+ * Local: reads get_option directly.
+ * Remote: fetches via gateway and caches in transient for 5 minutes.
+ *
+ * @return array
+ */
+function owc_oat_get_create_role_patterns() {
+    if ( owc_oat_is_local() ) {
+        $roles = get_option( 'oat_character_create_roles', array() );
+        return is_array( $roles ) ? $roles : array();
+    }
+
+    // Remote: cache via transient.
+    $cache_key = 'owc_oat_create_role_patterns';
+    $cached    = get_transient( $cache_key );
+    if ( is_array( $cached ) ) {
+        return $cached;
+    }
+
+    $response = owc_oat_request( 'oat/settings/create-roles' );
+    if ( is_wp_error( $response ) || ! isset( $response['roles'] ) ) {
+        return array();
+    }
+
+    $roles = is_array( $response['roles'] ) ? $response['roles'] : array();
+    set_transient( $cache_key, $roles, 5 * MINUTE_IN_SECONDS );
+    return $roles;
+}
+
+/**
  * Check if a user holds the resolved step role.
  *
  * @param array  $user_roles    Lowercase-normalized role paths.

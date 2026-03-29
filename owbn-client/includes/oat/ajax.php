@@ -282,6 +282,10 @@ function owc_oat_ajax_search_characters() {
 function owc_oat_ajax_create_character() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
+    if ( ! owc_oat_can_create_character() ) {
+        wp_send_json_error( 'You do not have permission to create characters.' );
+    }
+
     if ( ! class_exists( 'OAT_Character' ) ) {
         wp_send_json_error( 'OAT_Character model not available.' );
     }

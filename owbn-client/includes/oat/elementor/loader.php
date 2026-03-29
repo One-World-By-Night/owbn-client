@@ -160,6 +160,7 @@ class OWC_OAT_Elementor_Loader
 			'currentUserName'       => $current_user && $current_user->ID ? $current_user->display_name : '',
 			'currentUserId'         => $current_user && $current_user->ID ? $current_user->ID : 0,
 			'isSuperUser'           => $is_super ? '1' : '0',
+			'canCreateCharacter'    => ( function_exists( 'owc_oat_can_create_character' ) && owc_oat_can_create_character() ) ? '1' : '0',
 		) );
 
 		// Creature type picker (works local via AJAX or remote via gateway).

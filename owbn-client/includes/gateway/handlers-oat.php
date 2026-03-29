@@ -656,6 +656,19 @@ function owbn_gateway_oat_rules_list( $request ) {
  *
  * Returns the full taxonomy tree for cascading Genre > Faction > Type > Variant selects.
  */
+/**
+ * Handle POST /owbn/v1/oat/settings/create-roles
+ *
+ * Returns the character creation allowed role patterns.
+ */
+function owbn_gateway_oat_settings_create_roles( $request ) {
+    $roles = get_option( 'oat_character_create_roles', array() );
+    if ( ! is_array( $roles ) ) {
+        $roles = array();
+    }
+    return owbn_gateway_respond( array( 'roles' => $roles ) );
+}
+
 function owbn_gateway_oat_creature_taxonomy( $request ) {
     if ( ! class_exists( 'OAT_Creature_Taxonomy' ) ) {
         return owbn_gateway_respond( array( 'genres' => array(), 'factions' => array(), 'types' => array(), 'variants' => array() ) );
