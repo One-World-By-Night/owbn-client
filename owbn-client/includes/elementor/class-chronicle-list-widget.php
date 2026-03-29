@@ -95,6 +95,21 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		);
 
 		$this->add_control(
+			'chronicle_status',
+			[
+				'label'       => __( 'Chronicle Status', 'owbn-client' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'publish',
+				'options'     => [
+					'publish'        => __( 'Active (Published)', 'owbn-client' ),
+					'decommissioned' => __( 'Decommissioned', 'owbn-client' ),
+					'all'            => __( 'All', 'owbn-client' ),
+				],
+				'description' => __( 'Which chronicles to show based on their status.', 'owbn-client' ),
+			]
+		);
+
+		$this->add_control(
 			'detail_page',
 			[
 				'label'       => __('Detail Page', 'owbn-client'),
@@ -553,6 +568,15 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		if (isset($data['error'])) {
 			echo '<p class="owc-error">' . esc_html($data['error']) . '</p>';
 			return;
+		}
+
+		// Filter by chronicle post status.
+		$status_filter = $settings['chronicle_status'] ?? 'publish';
+		if ( 'all' !== $status_filter ) {
+			$data = array_filter( $data, function( $c ) use ( $status_filter ) {
+				return ( $c['status'] ?? 'publish' ) === $status_filter;
+			} );
+			$data = array_values( $data );
 		}
 
 		// Handle empty data

@@ -18,6 +18,12 @@ function owc_render_chronicles_list(array $chronicles): string
         return '<p class="owc-error">' . esc_html($chronicles['error']) . '</p>';
     }
 
+    // Filter to published chronicles only (shortcode path).
+    $chronicles = array_filter( $chronicles, function( $c ) {
+        return ( $c['status'] ?? 'publish' ) === 'publish';
+    } );
+    $chronicles = array_values( $chronicles );
+
     if (empty($chronicles)) {
         return '<p class="owc-no-results">' . esc_html__('No chronicles found.', 'owbn-client') . '</p>';
     }
