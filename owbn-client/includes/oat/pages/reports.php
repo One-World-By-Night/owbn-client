@@ -298,8 +298,9 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             sort( $status_keys );
             $headers = array_merge( array( 'Chronicle' ), array_map( 'ucfirst', $status_keys ), array( 'Total' ) );
             echo '<table class="widefat striped"><thead><tr>';
-            foreach ( $headers as $h ) {
-                echo '<th>' . esc_html( $h ) . '</th>';
+            foreach ( $headers as $i => $h ) {
+                $align = ( $i > 0 ) ? ' style="text-align:right;"' : '';
+                echo '<th' . $align . '>' . esc_html( $h ) . '</th>';
             }
             echo '</tr></thead><tbody>';
             foreach ( $pivoted as $slug => $counts ) {
@@ -348,8 +349,9 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             sort( $status_keys );
             $headers = array_merge( array( 'Domain' ), array_map( 'ucfirst', $status_keys ), array( 'Total' ) );
             echo '<table class="widefat striped"><thead><tr>';
-            foreach ( $headers as $h ) {
-                echo '<th>' . esc_html( $h ) . '</th>';
+            foreach ( $headers as $i => $h ) {
+                $align = ( $i > 0 ) ? ' style="text-align:right;"' : '';
+                echo '<th' . $align . '>' . esc_html( $h ) . '</th>';
             }
             echo '</tr></thead><tbody>';
             foreach ( $pivoted as $dom => $counts ) {
