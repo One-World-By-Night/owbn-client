@@ -18,54 +18,6 @@ defined( 'ABSPATH' ) || exit;
  * @return void
  */
 function owc_oat_page_registry() {
-    $chronicle_filter = isset( $_GET['chronicle'] ) ? sanitize_text_field( $_GET['chronicle'] ) : '';
-    $genre_filter     = isset( $_GET['genre'] ) ? sanitize_text_field( $_GET['genre'] ) : '';
-
-    // Build API args from filters.
-    $args = array();
-    if ( $chronicle_filter ) {
-        $args['chronicle'] = $chronicle_filter;
-    }
-    if ( $genre_filter ) {
-        $args['genre'] = $genre_filter;
-    }
-
-    $result = owc_oat_get_registry( $args );
-
-    if ( is_wp_error( $result ) ) {
-        echo '<div class="wrap">';
-        echo '<h1>Registry</h1>';
-        echo '<div class="notice notice-error"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
-        echo '</div>';
-        return;
-    }
-
-    $characters = isset( $result['characters'] ) ? $result['characters'] : array();
-
-    // Normalize characters to arrays and tag ownership.
-    $user_id    = get_current_user_id();
-    $characters = array_map( function( $c ) use ( $user_id ) {
-        if ( is_object( $c ) ) {
-            $c = (array) $c;
-        }
-        // Tag ownership: REST API includes is_owner; local mode has wp_user_id.
-        // NPCs are never "owned" by a player — they belong to chronicle/coordinator.
-        if ( ! isset( $c['is_owner'] ) ) {
-            $is_npc = isset( $c['pc_npc'] ) && $c['pc_npc'] === 'npc';
-            $c['is_owner'] = ! $is_npc && isset( $c['wp_user_id'] ) && (int) $c['wp_user_id'] === $user_id;
-        }
-        // Normalize entry_counts.
-        if ( isset( $c['entry_counts'] ) && is_object( $c['entry_counts'] ) ) {
-            $c['entry_counts'] = (array) $c['entry_counts'];
-        }
-        return $c;
-    }, $characters );
-
-    // Build sections from the flat character list.
-    $sections = owc_oat_build_registry_sections( $characters );
-
-    $total_count = count( $characters );
-
     include dirname( __DIR__ ) . '/templates/registry.php';
 }
 

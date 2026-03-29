@@ -175,6 +175,22 @@ function owbn_gateway_register_oat_routes() {
         ),
     ) );
 
+    // ── Registry lazy-load (API key + user email) ─────────────────────
+
+    // Section headers with counts for a scope.
+    register_rest_route( $namespace, '/oat/registry/sections', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_sections',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Characters for a single section.
+    register_rest_route( $namespace, '/oat/registry/section-characters', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_section_characters',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
     // ── Creature taxonomy (server-scoped, API key only) ────────────────
 
     register_rest_route( $namespace, '/oat/creature-taxonomy', array(

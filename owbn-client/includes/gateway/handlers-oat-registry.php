@@ -426,3 +426,44 @@ function owbn_gateway_oat_cchub_entry( $request ) {
 
     return owbn_gateway_respond( $data );
 }
+
+/**
+ * Registry section headers with counts.
+ */
+function owbn_gateway_oat_registry_sections( $request ) {
+    $body  = $request->get_json_params();
+    $scope = isset( $body['scope'] ) ? sanitize_text_field( $body['scope'] ) : 'mine';
+
+    $user_id = (int) $request->get_param( '_oat_user_id' );
+    if ( ! $user_id ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_auth', 'User not found.', array( 'status' => 403 ) ) );
+    }
+
+    if ( ! class_exists( 'OAT_Registry' ) ) {
+        return owbn_gateway_respond( array() );
+    }
+
+    return owbn_gateway_respond( OAT_Registry::get_registry_sections( $user_id, $scope ) );
+}
+
+/**
+ * Characters for a single registry section.
+ */
+function owbn_gateway_oat_registry_section_characters( $request ) {
+    $body        = $request->get_json_params();
+    $section_key = isset( $body['section_key'] ) ? sanitize_text_field( $body['section_key'] ) : '';
+
+    $user_id = (int) $request->get_param( '_oat_user_id' );
+    if ( ! $user_id ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_auth', 'User not found.', array( 'status' => 403 ) ) );
+    }
+
+    if ( ! class_exists( 'OAT_Registry' ) ) {
+        return owbn_gateway_respond( array( 'characters' => array() ) );
+    }
+
+    $characters = OAT_Registry::get_section_characters( $user_id, $section_key );
+    return owbn_gateway_respond( array( 'characters' => array_map( function( $c ) {
+        return (array) $c;
+    }, $characters ) ) );
+}

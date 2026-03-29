@@ -23,6 +23,7 @@ add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
 add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coordinators_for_rules' );
 add_action( 'wp_ajax_owc_oat_submit_entry_frontend', 'owc_oat_ajax_submit_entry_frontend' );
 add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_activity' );
+add_action( 'wp_ajax_owc_oat_registry_sections', 'owc_oat_ajax_registry_sections' );
 add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
@@ -784,6 +785,49 @@ function owc_cchub_ajax_get_entry() {
 
     $data = owc_oat_get_cchub_entry( $entry_id );
 
+    if ( is_wp_error( $data ) ) {
+        wp_send_json_error( $data->get_error_message() );
+    }
+
+    wp_send_json_success( $data );
+}
+
+/**
+ * AJAX: Get registry section headers with counts for a scope.
+ *
+ * POST params: scope (mine|chronicles|coordinators|decommissioned)
+ */
+function owc_oat_ajax_registry_sections() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $scope = isset( $_POST['scope'] ) ? sanitize_text_field( $_POST['scope'] ) : 'mine';
+    $valid = array( 'mine', 'chronicles', 'coordinators', 'decommissioned' );
+    if ( ! in_array( $scope, $valid, true ) ) {
+        wp_send_json_error( 'Invalid scope.' );
+    }
+
+    $data = owc_oat_get_registry_sections( $scope );
+    if ( is_wp_error( $data ) ) {
+        wp_send_json_error( $data->get_error_message() );
+    }
+
+    wp_send_json_success( $data );
+}
+
+/**
+ * AJAX: Get characters for a single registry section.
+ *
+ * POST params: section_key (e.g. 'mine', 'chronicle-hartford', 'coordinator-vampire')
+ */
+function owc_oat_ajax_registry_section() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $section_key = isset( $_POST['section_key'] ) ? sanitize_text_field( $_POST['section_key'] ) : '';
+    if ( ! $section_key ) {
+        wp_send_json_error( 'Missing section_key.' );
+    }
+
+    $data = owc_oat_get_section_characters( $section_key );
     if ( is_wp_error( $data ) ) {
         wp_send_json_error( $data->get_error_message() );
     }

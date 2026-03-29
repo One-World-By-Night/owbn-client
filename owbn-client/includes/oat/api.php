@@ -1797,6 +1797,38 @@ function owc_oat_get_registry( $args = array() ) {
 }
 
 /**
+ * Fetch registry section headers with counts for a scope.
+ *
+ * @param string $scope mine|chronicles|coordinators|decommissioned
+ * @return array|WP_Error
+ */
+function owc_oat_get_registry_sections( $scope ) {
+    if ( owc_oat_is_local() ) {
+        $user_id = get_current_user_id();
+        return OAT_Registry::get_registry_sections( $user_id, $scope );
+    }
+    return owc_oat_request( 'registry/sections', array( 'scope' => $scope ) );
+}
+
+/**
+ * Fetch characters for a single registry section.
+ *
+ * @param string $section_key e.g. 'mine', 'chronicle-hartford', 'coordinator-vampire'
+ * @return array|WP_Error
+ */
+function owc_oat_get_section_characters( $section_key ) {
+    if ( owc_oat_is_local() ) {
+        $user_id    = get_current_user_id();
+        $characters = OAT_Registry::get_section_characters( $user_id, $section_key );
+        // Normalize to arrays for consistency with remote mode.
+        return array( 'characters' => array_map( function( $c ) {
+            return (array) $c;
+        }, $characters ) );
+    }
+    return owc_oat_request( 'registry/section-characters', array( 'section_key' => $section_key ) );
+}
+
+/**
  * Fetch registry entries for one character.
  *
  * @param int $character_id
