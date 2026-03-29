@@ -218,8 +218,8 @@ function owbn_gateway_oat_registry_update_character( $request ) {
     $data = array();
     $allowed = array(
         'character_name', 'chronicle_slug', 'player_name', 'player_email',
-        'pc_npc', 'creature_type', 'status', 'npc_coordinator', 'npc_type',
-        'wp_user_id',
+        'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
+        'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
     );
     foreach ( $allowed as $field ) {
         if ( isset( $body[ $field ] ) ) {

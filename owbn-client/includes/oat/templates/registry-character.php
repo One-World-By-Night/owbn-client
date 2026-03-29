@@ -18,8 +18,10 @@ defined( 'ABSPATH' ) || exit;
 
 $char_name       = isset( $character['character_name'] ) ? $character['character_name'] : '(unknown)';
 $chronicle       = isset( $character['chronicle_slug'] ) ? $character['chronicle_slug'] : '';
+$creature_genre  = isset( $character['creature_genre'] ) ? $character['creature_genre'] : '';
 $creature        = isset( $character['creature_type'] ) ? $character['creature_type'] : '';
 $creature_sub    = isset( $character['creature_sub_type'] ) ? $character['creature_sub_type'] : '';
+$creature_variant = isset( $character['creature_variant'] ) ? $character['creature_variant'] : '';
 $pc_npc          = isset( $character['pc_npc'] ) ? $character['pc_npc'] : '';
 $char_status     = isset( $character['status'] ) ? $character['status'] : '';
 $player_email    = isset( $character['player_email'] ) ? $character['player_email'] : '';
@@ -58,12 +60,24 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
                     <td><input type="text" name="chronicle_slug" id="chronicle_slug" value="<?php echo esc_attr( $chronicle ); ?>" class="regular-text"></td>
                 </tr>
                 <tr>
-                    <th><label for="creature_type">Creature Type</label></th>
-                    <td><input type="text" name="creature_type" id="creature_type" value="<?php echo esc_attr( $creature ); ?>" class="regular-text"></td>
-                </tr>
-                <tr>
-                    <th><label for="creature_sub_type">Creature Sub-Type</label></th>
-                    <td><input type="text" name="creature_sub_type" id="creature_sub_type" value="<?php echo esc_attr( $creature_sub ); ?>" class="regular-text"></td>
+                    <th>Creature</th>
+                    <td>
+                        <div data-creature-picker>
+                            <p><label>Genre<br>
+                                <select name="creature_genre" data-value="<?php echo esc_attr( $creature_genre ); ?>" style="width:100%;max-width:25em;"></select>
+                            </label></p>
+                            <p><label>Faction<br>
+                                <select name="creature_sub_type" data-value="<?php echo esc_attr( $creature_sub ); ?>" style="width:100%;max-width:25em;"></select>
+                            </label></p>
+                            <p><label>Type<br>
+                                <select name="creature_type" data-value="<?php echo esc_attr( $creature ); ?>" style="width:100%;max-width:25em;"></select>
+                            </label></p>
+                            <p class="oat-creature-variant-wrap"><label>Variant<br>
+                                <select name="creature_variant" data-value="<?php echo esc_attr( $creature_variant ); ?>" style="width:100%;max-width:25em;"></select>
+                            </label></p>
+                        </div>
+                        <button type="button" class="button button-small oat-creature-clear" style="margin-top:4px;">Clear Creature</button>
+                    </td>
                 </tr>
                 <tr>
                     <th><label for="pc_npc">PC/NPC</label></th>
@@ -120,7 +134,7 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
         <!-- ── Read-Only Character Info ──────────────────────────────── -->
         <table class="form-table">
             <tr><th>Chronicle</th><td><?php echo esc_html( $chronicle ); ?></td></tr>
-            <tr><th>Creature Type</th><td><?php echo esc_html( $creature ); ?></td></tr>
+            <tr><th>Creature</th><td><?php echo esc_html( implode( ' / ', array_filter( array( $creature_genre, $creature_sub, $creature, $creature_variant ) ) ) ); ?></td></tr>
             <tr><th>PC/NPC</th><td><?php echo esc_html( strtoupper( $pc_npc ) ); ?></td></tr>
             <tr><th>Status</th><td><?php echo esc_html( ucfirst( $char_status ) ); ?></td></tr>
             <?php if ( $player_name ) : ?>
@@ -289,6 +303,28 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
         </table>
     <?php endif; ?>
 </div>
+
+<?php if ( ! empty( $can_edit ) ) : ?>
+<script>
+(function() {
+    var clearBtn = document.querySelector('.oat-creature-clear');
+    if ( clearBtn ) {
+        clearBtn.addEventListener('click', function() {
+            var picker = document.querySelector('[data-creature-picker]');
+            if ( ! picker ) return;
+            var selects = picker.querySelectorAll('select');
+            selects.forEach(function(sel) {
+                sel.value = '';
+                sel.disabled = true;
+            });
+            // Re-enable genre so user can re-pick.
+            var genre = picker.querySelector('select[name="creature_genre"]');
+            if ( genre ) genre.disabled = false;
+        });
+    }
+})();
+</script>
+<?php endif; ?>
 
 <?php if ( ! empty( $can_edit ) && ! empty( $npc_role_options ) ) : ?>
 <script>

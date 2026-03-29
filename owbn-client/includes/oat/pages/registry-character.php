@@ -130,7 +130,7 @@ function owc_oat_handle_grant_actions( $character_id ) {
 
         $fields = array(
             'character_name', 'player_email', 'player_name',
-            'chronicle_slug', 'pc_npc', 'creature_type', 'creature_sub_type',
+            'chronicle_slug', 'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
             'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
         );
 
