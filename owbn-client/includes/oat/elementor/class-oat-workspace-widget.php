@@ -297,8 +297,8 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<?php endif; ?>
 				<?php if ( ! empty( $roles ) ) : ?>
 					<details style="margin-top:6px;">
-						<summary style="cursor:pointer;color:#555;font-size:0.9em;">Your Roles (<?php echo count( $roles ); ?>)</summary>
-						<ul style="margin:6px 0 0;padding-left:20px;font-size:0.85em;color:#666;font-family:monospace;">
+						<summary style="cursor:pointer;color:#555;">Your Roles (<?php echo count( $roles ); ?>)</summary>
+						<ul style="margin:6px 0 0;padding-left:20px;font-size:1em;color:#666;font-family:monospace;">
 							<?php foreach ( $roles as $r ) : ?>
 								<li><?php echo esc_html( $r ); ?></li>
 							<?php endforeach; ?>
