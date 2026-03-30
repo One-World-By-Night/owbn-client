@@ -184,6 +184,13 @@ function owbn_gateway_register_oat_routes() {
         'permission_callback' => 'owbn_gateway_oat_authenticate_user',
     ) );
 
+    // Search characters by name/chronicle.
+    register_rest_route( $namespace, '/oat/registry/search', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_search',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
     // Characters for a single section.
     register_rest_route( $namespace, '/oat/registry/section-characters', array(
         'methods'             => WP_REST_Server::CREATABLE,

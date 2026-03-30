@@ -1909,6 +1909,23 @@ function owc_oat_get_section_characters( $section_key ) {
 }
 
 /**
+ * Search registry characters by name or chronicle slug.
+ *
+ * Scoped to current user's access — same visibility as registry sections.
+ *
+ * @param string $q Search term (min 2 chars).
+ * @return array|WP_Error Array of character arrays.
+ */
+function owc_oat_registry_search( $q ) {
+    if ( owc_oat_is_local() ) {
+        $user_id    = get_current_user_id();
+        $characters = OAT_Registry::search_characters( $user_id, $q );
+        return array_map( function( $c ) { return (array) $c; }, $characters );
+    }
+    return owc_oat_request( 'registry/search', array( 'q' => $q ) );
+}
+
+/**
  * Fetch registry entries for one character.
  *
  * @param int $character_id

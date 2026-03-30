@@ -467,3 +467,25 @@ function owbn_gateway_oat_registry_section_characters( $request ) {
         return (array) $c;
     }, $characters ) ) );
 }
+
+/**
+ * Search registry characters by name/chronicle.
+ */
+function owbn_gateway_oat_registry_search( $request ) {
+    $body = $request->get_json_params();
+    $q    = isset( $body['q'] ) ? sanitize_text_field( $body['q'] ) : '';
+
+    $user_id = (int) $request->get_param( '_oat_user_id' );
+    if ( ! $user_id ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_auth', 'User not found.', array( 'status' => 403 ) ) );
+    }
+
+    if ( ! class_exists( 'OAT_Registry' ) || strlen( $q ) < 2 ) {
+        return owbn_gateway_respond( array() );
+    }
+
+    $characters = OAT_Registry::search_characters( $user_id, $q );
+    return owbn_gateway_respond( array_map( function( $c ) {
+        return (array) $c;
+    }, $characters ) );
+}

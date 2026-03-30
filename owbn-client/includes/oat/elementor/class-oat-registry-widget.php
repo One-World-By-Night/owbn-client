@@ -282,28 +282,56 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 				});
 			});
 
-			// Character search — filters within loaded sections.
+			// Character search — server-side query, replaces section view with flat results.
 			var search = widget.querySelector('.oat-registry-search');
+			var searchTimer = null;
+			var searchActive = false;
 			if (search) {
 				search.addEventListener('input', function() {
-					var term = this.value.toLowerCase();
-					content.querySelectorAll('.oat-registry-section').forEach(function(section) {
-						var rows = section.querySelectorAll('.oat-registry-row');
-						if (!rows.length) return; // Not loaded yet.
-						var visible = 0;
-						rows.forEach(function(row) {
-							var name = row.getAttribute('data-name') || '';
-							var chron = row.getAttribute('data-chronicle') || '';
-							var match = !term || name.indexOf(term) !== -1 || chron.indexOf(term) !== -1;
-							row.style.display = match ? '' : 'none';
-							if (match) visible++;
-						});
-						if (!term) {
-							section.style.display = '';
-						} else {
-							section.style.display = visible > 0 ? '' : 'none';
+					var term = this.value.trim();
+					clearTimeout(searchTimer);
+					if (term.length < 2) {
+						if (term.length === 0 && searchActive) {
+							searchActive = false;
+							loadTab(firstScope);
 						}
-					});
+						return;
+					}
+					searchTimer = setTimeout(function() {
+						searchActive = true;
+						content.innerHTML = '<div class="oat-registry-loading">Searching...</div>';
+						post('owc_oat_registry_search', { q: term }, function(data) {
+							if (!data || !data.length) {
+								content.innerHTML = '<p>No characters found.</p>';
+								return;
+							}
+							var html = '<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">'
+								+ '<thead><tr>'
+								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
+								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
+								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
+								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
+								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
+								+ '<th style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
+								+ '</tr></thead><tbody>';
+							for (var i = 0; i < data.length; i++) {
+								var c = data[i];
+								var url = detailBase + '?character_id=' + (c.id || 0);
+								var entries = c.entry_counts || 0;
+								if (typeof entries === 'object') { var sum = 0; for (var k in entries) sum += parseInt(entries[k])||0; entries = sum; }
+								html += '<tr>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '" target="_blank">' + (c.character_name||'') + '</a></td>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.chronicle_slug||'').toUpperCase() + '</td>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.creature_type||'') + '</td>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.pc_npc||'').toUpperCase() + '</td>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : '') + '</td>'
+									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">' + entries + '</td>'
+									+ '</tr>';
+							}
+							html += '</tbody></table>';
+							content.innerHTML = html;
+						});
+					}, 300);
 				});
 			}
 

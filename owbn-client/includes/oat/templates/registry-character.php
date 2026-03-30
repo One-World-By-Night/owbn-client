@@ -262,6 +262,28 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
     <hr>
 
     <!-- ── Registry Entries ─────────────────────────────────────── -->
+    <?php
+    // Build form slug → label and domain slug → label maps.
+    $form_labels   = array();
+    $domain_labels = array();
+    if ( class_exists( 'OAT_Form' ) ) {
+        foreach ( OAT_Form::all() as $f ) {
+            $form_labels[ $f->slug ] = $f->label;
+        }
+    }
+    if ( class_exists( 'OAT_Domain_Registry' ) ) {
+        foreach ( OAT_Domain_Registry::get_all() as $d ) {
+            $domain_labels[ $d['slug'] ] = $d['label'];
+        }
+    } elseif ( function_exists( 'owc_oat_get_domains' ) ) {
+        $domains_list = owc_oat_get_domains();
+        if ( ! is_wp_error( $domains_list ) ) {
+            foreach ( $domains_list as $d ) {
+                $domain_labels[ $d['slug'] ] = $d['label'];
+            }
+        }
+    }
+    ?>
     <h2>Registry Entries (<?php echo count( $entries ); ?>)</h2>
 
     <?php if ( empty( $entries ) ) : ?>
@@ -291,8 +313,8 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
                 ?>
                     <tr>
                         <td><a href="<?php echo esc_url( $entry_url ); ?>"><strong>#<?php echo esc_html( $e_id ); ?></strong></a></td>
-                        <td><?php echo esc_html( $e_domain ); ?></td>
-                        <td><?php echo esc_html( str_replace( '_', ' ', $e_form ) ); ?></td>
+                        <td><?php echo esc_html( $domain_labels[ $e_domain ] ?? ucwords( str_replace( '_', ' ', $e_domain ) ) ); ?></td>
+                        <td><?php echo esc_html( $form_labels[ $e_form ] ?? ucwords( str_replace( '_', ' ', $e_form ) ) ); ?></td>
                         <td><span class="oat-status oat-status-<?php echo esc_attr( $e_status ); ?>"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $e_status ) ) ); ?></span></td>
                         <td><?php echo esc_html( $e_genre ); ?></td>
                         <td><?php echo esc_html( is_numeric( $e_created ) ? owc_oat_format_date( $e_created ) : $e_created ); ?></td>

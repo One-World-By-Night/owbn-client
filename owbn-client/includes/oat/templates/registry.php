@@ -128,20 +128,48 @@ defined( 'ABSPATH' ) || exit;
         loadTab($(this).data('scope'));
     });
 
-    // Search — filters within loaded rows.
+    // Search — server-side query, replaces section view with flat results.
+    var searchTimer = null;
     $('#oat-registry-search').on('input', function() {
-        var term = this.value.toLowerCase();
-        $content.find('.oat-reg-section').each(function() {
-            var $rows = $(this).find('.oat-reg-row');
-            if (!$rows.length) return;
-            var visible = 0;
-            $rows.each(function() {
-                var match = !term || ($(this).data('name')||'').indexOf(term) !== -1 || ($(this).data('chron')||'').indexOf(term) !== -1;
-                $(this).toggle(match);
-                if (match) visible++;
+        var term = this.value.trim();
+        clearTimeout(searchTimer);
+        if (term.length < 2) {
+            // Restore section view if cleared.
+            if (term.length === 0 && $content.data('searchActive')) {
+                $content.data('searchActive', false);
+                var activeTab = $('.oat-reg-tab.nav-tab-active').data('scope') || 'mine';
+                loadTab(activeTab);
+            }
+            return;
+        }
+        searchTimer = setTimeout(function() {
+            $content.data('searchActive', true);
+            $content.html('<p>Searching...</p>');
+            doPost('owc_oat_registry_search', { q: term }, function(data) {
+                if (!data || !data.length) {
+                    $content.html('<p>No characters found for "' + $('<span>').text(term).html() + '".</p>');
+                    return;
+                }
+                var html = '<table class="wp-list-table widefat fixed striped"><thead><tr>'
+                    + '<th style="width:25%;">Character</th><th>Chronicle</th><th>Type</th><th>PC/NPC</th><th>Status</th><th style="width:60px;">Entries</th>'
+                    + '</tr></thead><tbody>';
+                for (var i = 0; i < data.length; i++) {
+                    var c = data[i];
+                    var url = <?php echo wp_json_encode( admin_url( 'admin.php?page=owc-oat-registry-character&character_id=' ) ); ?> + (c.id || 0);
+                    var entries = c.entry_counts || 0;
+                    if (typeof entries === 'object') { var sum = 0; for (var k in entries) sum += parseInt(entries[k])||0; entries = sum; }
+                    html += '<tr>'
+                        + '<td><a href="' + url + '"><strong>' + (c.character_name||'') + '</strong></a></td>'
+                        + '<td>' + (c.chronicle_slug||'').toUpperCase() + '</td>'
+                        + '<td>' + (c.creature_type||'') + '</td>'
+                        + '<td>' + (c.pc_npc||'').toUpperCase() + '</td>'
+                        + '<td>' + (c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : '') + '</td>'
+                        + '<td>' + entries + '</td></tr>';
+                }
+                html += '</tbody></table>';
+                $content.html(html);
             });
-            $(this).toggle(!term || visible > 0);
-        });
+        }, 300);
     });
 
     // Clear.

@@ -25,6 +25,7 @@ add_action( 'wp_ajax_owc_oat_submit_entry_frontend', 'owc_oat_ajax_submit_entry_
 add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_activity' );
 add_action( 'wp_ajax_owc_oat_registry_sections', 'owc_oat_ajax_registry_sections' );
 add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
+add_action( 'wp_ajax_owc_oat_registry_search', 'owc_oat_ajax_registry_search' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
@@ -832,6 +833,28 @@ function owc_oat_ajax_registry_section() {
     }
 
     $data = owc_oat_get_section_characters( $section_key );
+    if ( is_wp_error( $data ) ) {
+        wp_send_json_error( $data->get_error_message() );
+    }
+
+    wp_send_json_success( $data );
+}
+
+/**
+ * AJAX: Search registry characters by name or chronicle.
+ *
+ * POST params: q (search term, min 2 chars)
+ * Returns scoped results — user only sees characters they have access to.
+ */
+function owc_oat_ajax_registry_search() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $q = isset( $_POST['q'] ) ? sanitize_text_field( $_POST['q'] ) : '';
+    if ( strlen( $q ) < 2 ) {
+        wp_send_json_error( 'Search term too short.' );
+    }
+
+    $data = owc_oat_registry_search( $q );
     if ( is_wp_error( $data ) ) {
         wp_send_json_error( $data->get_error_message() );
     }
