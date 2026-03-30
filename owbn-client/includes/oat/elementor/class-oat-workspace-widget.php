@@ -92,9 +92,33 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 		$repeater = new \Elementor\Repeater();
 
 		$repeater->add_control( 'card_title', array(
-			'label'   => __( 'Card Title', 'owbn-client' ),
+			'label'       => __( 'Card Name', 'owbn-client' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Resources',
+			'description' => __( 'Links with the same card name are grouped together.', 'owbn-client' ),
+		) );
+
+		$repeater->add_control( 'link_label', array(
+			'label'   => __( 'Link Label', 'owbn-client' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => 'Resources',
+			'default' => '',
+		) );
+
+		$repeater->add_control( 'link_url', array(
+			'label'       => __( 'Link URL', 'owbn-client' ),
+			'type'        => Controls_Manager::URL,
+			'default'     => array(
+				'url'         => '',
+				'is_external' => true,
+				'nofollow'    => false,
+			),
+			'show_external' => true,
+		) );
+
+		$repeater->add_control( 'link_sso', array(
+			'label'       => __( 'Route through SSO', 'owbn-client' ),
+			'type'        => Controls_Manager::SWITCHER,
+			'default'     => 'yes',
 		) );
 
 		$repeater->add_control( 'card_visibility', array(
@@ -109,26 +133,11 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			),
 		) );
 
-		$repeater->add_control( 'card_links', array(
-			'label'       => __( 'Links (one per line: Label | URL)', 'owbn-client' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => '',
-			'placeholder' => "Genre/Resource Packets | https://council.owbn.net/genre-resource-packets/\nAnother Link | https://example.com/page/",
-			'description' => __( 'Format: Link Label | URL (one per line)', 'owbn-client' ),
-		) );
-
-		$repeater->add_control( 'card_sso', array(
-			'label'       => __( 'Wrap links with SSO', 'owbn-client' ),
-			'type'        => Controls_Manager::SWITCHER,
-			'default'     => 'yes',
-			'description' => __( 'Route links through SSO auth', 'owbn-client' ),
-		) );
-
-		$this->add_control( 'custom_cards', array(
-			'label'       => __( 'Cards', 'owbn-client' ),
+		$this->add_control( 'custom_links', array(
+			'label'       => __( 'Custom Links', 'owbn-client' ),
 			'type'        => Controls_Manager::REPEATER,
 			'fields'      => $repeater->get_controls(),
-			'title_field' => '{{{ card_title }}}',
+			'title_field' => '{{{ card_title }}} — {{{ link_label }}}',
 		) );
 
 		$this->end_controls_section();
@@ -402,41 +411,56 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 			<?php
 			// ── Custom Cards ─────────────────────────────────────
-			$custom_cards = $settings['custom_cards'] ?? array();
-			if ( ! empty( $custom_cards ) ) : ?>
+			// Group links by card_title, respecting visibility.
+			$custom_links = $settings['custom_links'] ?? array();
+			$grouped_cards = array();
+			foreach ( $custom_links as $item ) {
+				$card_name  = $item['card_title'] ?? '';
+				$visibility = $item['card_visibility'] ?? 'everyone';
+				if ( ! $card_name ) continue;
+
+				// Visibility check.
+				if ( 'chronicle' === $visibility && empty( $chronicle_roles ) ) continue;
+				if ( 'coordinator' === $visibility && empty( $coord_roles ) ) continue;
+				if ( 'exec' === $visibility && empty( $exec_roles ) ) continue;
+
+				if ( ! isset( $grouped_cards[ $card_name ] ) ) {
+					$grouped_cards[ $card_name ] = array();
+				}
+				$grouped_cards[ $card_name ][] = $item;
+			}
+
+			if ( ! empty( $grouped_cards ) ) : ?>
 			<div class="owc-ws-section">
 				<h3>Resources</h3>
 				<div class="owc-ws-grid">
-					<?php foreach ( $custom_cards as $card ) :
-						$card_title = $card['card_title'] ?? '';
-						$card_raw   = $card['card_links'] ?? '';
-						$use_sso    = ( $card['card_sso'] ?? 'yes' ) === 'yes';
-						$visibility = $card['card_visibility'] ?? 'everyone';
-						if ( ! $card_title || ! $card_raw ) continue;
-
-						// Visibility check.
-						if ( 'chronicle' === $visibility && empty( $chronicle_roles ) ) continue;
-						if ( 'coordinator' === $visibility && empty( $coord_roles ) ) continue;
-						if ( 'exec' === $visibility && empty( $exec_roles ) ) continue;
-
-						$lines = array_filter( array_map( 'trim', explode( "\n", $card_raw ) ) );
-					?>
+					<?php foreach ( $grouped_cards as $card_name => $items ) : ?>
 					<div class="owc-ws-card">
-						<h4><?php echo esc_html( $card_title ); ?></h4>
+						<h4><?php echo esc_html( $card_name ); ?></h4>
 						<ul class="owc-ws-links">
-							<?php foreach ( $lines as $line ) :
-								$parts = array_map( 'trim', explode( '|', $line, 2 ) );
-								if ( count( $parts ) < 2 ) continue;
-								$link_label = $parts[0];
-								$link_url   = $parts[1];
+							<?php foreach ( $items as $item ) :
+								$label    = $item['link_label'] ?? '';
+								$url_data = $item['link_url'] ?? array();
+								$raw_url  = $url_data['url'] ?? '';
+								$external = ! empty( $url_data['is_external'] );
+								$nofollow = ! empty( $url_data['nofollow'] );
+								$use_sso  = ( $item['link_sso'] ?? 'yes' ) === 'yes';
+
+								if ( ! $label || ! $raw_url ) continue;
+
+								$href = $raw_url;
 								if ( $use_sso ) {
-									$parsed = parse_url( $link_url );
+									$parsed = wp_parse_url( $raw_url );
 									$base   = ( $parsed['scheme'] ?? 'https' ) . '://' . ( $parsed['host'] ?? '' );
 									$path   = ltrim( ( $parsed['path'] ?? '/' ) . ( ! empty( $parsed['query'] ) ? '?' . $parsed['query'] : '' ), '/' );
-									$link_url = $sso_link( $base, $path );
+									$href   = $sso_link( $base, $path );
 								}
+
+								$attrs = '';
+								if ( $external ) $attrs .= ' target="_blank"';
+								if ( $nofollow ) $attrs .= ' rel="nofollow"';
 							?>
-								<li><a href="<?php echo esc_url( $link_url ); ?>" target="_blank"><?php echo esc_html( $link_label ); ?></a></li>
+								<li><a href="<?php echo esc_url( $href ); ?>"<?php echo $attrs; ?>><?php echo esc_html( $label ); ?></a></li>
 							<?php endforeach; ?>
 						</ul>
 					</div>
