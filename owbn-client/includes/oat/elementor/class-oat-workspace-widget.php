@@ -164,8 +164,9 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			}
 		}
 
-		// Resolve titles.
+		// Resolve titles and post IDs for edit links.
 		$chron_titles = array();
+		$chron_ids    = array();
 		if ( function_exists( 'owc_get_chronicles' ) && ! empty( $chronicle_roles ) ) {
 			$all_chrons = owc_get_chronicles();
 			if ( ! is_wp_error( $all_chrons ) ) {
@@ -173,12 +174,14 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 					$c = (array) $c;
 					if ( isset( $chronicle_roles[ $c['slug'] ] ) ) {
 						$chron_titles[ $c['slug'] ] = $c['title'] ?? ucfirst( $c['slug'] );
+						$chron_ids[ $c['slug'] ]    = $c['id'] ?? 0;
 					}
 				}
 			}
 		}
 
 		$coord_titles = array();
+		$coord_ids    = array();
 		if ( function_exists( 'owc_get_coordinators' ) && ! empty( $coord_roles ) ) {
 			$all_coords = owc_get_coordinators();
 			if ( ! is_wp_error( $all_coords ) ) {
@@ -186,6 +189,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 					$co = (array) $co;
 					if ( isset( $coord_roles[ $co['slug'] ] ) ) {
 						$coord_titles[ $co['slug'] ] = $co['title'] ?? ucfirst( $co['slug'] );
+						$coord_ids[ $co['slug'] ]    = $co['id'] ?? 0;
 					}
 				}
 			}
@@ -252,7 +256,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 					<div class="owc-ws-card">
 						<h4>OAT Dashboard<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?> pending</span><?php endif; ?></h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">My Characters, Inbox &amp; Submissions</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">My Characters, Inbox &amp; Submissions</a></li>
 						</ul>
 					</div>
 				</div>
@@ -275,10 +279,11 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 								<span class="owc-ws-role-tag"><?php echo esc_html( $rl ); ?></span>
 							<?php endforeach; ?>
 						</h4>
+						<?php $chron_post_id = $chron_ids[ $slug ] ?? 0; ?>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>">View Chronicle</a></li>
-							<?php if ( $is_hst ) : ?>
-								<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'wp-admin/edit.php?post_type=owbn_chronicle&s=' . $slug ) ); ?>">Edit Chronicle</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>" target="_blank">View Chronicle</a></li>
+							<?php if ( $is_hst && $chron_post_id ) : ?>
+								<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Chronicle</a></li>
 							<?php endif; ?>
 							<?php if ( $is_hst || $is_cm ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">OAT Dashboard</a></li>
@@ -301,17 +306,20 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 					<?php foreach ( $coord_roles as $genre => $level ) :
 						$title = $coord_titles[ $genre ] ?? ucfirst( $genre );
 						$level_label = ( $level === 'coordinator' ) ? 'Coordinator' : 'Sub-Coordinator';
+						$coord_post_id = $coord_ids[ $genre ] ?? 0;
 					?>
 					<div class="owc-ws-card">
 						<h4><?php echo esc_html( $title ); ?>
 							<span class="owc-ws-role-tag"><?php echo esc_html( $level_label ); ?></span>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ); ?>">View Coordinator Page</a></li>
-							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'wp-admin/edit.php?post_type=owbn_coordinator&s=' . $genre ) ); ?>">Edit Coordinator Page</a></li>
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">OAT Dashboard</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ); ?>" target="_blank">View Coordinator Page</a></li>
+							<?php if ( $coord_post_id ) : ?>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'wp-admin/post.php?post=' . $coord_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Coordinator Page</a></li>
+							<?php endif; ?>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">OAT Dashboard</a></li>
 							<?php if ( $level === 'coordinator' ) : ?>
-								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
 							<?php endif; ?>
 						</ul>
 					</div>
@@ -333,8 +341,8 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<span class="owc-ws-role-tag">Exec</span>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ); ?>">Archivist Admin</a></li>
-							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ); ?>" target="_blank">Archivist Admin</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
 						</ul>
 					</div>
 					<?php endforeach; ?>
