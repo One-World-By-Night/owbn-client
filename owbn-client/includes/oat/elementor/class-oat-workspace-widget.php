@@ -20,7 +20,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'OAT Workspace', 'owbn-client' );
+		return __( 'Archivist Dashboard', 'owbn-client' );
 	}
 
 	public function get_icon() {
@@ -374,7 +374,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<h3>My Stuff</h3>
 				<div class="owc-ws-grid">
 					<div class="owc-ws-card">
-						<h4>OAT Dashboard<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?> pending</span><?php endif; ?></h4>
+						<h4>Archivist Dashboard<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?> pending</span><?php endif; ?></h4>
 						<ul class="owc-ws-links">
 							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">My Characters, Inbox &amp; Submissions</a></li>
 						</ul>
@@ -407,7 +407,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 								<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Chronicle</a></li>
 							<?php endif; ?>
 							<?php if ( $is_hst || $is_cm ) : ?>
-								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">OAT Dashboard</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">Archivist Dashboard</a></li>
 							<?php endif; ?>
 							<?php if ( $is_cm ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
@@ -439,7 +439,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<?php if ( $coord_post_id ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'wp-admin/post.php?post=' . $coord_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Coordinator Page</a></li>
 							<?php endif; ?>
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">OAT Dashboard</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">Archivist Dashboard</a></li>
 							<?php if ( $level === 'coordinator' ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
 							<?php endif; ?>

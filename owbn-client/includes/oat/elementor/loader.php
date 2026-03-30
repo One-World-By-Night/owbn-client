@@ -47,7 +47,7 @@ class OWC_OAT_Elementor_Loader
 	public static function register_category( $elements_manager )
 	{
 		$elements_manager->add_category( 'owbn-oat', array(
-			'title' => __( 'OAT — Archivist Toolkit', 'owbn-client' ),
+			'title' => __( 'Archivist Toolkit', 'owbn-client' ),
 			'icon'  => 'eicon-form-horizontal',
 		) );
 	}
@@ -198,12 +198,12 @@ class OWC_OAT_Elementor_Loader
 function owc_oat_create_pages()
 {
 	$pages = array(
-		'oat_page_dashboard'        => array( 'title' => 'OAT Dashboard',        'slug' => 'oat-dashboard' ),
-		'oat_page_inbox'            => array( 'title' => 'OAT Inbox',            'slug' => 'oat-inbox' ),
-		'oat_page_submit'           => array( 'title' => 'OAT Submit',           'slug' => 'oat-submit' ),
-		'oat_page_entry'            => array( 'title' => 'OAT Entry',            'slug' => 'oat-entry' ),
-		'oat_page_registry'         => array( 'title' => 'OAT Registry',         'slug' => 'oat-registry' ),
-		'oat_page_registry_detail'  => array( 'title' => 'OAT Registry Detail',  'slug' => 'oat-registry-detail' ),
+		'oat_page_dashboard'        => array( 'title' => 'Archivist Dashboard',  'slug' => 'oat-dashboard' ),
+		'oat_page_inbox'            => array( 'title' => 'Archivist Inbox',      'slug' => 'oat-inbox' ),
+		'oat_page_submit'           => array( 'title' => 'Archivist Submit',     'slug' => 'oat-submit' ),
+		'oat_page_entry'            => array( 'title' => 'Archivist Entry',      'slug' => 'oat-entry' ),
+		'oat_page_registry'         => array( 'title' => 'Archivist Registry',   'slug' => 'oat-registry' ),
+		'oat_page_registry_detail'  => array( 'title' => 'Registry Detail',      'slug' => 'oat-registry-detail' ),
 	);
 
 	// ccHub pages only on sites with local OAT data (archivist).

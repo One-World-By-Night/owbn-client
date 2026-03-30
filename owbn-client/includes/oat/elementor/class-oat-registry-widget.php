@@ -12,7 +12,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'OAT Registry', 'owbn-client' );
+		return __( 'Archivist Registry', 'owbn-client' );
 	}
 
 	public function get_icon() {

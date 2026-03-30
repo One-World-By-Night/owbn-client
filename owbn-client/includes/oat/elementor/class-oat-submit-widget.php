@@ -25,7 +25,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'OAT Submit Form', 'owbn-client' );
+		return __( 'Archivist Submit Form', 'owbn-client' );
 	}
 
 	public function get_icon()

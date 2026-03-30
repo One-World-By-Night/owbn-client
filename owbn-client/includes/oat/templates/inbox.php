@@ -15,7 +15,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <?php if ( empty( $embedded ) ) : ?><div class="wrap">
-    <h1>OAT Inbox</h1>
+    <h1>Archivist Inbox</h1>
 <?php endif; ?>
 
     <form method="get">

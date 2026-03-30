@@ -24,7 +24,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'OAT Activity Feed', 'owbn-client' );
+		return __( 'Archivist Activity Feed', 'owbn-client' );
 	}
 
 	public function get_icon()

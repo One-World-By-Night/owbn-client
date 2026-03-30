@@ -26,8 +26,8 @@ function owc_oat_register_menus() {
 
     if ( ! $oat_local ) {
         add_menu_page(
-            'OAT',
-            'OAT',
+            'Archivist Dashboard',
+            'Archivist',
             'read',
             'owc-oat-workspace',
             'owc_oat_render_workspace',
@@ -101,7 +101,7 @@ function owc_oat_render_workspace() {
 
     ?>
     <div class="wrap">
-        <h1>OAT Workspace</h1>
+        <h1>Archivist Dashboard</h1>
         <nav class="nav-tab-wrapper">
             <?php foreach ( $tabs as $slug => $label ) :
                 $url    = admin_url( 'admin.php?page=owc-oat-workspace&tab=' . $slug );

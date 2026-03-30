@@ -23,7 +23,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'OAT Inbox', 'owbn-client' );
+		return __( 'Archivist Inbox', 'owbn-client' );
 	}
 
 	public function get_icon()

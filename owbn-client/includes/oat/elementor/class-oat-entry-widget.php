@@ -24,7 +24,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'OAT Entry Detail', 'owbn-client' );
+		return __( 'Archivist Entry Detail', 'owbn-client' );
 	}
 
 	public function get_icon()

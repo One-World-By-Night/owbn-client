@@ -25,7 +25,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'OAT Dashboard', 'owbn-client' );
+		return __( 'Archivist Dashboard', 'owbn-client' );
 	}
 
 	public function get_icon()
