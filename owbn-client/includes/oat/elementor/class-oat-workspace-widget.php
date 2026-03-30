@@ -121,6 +121,19 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			'default'     => 'yes',
 		) );
 
+		$repeater->add_control( 'card_section', array(
+			'label'   => __( 'Place in section', 'owbn-client' ),
+			'type'    => Controls_Manager::SELECT,
+			'default' => 'self',
+			'options' => array(
+				'self'        => __( 'My Stuff', 'owbn-client' ),
+				'chronicle'   => __( 'My Chronicles', 'owbn-client' ),
+				'coordinator' => __( 'My Coordinator Roles', 'owbn-client' ),
+				'exec'        => __( 'Executive Roles', 'owbn-client' ),
+				'resources'   => __( 'Resources (standalone)', 'owbn-client' ),
+			),
+		) );
+
 		$repeater->add_control( 'card_visibility', array(
 			'label'   => __( 'Show to', 'owbn-client' ),
 			'type'    => Controls_Manager::SELECT,
@@ -168,12 +181,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			return;
 		}
 
-		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">'
-				. esc_html__( 'OAT Workspace — preview not available in editor.', 'owbn-client' )
-				. '</div>';
-			return;
-		}
+		// Allow rendering in editor so you can see the layout while editing.
 
 		$settings      = $this->get_settings_for_display();
 		$council_url   = rtrim( $settings['council_base_url'] ?? 'https://council.owbn.net', '/' );
@@ -267,6 +275,48 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 		$pid_key   = defined( 'PID_META_KEY' ) ? PID_META_KEY : 'player_id';
 		$player_id = get_user_meta( $user->ID, $pid_key, true );
 
+		// Pre-group custom links by section → card_title.
+		$custom_links = $settings['custom_links'] ?? array();
+		$custom_by_section = array(); // section => [ card_title => [ items ] ]
+		foreach ( $custom_links as $item ) {
+			$card_name  = $item['card_title'] ?? '';
+			$section    = $item['card_section'] ?? 'self';
+			$visibility = $item['card_visibility'] ?? 'everyone';
+			if ( ! $card_name ) continue;
+			if ( 'chronicle' === $visibility && empty( $chronicle_roles ) ) continue;
+			if ( 'coordinator' === $visibility && empty( $coord_roles ) ) continue;
+			if ( 'exec' === $visibility && empty( $exec_roles ) ) continue;
+			$custom_by_section[ $section ][ $card_name ][] = $item;
+		}
+
+		// Helper: render custom cards for a section.
+		$render_custom_cards = function( $section_key ) use ( $custom_by_section, $sso_link ) {
+			if ( empty( $custom_by_section[ $section_key ] ) ) return;
+			foreach ( $custom_by_section[ $section_key ] as $card_name => $items ) {
+				echo '<div class="owc-ws-card"><h4>' . esc_html( $card_name ) . '</h4><ul class="owc-ws-links">';
+				foreach ( $items as $item ) {
+					$label    = $item['link_label'] ?? '';
+					$url_data = $item['link_url'] ?? array();
+					$raw_url  = $url_data['url'] ?? '';
+					$external = ! empty( $url_data['is_external'] );
+					$nofollow = ! empty( $url_data['nofollow'] );
+					$use_sso  = ( $item['link_sso'] ?? 'yes' ) === 'yes';
+					if ( ! $label || ! $raw_url ) continue;
+					$href = $raw_url;
+					if ( $use_sso ) {
+						$parsed = wp_parse_url( $raw_url );
+						$base   = ( $parsed['scheme'] ?? 'https' ) . '://' . ( $parsed['host'] ?? '' );
+						$path   = ltrim( ( $parsed['path'] ?? '/' ) . ( ! empty( $parsed['query'] ) ? '?' . $parsed['query'] : '' ), '/' );
+						$href   = $sso_link( $base, $path );
+					}
+					$attrs = $external ? ' target="_blank"' : '';
+					$attrs .= $nofollow ? ' rel="nofollow"' : '';
+					echo '<li><a href="' . esc_url( $href ) . '"' . $attrs . '>' . esc_html( $label ) . '</a></li>';
+				}
+				echo '</ul></div>';
+			}
+		};
+
 		?>
 		<div class="owc-workspace">
 			<style>
@@ -328,6 +378,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">My Characters, Inbox &amp; Submissions</a></li>
 						</ul>
 					</div>
+					<?php $render_custom_cards( 'self' ); ?>
 				</div>
 			</div>
 
@@ -363,6 +414,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 						</ul>
 					</div>
 					<?php endforeach; ?>
+					<?php $render_custom_cards( 'chronicle' ); ?>
 				</div>
 			</div>
 			<?php endif; ?>
@@ -393,6 +445,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 						</ul>
 					</div>
 					<?php endforeach; ?>
+					<?php $render_custom_cards( 'coordinator' ); ?>
 				</div>
 			</div>
 			<?php endif; ?>
@@ -415,66 +468,16 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 						</ul>
 					</div>
 					<?php endforeach; ?>
+					<?php $render_custom_cards( 'exec' ); ?>
 				</div>
 			</div>
 			<?php endif; ?>
 
-			<?php
-			// ── Custom Cards ─────────────────────────────────────
-			// Group links by card_title, respecting visibility.
-			$custom_links = $settings['custom_links'] ?? array();
-			$grouped_cards = array();
-			foreach ( $custom_links as $item ) {
-				$card_name  = $item['card_title'] ?? '';
-				$visibility = $item['card_visibility'] ?? 'everyone';
-				if ( ! $card_name ) continue;
-
-				// Visibility check.
-				if ( 'chronicle' === $visibility && empty( $chronicle_roles ) ) continue;
-				if ( 'coordinator' === $visibility && empty( $coord_roles ) ) continue;
-				if ( 'exec' === $visibility && empty( $exec_roles ) ) continue;
-
-				if ( ! isset( $grouped_cards[ $card_name ] ) ) {
-					$grouped_cards[ $card_name ] = array();
-				}
-				$grouped_cards[ $card_name ][] = $item;
-			}
-
-			if ( ! empty( $grouped_cards ) ) : ?>
+			<?php if ( ! empty( $custom_by_section['resources'] ) ) : ?>
 			<div class="owc-ws-section">
 				<h3>Resources</h3>
 				<div class="owc-ws-grid">
-					<?php foreach ( $grouped_cards as $card_name => $items ) : ?>
-					<div class="owc-ws-card">
-						<h4><?php echo esc_html( $card_name ); ?></h4>
-						<ul class="owc-ws-links">
-							<?php foreach ( $items as $item ) :
-								$label    = $item['link_label'] ?? '';
-								$url_data = $item['link_url'] ?? array();
-								$raw_url  = $url_data['url'] ?? '';
-								$external = ! empty( $url_data['is_external'] );
-								$nofollow = ! empty( $url_data['nofollow'] );
-								$use_sso  = ( $item['link_sso'] ?? 'yes' ) === 'yes';
-
-								if ( ! $label || ! $raw_url ) continue;
-
-								$href = $raw_url;
-								if ( $use_sso ) {
-									$parsed = wp_parse_url( $raw_url );
-									$base   = ( $parsed['scheme'] ?? 'https' ) . '://' . ( $parsed['host'] ?? '' );
-									$path   = ltrim( ( $parsed['path'] ?? '/' ) . ( ! empty( $parsed['query'] ) ? '?' . $parsed['query'] : '' ), '/' );
-									$href   = $sso_link( $base, $path );
-								}
-
-								$attrs = '';
-								if ( $external ) $attrs .= ' target="_blank"';
-								if ( $nofollow ) $attrs .= ' rel="nofollow"';
-							?>
-								<li><a href="<?php echo esc_url( $href ); ?>"<?php echo $attrs; ?>><?php echo esc_html( $label ); ?></a></li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-					<?php endforeach; ?>
+					<?php $render_custom_cards( 'resources' ); ?>
 				</div>
 			</div>
 			<?php endif; ?>
