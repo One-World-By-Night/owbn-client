@@ -7,8 +7,9 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap">
+<?php if ( empty( $embedded ) ) : ?><div class="wrap">
     <h1>Registry</h1>
+<?php endif; ?>
 
     <nav class="nav-tab-wrapper" id="oat-registry-tabs">
         <a href="#" class="nav-tab oat-reg-tab" data-scope="mine">My Characters</a>
@@ -25,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
     <div id="oat-registry-content">
         <p>Loading...</p>
     </div>
-</div>
+<?php if ( empty( $embedded ) ) : ?></div><?php endif; ?>
 
 <script>
 (function($) {

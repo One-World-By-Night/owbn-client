@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return void
  */
-function owc_oat_page_submit() {
+function owc_oat_page_submit( $embedded = false ) {
     $error   = '';
     $success = '';
 

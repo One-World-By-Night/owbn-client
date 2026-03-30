@@ -14,11 +14,17 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap">
+<?php if ( empty( $embedded ) ) : ?><div class="wrap">
     <h1>OAT Inbox</h1>
+<?php endif; ?>
 
     <form method="get">
-        <input type="hidden" name="page" value="owc-oat-inbox">
+        <?php if ( ! empty( $embedded ) ) : ?>
+            <input type="hidden" name="page" value="owc-oat-workspace">
+            <input type="hidden" name="tab" value="inbox">
+        <?php else : ?>
+            <input type="hidden" name="page" value="owc-oat-inbox">
+        <?php endif; ?>
         <div class="alignleft actions">
             <select name="domain">
                 <option value="">All Domains</option>
@@ -115,4 +121,4 @@ defined( 'ABSPATH' ) || exit;
             </tbody>
         </table>
     <?php endif; ?>
-</div>
+<?php if ( empty( $embedded ) ) : ?></div><?php endif; ?>

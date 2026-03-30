@@ -13,8 +13,9 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap">
+<?php if ( empty( $embedded ) ) : ?><div class="wrap">
     <h1>New Submission</h1>
+<?php endif; ?>
 
     <?php if ( $error ) : ?>
         <div class="notice notice-error"><p><?php echo esc_html( $error ); ?></p></div>
@@ -59,7 +60,7 @@ defined( 'ABSPATH' ) || exit;
 
         <?php submit_button( 'Submit Entry' ); ?>
     </form>
-</div>
+<?php if ( empty( $embedded ) ) : ?></div><?php endif; ?>
 
 <script>
 jQuery(function($) {

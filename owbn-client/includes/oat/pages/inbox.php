@@ -12,17 +12,16 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return void
  */
-function owc_oat_page_inbox() {
+function owc_oat_page_inbox( $embedded = false ) {
     $domain_filter = isset( $_GET['domain'] ) ? sanitize_text_field( $_GET['domain'] ) : '';
 
     // Fetch inbox data (local or remote).
     $inbox = owc_oat_get_inbox( $domain_filter );
 
     if ( is_wp_error( $inbox ) ) {
-        echo '<div class="wrap">';
-        echo '<h1>OAT Inbox</h1>';
+        if ( ! $embedded ) { echo '<div class="wrap"><h1>OAT Inbox</h1>'; }
         echo '<div class="notice notice-error"><p>' . esc_html( $inbox->get_error_message() ) . '</p></div>';
-        echo '</div>';
+        if ( ! $embedded ) { echo '</div>'; }
         return;
     }
 

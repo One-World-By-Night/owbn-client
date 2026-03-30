@@ -29,8 +29,8 @@ function owc_oat_register_menus() {
             'OAT',
             'OAT',
             'read',
-            'owc-oat-inbox',
-            'owc_oat_render_inbox',
+            'owc-oat-workspace',
+            'owc_oat_render_workspace',
             'dashicons-clipboard',
             31
         );
@@ -38,30 +38,17 @@ function owc_oat_register_menus() {
 
     add_submenu_page(
         $parent,
-        'Inbox',
-        'Inbox',
+        'Workspace',
+        'Workspace',
         'read',
-        'owc-oat-inbox',
-        'owc_oat_render_inbox'
+        'owc-oat-workspace',
+        'owc_oat_render_workspace'
     );
 
-    add_submenu_page(
-        $parent,
-        'New Submission',
-        'New Submission',
-        'read',
-        'owc-oat-submit',
-        'owc_oat_render_submit'
-    );
-
-    add_submenu_page(
-        $parent,
-        'Registry',
-        'Registry',
-        'read',
-        'owc-oat-registry',
-        'owc_oat_render_registry'
-    );
+    // Hidden pages: standalone versions for backward-compatible links.
+    add_submenu_page( null, 'Inbox', 'Inbox', 'read', 'owc-oat-inbox', 'owc_oat_render_inbox' );
+    add_submenu_page( null, 'New Submission', 'New Submission', 'read', 'owc-oat-submit', 'owc_oat_render_submit' );
+    add_submenu_page( null, 'Registry', 'Registry', 'read', 'owc-oat-registry', 'owc_oat_render_registry' );
 
     // Reports: only on local OAT host (archivist), not remote sites.
     if ( $oat_local ) {
@@ -99,7 +86,56 @@ function owc_oat_register_menus() {
 
 
 /**
- * Render the inbox page.
+ * Render the Workspace page — Inbox, Submit, Registry as tabs.
+ *
+ * @return void
+ */
+function owc_oat_render_workspace() {
+    $tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'inbox';
+
+    $tabs = array(
+        'inbox'    => 'Inbox',
+        'submit'   => 'New Submission',
+        'registry' => 'Registry',
+    );
+
+    ?>
+    <div class="wrap">
+        <h1>OAT Workspace</h1>
+        <nav class="nav-tab-wrapper">
+            <?php foreach ( $tabs as $slug => $label ) :
+                $url    = admin_url( 'admin.php?page=owc-oat-workspace&tab=' . $slug );
+                $active = ( $tab === $slug ) ? ' nav-tab-active' : '';
+            ?>
+                <a href="<?php echo esc_url( $url ); ?>" class="nav-tab<?php echo $active; ?>">
+                    <?php echo esc_html( $label ); ?>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+        <div style="margin-top:15px;">
+            <?php
+            switch ( $tab ) {
+                case 'inbox':
+                    require_once __DIR__ . '/pages/inbox.php';
+                    owc_oat_page_inbox( true );
+                    break;
+                case 'submit':
+                    require_once __DIR__ . '/pages/submit.php';
+                    owc_oat_page_submit( true );
+                    break;
+                case 'registry':
+                    require_once __DIR__ . '/pages/registry.php';
+                    owc_oat_page_registry( true );
+                    break;
+            }
+            ?>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Render the inbox page (standalone).
  *
  * @return void
  */
@@ -109,7 +145,7 @@ function owc_oat_render_inbox() {
 }
 
 /**
- * Render the submit page.
+ * Render the submit page (standalone).
  *
  * @return void
  */
@@ -216,7 +252,8 @@ function owc_oat_enqueue_assets( $hook ) {
     );
 
     // Submit page: preload editor scripts so AJAX-loaded htmlarea fields work.
-    if ( strpos( $hook, 'owc-oat-submit' ) !== false ) {
+    // Also load on workspace since submit tab can be active.
+    if ( strpos( $hook, 'owc-oat-submit' ) !== false || strpos( $hook, 'owc-oat-workspace' ) !== false ) {
         wp_enqueue_editor();
         wp_enqueue_script( 'jquery-ui-autocomplete' );
         wp_enqueue_style( 'wp-jquery-ui-dialog' );

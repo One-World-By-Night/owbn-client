@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return void
  */
-function owc_oat_page_registry() {
+function owc_oat_page_registry( $embedded = false ) {
     include dirname( __DIR__ ) . '/templates/registry.php';
 }
 
