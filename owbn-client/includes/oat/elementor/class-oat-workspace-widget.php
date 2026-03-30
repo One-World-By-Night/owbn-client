@@ -320,23 +320,24 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 		?>
 		<div class="owc-workspace">
 			<style>
-				.owc-workspace { font-family: inherit; }
+				.owc-workspace { font-family: inherit; color: inherit; }
 				.owc-ws-section { margin-bottom: 24px; }
-				.owc-ws-section h3 { font-size: 1.2em; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+				.owc-ws-section h3 { font-size: 1.2em; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid currentColor; opacity: 0.3; }
+				.owc-ws-section h3 { border-bottom-color: currentColor; opacity: 1; }
 				.owc-ws-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-				.owc-ws-card { border: 1px solid #ddd; border-radius: 6px; padding: 16px; background: #fafafa; transition: box-shadow 0.15s; }
-				.owc-ws-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-				.owc-ws-card h4 { margin: 0 0 8px; font-size: 1em; }
+				.owc-ws-card { border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; padding: 16px; background: rgba(128,128,128,0.08); transition: box-shadow 0.15s; }
+				.owc-ws-card:hover { box-shadow: 0 2px 8px rgba(128,128,128,0.2); }
+				.owc-ws-card h4 { margin: 0 0 8px; font-size: 1em; color: inherit; }
 				.owc-ws-card .owc-ws-links { list-style: none; margin: 0; padding: 0; }
 				.owc-ws-card .owc-ws-links li { margin: 4px 0; }
-				.owc-ws-card .owc-ws-links a { text-decoration: none; color: #0073aa; }
+				.owc-ws-card .owc-ws-links a { text-decoration: none; color: var(--e-global-color-accent, #EA5B3A); }
 				.owc-ws-card .owc-ws-links a:hover { text-decoration: underline; }
-				.owc-ws-connect-btn { display: inline-block; padding: 8px 16px; background: #0073aa; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9em; }
-				.owc-ws-connect-btn:hover { background: #005a87; color: #fff; }
+				.owc-ws-connect-btn { display: inline-block; padding: 8px 16px; background: var(--e-global-color-accent, #EA5B3A); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9em; }
+				.owc-ws-connect-btn:hover { opacity: 0.85; color: #fff; }
 				.owc-ws-badge { display: inline-block; background: #d63638; color: #fff; border-radius: 10px; padding: 1px 8px; font-size: 0.85em; margin-left: 6px; }
-				.owc-ws-role-tag { display: inline-block; background: #e0e0e0; border-radius: 3px; padding: 1px 6px; font-size: 0.8em; color: #555; margin-left: 4px; }
+				.owc-ws-role-tag { display: inline-block; background: rgba(128,128,128,0.2); border-radius: 3px; padding: 1px 6px; font-size: 0.8em; color: inherit; opacity: 0.7; margin-left: 4px; }
 				.owc-ws-welcome { margin-bottom: 20px; }
-				.owc-ws-welcome p { margin: 4px 0; color: #555; }
+				.owc-ws-welcome p { margin: 4px 0; color: inherit; opacity: 0.7; }
 			</style>
 
 			<!-- ── Welcome ──────────────────────────────────────── -->
@@ -347,8 +348,8 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<?php endif; ?>
 				<?php if ( ! empty( $roles ) ) : ?>
 					<details style="margin-top:6px;">
-						<summary style="cursor:pointer;color:#555;">Your Roles (<?php echo count( $roles ); ?>)</summary>
-						<ul style="margin:6px 0 0;padding-left:20px;font-size:1em;color:#666;font-family:monospace;">
+						<summary style="cursor:pointer;opacity:0.7;">Your Roles (<?php echo count( $roles ); ?>)</summary>
+						<ul style="margin:6px 0 0;padding-left:20px;font-size:1em;opacity:0.7;font-family:monospace;">
 							<?php foreach ( $roles as $r ) : ?>
 								<li><?php echo esc_html( $r ); ?></li>
 							<?php endforeach; ?>
