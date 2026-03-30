@@ -262,14 +262,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ); ?>">Submit Entry</a></li>
 						</ul>
 					</div>
-					<div class="owc-ws-card">
-						<h4>Quick Links</h4>
-						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $players_url ); ?>">Players Portal</a></li>
-							<li><a href="<?php echo esc_url( $chronicles_url ); ?>">Chronicles</a></li>
-							<li><a href="<?php echo esc_url( $council_url ); ?>">Council</a></li>
-						</ul>
-					</div>
 				</div>
 			</div>
 
@@ -291,7 +283,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<?php endforeach; ?>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $chronicles_url . '/chronicle/' . $slug . '/' ); ?>">Chronicle Page</a></li>
+							<li><a href="<?php echo esc_url( $chronicles_url . '/chronicle-detail/?slug=' . $slug ); ?>">Chronicle Page</a></li>
 							<?php if ( $is_hst || $is_cm ) : ?>
 								<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ); ?>">OAT Inbox</a></li>
 							<?php endif; ?>
@@ -320,6 +312,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<span class="owc-ws-role-tag"><?php echo esc_html( $level_label ); ?></span>
 						</h4>
 						<ul class="owc-ws-links">
+							<li><a href="<?php echo esc_url( $council_url . '/coordinator-detail/?slug=' . $genre ); ?>">Coordinator Page</a></li>
 							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ); ?>">OAT Inbox</a></li>
 							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ); ?>">Registry</a></li>
 							<?php if ( $level === 'coordinator' ) : ?>
