@@ -126,6 +126,12 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 		$user = wp_get_current_user();
 
+		// Helper: build SSO-aware URL. Passes through ?auth=sso with redirect_uri to destination.
+		$sso_link = function( $base_url, $path = '/' ) {
+			$path = ltrim( $path, '/' );
+			return $base_url . '/?auth=sso&redirect_uri=' . rawurlencode( '/' . $path );
+		};
+
 		// Get ASC roles.
 		$roles = array();
 		if ( function_exists( 'owc_asc_get_user_roles' ) ) {
@@ -228,18 +234,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<?php endif; ?>
 			</div>
 
-			<!-- ── Connect ──────────────────────────────────────── -->
-			<div class="owc-ws-section">
-				<h3>Connect Your Sites</h3>
-				<p style="margin:0 0 10px;color:#666;font-size:0.9em;">Click each site once per session to establish your login, then use the links below freely.</p>
-				<div style="display:flex;gap:10px;flex-wrap:wrap;">
-					<a href="<?php echo esc_url( $players_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Players</a>
-					<a href="<?php echo esc_url( $chronicles_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Chronicles</a>
-					<a href="<?php echo esc_url( $council_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Council</a>
-					<a href="<?php echo esc_url( $archivist_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Archivist</a>
-				</div>
-			</div>
-
 			<!-- ── 1. Self ──────────────────────────────────────── -->
 			<div class="owc-ws-section">
 				<h3>My Stuff</h3>
@@ -247,19 +241,19 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 					<div class="owc-ws-card">
 						<h4>Inbox<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?></span><?php endif; ?></h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ); ?>">View Inbox</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">View Inbox</a></li>
 						</ul>
 					</div>
 					<div class="owc-ws-card">
 						<h4>My Characters</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ); ?>">View Registry</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ); ?>">View Registry</a></li>
 						</ul>
 					</div>
 					<div class="owc-ws-card">
 						<h4>New Submission</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ); ?>">Submit Entry</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ) ); ?>">Submit Entry</a></li>
 						</ul>
 					</div>
 				</div>
@@ -283,13 +277,13 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<?php endforeach; ?>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $chronicles_url . '/chronicle-detail/?slug=' . $slug ); ?>">Chronicle Page</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>">Chronicle Page</a></li>
 							<?php if ( $is_hst || $is_cm ) : ?>
-								<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ); ?>">OAT Inbox</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">OAT Inbox</a></li>
 							<?php endif; ?>
 							<?php if ( $is_cm ) : ?>
-								<li><a href="<?php echo esc_url( $council_url . '/voting-dashboard/' ); ?>">Council Votes</a></li>
-								<li><a href="<?php echo esc_url( $council_url . '/cast-vote/' ); ?>">Cast Vote</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'cast-vote/' ) ); ?>">Cast Vote</a></li>
 							<?php endif; ?>
 						</ul>
 					</div>
@@ -312,11 +306,11 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<span class="owc-ws-role-tag"><?php echo esc_html( $level_label ); ?></span>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $council_url . '/coordinator-detail/?slug=' . $genre ); ?>">Coordinator Page</a></li>
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ); ?>">OAT Inbox</a></li>
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ); ?>">Registry</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ); ?>">Coordinator Page</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">OAT Inbox</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ); ?>">Registry</a></li>
 							<?php if ( $level === 'coordinator' ) : ?>
-								<li><a href="<?php echo esc_url( $council_url . '/voting-dashboard/' ); ?>">Council Votes</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
 							<?php endif; ?>
 						</ul>
 					</div>
@@ -338,8 +332,8 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<span class="owc-ws-role-tag">Exec</span>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $archivist_url . '/wp-admin/' ); ?>">Archivist Admin</a></li>
-							<li><a href="<?php echo esc_url( $council_url . '/voting-dashboard/' ); ?>">Council Votes</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ); ?>">Archivist Admin</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
 						</ul>
 					</div>
 					<?php endforeach; ?>
