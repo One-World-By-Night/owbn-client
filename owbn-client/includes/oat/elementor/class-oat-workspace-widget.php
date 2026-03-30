@@ -83,6 +83,56 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// Custom cards section.
+		$this->start_controls_section( 'custom_cards_section', array(
+			'label' => __( 'Custom Cards', 'owbn-client' ),
+			'tab'   => Controls_Manager::TAB_CONTENT,
+		) );
+
+		$repeater = new \Elementor\Repeater();
+
+		$repeater->add_control( 'card_title', array(
+			'label'   => __( 'Card Title', 'owbn-client' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => 'Resources',
+		) );
+
+		$repeater->add_control( 'card_visibility', array(
+			'label'   => __( 'Show to', 'owbn-client' ),
+			'type'    => Controls_Manager::SELECT,
+			'default' => 'everyone',
+			'options' => array(
+				'everyone'    => __( 'Everyone (logged in)', 'owbn-client' ),
+				'chronicle'   => __( 'Chronicle staff only', 'owbn-client' ),
+				'coordinator' => __( 'Coordinators only', 'owbn-client' ),
+				'exec'        => __( 'Exec only', 'owbn-client' ),
+			),
+		) );
+
+		$repeater->add_control( 'card_links', array(
+			'label'       => __( 'Links (one per line: Label | URL)', 'owbn-client' ),
+			'type'        => Controls_Manager::TEXTAREA,
+			'default'     => '',
+			'placeholder' => "Genre/Resource Packets | https://council.owbn.net/genre-resource-packets/\nAnother Link | https://example.com/page/",
+			'description' => __( 'Format: Link Label | URL (one per line)', 'owbn-client' ),
+		) );
+
+		$repeater->add_control( 'card_sso', array(
+			'label'       => __( 'Wrap links with SSO', 'owbn-client' ),
+			'type'        => Controls_Manager::SWITCHER,
+			'default'     => 'yes',
+			'description' => __( 'Route links through SSO auth', 'owbn-client' ),
+		) );
+
+		$this->add_control( 'custom_cards', array(
+			'label'       => __( 'Cards', 'owbn-client' ),
+			'type'        => Controls_Manager::REPEATER,
+			'fields'      => $repeater->get_controls(),
+			'title_field' => '{{{ card_title }}}',
+		) );
+
+		$this->end_controls_section();
+
 		$this->start_controls_section( 'style_section', array(
 			'label' => __( 'Style', 'owbn-client' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
@@ -343,6 +393,51 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 						<ul class="owc-ws-links">
 							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ); ?>" target="_blank">Archivist Admin</a></li>
 							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
+						</ul>
+					</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<?php endif; ?>
+
+			<?php
+			// ── Custom Cards ─────────────────────────────────────
+			$custom_cards = $settings['custom_cards'] ?? array();
+			if ( ! empty( $custom_cards ) ) : ?>
+			<div class="owc-ws-section">
+				<h3>Resources</h3>
+				<div class="owc-ws-grid">
+					<?php foreach ( $custom_cards as $card ) :
+						$card_title = $card['card_title'] ?? '';
+						$card_raw   = $card['card_links'] ?? '';
+						$use_sso    = ( $card['card_sso'] ?? 'yes' ) === 'yes';
+						$visibility = $card['card_visibility'] ?? 'everyone';
+						if ( ! $card_title || ! $card_raw ) continue;
+
+						// Visibility check.
+						if ( 'chronicle' === $visibility && empty( $chronicle_roles ) ) continue;
+						if ( 'coordinator' === $visibility && empty( $coord_roles ) ) continue;
+						if ( 'exec' === $visibility && empty( $exec_roles ) ) continue;
+
+						$lines = array_filter( array_map( 'trim', explode( "\n", $card_raw ) ) );
+					?>
+					<div class="owc-ws-card">
+						<h4><?php echo esc_html( $card_title ); ?></h4>
+						<ul class="owc-ws-links">
+							<?php foreach ( $lines as $line ) :
+								$parts = array_map( 'trim', explode( '|', $line, 2 ) );
+								if ( count( $parts ) < 2 ) continue;
+								$link_label = $parts[0];
+								$link_url   = $parts[1];
+								if ( $use_sso ) {
+									$parsed = parse_url( $link_url );
+									$base   = ( $parsed['scheme'] ?? 'https' ) . '://' . ( $parsed['host'] ?? '' );
+									$path   = ltrim( ( $parsed['path'] ?? '/' ) . ( ! empty( $parsed['query'] ) ? '?' . $parsed['query'] : '' ), '/' );
+									$link_url = $sso_link( $base, $path );
+								}
+							?>
+								<li><a href="<?php echo esc_url( $link_url ); ?>" target="_blank"><?php echo esc_html( $link_label ); ?></a></li>
+							<?php endforeach; ?>
 						</ul>
 					</div>
 					<?php endforeach; ?>
