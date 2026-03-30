@@ -234,26 +234,25 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<?php endif; ?>
 			</div>
 
+			<!-- ── Connect ──────────────────────────────────────── -->
+			<div class="owc-ws-section">
+				<h3>OWBN Sites</h3>
+				<div style="display:flex;gap:10px;flex-wrap:wrap;">
+					<a href="<?php echo esc_url( $players_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Players</a>
+					<a href="<?php echo esc_url( $chronicles_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Chronicles</a>
+					<a href="<?php echo esc_url( $council_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Council</a>
+					<a href="<?php echo esc_url( $archivist_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Archivist</a>
+				</div>
+			</div>
+
 			<!-- ── 1. Self ──────────────────────────────────────── -->
 			<div class="owc-ws-section">
 				<h3>My Stuff</h3>
 				<div class="owc-ws-grid">
 					<div class="owc-ws-card">
-						<h4>Inbox<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?></span><?php endif; ?></h4>
+						<h4>OAT Dashboard<?php if ( $inbox_count > 0 ) : ?><span class="owc-ws-badge"><?php echo (int) $inbox_count; ?> pending</span><?php endif; ?></h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">View Inbox</a></li>
-						</ul>
-					</div>
-					<div class="owc-ws-card">
-						<h4>My Characters</h4>
-						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ); ?>">View Registry</a></li>
-						</ul>
-					</div>
-					<div class="owc-ws-card">
-						<h4>New Submission</h4>
-						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ) ); ?>">Submit Entry</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">My Characters, Inbox &amp; Submissions</a></li>
 						</ul>
 					</div>
 				</div>
@@ -277,13 +276,15 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<?php endforeach; ?>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>">Chronicle Page</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>">View Chronicle</a></li>
+							<?php if ( $is_hst ) : ?>
+								<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'wp-admin/edit.php?post_type=owbn_chronicle&s=' . $slug ) ); ?>">Edit Chronicle</a></li>
+							<?php endif; ?>
 							<?php if ( $is_hst || $is_cm ) : ?>
-								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">OAT Inbox</a></li>
+								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">OAT Dashboard</a></li>
 							<?php endif; ?>
 							<?php if ( $is_cm ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
-								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'cast-vote/' ) ); ?>">Cast Vote</a></li>
 							<?php endif; ?>
 						</ul>
 					</div>
@@ -306,9 +307,9 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<span class="owc-ws-role-tag"><?php echo esc_html( $level_label ); ?></span>
 						</h4>
 						<ul class="owc-ws-links">
-							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ); ?>">Coordinator Page</a></li>
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ); ?>">OAT Inbox</a></li>
-							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ); ?>">Registry</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ); ?>">View Coordinator Page</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'wp-admin/edit.php?post_type=owbn_coordinator&s=' . $genre ) ); ?>">Edit Coordinator Page</a></li>
+							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>">OAT Dashboard</a></li>
 							<?php if ( $level === 'coordinator' ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>">Council Votes</a></li>
 							<?php endif; ?>
