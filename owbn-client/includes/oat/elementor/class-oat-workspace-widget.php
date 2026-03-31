@@ -358,8 +358,10 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				<div class="owc-ws-grid">
 					<?php foreach ( $chronicle_roles as $slug => $types ) :
 						$title = $chron_titles[ $slug ] ?? strtoupper( $slug );
-						$is_cm  = in_array( 'cm', $types, true );
-						$is_hst = in_array( 'hst', $types, true );
+						$is_cm    = in_array( 'cm', $types, true );
+						$is_hst   = in_array( 'hst', $types, true );
+						$is_staff = in_array( 'staff', $types, true );
+						$can_edit = $is_hst || $is_cm || $is_staff;
 						$chron_post_id = $chron_ids[ $slug ] ?? 0;
 					?>
 					<div class="owc-ws-card">
@@ -370,10 +372,10 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 						</h4>
 						<ul class="owc-ws-links">
 							<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ); ?>" target="_blank">View Chronicle</a></li>
-							<?php if ( $is_hst && $chron_post_id ) : ?>
+							<?php if ( $can_edit && $chron_post_id ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Chronicle</a></li>
 							<?php endif; ?>
-							<?php if ( $is_hst || $is_cm ) : ?>
+							<?php if ( $can_edit ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">Archivist Dashboard</a></li>
 							<?php endif; ?>
 							<?php if ( $is_cm ) : ?>
