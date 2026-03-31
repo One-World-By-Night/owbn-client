@@ -194,8 +194,12 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 				if ( ! isset( $coord_roles[ $genre ] ) || $level === 'coordinator' ) {
 					$coord_roles[ $genre ] = $level;
 				}
-			} elseif ( preg_match( '#^exec/([^/]+)/coordinator$#i', $role, $m ) ) {
-				$exec_roles[ strtolower( $m[1] ) ] = 'coordinator';
+			} elseif ( preg_match( '#^exec/([^/]+)/(coordinator|staff|sub-coordinator)$#i', $role, $m ) ) {
+				$office = strtolower( $m[1] );
+				$level  = strtolower( $m[2] );
+				if ( ! isset( $exec_roles[ $office ] ) || $level === 'coordinator' ) {
+					$exec_roles[ $office ] = $level;
+				}
 			}
 		}
 
@@ -228,7 +232,22 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			}
 		}
 
-		$cached = compact( 'chronicle_roles', 'coord_roles', 'exec_roles', 'chron_titles', 'chron_ids', 'coord_titles', 'coord_ids' );
+		// Resolve exec titles and post IDs from coordinators data (exec offices are coordinator CPTs).
+		$exec_titles = $exec_ids = array();
+		if ( function_exists( 'owc_get_coordinators' ) && ! empty( $exec_roles ) ) {
+			$all = owc_get_coordinators();
+			if ( ! is_wp_error( $all ) ) {
+				foreach ( $all as $co ) {
+					$co = (array) $co;
+					if ( isset( $exec_roles[ $co['slug'] ] ) ) {
+						$exec_titles[ $co['slug'] ] = $co['title'] ?? ucfirst( $co['slug'] );
+						$exec_ids[ $co['slug'] ]    = $co['id'] ?? 0;
+					}
+				}
+			}
+		}
+
+		$cached = compact( 'chronicle_roles', 'coord_roles', 'exec_roles', 'chron_titles', 'chron_ids', 'coord_titles', 'coord_ids', 'exec_titles', 'exec_ids' );
 		return $cached;
 	}
 
@@ -421,12 +440,20 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			<div class="owc-ws-section">
 				<?php if ( $heading ) : ?><h3><?php echo esc_html( $heading ); ?></h3><?php endif; ?>
 				<div class="owc-ws-grid">
-					<?php foreach ( $exec_roles as $office => $level ) : ?>
+					<?php foreach ( $exec_roles as $office => $level ) :
+						$exec_title   = $exec_titles[ $office ] ?? ucfirst( str_replace( '-', ' ', $office ) );
+						$exec_post_id = $exec_ids[ $office ] ?? 0;
+						$level_label  = ( $level === 'coordinator' ) ? 'Coordinator' : ucfirst( $level );
+					?>
 					<div class="owc-ws-card">
-						<h4><?php echo esc_html( ucfirst( str_replace( '-', ' ', $office ) ) ); ?>
-							<span class="owc-ws-role-tag">Exec</span>
+						<h4><?php echo esc_html( $exec_title ); ?>
+							<span class="owc-ws-role-tag"><?php echo esc_html( $level_label ); ?></span>
 						</h4>
 						<ul class="owc-ws-links">
+							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $office ) ); ?>" target="_blank">View Page</a></li>
+							<?php if ( $exec_post_id ) : ?>
+								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'wp-admin/post.php?post=' . $exec_post_id . '&action=edit' ) ); ?>" target="_blank">Edit Page</a></li>
+							<?php endif; ?>
 							<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ); ?>" target="_blank">Archivist Admin</a></li>
 							<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
 						</ul>
