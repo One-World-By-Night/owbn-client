@@ -396,8 +396,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 							<?php endif; ?>
 							<?php if ( $can_edit ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ); ?>" target="_blank">Archivist Dashboard</a></li>
-							<?php endif; ?>
-							<?php if ( $is_cm ) : ?>
 								<li><a href="<?php echo esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ); ?>" target="_blank">Council Votes</a></li>
 							<?php endif; ?>
 						</ul>
