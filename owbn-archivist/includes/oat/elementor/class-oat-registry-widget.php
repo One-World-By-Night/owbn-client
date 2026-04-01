@@ -72,6 +72,12 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			'default' => 'yes',
 		) );
 
+		$this->add_control( 'show_last_activity', array(
+			'label'   => __( 'Show Last Activity Column', 'owbn-client' ),
+			'type'    => Controls_Manager::SWITCHER,
+			'default' => '',
+		) );
+
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_section', array(
@@ -131,6 +137,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			$all_tabs = array( $widget_scope => $all_tabs[ $widget_scope ] ?? 'Registry' );
 		}
 
+		$show_activity = ( $settings['show_last_activity'] ?? '' ) === 'yes';
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$nonce    = wp_create_nonce( 'owc_oat_nonce' );
 
@@ -143,6 +150,11 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		.oat-registry-tab.active { font-weight: bold; background: #fff; border-bottom-color: #fff; }
 		.oat-registry-tab { display: inline-block; padding: 8px 16px; border: 1px solid #ddd; border-bottom: none; margin-right: 2px; cursor: pointer; border-radius: 4px 4px 0 0; background: #f7f7f7; text-decoration: none; color: inherit; }
 		.oat-registry-loading { padding: 20px; text-align: center; color: #666; }
+		.oat-registry-table th[data-sort] { cursor: pointer; user-select: none; }
+		.oat-registry-table th[data-sort]:hover { opacity: 0.7; }
+		.oat-registry-table th[data-sort]::after { content: ' \2195'; font-size: 0.7em; opacity: 0.4; }
+		.oat-registry-table th[data-sort].sort-asc::after { content: ' \2191'; opacity: 1; }
+		.oat-registry-table th[data-sort].sort-desc::after { content: ' \2193'; opacity: 1; }
 		</style>
 		<div class="oat-registry-widget">
 			<div class="oat-registry-header">
@@ -173,6 +185,9 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			var detailBase = <?php echo wp_json_encode( $detail_base ); ?>;
 			var tabs      = widget.querySelectorAll('.oat-registry-tab');
 			var firstScope = <?php echo wp_json_encode( array_key_first( $all_tabs ) ); ?>;
+			var showActivity = <?php echo $show_activity ? 'true' : 'false'; ?>;
+			var activityCol = showActivity ? '<th data-sort="activity" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Last Activity</th>' : '';
+			var activityColCount = showActivity ? 7 : 6;
 			var loadedSections = {};
 
 			function post(action, data, cb) {
@@ -207,14 +222,15 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 							+ '<div class="oat-registry-section-body oat-collapsed">'
 							+ '<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">'
 							+ '<thead><tr>'
-							+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
-							+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
-							+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
-							+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
-							+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
-							+ '<th style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
+							+ '<th data-sort="name" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
+							+ '<th data-sort="chronicle" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
+							+ '<th data-sort="type" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
+							+ '<th data-sort="pcnpc" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
+							+ '<th data-sort="status" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
+							+ '<th data-sort="entries" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
+							+ activityCol
 							+ '</tr></thead>'
-							+ '<tbody><tr><td colspan="6" class="oat-registry-loading">Loading...</td></tr></tbody>'
+							+ '<tbody><tr><td colspan="' + activityColCount + '" class="oat-registry-loading">Loading...</td></tr></tbody>'
 							+ '</table></div></div>';
 					}
 					content.innerHTML = html;
@@ -261,13 +277,27 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 							var sum = 0; for (var k in entries) sum += parseInt(entries[k])||0;
 							entries = sum;
 						}
-						html += '<tr class="oat-registry-row" data-name="' + name.toLowerCase() + '" data-chronicle="' + slug.toLowerCase() + '">'
+						var lastAct = c.last_activity || '';
+						var lastActDisplay = '';
+						if (lastAct) {
+							var d = new Date(parseInt(lastAct) * 1000);
+							lastActDisplay = d.toLocaleDateString();
+						}
+						html += '<tr class="oat-registry-row"'
+							+ ' data-name="' + name.toLowerCase() + '"'
+							+ ' data-chronicle="' + slug.toLowerCase() + '"'
+							+ ' data-type="' + (c.creature_type||'').toLowerCase() + '"'
+							+ ' data-pcnpc="' + (c.pc_npc||'').toLowerCase() + '"'
+							+ ' data-status="' + (c.status||'').toLowerCase() + '"'
+							+ ' data-entries="' + entries + '"'
+							+ ' data-activity="' + (lastAct||'0') + '">'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '" target="_blank">' + name + '</a></td>'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + slug + '</td>'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.creature_type||'') + '</td>'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.pc_npc||'').toUpperCase() + '</td>'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : '') + '</td>'
 							+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">' + entries + '</td>'
+							+ (showActivity ? '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + lastActDisplay + '</td>' : '')
 							+ '</tr>';
 					}
 					tbody.innerHTML = html;
@@ -307,25 +337,36 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 							}
 							var html = '<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">'
 								+ '<thead><tr>'
-								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
-								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
-								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
-								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
-								+ '<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
-								+ '<th style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
+								+ '<th data-sort="name" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
+								+ '<th data-sort="chronicle" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
+								+ '<th data-sort="type" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
+								+ '<th data-sort="pcnpc" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
+								+ '<th data-sort="status" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
+								+ '<th data-sort="entries" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
+								+ activityCol
 								+ '</tr></thead><tbody>';
 							for (var i = 0; i < data.length; i++) {
 								var c = data[i];
 								var url = detailBase + '?character_id=' + (c.id || 0);
 								var entries = c.entry_counts || 0;
 								if (typeof entries === 'object') { var sum = 0; for (var k in entries) sum += parseInt(entries[k])||0; entries = sum; }
-								html += '<tr>'
+								var sLastAct = c.last_activity || '';
+								var sLastDisp = sLastAct ? new Date(parseInt(sLastAct)*1000).toLocaleDateString() : '';
+								html += '<tr class="oat-registry-row"'
+									+ ' data-name="' + (c.character_name||'').toLowerCase() + '"'
+									+ ' data-chronicle="' + (c.chronicle_slug||'').toLowerCase() + '"'
+									+ ' data-type="' + (c.creature_type||'').toLowerCase() + '"'
+									+ ' data-pcnpc="' + (c.pc_npc||'').toLowerCase() + '"'
+									+ ' data-status="' + (c.status||'').toLowerCase() + '"'
+									+ ' data-entries="' + entries + '"'
+									+ ' data-activity="' + (sLastAct||'0') + '">'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="' + url + '" target="_blank">' + (c.character_name||'') + '</a></td>'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.chronicle_slug||'').toUpperCase() + '</td>'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.creature_type||'') + '</td>'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.pc_npc||'').toUpperCase() + '</td>'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + (c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : '') + '</td>'
 									+ '<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">' + entries + '</td>'
+									+ (showActivity ? '<td style="padding:6px 8px;border-bottom:1px solid #eee;">' + sLastDisp + '</td>' : '')
 									+ '</tr>';
 							}
 							html += '</tbody></table>';
@@ -350,6 +391,37 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 					});
 				});
 			}
+
+			// Sort handler — click th[data-sort] to sort rows within that section.
+			content.addEventListener('click', function(e) {
+				var th = e.target.closest('th[data-sort]');
+				if (!th) return;
+				var key = th.getAttribute('data-sort');
+				var tbody = th.closest('table').querySelector('tbody');
+				if (!tbody) return;
+				var rows = Array.from(tbody.querySelectorAll('tr.oat-registry-row'));
+				if (!rows.length) return;
+
+				// Toggle direction.
+				var asc = !th.classList.contains('sort-asc');
+				th.closest('thead').querySelectorAll('th[data-sort]').forEach(function(h) {
+					h.classList.remove('sort-asc', 'sort-desc');
+				});
+				th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+
+				var numeric = (key === 'entries' || key === 'activity');
+				rows.sort(function(a, b) {
+					var va = a.getAttribute('data-' + key) || '';
+					var vb = b.getAttribute('data-' + key) || '';
+					if (numeric) {
+						va = parseFloat(va) || 0;
+						vb = parseFloat(vb) || 0;
+						return asc ? va - vb : vb - va;
+					}
+					return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+				});
+				rows.forEach(function(row) { tbody.appendChild(row); });
+			});
 
 			// Load first tab on ready.
 			loadTab(firstScope);
