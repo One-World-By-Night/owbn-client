@@ -40,6 +40,11 @@ require_once __DIR__ . '/gateway/init.php';
 // ── Admin bar menu ──────────────────────────────────────────────────────────
 require_once __DIR__ . '/admin-bar/init.php';
 
+// ── Block editor (Gutenberg) category ──────────────────────────────────────
+if ( file_exists( __DIR__ . '/editor/init.php' ) ) {
+    require_once __DIR__ . '/editor/init.php';
+}
+
 // ── UX Feedback ─────────────────────────────────────────────────────────────
 require_once __DIR__ . '/feedback/init.php';
 

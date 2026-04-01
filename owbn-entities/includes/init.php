@@ -17,12 +17,22 @@ require_once __DIR__ . '/core/rewrites.php';
 // ── Cache invalidation hooks ───────────────────────────────────────────────
 require_once __DIR__ . '/hooks/cache-hooks.php';
 
+// ── API webhook hook handlers ─────────────────────────────────────────────
+require_once __DIR__ . '/hooks/api-chronicles.php';
+require_once __DIR__ . '/hooks/api-coordinators.php';
+require_once __DIR__ . '/hooks/api-territories.php';
+
 // ── Render functions ───────────────────────────────────────────────────────
 require_once __DIR__ . '/render/init.php';
 
 // ── Shortcodes ─────────────────────────────────────────────────────────────
 if ( file_exists( __DIR__ . '/shortcodes/init.php' ) ) {
     require_once __DIR__ . '/shortcodes/init.php';
+}
+
+// ── Template loader (non-Elementor fallback) ──────────────────────────────
+if ( file_exists( __DIR__ . '/templates/init.php' ) ) {
+    require_once __DIR__ . '/templates/init.php';
 }
 
 // ── Elementor widgets ──────────────────────────────────────────────────────

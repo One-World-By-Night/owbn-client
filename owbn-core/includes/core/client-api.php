@@ -158,6 +158,7 @@ function owc_remote_request(string $url, string $api_key, array $body = [])
 }
 
 
+if ( ! function_exists( 'owc_get_local_chronicles' ) ) :
 function owc_get_local_chronicles()
 {
     if (!post_type_exists('owbn_chronicle')) {
@@ -192,6 +193,9 @@ function owc_get_local_chronicles()
     }, $posts);
 }
 
+endif; // owc_get_local_chronicles
+
+if ( ! function_exists( 'owc_get_local_coordinators' ) ) :
 function owc_get_local_coordinators()
 {
     if (!post_type_exists('owbn_coordinator')) {
@@ -221,6 +225,9 @@ function owc_get_local_coordinators()
     }, $posts);
 }
 
+endif; // owc_get_local_coordinators
+
+if ( ! function_exists( 'owc_get_local_territories' ) ) :
 function owc_get_local_territories()
 {
     if (!post_type_exists('owbn_territory')) {
@@ -258,6 +265,9 @@ function owc_get_local_territories()
 }
 
 
+endif; // owc_get_local_territories
+
+if ( ! function_exists( 'owc_get_local_chronicle_detail' ) ) :
 function owc_get_local_chronicle_detail(string $slug)
 {
     if (!post_type_exists('owbn_chronicle')) {
@@ -328,6 +338,9 @@ function owc_get_local_chronicle_detail(string $slug)
     ];
 }
 
+endif; // owc_get_local_chronicle_detail
+
+if ( ! function_exists( 'owc_get_local_coordinator_detail' ) ) :
 function owc_get_local_coordinator_detail(string $slug)
 {
     if (!post_type_exists('owbn_coordinator')) {
@@ -374,6 +387,9 @@ function owc_get_local_coordinator_detail(string $slug)
     ];
 }
 
+endif; // owc_get_local_coordinator_detail
+
+if ( ! function_exists( 'owc_get_local_territory_detail' ) ) :
 function owc_get_local_territory_detail(int $id)
 {
     $post = get_post($id);
@@ -399,6 +415,9 @@ function owc_get_local_territory_detail(int $id)
     ];
 }
 
+endif; // owc_get_local_territory_detail
+
+if ( ! function_exists( 'owc_get_local_territories_by_slug' ) ) :
 function owc_get_local_territories_by_slug(string $slug)
 {
     if (!post_type_exists('owbn_territory')) {
@@ -444,6 +463,9 @@ function owc_get_local_territories_by_slug(string $slug)
 }
 
 
+endif; // owc_get_local_territories_by_slug
+
+if ( ! function_exists( 'owc_get_chronicles' ) ) :
 function owc_get_chronicles(bool $force_refresh = false)
 {
     if (!owc_chronicles_enabled()) {
@@ -479,6 +501,9 @@ function owc_get_chronicles(bool $force_refresh = false)
     return $data;
 }
 
+endif; // owc_get_chronicles
+
+if ( ! function_exists( 'owc_get_coordinators' ) ) :
 function owc_get_coordinators(bool $force_refresh = false)
 {
     if (!owc_coordinators_enabled()) {
@@ -514,6 +539,9 @@ function owc_get_coordinators(bool $force_refresh = false)
     return $data;
 }
 
+endif; // owc_get_coordinators
+
+if ( ! function_exists( 'owc_get_territories' ) ) :
 function owc_get_territories(bool $force_refresh = false)
 {
     if (!owc_territories_enabled()) {
@@ -550,6 +578,9 @@ function owc_get_territories(bool $force_refresh = false)
 }
 
 
+endif; // owc_get_territories
+
+if ( ! function_exists( 'owc_get_chronicle_detail' ) ) :
 function owc_get_chronicle_detail(string $slug)
 {
     if (!owc_chronicles_enabled()) {
@@ -583,6 +614,9 @@ function owc_get_chronicle_detail(string $slug)
     return $data;
 }
 
+endif; // owc_get_chronicle_detail
+
+if ( ! function_exists( 'owc_get_coordinator_detail' ) ) :
 function owc_get_coordinator_detail(string $slug)
 {
     if (!owc_coordinators_enabled()) {
@@ -616,6 +650,9 @@ function owc_get_coordinator_detail(string $slug)
     return $data;
 }
 
+endif; // owc_get_coordinator_detail
+
+if ( ! function_exists( 'owc_get_territory_detail' ) ) :
 function owc_get_territory_detail(int $id)
 {
     if (!owc_territories_enabled()) {
@@ -649,6 +686,9 @@ function owc_get_territory_detail(int $id)
     return $data;
 }
 
+endif; // owc_get_territory_detail
+
+if ( ! function_exists( 'owc_get_territories_by_slug' ) ) :
 function owc_get_territories_by_slug(string $typed_slug)
 {
     if (!owc_territories_enabled()) {
@@ -684,6 +724,9 @@ function owc_get_territories_by_slug(string $typed_slug)
  * @param bool   $force_refresh Skip transient cache.
  * @return array|WP_Error
  */
+endif; // owc_get_territories_by_slug
+
+if ( ! function_exists( 'owc_get_entity_votes' ) ) :
 function owc_get_entity_votes($type, $slug, $force_refresh = false)
 {
     if ( ! (bool) get_option(owc_option_name('enable_vote_history'), false) ) {
@@ -720,6 +763,9 @@ function owc_get_entity_votes($type, $slug, $force_refresh = false)
 
     return $data;
 }
+
+
+endif; // owc_get_entity_votes
 
 
 function owc_refresh_all_caches()
