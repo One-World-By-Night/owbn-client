@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * Plugin Name: OWBN Archivist
+ * Plugin URI: https://github.com/One-World-By-Night/owbn-archivist
+ * Description: OAT (OWBN Archivist Toolkit) — workflow engine, character registry, submissions, inbox, reports, custom content hub.
+ * Version: 1.0.0
+ * Author: greghacke
+ * Author URI: https://www.owbn.net
+ * Text Domain: owbn-client
+ * License: GPL-2.0-or-later
+ * Requires Plugins: owbn-core
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+define( 'OWC_ARCHIVIST_VERSION', '1.0.0' );
+define( 'OWC_ARCHIVIST_DIR', plugin_dir_path( __FILE__ ) );
+define( 'OWC_ARCHIVIST_URL', plugin_dir_url( __FILE__ ) );
+
+/**
+ * Verify OWBN Core dependency.
+ */
+if ( ! defined( 'OWC_CORE_VERSION' ) ) {
+    add_action( 'admin_notices', function () {
+        echo '<div class="notice notice-error"><p>';
+        esc_html_e(
+            'OWBN Archivist requires the OWBN Core plugin to be installed and activated.',
+            'owbn-client'
+        );
+        echo '</p></div>';
+    } );
+    return;
+}
+
+/**
+ * Load instance-specific prefix (OWC_PREFIX, OWC_LABEL).
+ */
+$prefix_file = __DIR__ . '/prefix.php';
+
+if ( file_exists( $prefix_file ) ) {
+    require_once $prefix_file;
+}
+
+/**
+ * Bootstrap archivist modules.
+ */
+require_once OWC_ARCHIVIST_DIR . 'includes/init.php';

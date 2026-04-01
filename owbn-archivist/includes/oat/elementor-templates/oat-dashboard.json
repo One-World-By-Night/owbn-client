@@ -1,0 +1,63 @@
+{
+  "version": "0.4",
+  "title": "OAT Dashboard",
+  "type": "page",
+  "content": [
+    {
+      "id": "0a1b2c3",
+      "elType": "section",
+      "settings": {},
+      "elements": [
+        {
+          "id": "1a2b3c4",
+          "elType": "column",
+          "settings": {"_column_size": 100},
+          "elements": [
+            {
+              "id": "2a3b4c5",
+              "elType": "widget",
+              "widgetType": "owc_oat_dashboard",
+              "settings": {
+                "show_pending": "yes",
+                "show_submissions": "yes",
+                "show_watching": "yes",
+                "submit_page_url": "/oat-submit/",
+                "inbox_page_url": "/oat-inbox/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3a4b5c6",
+      "elType": "section",
+      "settings": {},
+      "elements": [
+        {
+          "id": "4a5b6c7",
+          "elType": "column",
+          "settings": {"_column_size": 100},
+          "elements": [
+            {
+              "id": "5a6b7c8",
+              "elType": "widget",
+              "widgetType": "owc_oat_activity",
+              "settings": {
+                "item_count": 10,
+                "domain_filter": "",
+                "auto_refresh": 0,
+                "entry_detail_page": "/oat-entry/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_header_footer"
+  }
+}

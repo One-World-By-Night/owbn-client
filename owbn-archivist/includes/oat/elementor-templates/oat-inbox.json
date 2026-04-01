@@ -1,0 +1,38 @@
+{
+  "version": "0.4",
+  "title": "OAT Inbox",
+  "type": "page",
+  "content": [
+    {
+      "id": "6a7b8c9",
+      "elType": "section",
+      "settings": {},
+      "elements": [
+        {
+          "id": "7a8b9c0",
+          "elType": "column",
+          "settings": {"_column_size": 100},
+          "elements": [
+            {
+              "id": "8a9b0c1",
+              "elType": "widget",
+              "widgetType": "owc_oat_inbox",
+              "settings": {
+                "default_tab": "assigned",
+                "per_page": 20,
+                "show_domain_filter": "yes",
+                "show_status_filter": "yes",
+                "show_search": "yes",
+                "entry_detail_page": "/oat-entry/"
+              },
+              "elements": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "template": "elementor_header_footer"
+  }
+}

@@ -512,28 +512,28 @@ function owc_get_current_coordinator() {
 
 ## EXECUTION ORDER
 
-### Phase 1: Extract owbn-core
-- [ ] Create `owbn-core/` plugin structure
-- [ ] Move accessSchema client, helpers, player-ID, settings, admin, notifications
-- [ ] Move shared gateway auth (`auth.php`, `handlers-users.php`, `routes-users.php`)
-- [ ] Move shared client-api functions (remote request, cache, config)
-- [ ] Move entity-resolution (shared title/slug lookup)
-- [ ] Add admin bar menu module
-- [ ] Add UX feedback module (from `owbn-ux-feedback.php`)
-- [ ] Add settings tab filter hook
-- [ ] Add `OWC_CORE_VERSION` constant
-- [ ] Build out `utils/init.php` with consolidated shared helpers
-- [ ] Build out `hooks/webhooks.php` dispatcher
-- [ ] Build out `editor/init.php` Gutenberg stub
-- [ ] Test on SSO site (core-only install)
+### Phase 1: Extract owbn-core ✅ COMPLETE (commit b3b85d1)
+- [x] Create `owbn-core/` plugin structure — 41 PHP files, 1 CSS
+- [x] Move accessSchema client, helpers, player-ID, settings, admin, notifications
+- [x] Move shared gateway auth (`auth.php`, `handlers-users.php`, `routes-users.php`)
+- [x] Move shared client-api functions (remote request, cache, config)
+- [x] Move entity-resolution (shared title/slug lookup)
+- [x] Add admin bar menu module — `includes/admin-bar/init.php`
+- [x] Add UX feedback module — `includes/feedback/init.php` (ported from owbn-ux-feedback.php)
+- [x] Add settings tab filter hook — `apply_filters( 'owc_settings_tabs', $tabs )`
+- [x] Add `OWC_CORE_VERSION` constant
+- [ ] Build out `utils/init.php` with consolidated shared helpers (stub created)
+- [ ] Build out `hooks/webhooks.php` dispatcher (stub created)
+- [ ] Build out `editor/init.php` Gutenberg stub (deferred)
+- [ ] Test on Studio studiosso (local SSO instance)
 
-### Phase 2: Extract owbn-entities
-- [ ] Create `owbn-entities/` plugin structure
-- [ ] Move render/, shortcodes, rewrites, cache-hooks
-- [ ] Move entity-specific client-api functions
-- [ ] Move entity Elementor widgets (list, detail, field, territory)
-- [ ] Move entity settings tabs
-- [ ] Move entity CSS/JS assets
+### Phase 2: Extract owbn-entities 🔄 IN PROGRESS
+- [x] Create `owbn-entities/` plugin structure
+- [x] Move render/, shortcodes, rewrites, cache-hooks
+- [ ] Move entity-specific client-api functions (currently duplicated in core — prune in Phase 5)
+- [x] Move entity Elementor widgets (list, detail, field, territory)
+- [x] Move entity settings tabs (chronicles, coordinators, territories, vote-history)
+- [x] Move entity CSS/JS assets
 - [ ] Build section widgets for chronicle detail (12 widgets)
 - [ ] Build section widgets for coordinator detail (10 widgets)
 - [ ] Build shared data singleton
@@ -541,34 +541,50 @@ function owc_get_current_coordinator() {
 - [ ] Build page templates (`detail-owbn-chronicle.php`, etc.)
 - [ ] Build compact card renderers (`render-chronicle-box.php`, `render-coordinator-box.php`)
 - [ ] Build API hook handlers from stubs
-- [ ] Add owbn-core dependency check
+- [x] Add owbn-core dependency check
 - [ ] Add edit buttons to header section widgets
 - [ ] Create Elementor page templates with section widgets for chronicle/coordinator detail
-- [ ] Test on chronicles and council
+- [ ] Test on Studio studiodev
 
-### Phase 3: Extract owbn-gateway
-- [ ] Create `owbn-gateway/` plugin structure
-- [ ] Move entity routes and handlers
-- [ ] Move vote handlers
-- [ ] Add owbn-core dependency check
-- [ ] Test producer mode on chronicles and council
+### Phase 3: Extract owbn-gateway 🔄 IN PROGRESS
+- [x] Create `owbn-gateway/` plugin structure
+- [x] Move entity routes and handlers
+- [x] Move vote handlers
+- [x] Add owbn-core dependency check
+- [ ] Test producer mode on Studio studiodev
 
-### Phase 4: Extract owbn-archivist
-- [ ] Create `owbn-archivist/` plugin structure
-- [ ] Move entire `oat/` directory
-- [ ] Move OAT gateway routes and handlers (`auth-oat.php`, `routes-oat.php`, `handlers-oat*.php`)
-- [ ] Move OAT settings tab
-- [ ] Move OAT dashboard widgets
-- [ ] Add owbn-core dependency check
-- [ ] Test on archivist
+### Phase 4: Extract owbn-archivist 🔄 IN PROGRESS
+- [x] Create `owbn-archivist/` plugin structure
+- [x] Move entire `oat/` directory
+- [x] Move OAT gateway routes and handlers (`auth-oat.php`, `routes-oat.php`, `handlers-oat*.php`)
+- [x] Move OAT settings tab
+- [ ] Move OAT dashboard widgets (split from core dashboard-widgets.php)
+- [x] Add owbn-core dependency check
+- [ ] Test on Studio studiodev
 
-### Phase 5: Decommission owbn-client
+### Phase 5: Local Testing & Integration
+- [ ] Symlink all 4 plugins into Studio studiodev
+- [ ] Sync Studio theme + plugins to match production
+- [ ] Remove old owbn-client from studiodev
+- [ ] Activate new plugin set
+- [ ] Test entity display (chronicles, coordinators, territories)
+- [ ] Test OAT (submissions, inbox, registry, reports)
+- [ ] Test gateway (cross-site data fetch)
+- [ ] Test admin bar menu
+- [ ] Test UX feedback widget
+- [ ] Test settings tabs from all plugins
+
+### Phase 6: Production Deploy
 - [ ] Archive `migration-helper.php` to `_INPROGRESS/`
 - [ ] Remove dead stubs (`includes/fields.php`)
-- [ ] Remove old owbn-client from all sites
-- [ ] Activate appropriate plugin set per site
+- [ ] Deploy owbn-core to all sites
+- [ ] Deploy owbn-entities to chronicles + council
+- [ ] Deploy owbn-gateway to chronicles + council
+- [ ] Deploy owbn-archivist to archivist
+- [ ] Deactivate old owbn-client on each site
+- [ ] Activate new plugin set per site
 - [ ] Verify all functionality across all sites
-- [ ] Archive old repo
+- [ ] Archive old owbn-client repo
 
 ---
 

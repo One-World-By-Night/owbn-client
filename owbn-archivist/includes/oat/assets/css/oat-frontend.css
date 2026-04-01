@@ -1,0 +1,890 @@
+/* OAT Frontend Styles
+ *
+ * Frontend-specific styles for OAT Elementor widgets.
+ * Builds on oat-client.css (loaded as dependency).
+ */
+
+/* ── Centered Workspace ──────────────────────────────────────────────────── */
+
+.oat-dashboard,
+.oat-dashboard-actions,
+.oat-inbox-widget,
+.oat-submit-widget,
+.oat-entry-detail,
+.oat-entry-widget,
+.oat-activity-widget,
+.oat-frontend-form {
+	max-width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* ── Login Prompt ─────────────────────────────────────────────────────────── */
+
+.oat-login-prompt {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+	font-size: 15px;
+}
+
+.oat-login-prompt a {
+	color: #2271b1;
+	text-decoration: underline;
+}
+
+/* ── Status Badges (extend oat-client.css) ────────────────────────────────── */
+
+.oat-status-draft {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.oat-status-in_progress {
+	background: #e5f5fa;
+	color: #005a87;
+}
+
+.oat-status-on_hold {
+	background: #fcf0e3;
+	color: #996800;
+}
+
+/* ── Dashboard Cards ──────────────────────────────────────────────────────── */
+
+.oat-dashboard {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.oat-dashboard-card {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 6px;
+	padding: 24px;
+	text-align: center;
+	flex: 1;
+	min-width: 140px;
+}
+
+.oat-dashboard-count {
+	display: block;
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: #1d2327;
+}
+
+.oat-dashboard-label {
+	display: block;
+	font-size: 14px;
+	color: #646970;
+	margin-top: 4px;
+}
+
+.oat-dashboard-actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.oat-btn {
+	display: inline-block;
+	padding: 8px 18px;
+	border-radius: 4px;
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	cursor: pointer;
+	border: none;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.oat-btn-primary {
+	background: #2271b1;
+	color: #fff;
+}
+
+.oat-btn-primary:hover {
+	background: #135e96;
+	color: #fff;
+}
+
+.oat-btn-secondary {
+	background: #f0f0f1;
+	color: #1d2327;
+}
+
+.oat-btn-secondary:hover {
+	background: #dcdcde;
+	color: #1d2327;
+}
+
+/* ── Inbox Table ──────────────────────────────────────────────────────────── */
+
+.oat-inbox-tabs {
+	display: flex;
+	gap: 0;
+	border-bottom: 2px solid #ccd0d4;
+	margin-bottom: 16px;
+}
+
+.oat-inbox-tab {
+	padding: 10px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #646970;
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -2px;
+	cursor: pointer;
+	transition: color 0.2s, border-color 0.2s;
+}
+
+.oat-inbox-tab:hover {
+	color: #1d2327;
+}
+
+.oat-inbox-tab.active {
+	color: #2271b1;
+	border-bottom-color: #2271b1;
+}
+
+.oat-inbox-tab .oat-tab-count {
+	display: inline-block;
+	background: #f0f0f1;
+	border-radius: 10px;
+	padding: 0 7px;
+	font-size: 12px;
+	margin-left: 6px;
+}
+
+.oat-inbox-tab.active .oat-tab-count {
+	background: #e5f0f7;
+	color: #2271b1;
+}
+
+.oat-inbox-filters {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 16px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.oat-inbox-filters select,
+.oat-inbox-filters input[type="text"] {
+	padding: 6px 10px;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 13px;
+	min-width: 150px;
+}
+
+.oat-inbox-filters input[type="text"] {
+	min-width: 200px;
+}
+
+.oat-inbox-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #ccd0d4;
+	font-size: 14px;
+}
+
+.oat-inbox-table thead th {
+	background: #f6f7f7;
+	padding: 10px 12px;
+	text-align: left;
+	font-weight: 600;
+	border-bottom: 1px solid #ccd0d4;
+	cursor: pointer;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.oat-inbox-table thead th:hover {
+	background: #eaeaea;
+}
+
+.oat-inbox-table thead th .oat-sort-icon {
+	display: inline-block;
+	margin-left: 4px;
+	font-size: 11px;
+	color: #999;
+}
+
+.oat-inbox-table thead th.sort-asc .oat-sort-icon::after { content: '\25B2'; }
+.oat-inbox-table thead th.sort-desc .oat-sort-icon::after { content: '\25BC'; }
+
+.oat-inbox-table tbody tr {
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.oat-inbox-table tbody tr:hover {
+	background: #f6f7f7;
+}
+
+.oat-inbox-table tbody td {
+	padding: 10px 12px;
+	vertical-align: middle;
+}
+
+.oat-inbox-table tbody td a {
+	color: #2271b1;
+	text-decoration: none;
+}
+
+.oat-inbox-table tbody td a:hover {
+	text-decoration: underline;
+}
+
+.oat-inbox-empty {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+	font-size: 14px;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────────────── */
+
+.oat-pagination {
+	display: flex;
+	justify-content: center;
+	gap: 4px;
+	margin-top: 16px;
+	padding: 8px 0;
+}
+
+.oat-page-btn {
+	display: inline-block;
+	padding: 6px 12px;
+	border: 1px solid #ccd0d4;
+	border-radius: 3px;
+	font-size: 13px;
+	color: #2271b1;
+	background: #fff;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.oat-page-btn:hover {
+	background: #f0f0f1;
+}
+
+.oat-page-btn.active {
+	background: #2271b1;
+	color: #fff;
+	border-color: #2271b1;
+}
+
+.oat-page-btn.disabled {
+	color: #a7aaad;
+	cursor: default;
+	pointer-events: none;
+}
+
+/* ── Timeline (frontend — extends oat-client.css) ─────────────────────────── */
+
+.oat-timeline-toggle {
+	background: none;
+	border: none;
+	color: #2271b1;
+	font-size: 14px;
+	cursor: pointer;
+	padding: 4px 0;
+	margin-bottom: 8px;
+}
+
+.oat-timeline-toggle:hover {
+	text-decoration: underline;
+}
+
+.oat-timeline.collapsed {
+	display: none;
+}
+
+/* ── Action Buttons (frontend context) ────────────────────────────────────── */
+
+.oat-action-btn {
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 500;
+	border: none;
+	cursor: pointer;
+	transition: opacity 0.2s;
+}
+
+.oat-action-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.oat-action-btn-approve { background: #006505; color: #fff; }
+.oat-action-btn-approve:hover { background: #004d04; }
+
+.oat-action-btn-deny { background: #8b0000; color: #fff; }
+.oat-action-btn-deny:hover { background: #6b0000; }
+
+.oat-action-btn-request_changes { background: #996800; color: #fff; }
+.oat-action-btn-request_changes:hover { background: #7a5300; }
+
+.oat-action-btn-bump { background: #2271b1; color: #fff; }
+.oat-action-btn-bump:hover { background: #135e96; }
+
+.oat-action-btn-cancel { background: #646970; color: #fff; }
+.oat-action-btn-cancel:hover { background: #50575e; }
+
+.oat-action-btn-hold { background: #996800; color: #fff; }
+.oat-action-btn-hold:hover { background: #7a5300; }
+
+.oat-action-btn-resume { background: #2271b1; color: #fff; }
+.oat-action-btn-resume:hover { background: #135e96; }
+
+.oat-action-btn-reassign,
+.oat-action-btn-delegate { background: #50575e; color: #fff; }
+.oat-action-btn-reassign:hover,
+.oat-action-btn-delegate:hover { background: #3c4043; }
+
+/* ── Entry Detail Meta Grid ───────────────────────────────────────────────── */
+
+.oat-entry-meta-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.oat-entry-meta-item {
+	padding: 8px 12px;
+	background: #f6f7f7;
+	border-radius: 4px;
+}
+
+.oat-entry-meta-label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	color: #646970;
+	text-transform: uppercase;
+	margin-bottom: 2px;
+}
+
+.oat-entry-meta-value {
+	font-size: 14px;
+	color: #1d2327;
+}
+
+/* ── Entry Sections ───────────────────────────────────────────────────────── */
+
+.oat-entry-section {
+	margin-bottom: 24px;
+}
+
+.oat-entry-section-header {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1d2327;
+	border-bottom: 1px solid #ccd0d4;
+	padding-bottom: 8px;
+	margin-bottom: 12px;
+}
+
+/* ── Form Fields (frontend context) ───────────────────────────────────────── */
+
+.oat-form-fields .oat-field {
+	margin-bottom: 16px;
+}
+
+.oat-form-fields .oat-field-label {
+	display: block;
+	font-size: 14px;
+	font-weight: 700;
+	color: #1d2327;
+	margin-bottom: 4px;
+}
+
+.oat-form-fields .oat-field-label label {
+	font-weight: inherit;
+}
+
+.oat-form-fields .oat-field-content {
+	display: block;
+}
+
+.oat-form-fields .oat-field-heading {
+	margin: 20px 0 8px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-form-fields .oat-field-heading h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.oat-frontend-form .oat-field-row {
+	margin-bottom: 16px;
+}
+
+.oat-frontend-form .oat-field-label {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	color: #1d2327;
+	margin-bottom: 4px;
+}
+
+.oat-frontend-form .oat-field-label .oat-required {
+	color: #8b0000;
+}
+
+.oat-frontend-form input[type="text"],
+.oat-frontend-form input[type="email"],
+.oat-frontend-form input[type="url"],
+.oat-frontend-form input[type="number"],
+.oat-frontend-form input[type="date"],
+.oat-frontend-form input[type="time"],
+.oat-frontend-form input[type="datetime-local"],
+.oat-frontend-form select,
+.oat-frontend-form textarea {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+	box-sizing: border-box;
+	transition: border-color 0.2s;
+}
+
+.oat-frontend-form input:focus,
+.oat-frontend-form select:focus,
+.oat-frontend-form textarea:focus {
+	border-color: #2271b1;
+	outline: none;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.oat-frontend-form textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.oat-frontend-form .oat-field-error {
+	color: #8b0000;
+	font-size: 13px;
+	margin-top: 4px;
+}
+
+.oat-frontend-form .oat-field-description {
+	color: #646970;
+	font-size: 13px;
+	margin-top: 4px;
+}
+
+/* ── Read-only form fields (entry detail) ─────────────────────────────────── */
+
+/* ── Read-only field display (div-based, stacked) ─────────────────────────── */
+
+.oat-fields-readonly {
+	margin: 0;
+	padding: 0;
+}
+
+.oat-ro-field {
+	padding: 8px 16px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.oat-ro-field:last-child {
+	border-bottom: none;
+}
+
+.oat-ro-label {
+	font-weight: 700;
+	font-size: 14px;
+	color: #1d2327;
+	margin-bottom: 2px;
+}
+
+.oat-ro-help {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	font-weight: normal;
+	margin-top: 1px;
+}
+
+.oat-ro-value {
+	font-size: 14px;
+	color: #3c434a;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+.oat-ro-value a {
+	color: #2271b1;
+}
+
+.oat-ro-heading {
+	padding: 16px 16px 4px;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-ro-heading h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Narrow screens: single-column meta grid */
+@media (max-width: 768px) {
+	.oat-entry-meta-grid {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+
+/* Submit button */
+.oat-submit-btn {
+	display: inline-block;
+	padding: 10px 24px;
+	background: #2271b1;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	font-size: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.oat-submit-btn:hover {
+	background: #135e96;
+}
+
+.oat-submit-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* ── Chronicle / Coordinator Autocomplete Pickers ────────────────────────── */
+
+.oat-chronicle-autocomplete-wrap,
+.oat-coordinator-autocomplete-wrap {
+	position: relative;
+}
+
+.oat-chronicle-selected,
+.oat-coordinator-selected {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 12px;
+	background: #f6f7f7;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.oat-chronicle-selected-name,
+.oat-coordinator-selected-name {
+	font-weight: 500;
+}
+
+.oat-chronicle-clear,
+.oat-coordinator-clear {
+	color: #8b0000;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+/* jQuery UI autocomplete dropdown */
+.ui-autocomplete {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+	max-height: 240px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	z-index: 100100;
+	list-style: none;
+	margin: 0;
+	padding: 4px 0;
+}
+
+.ui-autocomplete .ui-menu-item-wrapper {
+	display: block;
+	padding: 8px 12px;
+	font-size: 14px;
+	color: #1d2327;
+	cursor: pointer;
+}
+
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active,
+.ui-autocomplete .ui-menu-item-wrapper:hover {
+	background: #e5f0f7;
+	color: #2271b1;
+}
+
+/* Submit feedback */
+.oat-submit-success {
+	background: #d7f0d7;
+	color: #006505;
+	padding: 12px 16px;
+	border-radius: 4px;
+	margin-top: 16px;
+}
+
+.oat-submit-error {
+	background: #f0d7d7;
+	color: #8b0000;
+	padding: 12px 16px;
+	border-radius: 4px;
+	margin-top: 16px;
+}
+
+/* ── Activity Feed ────────────────────────────────────────────────────────── */
+
+.oat-activity-feed {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.oat-activity-item {
+	display: flex;
+	gap: 12px;
+	padding: 12px;
+	border-bottom: 1px solid #f0f0f1;
+	align-items: flex-start;
+}
+
+.oat-activity-item:last-child {
+	border-bottom: none;
+}
+
+.oat-activity-time {
+	flex-shrink: 0;
+	font-size: 12px;
+	color: #646970;
+	min-width: 80px;
+}
+
+.oat-activity-body {
+	flex: 1;
+	font-size: 14px;
+}
+
+.oat-activity-action {
+	display: inline-block;
+	padding: 1px 6px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.oat-activity-note {
+	color: #646970;
+	font-size: 13px;
+	margin-top: 4px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 400px;
+}
+
+/* ── Watch Toggle ─────────────────────────────────────────────────────────── */
+
+.oat-watch-btn {
+	background: none;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 6px 14px;
+	font-size: 13px;
+	color: #646970;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.oat-watch-btn:hover {
+	border-color: #2271b1;
+	color: #2271b1;
+}
+
+.oat-watch-btn.watching {
+	background: #e5f0f7;
+	border-color: #2271b1;
+	color: #2271b1;
+}
+
+/* ── Linked Entries ───────────────────────────────────────────────────────── */
+
+.oat-linked-entries {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.oat-linked-entry {
+	padding: 8px 12px;
+	border-bottom: 1px solid #f0f0f1;
+	font-size: 14px;
+}
+
+.oat-linked-entry:last-child {
+	border-bottom: none;
+}
+
+.oat-linked-type {
+	font-size: 12px;
+	color: #646970;
+	text-transform: uppercase;
+	margin-right: 8px;
+}
+
+/* ── Rules Table ──────────────────────────────────────────────────────────── */
+
+.oat-rules-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+	border: 1px solid #ccd0d4;
+}
+
+.oat-rules-table th {
+	background: #f6f7f7;
+	padding: 8px 10px;
+	text-align: left;
+	font-weight: 600;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-rules-table td {
+	padding: 8px 10px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+/* ── Assignees Table ──────────────────────────────────────────────────────── */
+
+.oat-assignees-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+	border: 1px solid #ccd0d4;
+}
+
+.oat-assignees-table th {
+	background: #f6f7f7;
+	padding: 8px 10px;
+	text-align: left;
+	font-weight: 600;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-assignees-table td {
+	padding: 8px 10px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+/* ── Timer Section ────────────────────────────────────────────────────────── */
+
+.oat-timer-section {
+	background: #fcf0e3;
+	border: 1px solid #dba617;
+	border-radius: 4px;
+	padding: 12px 16px;
+	margin-bottom: 16px;
+}
+
+.oat-timer-label {
+	font-weight: 600;
+	color: #996800;
+}
+
+.oat-timer-expires {
+	font-size: 13px;
+	color: #646970;
+	margin-top: 4px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 768px) {
+	/* Dashboard cards stack */
+	.oat-dashboard {
+		flex-direction: column;
+	}
+
+	.oat-dashboard-card {
+		min-width: auto;
+	}
+
+	.oat-dashboard-actions {
+		flex-direction: column;
+	}
+
+	/* Inbox tabs scroll */
+	.oat-inbox-tabs {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* Inbox table → card layout */
+	.oat-inbox-table thead {
+		display: none;
+	}
+
+	.oat-inbox-table tbody tr {
+		display: block;
+		border: 1px solid #ccd0d4;
+		border-radius: 4px;
+		margin-bottom: 12px;
+		padding: 12px;
+	}
+
+	.oat-inbox-table tbody td {
+		display: flex;
+		justify-content: space-between;
+		padding: 4px 0;
+		border: none;
+	}
+
+	.oat-inbox-table tbody td::before {
+		content: attr(data-label);
+		font-weight: 600;
+		margin-right: 12px;
+		flex-shrink: 0;
+	}
+
+	/* Filters stack */
+	.oat-inbox-filters {
+		flex-direction: column;
+	}
+
+	.oat-inbox-filters select,
+	.oat-inbox-filters input[type="text"] {
+		width: 100%;
+		min-width: auto;
+	}
+
+	/* Entry meta single column */
+	.oat-entry-meta-grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* Activity feed note full width */
+	.oat-activity-note {
+		max-width: 100%;
+	}
+}
