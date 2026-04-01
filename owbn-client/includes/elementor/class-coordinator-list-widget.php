@@ -521,7 +521,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 								<?php echo esc_html($type); ?>
 							</div>
 
-							<div class="owc-list-header">
+							<div class="owc-list-header wp-dark-mode-ignore" style="background:#2c3e50 !important;color:#fff !important;">
 								<div class="owc-col-office"><?php esc_html_e('Office', 'owbn-client'); ?></div>
 								<div class="owc-col-coordinator"><?php esc_html_e('Coordinator', 'owbn-client'); ?></div>
 								<div class="owc-col-email"><?php esc_html_e('Contact', 'owbn-client'); ?></div>
