@@ -37,6 +37,11 @@ if ( is_admin() ) {
 // ── Gateway shared auth (needed by owbn-gateway and owbn-archivist) ─────────
 require_once __DIR__ . '/gateway/init.php';
 
+
+// ── Elementor widgets (workspace) ────────────────────────────────────────
+if ( file_exists( __DIR__ . '/elementor/widgets-loader.php' ) ) {
+    require_once __DIR__ . '/elementor/widgets-loader.php';
+}
 // ── Admin bar menu ──────────────────────────────────────────────────────────
 require_once __DIR__ . '/admin-bar/init.php';
 
