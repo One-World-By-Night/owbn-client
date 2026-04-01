@@ -486,7 +486,7 @@ function owc_render_settings_page()
             <ul class="owc-settings-tabs">
                 <?php foreach ( $tabs as $slug => $tab ) :
                     $is_enabled = ! empty( $tab['always_on'] )
-                        || (bool) get_option( owc_option_name( $tab['enable_key'] ), false );
+                        || ( ! empty( $tab['enable_key'] ) && (bool) get_option( owc_option_name( $tab['enable_key'] ), false ) );
                     $classes = array( 'owc-settings-tab' );
                     if ( $slug === $active_tab ) {
                         $classes[] = 'owc-settings-tab--active';
@@ -497,7 +497,7 @@ function owc_render_settings_page()
                 ?>
                 <li class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
                     <a href="<?php echo esc_url( add_query_arg( 'tab', $slug, $page_url ) ); ?>">
-                        <span class="dashicons <?php echo esc_attr( $tab['icon'] ); ?>"></span>
+                        <span class="dashicons <?php echo esc_attr( $tab['icon'] ?? 'dashicons-admin-generic' ); ?>"></span>
                         <?php echo esc_html( $tab['label'] ); ?>
                         <?php if ( ! $is_enabled && empty( $tab['always_on'] ) ) : ?>
                             <span class="owc-tab-badge"><?php esc_html_e( 'Off', 'owbn-client' ); ?></span>
@@ -512,7 +512,7 @@ function owc_render_settings_page()
                 <?php
                 $tab_config = $tabs[ $active_tab ];
                 $is_enabled = ! empty( $tab_config['always_on'] )
-                    || (bool) get_option( owc_option_name( $tab_config['enable_key'] ), false );
+                    || ( ! empty( $tab_config['enable_key'] ) && (bool) get_option( owc_option_name( $tab_config['enable_key'] ), false ) );
 
                 if ( ! $is_enabled && empty( $tab_config['always_on'] ) ) {
                     // Show disabled message.
