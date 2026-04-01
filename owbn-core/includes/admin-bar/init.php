@@ -37,13 +37,12 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         ? '<img src="' . esc_url( $logo_url ) . '" alt="OWBN" style="height:20px;vertical-align:middle;margin-right:4px;">'
         : 'OWBN';
 
-    // Top-level node — parent 'top-secondary' puts it on the RIGHT side.
+    // Top-level node on the main admin bar (left side) — dropdowns work here.
     $wp_admin_bar->add_node( array(
-        'id'     => 'owbn-menu',
-        'parent' => 'top-secondary',
-        'title'  => $title,
-        'href'   => admin_url(),
-        'meta'   => array( 'class' => 'owbn-admin-bar-menu' ),
+        'id'    => 'owbn-menu',
+        'title' => $title,
+        'href'  => admin_url(),
+        'meta'  => array( 'class' => 'owbn-admin-bar-menu' ),
     ) );
 
     // Default links — stores clean destination URLs.
