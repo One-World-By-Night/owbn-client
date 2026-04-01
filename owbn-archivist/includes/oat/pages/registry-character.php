@@ -226,7 +226,7 @@ function owc_oat_can_manage_grants() {
 
     foreach ( $roles as $role ) {
         // Staff roles (HST, CM, staff, AST).
-        if ( preg_match( '#^chronicle/[^/]+/(hst|staff|cm|ast)#i', $role ) ) {
+        if ( preg_match( '#^chronicle/[^/]+/(hst|staff|cm)#i', $role ) ) {
             return true;
         }
         // Exec archivist roles.
@@ -278,7 +278,7 @@ function owc_oat_can_edit_character( $character, $active_grants = array() ) {
         }
 
         // Staff can edit characters in their chronicle.
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm)#i', $role, $m ) ) {
             if ( $chronicle_slug && $m[1] === $chronicle_slug ) {
                 return true;
             }
@@ -329,8 +329,8 @@ function owc_oat_get_npc_role_options() {
     $seen    = array();
 
     foreach ( $roles as $role ) {
-        // Chronicle staff: chronicle/<slug>/(hst|staff|cm|ast)
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
+        // Chronicle staff: chronicle/<slug>/(hst|staff|cm)
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm)#i', $role, $m ) ) {
             $slug = strtolower( $m[1] );
             $key  = 'chronicle:' . $slug;
             if ( ! isset( $seen[ $key ] ) ) {

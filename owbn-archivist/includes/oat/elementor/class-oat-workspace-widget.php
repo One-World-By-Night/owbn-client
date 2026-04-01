@@ -186,7 +186,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 		$coord_roles     = array();
 		$exec_roles      = array();
 		foreach ( $roles as $role ) {
-			if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|ast)$#i', $role, $m ) ) {
+			if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff)$#i', $role, $m ) ) {
 				$chronicle_roles[ strtolower( $m[1] ) ][] = strtolower( $m[2] );
 			} elseif ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {
 				$genre = strtolower( $m[1] );

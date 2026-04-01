@@ -149,7 +149,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			if ( $edit_scope === 'none' && is_array( $user_asc_roles ) ) {
 				$chron_slug = $character['chronicle_slug'] ?? '';
 				foreach ( $user_asc_roles as $r ) {
-					if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $r, $m ) && $m[1] === $chron_slug ) {
+					if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm)#i', $r, $m ) && $m[1] === $chron_slug ) {
 						$edit_scope = 'staff';
 						break;
 					}

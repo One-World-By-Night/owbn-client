@@ -44,7 +44,7 @@ function owc_oat_build_registry_sections( $characters ) {
         $asc_roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
         if ( is_array( $asc_roles ) ) {
             foreach ( $asc_roles as $role ) {
-                if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
+                if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm)#i', $role, $m ) ) {
                     $my_chronicle_slugs[] = $m[1];
                 }
                 if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {

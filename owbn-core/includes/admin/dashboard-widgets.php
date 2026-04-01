@@ -62,7 +62,7 @@ function owc_render_my_cc_widget() {
 	$my_exec = array(); // exec role label
 
 	foreach ( $roles as $role ) {
-		if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|ast|staff)#i', $role, $m ) ) {
+		if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff)#i', $role, $m ) ) {
 			$slug = strtolower( $m[1] );
 			$pos  = strtolower( $m[2] );
 			$rank = $chron_rank[ $pos ] ?? 0;
