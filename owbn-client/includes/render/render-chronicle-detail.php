@@ -316,7 +316,18 @@ function owc_render_chronicle_links(array $chronicle): string
  */
 function owc_render_chronicle_documents(array $chronicle): string
 {
-    $docs = array_filter($chronicle['document_links'] ?? [], fn($d) => !empty($d['link']));
+    $raw_docs = $chronicle['document_links'] ?? [];
+    // Resolve file_id to URL if not already resolved.
+    foreach ( $raw_docs as &$d ) {
+        if ( empty( $d['url'] ) && ! empty( $d['file_id'] ) ) {
+            $d['url'] = wp_get_attachment_url( $d['file_id'] );
+        }
+        if ( empty( $d['url'] ) && ! empty( $d['link'] ) ) {
+            $d['url'] = $d['link'];
+        }
+    }
+    unset( $d );
+    $docs = array_filter( $raw_docs, fn($d) => !empty($d['url']) );
 
     if (empty($docs)) {
         return '';

@@ -10,10 +10,15 @@
 /* Header row */
 .owc-list-header {
     display: flex;
-    background: #2c3e50;
-    color: #fff;
+    background: #2c3e50 !important;
+    color: #fff !important;
     font-size: 14px;
     font-weight: 600;
+}
+
+.owc-list-header > div,
+.owc-list-header > div a {
+    color: #fff !important;
 }
 
 .owc-list-header > div {

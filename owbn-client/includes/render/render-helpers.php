@@ -175,6 +175,14 @@ function owc_format_location(array $location): string
  */
 function owc_render_document_links(array $links): string
 {
+    // Resolve file_id to URL for uploaded documents.
+    foreach ( $links as &$l ) {
+        if ( empty( $l['url'] ) && empty( $l['link'] ) && ! empty( $l['file_id'] ) ) {
+            $l['url'] = wp_get_attachment_url( $l['file_id'] );
+        }
+    }
+    unset( $l );
+
     $links = array_filter($links, fn($l) => !empty($l['url']) || !empty($l['link']));
 
     if (empty($links)) {

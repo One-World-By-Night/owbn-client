@@ -321,7 +321,9 @@ function owc_get_local_chronicle_detail(string $slug)
         'player_lists'           => get_post_meta($id, 'player_lists', true) ?: [],
         'social_urls'            => get_post_meta($id, 'social_urls', true) ?: [],
         'email_lists'            => get_post_meta($id, 'email_lists', true) ?: [],
-        'document_links'         => get_post_meta($id, 'document_links', true) ?: [],
+        'document_links'         => function_exists( 'owbn_format_document_links' )
+            ? owbn_format_document_links( get_post_meta( $id, 'document_links', true ) ?: [] )
+            : ( get_post_meta( $id, 'document_links', true ) ?: [] ),
         'web_url'                => get_post_meta($id, 'web_url', true),
     ];
 }
@@ -365,7 +367,9 @@ function owc_get_local_coordinator_detail(string $slug)
         'email_lists'         => get_post_meta($id, 'email_lists', true) ?: [],
         'player_lists'        => get_post_meta($id, 'player_lists', true) ?: [],
         'social_links'        => get_post_meta($id, 'social_links', true) ?: [],
-        'document_links'      => get_post_meta($id, 'document_links', true) ?: [],
+        'document_links'      => function_exists( 'owbn_format_document_links' )
+            ? owbn_format_document_links( get_post_meta( $id, 'document_links', true ) ?: [] )
+            : ( get_post_meta( $id, 'document_links', true ) ?: [] ),
         'web_url'             => get_post_meta($id, 'web_url', true),
     ];
 }

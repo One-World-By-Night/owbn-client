@@ -21,7 +21,7 @@ function owc_render_coordinator_detail(array $coordinator): string
 
     // Check if sidebar has any content
     $has_hosting = !empty($coordinator['hosting_chronicle']);
-    $has_documents = !empty(array_filter($coordinator['document_links'] ?? [], fn($d) => !empty($d['url'])));
+    $has_documents = !empty(array_filter($coordinator['document_links'] ?? [], fn($d) => !empty($d['url']) || !empty($d['link']) || !empty($d['file_id'])));
     $has_contacts = !empty(array_filter($coordinator['email_lists'] ?? [], fn($l) => !empty($l['list_name']) || !empty($l['email_address'])));
     $has_sidebar = $has_hosting || $has_documents || $has_contacts;
 
@@ -179,6 +179,16 @@ function owc_render_coordinator_subcoords(array $coordinator): string
 function owc_render_coordinator_documents(array $coordinator): string
 {
     $documents = $coordinator['document_links'] ?? [];
+    // Resolve file_id to URL for uploaded documents.
+    foreach ( $documents as &$d ) {
+        if ( empty( $d['url'] ) && ! empty( $d['file_id'] ) ) {
+            $d['url'] = wp_get_attachment_url( $d['file_id'] );
+        }
+        if ( empty( $d['url'] ) && ! empty( $d['link'] ) ) {
+            $d['url'] = $d['link'];
+        }
+    }
+    unset( $d );
     $documents = array_filter($documents, fn($d) => !empty($d['url']));
 
     if (empty($documents)) {
