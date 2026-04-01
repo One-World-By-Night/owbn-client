@@ -33,7 +33,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 
 	public function get_categories(): array
 	{
-		return ['owbn-client'];
+		return ['owbn-entities'];
 	}
 
 	public function get_keywords(): array

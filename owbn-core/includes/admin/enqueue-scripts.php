@@ -31,7 +31,8 @@ add_action( 'admin_enqueue_scripts', function ( $hook_suffix ) {
     );
 
     wp_localize_script( 'owc-admin-settings', 'owcSettings', array(
-        'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-        'searchNonce' => wp_create_nonce( 'owc_data_search_nonce' ),
+        'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+        'searchNonce'  => wp_create_nonce( 'owc_data_search_nonce' ),
+        'testApiNonce' => wp_create_nonce( 'owc_test_api_nonce' ),
     ) );
 });
