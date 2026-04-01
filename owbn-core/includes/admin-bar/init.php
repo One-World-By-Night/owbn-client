@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-add_action( 'admin_bar_menu', 'owc_admin_bar_owbn_menu', 1 );
+add_action( 'admin_bar_menu', 'owc_admin_bar_owbn_menu', 100 );
 add_action( 'wp_head', 'owc_admin_bar_owbn_css' );
 add_action( 'admin_head', 'owc_admin_bar_owbn_css' );
 
@@ -34,7 +34,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
     }
 
     $title = $logo_url
-        ? '<img src="' . esc_url( $logo_url ) . '" alt="OWBN" style="height:20px;vertical-align:middle;margin-right:4px;">'
+        ? '<img src="' . esc_url( $logo_url ) . '" alt="OWBN" style="height:20px;vertical-align:middle;margin-right:4px;"> OWBN'
         : 'OWBN';
 
     // Top-level node on the main admin bar (left side) — dropdowns work here.
