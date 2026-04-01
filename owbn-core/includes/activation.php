@@ -134,28 +134,27 @@ function owc_create_default_pages()
  */
 function owc_core_activate()
 {
-    // Set default OWBN Menu links if not already set.
-    $links_option = owc_option_name('admin_bar_links');
-    if (!get_option($links_option, false)) {
-        $default_links = [
-            [
-                'label' => 'My Account',
-                'url'   => '/my-account/',
-            ],
-            [
-                'label' => 'Chronicles',
-                'url'   => '/chronicles/',
-            ],
-            [
-                'label' => 'Council',
-                'url'   => '/council/',
-            ],
-            [
-                'label' => 'Archivist',
-                'url'   => '/oat-dashboard/',
-            ],
-        ];
-        update_option($links_option, $default_links);
+    // Set default OWBN Menu links — always validate format on activation.
+    $links_option = owc_option_name( 'admin_bar_links' );
+    $existing     = get_option( $links_option, array() );
+    $needs_reset  = empty( $existing );
+
+    // Check for broken format (missing 'title' key from old activation bug).
+    if ( ! $needs_reset && ! empty( $existing ) ) {
+        $first = reset( $existing );
+        if ( ! isset( $first['title'] ) || empty( $first['title'] ) ) {
+            $needs_reset = true;
+        }
+    }
+
+    if ( $needs_reset ) {
+        $default_links = array(
+            array( 'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/' ),
+            array( 'title' => 'Chronicles',   'url' => 'https://chronicles.owbn.net/' ),
+            array( 'title' => 'Council',      'url' => 'https://council.owbn.net/' ),
+            array( 'title' => 'Archivist',    'url' => 'https://archivist.owbn.net/' ),
+        );
+        update_option( $links_option, $default_links );
     }
 
     // Flush rewrite rules so any custom rewrites take effect.

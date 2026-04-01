@@ -42,7 +42,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         'id'     => 'owbn-menu',
         'parent' => 'top-secondary',
         'title'  => $title,
-        'href'   => '#',
+        'href'   => admin_url(),
         'meta'   => array( 'class' => 'owbn-admin-bar-menu' ),
     ) );
 
