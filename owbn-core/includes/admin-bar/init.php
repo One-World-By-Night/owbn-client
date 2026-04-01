@@ -42,8 +42,8 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         'id'     => 'owbn-menu',
         'parent' => 'top-secondary',
         'title'  => $title,
-        'href'   => 'https://owbn.net',
-        'meta'   => array( 'class' => 'owbn-admin-bar-menu', 'target' => '_blank' ),
+        'href'   => '#',
+        'meta'   => array( 'class' => 'owbn-admin-bar-menu' ),
     ) );
 
     // Default links — stores clean destination URLs.
