@@ -46,26 +46,42 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         'meta'   => array( 'class' => 'owbn-admin-bar-menu', 'target' => '_blank' ),
     ) );
 
-    // Default links — overridable via option.
+    // Default links — stores clean destination URLs.
+    // SSO redirect is built at render time for remote sites.
     $default_links = array(
-        array( 'id' => 'owbn-sso',         'title' => 'My Account',           'url' => 'https://sso.owbn.net/site-listing/?auth=sso' ),
-        array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',          'url' => 'https://chronicles.owbn.net/?auth=sso' ),
-        array( 'id' => 'owbn-council',      'title' => 'Council',             'url' => 'https://council.owbn.net/?auth=sso' ),
-        array( 'id' => 'owbn-archivist',    'title' => 'Archivist',           'url' => 'https://archivist.owbn.net/?auth=sso' ),
+        array( 'id' => 'owbn-sso',         'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/' ),
+        array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',  'url' => 'https://chronicles.owbn.net/' ),
+        array( 'id' => 'owbn-council',      'title' => 'Council',     'url' => 'https://council.owbn.net/' ),
+        array( 'id' => 'owbn-archivist',    'title' => 'Archivist',   'url' => 'https://archivist.owbn.net/' ),
     );
 
     $custom_links = get_option( owc_option_name( 'admin_bar_links' ), array() );
     $links = ! empty( $custom_links ) ? $custom_links : $default_links;
 
+    $current_host = wp_parse_url( home_url(), PHP_URL_HOST );
+
     foreach ( $links as $link ) {
         if ( empty( $link['url'] ) || empty( $link['title'] ) ) {
             continue;
         }
+
+        $url  = $link['url'];
+        $host = wp_parse_url( $url, PHP_URL_HOST );
+
+        // If linking to a different OWBN site, route through that site's SSO auth.
+        if ( $host && $host !== $current_host ) {
+            $parsed = wp_parse_url( $url );
+            $path   = isset( $parsed['path'] ) ? $parsed['path'] : '/';
+            $query  = isset( $parsed['query'] ) ? '?' . $parsed['query'] : '';
+            $base   = ( isset( $parsed['scheme'] ) ? $parsed['scheme'] : 'https' ) . '://' . $host;
+            $url    = $base . '/?auth=sso&redirect_uri=' . rawurlencode( $path . $query );
+        }
+
         $wp_admin_bar->add_node( array(
             'id'     => isset( $link['id'] ) ? $link['id'] : sanitize_title( $link['title'] ),
             'parent' => 'owbn-menu',
             'title'  => $link['title'],
-            'href'   => $link['url'],
+            'href'   => $url,
             'meta'   => array( 'target' => '_blank' ),
         ) );
     }

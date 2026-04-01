@@ -11,10 +11,10 @@ $bar_option = owc_option_name( 'admin_bar_links' );
 $bar_links  = get_option( $bar_option, array() );
 if ( empty( $bar_links ) ) {
     $bar_links = array(
-        array( 'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/?auth=sso' ),
-        array( 'title' => 'Chronicles', 'url' => 'https://chronicles.owbn.net/?auth=sso' ),
-        array( 'title' => 'Council',    'url' => 'https://council.owbn.net/?auth=sso' ),
-        array( 'title' => 'Archivist',  'url' => 'https://archivist.owbn.net/?auth=sso' ),
+        array( 'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/' ),
+        array( 'title' => 'Chronicles', 'url' => 'https://chronicles.owbn.net/' ),
+        array( 'title' => 'Council',    'url' => 'https://council.owbn.net/' ),
+        array( 'title' => 'Archivist',  'url' => 'https://archivist.owbn.net/' ),
     );
 }
 
