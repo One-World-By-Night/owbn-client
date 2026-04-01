@@ -25,6 +25,9 @@ defined('ABSPATH') || exit;
  * @param mixed $data
  * @return WP_REST_Response
  */
+// owbn_gateway_respond() is defined in owbn-core/includes/gateway/response.php
+// Fallback here in case core didn't load it.
+if ( ! function_exists( 'owbn_gateway_respond' ) ) :
 function owbn_gateway_respond( $data ) {
     if ( is_wp_error( $data ) ) {
         $status = (int) $data->get_error_data( 'status' );
@@ -36,14 +39,13 @@ function owbn_gateway_respond( $data ) {
             $status > 0 ? $status : 400
         );
     }
-
     $response = new WP_REST_Response( $data, 200 );
-    // Prevent SiteGround/nginx proxy from caching API responses.
     $response->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
     $response->header( 'Pragma', 'no-cache' );
     $response->header( 'Expires', '0' );
     return $response;
 }
+endif;
 
 /**
  * Fetch data from a remote gateway endpoint.
