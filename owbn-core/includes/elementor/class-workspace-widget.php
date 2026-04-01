@@ -34,7 +34,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 	}
 
 	public function get_style_depends() {
-		return array( 'owc-oat-client', 'owc-oat-frontend' );
+		return array(); // Styles are inline in render()
 	}
 
 	protected function register_controls() {
