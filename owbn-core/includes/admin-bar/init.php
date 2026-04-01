@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-add_action( 'admin_bar_menu', 'owc_admin_bar_owbn_menu', 100 );
+add_action( 'admin_bar_menu', 'owc_admin_bar_owbn_menu', 0 );
 add_action( 'wp_head', 'owc_admin_bar_owbn_css' );
 add_action( 'admin_head', 'owc_admin_bar_owbn_css' );
 
