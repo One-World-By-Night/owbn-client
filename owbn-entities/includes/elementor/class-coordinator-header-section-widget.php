@@ -42,12 +42,8 @@ class OWC_Coordinator_Header_Section_Widget extends Widget_Base {
         }
 
         // Edit button for authorized users.
-        $post_id = 0;
-        if ( function_exists( 'owc_entity_get_map' ) ) {
-            $map     = owc_entity_get_map( 'coordinator' );
-            $slug    = $data['slug'] ?? '';
-            $post_id = isset( $map[ $slug ] ) ? (int) $map[ $slug ] : 0;
-        }
+        $slug    = $data['slug'] ?? '';
+        $post_id = function_exists( 'owc_cc_widget_get_post_id' ) ? owc_cc_widget_get_post_id( 'coordinator', $slug ) : 0;
         if ( $post_id && current_user_can( 'edit_post', $post_id ) ) {
             echo '<a href="' . esc_url( admin_url( 'post.php?post=' . $post_id . '&action=edit' ) ) . '" class="button" style="margin-top:8px;">Edit Coordinator</a>';
         }

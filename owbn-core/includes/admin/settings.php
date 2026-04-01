@@ -230,6 +230,11 @@ add_action('admin_init', function () {
         'default'           => false,
         'sanitize_callback' => 'rest_sanitize_boolean',
     ]);
+    register_setting($g, owc_option_name('ux_feedback_enabled'), [
+        'type'              => 'boolean',
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+    ]);
     register_setting($g, owc_option_name('cache_ttl'), [
         'type'              => 'integer',
         'default'           => 3600,

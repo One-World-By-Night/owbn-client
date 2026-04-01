@@ -217,6 +217,7 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
         array( 'label' => 'Player ID',    'enable_key' => 'enable_player_id',    'mode_key' => 'player_id_mode' ),
         array( 'label' => 'OAT',          'enable_key' => 'enable_oat',          'mode_key' => 'oat_mode' ),
         array( 'label' => 'accessSchema', 'enable_key' => 'asc_enabled',         'mode_key' => 'asc_mode' ),
+        array( 'label' => 'UX Feedback',  'enable_key' => 'ux_feedback_enabled', 'mode_key' => '' ),
     );
     ?>
     <table class="widefat owc-data-sources-table">
