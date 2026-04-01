@@ -23,9 +23,13 @@ defined('ABSPATH') || exit;
  */
 function owc_archivist_ensure_page($slug, $title, $elementor_data)
 {
-    $page = get_page_by_path($slug, OBJECT, 'page');
-    if ($page) {
-        $page_id = $page->ID;
+    global $wpdb;
+    $page_id = (int) $wpdb->get_var( $wpdb->prepare(
+        "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = 'page' LIMIT 1",
+        $slug
+    ) );
+    if ( $page_id ) {
+        wp_update_post( array( 'ID' => $page_id, 'post_status' => 'publish', 'post_title' => $title ) );
     } else {
         $page_id = wp_insert_post(array(
             'post_type'   => 'page',
