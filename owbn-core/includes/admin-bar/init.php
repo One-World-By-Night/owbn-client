@@ -3,9 +3,9 @@
 /**
  * OWBN Core — Admin Bar Menu
  *
- * Adds an "OWBN" menu to the WordPress admin bar for logged-in users.
- * Positioned on the RIGHT side, next to "Howdy, <User>".
- * Links are configurable via Settings → General tab.
+ * Adds an "OWBN" dropdown menu to the WordPress admin bar.
+ * All the way left, before WP logo. Works on single-site and multisite.
+ * Links configurable via Settings → OWBN Menu tab.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -15,7 +15,7 @@ add_action( 'wp_head', 'owc_admin_bar_owbn_css' );
 add_action( 'admin_head', 'owc_admin_bar_owbn_css' );
 
 /**
- * Register the OWBN admin bar menu on the right side.
+ * Register the OWBN admin bar menu.
  *
  * @param WP_Admin_Bar $wp_admin_bar
  */
@@ -24,7 +24,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         return;
     }
 
-    // Get logo URL — check theme first, then plugin fallback.
+    // Get logo URL — theme first, plugin fallback.
     $logo_url = '';
     $theme_logo = get_template_directory() . '/assets/images/owbn-logo.png';
     if ( file_exists( $theme_logo ) ) {
@@ -33,22 +33,21 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         $logo_url = OWC_CORE_URL . 'assets/images/owbn-logo.png';
     }
 
-    $title = $logo_url
-        ? '<img src="' . esc_url( $logo_url ) . '" alt="OWBN" style="height:20px;vertical-align:middle;margin-right:4px;"> OWBN'
-        : 'OWBN';
+    // Build title with logo + text.
+    $img   = $logo_url ? '<img src="' . esc_url( $logo_url ) . '" alt="" class="owbn-bar-logo">' : '';
+    $title = $img . '<span class="owbn-bar-label">OWBN</span>';
 
-    // Top-level node on the main admin bar (left side) — dropdowns work here.
+    // Top-level node — no parent = left side of admin bar.
     $wp_admin_bar->add_node( array(
         'id'    => 'owbn-menu',
         'title' => $title,
         'href'  => admin_url(),
-        'meta'  => array( 'class' => 'owbn-admin-bar-menu' ),
+        'meta'  => array( 'class' => 'menupop' ),
     ) );
 
-    // Default links — stores clean destination URLs.
-    // SSO redirect is built at render time for remote sites.
+    // Default links.
     $default_links = array(
-        array( 'id' => 'owbn-sites',       'title' => 'My Sites',     'url' => 'https://sso.owbn.net/site-listing/' ),
+        array( 'id' => 'owbn-sites',       'title' => 'My Sites',    'url' => 'https://sso.owbn.net/site-listing/' ),
         array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',  'url' => 'https://chronicles.owbn.net/' ),
         array( 'id' => 'owbn-council',      'title' => 'Council',     'url' => 'https://council.owbn.net/' ),
         array( 'id' => 'owbn-archivist',    'title' => 'Archivist',   'url' => 'https://archivist.owbn.net/' ),
@@ -67,7 +66,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         $url  = $link['url'];
         $host = wp_parse_url( $url, PHP_URL_HOST );
 
-        // If linking to a different OWBN site, route through that site's SSO auth.
+        // SSO redirect for cross-site links.
         if ( $host && $host !== $current_host ) {
             $parsed = wp_parse_url( $url );
             $path   = isset( $parsed['path'] ) ? $parsed['path'] : '/';
@@ -77,9 +76,9 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
         }
 
         $wp_admin_bar->add_node( array(
-            'id'     => isset( $link['id'] ) ? $link['id'] : sanitize_title( $link['title'] ),
+            'id'     => isset( $link['id'] ) ? $link['id'] : 'owbn-' . sanitize_title( $link['title'] ),
             'parent' => 'owbn-menu',
-            'title'  => $link['title'],
+            'title'  => esc_html( $link['title'] ),
             'href'   => $url,
             'meta'   => array( 'target' => '_blank' ),
         ) );
@@ -87,7 +86,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
 }
 
 /**
- * Minimal CSS for the OWBN admin bar logo.
+ * CSS for the OWBN admin bar menu — consistent spacing and dropdown alignment.
  */
 function owc_admin_bar_owbn_css() {
     if ( ! is_admin_bar_showing() ) {
@@ -95,9 +94,32 @@ function owc_admin_bar_owbn_css() {
     }
     ?>
     <style>
-    #wpadminbar #wp-admin-bar-owbn-menu > .ab-item img { display: inline-block; }
-    #wpadminbar #wp-admin-bar-owbn-menu > .ab-item:focus img,
-    #wpadminbar #wp-admin-bar-owbn-menu:hover > .ab-item img { opacity: 1; }
+    /* OWBN admin bar menu — logo + label */
+    #wpadminbar #wp-admin-bar-owbn-menu > .ab-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 0 10px !important;
+    }
+    #wpadminbar #wp-admin-bar-owbn-menu .owbn-bar-logo {
+        display: inline-block !important;
+        height: 20px !important;
+        width: auto !important;
+        vertical-align: middle !important;
+    }
+    #wpadminbar #wp-admin-bar-owbn-menu .owbn-bar-label {
+        font-weight: 600 !important;
+        letter-spacing: 0.5px !important;
+    }
+    /* Dropdown items — consistent padding, no extra indent */
+    #wpadminbar #wp-admin-bar-owbn-menu .ab-submenu .ab-item {
+        padding: 0 16px !important;
+        line-height: 26px !important;
+    }
+    /* Ensure dropdown is visible and properly positioned */
+    #wpadminbar #wp-admin-bar-owbn-menu.menupop .ab-sub-wrapper {
+        min-width: 180px !important;
+    }
     </style>
     <?php
 }
