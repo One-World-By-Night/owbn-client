@@ -25,6 +25,10 @@ if ( ! defined( 'OWC_ENTITIES_JS_URL' ) ) {
     define( 'OWC_ENTITIES_JS_URL', OWC_ENTITIES_URL . 'includes/assets/js/' );
 }
 
+// Activation hooks — must be registered at top level (before plugins_loaded).
+require_once OWC_ENTITIES_DIR . 'includes/activation.php';
+register_activation_hook( __FILE__, 'owc_entities_activate' );
+
 /**
  * Dependency check and bootstrap — deferred so load order doesn't matter.
  */

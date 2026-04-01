@@ -124,3 +124,40 @@ function owc_create_default_pages()
         }
     }
 }
+
+/**
+ * Core plugin activation routine.
+ *
+ * Sets default admin bar links (if not already configured) and flushes rewrite rules.
+ *
+ * @since 1.0.0
+ */
+function owc_core_activate()
+{
+    // Set default OWBN Menu links if not already set.
+    $links_option = owc_option_name('admin_bar_links');
+    if (!get_option($links_option, false)) {
+        $default_links = [
+            [
+                'label' => 'My Account',
+                'url'   => '/my-account/',
+            ],
+            [
+                'label' => 'Chronicles',
+                'url'   => '/chronicles/',
+            ],
+            [
+                'label' => 'Council',
+                'url'   => '/council/',
+            ],
+            [
+                'label' => 'Archivist',
+                'url'   => '/oat-dashboard/',
+            ],
+        ];
+        update_option($links_option, $default_links);
+    }
+
+    // Flush rewrite rules so any custom rewrites take effect.
+    flush_rewrite_rules();
+}

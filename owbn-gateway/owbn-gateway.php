@@ -16,6 +16,10 @@ define( 'OWC_GATEWAY_VERSION', '1.0.0' );
 define( 'OWC_GATEWAY_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_GATEWAY_URL', plugin_dir_url( __FILE__ ) );
 
+// Activation hooks — must be registered at top level (before plugins_loaded).
+require_once OWC_GATEWAY_DIR . 'includes/activation.php';
+register_activation_hook( __FILE__, 'owc_gateway_activate' );
+
 /**
  * Dependency check and bootstrap — deferred so load order doesn't matter.
  */

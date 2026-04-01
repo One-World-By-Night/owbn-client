@@ -30,7 +30,7 @@ require_once OWC_CORE_DIR . 'prefix.php';
 
 // Activation hooks.
 require_once OWC_CORE_DIR . 'includes/activation.php';
-register_activation_hook( __FILE__, 'owc_create_default_pages' );
+register_activation_hook( __FILE__, 'owc_core_activate' );
 
 // Load all core modules.
 require_once OWC_CORE_DIR . 'includes/init.php';

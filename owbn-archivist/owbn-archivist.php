@@ -18,6 +18,10 @@ define( 'OWC_ARCHIVIST_VERSION', '1.0.0' );
 define( 'OWC_ARCHIVIST_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_ARCHIVIST_URL', plugin_dir_url( __FILE__ ) );
 
+// Activation hooks — must be registered at top level (before plugins_loaded).
+require_once OWC_ARCHIVIST_DIR . 'includes/activation.php';
+register_activation_hook( __FILE__, 'owc_archivist_activate' );
+
 /**
  * Verify OWBN Core dependency — deferred to plugins_loaded so load order doesn't matter.
  */
