@@ -605,18 +605,31 @@ function owc_get_current_coordinator() {
 
 ## VALIDATION RESULTS
 
-Five validation passes completed before production deploy:
+### Round 1: Internal Plugin Validation (5 passes)
 
 | Pass | Scope | Issues Found | Fixed |
 |------|-------|-------------|-------|
 | 1. Function-level | 40 workflows across all plugins | 1 (migration menu) | Yes |
-| 2. Role-based | 40 actions × 7 roles (player, HST, CM, coordinator, sub-coord, archivist, admin) | 3 (edit buttons, UX toggle, grant note) | Yes |
+| 2. Role-based | 40 actions x 7 roles (player, HST, CM, coordinator, sub-coord, archivist, admin) | 3 (edit buttons, UX toggle, grant note) | Yes |
 | 3. UI/UX rendering | Assets, widgets, AJAX, nonces, shortcodes, hooks | 3 (missing CSS/JS, asset registration, nonce) | Yes |
 | 4. Cross-site flow | 5 deployment scenarios (consumer, producer, SSO-only, archivist-only, gateway-only) | 1 (gateway_respond in wrong plugin) | Yes |
-| 5. Final re-validation | All fixes verified + full role walkthrough repeated | 0 | — |
-| **Total** | | **8 issues** | **8 fixed** |
+| 5. Final re-validation | All fixes verified + full role walkthrough repeated | 0 | -- |
+| **Subtotal** | | **8 issues** | **8 fixed** |
 
-### Fixes Applied
+### Round 2: Cross-Plugin Integration Validation (3 passes)
+
+| Pass | Scope | Issues Found | Fixed |
+|------|-------|-------------|-------|
+| 6. owbn-core vs accessSchema server | API contracts, cache keys, role formats, auth flow, local mode | 1 (`has_access` vs `granted` key mismatch in local capability check) | Yes |
+| 7. owbn-entities vs chronicle-manager + territory-manager | CPT slugs, meta keys, document links, cache hooks, field rendering, vote tables | 6 (missing coord fields, session day key, game site keys, email list key) | Yes |
+| 8. owbn-archivist vs archivist-toolkit | OAT classes/methods, constants, DB schema, admin menus, asset handles | 4 (`OAT_Form::all()` missing, dead `OAT_Page_Entry`, invalid `admin_edit` action, no-op `updated_at`) | Yes |
+| **Subtotal** | | **11 issues** | **11 fixed** |
+
+### Grand Total: 19 issues found and fixed across 8 validation passes
+
+### All Fixes Applied
+
+**Round 1 (internal):**
 1. Moved `owbn_gateway_respond()` from gateway to core (archivist calls it 58 times)
 2. Fixed edit buttons to use `owc_cc_widget_get_post_id()` instead of entity map cast
 3. Added UX Feedback settings toggle to General tab with `register_setting`
@@ -626,17 +639,27 @@ Five validation passes completed before production deploy:
 7. Fixed monolithic widget categories from `owbn-client` to `owbn-entities`
 8. Removed migration menu item referencing archived function
 
+**Round 2 (cross-plugin):**
+9. Fixed `has_access` vs `granted` key in accessSchema local mode capability check
+10. Added `term_start_date`, `term_end_date`, `coordinator_appointment` to coordinator detail API
+11. Removed dead `social_links` from coordinator detail API
+12. Fixed session shortcode `day_of_week` -> `day` to match chronicle-manager field
+13. Fixed game sites shortcode `site_name`/`site_type` -> `name`/`online` to match chronicle-manager
+14. Fixed email list render `list_email` -> `email_address` to match chronicle-manager storage
+15. Fixed `OAT_Form::all()` -> `OAT_Form::get_all()` (method doesn't exist in toolkit)
+16. Removed dead `OAT_Page_Entry` class reference (never existed in toolkit)
+17. Fixed admin edit timeline to use `record` action type (`admin_edit` not in valid list)
+18. Fixed admin edit timestamp to use `update_status()` (`updated_at` alone not in allowed list)
+19. Fixed `owbn_gateway_respond()` shared between gateway and archivist via core
+
 ---
 
 ## FUNCTION COUNT SUMMARY
 
 | Plugin | Files | Functions | Lines | New Widgets |
 |--------|-------|-----------|-------|-------------|
-| **owbn-core** | 49 | ~100 | ~7,800 | 0 |
+| **owbn-core** | 50 | ~100 | ~8,000 | 0 |
 | **owbn-entities** | 72 | ~115 | ~9,600 | 22 section widgets |
 | **owbn-archivist** | 47 | ~120 | ~13,500 | 0 |
 | **owbn-gateway** | 6 | ~25 | ~2,200 | 0 |
-| **Archive** | 1 | 8 | 476 | 0 |
-| **Remove** | 1 | 0 | 0 | 0 |
-| **Build from stubs** | ~8 | TBD | TBD | 0 |
-| **Total** | ~128 | ~360 | ~31,100 | 22 |
+| **Total** | **175** | **~360** | **~33,300** | **22** |
