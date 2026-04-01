@@ -31,10 +31,9 @@ add_filter( 'owc_settings_tabs', 'owc_archivist_register_settings_tab' );
  * @return array Modified tabs array.
  */
 function owc_archivist_register_settings_tab( $tabs ) {
-    $tabs['oat'] = array(
-        'label' => __( 'OAT', 'owbn-client' ),
-        'file'  => __DIR__ . '/admin/settings-tabs/tab-oat.php',
-    );
+    if ( isset( $tabs['oat'] ) ) {
+        $tabs['oat']['partial'] = __DIR__ . '/admin/settings-tabs/tab-oat.php';
+    }
     return $tabs;
 }
 

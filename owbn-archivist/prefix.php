@@ -12,7 +12,11 @@
 defined('ABSPATH') || exit;
 
 // Unique constant prefix for this instance (alphanumeric, no spaces)
-define('OWC_PREFIX', 'OWBN');
+if ( ! defined( 'OWC_PREFIX' ) ) {
+    define( 'OWC_PREFIX', 'OWBN' );
+}
 
 // Human-readable label for admin UI
-define('OWC_LABEL', 'OWBN Client');
+if ( ! defined( 'OWC_LABEL' ) ) {
+    define( 'OWC_LABEL', 'OWBN Client' );
+}

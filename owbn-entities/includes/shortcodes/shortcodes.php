@@ -113,13 +113,10 @@ function owc_enqueue_assets()
     static $enqueued = false;
     if ($enqueued) return;
 
-    // Build the constant prefix: e.g., 'MYSITE_OWC_'
-    $prefix = strtoupper(preg_replace('/[^A-Z0-9]/i', '', OWC_PREFIX)) . '_OWC_';
-
-    // Get URLs and version from dynamic constants
-    $css_url = defined($prefix . 'CSS_URL') ? constant($prefix . 'CSS_URL') : OWC_PLUGIN_URL . 'includes/assets/css/';
-    $js_url  = defined($prefix . 'JS_URL') ? constant($prefix . 'JS_URL') : OWC_PLUGIN_URL . 'includes/assets/js/';
-    $version = defined($prefix . 'VERSION') ? constant($prefix . 'VERSION') : '2.1.1';
+    // Entity assets live in owbn-entities plugin directory.
+    $css_url = defined( 'OWC_ENTITIES_CSS_URL' ) ? OWC_ENTITIES_CSS_URL : OWC_PLUGIN_URL . 'includes/assets/css/';
+    $js_url  = defined( 'OWC_ENTITIES_JS_URL' ) ? OWC_ENTITIES_JS_URL : OWC_PLUGIN_URL . 'includes/assets/js/';
+    $version = defined( 'OWC_ENTITIES_VERSION' ) ? OWC_ENTITIES_VERSION : OWC_VERSION;
 
     // Tables CSS (base styles)
     wp_register_style(

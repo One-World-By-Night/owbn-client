@@ -17,6 +17,14 @@ define( 'OWC_ENTITIES_VERSION', '1.0.0' );
 define( 'OWC_ENTITIES_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_ENTITIES_URL', plugin_dir_url( __FILE__ ) );
 
+// Entity asset URLs — used by shortcodes and widgets for CSS/JS enqueue.
+if ( ! defined( 'OWC_ENTITIES_CSS_URL' ) ) {
+    define( 'OWC_ENTITIES_CSS_URL', OWC_ENTITIES_URL . 'includes/assets/css/' );
+}
+if ( ! defined( 'OWC_ENTITIES_JS_URL' ) ) {
+    define( 'OWC_ENTITIES_JS_URL', OWC_ENTITIES_URL . 'includes/assets/js/' );
+}
+
 /**
  * Dependency check: owbn-core must be active.
  */

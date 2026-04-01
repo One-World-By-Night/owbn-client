@@ -17,6 +17,14 @@ define( 'OWC_CORE_VERSION', '1.0.0' );
 define( 'OWC_CORE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_CORE_URL', plugin_dir_url( __FILE__ ) );
 
+// Backward-compat constants — code throughout still references these from the old monolithic plugin.
+if ( ! defined( 'OWC_VERSION' ) ) {
+    define( 'OWC_VERSION', OWC_CORE_VERSION );
+}
+if ( ! defined( 'OWC_PLUGIN_URL' ) ) {
+    define( 'OWC_PLUGIN_URL', OWC_CORE_URL );
+}
+
 // Shared prefix configuration.
 require_once OWC_CORE_DIR . 'prefix.php';
 

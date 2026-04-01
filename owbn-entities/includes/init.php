@@ -25,23 +25,19 @@ if ( file_exists( __DIR__ . '/shortcodes/init.php' ) ) {
 // ── Elementor widgets ──────────────────────────────────────────────────────
 require_once __DIR__ . '/elementor/widgets-loader.php';
 
-// ── Settings tabs (registered via owbn-core filter) ────────────────────────
+// ── Settings tabs — set partial paths for tabs defined by core ─────────────
 add_filter( 'owc_settings_tabs', function ( $tabs ) {
-    $tabs['chronicles'] = [
-        'label' => 'Chronicles',
-        'file'  => __DIR__ . '/admin/settings-tabs/tab-chronicles.php',
-    ];
-    $tabs['coordinators'] = [
-        'label' => 'Coordinators',
-        'file'  => __DIR__ . '/admin/settings-tabs/tab-coordinators.php',
-    ];
-    $tabs['territories'] = [
-        'label' => 'Territories',
-        'file'  => __DIR__ . '/admin/settings-tabs/tab-territories.php',
-    ];
-    $tabs['vote_history'] = [
-        'label' => 'Vote History',
-        'file'  => __DIR__ . '/admin/settings-tabs/tab-vote-history.php',
-    ];
+    if ( isset( $tabs['chronicles'] ) ) {
+        $tabs['chronicles']['partial'] = __DIR__ . '/admin/settings-tabs/tab-chronicles.php';
+    }
+    if ( isset( $tabs['coordinators'] ) ) {
+        $tabs['coordinators']['partial'] = __DIR__ . '/admin/settings-tabs/tab-coordinators.php';
+    }
+    if ( isset( $tabs['territories'] ) ) {
+        $tabs['territories']['partial'] = __DIR__ . '/admin/settings-tabs/tab-territories.php';
+    }
+    if ( isset( $tabs['vote-history'] ) ) {
+        $tabs['vote-history']['partial'] = __DIR__ . '/admin/settings-tabs/tab-vote-history.php';
+    }
     return $tabs;
 } );

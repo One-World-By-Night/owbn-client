@@ -37,7 +37,8 @@ function owc_sanitize_remote_url( $url ) {
 function owc_get_settings_tabs() {
     $base = owc_get_client_id() . '_owc';
 
-    // Core tabs — always available.
+    // All tabs defined here with groups for settings registration.
+    // Child plugins override 'partial' via the owc_settings_tabs filter.
     $tabs = array(
         'general'      => array(
             'label'     => __( 'General', 'owbn-core' ),
@@ -46,12 +47,47 @@ function owc_get_settings_tabs() {
             'group'     => $base . '_general',
             'partial'   => __DIR__ . '/settings-tabs/tab-general.php',
         ),
+        'chronicles'   => array(
+            'label'      => __( 'Chronicles', 'owbn-core' ),
+            'icon'       => 'dashicons-book-alt',
+            'enable_key' => 'enable_chronicles',
+            'group'      => $base . '_chronicles',
+            'partial'    => '', // Set by owbn-entities
+        ),
+        'coordinators' => array(
+            'label'      => __( 'Coordinators', 'owbn-core' ),
+            'icon'       => 'dashicons-groups',
+            'enable_key' => 'enable_coordinators',
+            'group'      => $base . '_coordinators',
+            'partial'    => '', // Set by owbn-entities
+        ),
+        'territories'  => array(
+            'label'      => __( 'Territories', 'owbn-core' ),
+            'icon'       => 'dashicons-location-alt',
+            'enable_key' => 'enable_territories',
+            'group'      => $base . '_territories',
+            'partial'    => '', // Set by owbn-entities
+        ),
+        'vote-history' => array(
+            'label'      => __( 'Vote History', 'owbn-core' ),
+            'icon'       => 'dashicons-chart-bar',
+            'enable_key' => 'enable_vote_history',
+            'group'      => $base . '_votes',
+            'partial'    => '', // Set by owbn-entities
+        ),
         'player-id'    => array(
             'label'      => __( 'Player ID', 'owbn-core' ),
             'icon'       => 'dashicons-id-alt',
             'enable_key' => 'enable_player_id',
             'group'      => $base . '_player_id',
             'partial'    => __DIR__ . '/settings-tabs/tab-player-id.php',
+        ),
+        'oat'          => array(
+            'label'      => __( 'OAT', 'owbn-core' ),
+            'icon'       => 'dashicons-archive',
+            'enable_key' => 'enable_oat',
+            'group'      => $base . '_oat',
+            'partial'    => '', // Set by owbn-archivist
         ),
         'accessschema' => array(
             'label'      => __( 'accessSchema', 'owbn-core' ),
@@ -63,10 +99,8 @@ function owc_get_settings_tabs() {
     );
 
     /**
-     * Allow child plugins to register additional settings tabs.
-     *
-     * @param array $tabs Existing tabs array.
-     * @return array Modified tabs array.
+     * Allow child plugins to override tab partials.
+     * Child plugins should set $tabs['xxx']['partial'] to their tab file path.
      */
     return apply_filters( 'owc_settings_tabs', $tabs );
 }
@@ -494,7 +528,11 @@ function owc_render_settings_page()
                     );
                 } else {
                     $group = $tab_config['group'];
-                    include $tab_config['partial'];
+                    if ( ! empty( $tab_config['partial'] ) && file_exists( $tab_config['partial'] ) ) {
+                        include $tab_config['partial'];
+                    } else {
+                        echo '<p>' . esc_html__( 'This tab is provided by a plugin that is not currently active.', 'owbn-core' ) . '</p>';
+                    }
                 }
                 ?>
             </div>
