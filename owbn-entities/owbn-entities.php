@@ -26,16 +26,16 @@ if ( ! defined( 'OWC_ENTITIES_JS_URL' ) ) {
 }
 
 /**
- * Dependency check: owbn-core must be active.
+ * Dependency check and bootstrap — deferred so load order doesn't matter.
  */
-if ( ! defined( 'OWC_CORE_VERSION' ) ) {
-    add_action( 'admin_notices', function () {
-        echo '<div class="notice notice-error"><p>';
-        echo '<strong>OWBN Entities</strong> requires the <strong>OWBN Core</strong> plugin to be installed and activated.';
-        echo '</p></div>';
-    } );
-    return;
-}
-
-// Load all entity modules.
-require_once OWC_ENTITIES_DIR . 'includes/init.php';
+add_action( 'plugins_loaded', function () {
+    if ( ! defined( 'OWC_CORE_VERSION' ) ) {
+        add_action( 'admin_notices', function () {
+            echo '<div class="notice notice-error"><p>';
+            echo '<strong>OWBN Entities</strong> requires the <strong>OWBN Core</strong> plugin to be installed and activated.';
+            echo '</p></div>';
+        } );
+        return;
+    }
+    require_once OWC_ENTITIES_DIR . 'includes/init.php';
+}, 5 );

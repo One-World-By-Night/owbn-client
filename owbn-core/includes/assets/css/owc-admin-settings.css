@@ -1,0 +1,305 @@
+/**
+ * OWBN Client - Settings Page Vertical Tabs
+ * location: includes/assets/css/owc-admin-settings.css
+ */
+
+.owc-settings-wrap {
+    display: flex;
+    gap: 0;
+    margin-top: 15px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Left sidebar tab nav */
+.owc-settings-tabs {
+    flex: 0 0 200px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #f6f7f7;
+    border-right: 1px solid #c3c4c7;
+}
+
+.owc-settings-tab a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #2c3338;
+    border-bottom: 1px solid #c3c4c7;
+    border-left: 3px solid transparent;
+    transition: background 0.15s;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.owc-settings-tab a:hover {
+    background: #fff;
+}
+
+.owc-settings-tab a:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.owc-settings-tab a .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: #646970;
+}
+
+.owc-settings-tab--active a {
+    background: #fff;
+    border-left-color: #2271b1;
+    font-weight: 600;
+    margin-right: -1px;
+}
+
+.owc-settings-tab--active a .dashicons {
+    color: #2271b1;
+}
+
+.owc-settings-tab--disabled a {
+    color: #a7aaad;
+}
+
+.owc-settings-tab--disabled a .dashicons {
+    color: #c3c4c7;
+}
+
+.owc-tab-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 400;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: #dcdcde;
+    color: #646970;
+}
+
+/* Right content area */
+.owc-settings-content {
+    flex: 1;
+    padding: 20px 25px;
+    min-width: 0;
+}
+
+.owc-settings-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Disabled feature notice */
+.owc-tab-disabled-notice {
+    padding: 40px 30px;
+    text-align: center;
+    color: #646970;
+}
+
+.owc-tab-disabled-notice p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Data sources table on general tab */
+.owc-data-sources-table {
+    max-width: 600px;
+}
+
+.owc-data-sources-table th,
+.owc-data-sources-table td {
+    padding: 8px 12px;
+}
+
+/* Mode badge */
+.owc-mode-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.owc-mode-badge--local {
+    background: #e7f5e7;
+    color: #1e7e1e;
+}
+
+.owc-mode-badge--remote {
+    background: #e7f0f5;
+    color: #1e5a7e;
+}
+
+.owc-mode-badge--server {
+    background: #f5e7f5;
+    color: #7e1e7e;
+}
+
+.owc-mode-badge--client {
+    background: #f5f0e7;
+    color: #7e5a1e;
+}
+
+/* Status section within tabs */
+.owc-tab-status {
+    max-width: 600px;
+}
+
+.owc-tab-status th,
+.owc-tab-status td {
+    padding: 8px 12px;
+}
+
+/* Data search within tabs */
+.owc-data-search {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #c3c4c7;
+}
+
+.owc-data-search h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.owc-data-search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+}
+
+.owc-data-search-input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.owc-data-search-results {
+    margin-top: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.owc-data-search-results table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.owc-data-search-results th {
+    text-align: left;
+    padding: 6px 10px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #c3c4c7;
+    font-size: 12px;
+    color: #646970;
+    position: sticky;
+    top: 0;
+}
+
+.owc-data-search-results td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #f0f0f1;
+    font-size: 13px;
+}
+
+.owc-data-search-results tr:nth-child(even) td {
+    background: #f9f9f9;
+}
+
+.owc-data-search-results tr:hover td {
+    background: #f0f6fc;
+}
+
+.owc-search-match-type {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.owc-search-match-type--exact,
+.owc-search-match-type--starts_with {
+    background: #e7f5e7;
+    color: #1e7e1e;
+}
+
+.owc-search-match-type--contains,
+.owc-search-match-type--slug_match,
+.owc-search-match-type--name_match,
+.owc-search-match-type--owner_match,
+.owc-search-match-type--location_match {
+    background: #e7f0f5;
+    color: #1e5a7e;
+}
+
+.owc-search-match-type--fuzzy {
+    background: #fdf0e2;
+    color: #8a6534;
+}
+
+.owc-search-status {
+    padding: 8px 0;
+    color: #646970;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.owc-search-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #c3c4c7;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: owc-spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes owc-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive: stack on narrow screens */
+@media screen and (max-width: 782px) {
+    .owc-settings-wrap {
+        flex-direction: column;
+    }
+
+    .owc-settings-tabs {
+        flex: none;
+        display: flex;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid #c3c4c7;
+    }
+
+    .owc-settings-tab a {
+        white-space: nowrap;
+        border-bottom: none;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        padding: 10px 12px;
+    }
+
+    .owc-settings-tab--active a {
+        border-left-color: transparent;
+        border-bottom-color: #2271b1;
+        margin-right: 0;
+        margin-bottom: -1px;
+    }
+
+    .owc-settings-content {
+        padding: 15px;
+    }
+}
