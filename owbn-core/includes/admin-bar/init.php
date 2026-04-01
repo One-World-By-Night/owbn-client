@@ -48,10 +48,10 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
 
     // Default links — overridable via option.
     $default_links = array(
-        array( 'id' => 'owbn-sso',         'title' => 'SSO / My Account',    'url' => 'https://sso.owbn.net' ),
-        array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',          'url' => 'https://chronicles.owbn.net' ),
-        array( 'id' => 'owbn-council',      'title' => 'Council',             'url' => 'https://council.owbn.net' ),
-        array( 'id' => 'owbn-archivist',    'title' => 'Archivist',           'url' => 'https://archivist.owbn.net' ),
+        array( 'id' => 'owbn-sso',         'title' => 'My Account',           'url' => 'https://sso.owbn.net/site-listing/?auth=sso' ),
+        array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',          'url' => 'https://chronicles.owbn.net/?auth=sso' ),
+        array( 'id' => 'owbn-council',      'title' => 'Council',             'url' => 'https://council.owbn.net/?auth=sso' ),
+        array( 'id' => 'owbn-archivist',    'title' => 'Archivist',           'url' => 'https://archivist.owbn.net/?auth=sso' ),
     );
 
     $custom_links = get_option( owc_option_name( 'admin_bar_links' ), array() );
