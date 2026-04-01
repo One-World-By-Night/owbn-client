@@ -246,7 +246,7 @@ function owc_render_social_links(array $links): string
  */
 function owc_render_email_lists(array $lists): string
 {
-    $lists = array_filter($lists, fn($l) => !empty($l['list_name']) || !empty($l['list_email']));
+    $lists = array_filter($lists, fn($l) => !empty($l['list_name']) || !empty($l['email_address']));
 
     if (empty($lists)) {
         return '';
@@ -260,9 +260,9 @@ function owc_render_email_lists(array $lists): string
                 <?php if (!empty($list['list_name'])) : ?>
                     <span class="owc-list-name"><?php echo esc_html($list['list_name']); ?></span>
                 <?php endif; ?>
-                <?php if (!empty($list['list_email'])) : ?>
-                    <a href="mailto:<?php echo esc_attr($list['list_email']); ?>">
-                        <?php echo esc_html($list['list_email']); ?>
+                <?php if (!empty($list['email_address'])) : ?>
+                    <a href="mailto:<?php echo esc_attr($list['email_address']); ?>">
+                        <?php echo esc_html($list['email_address']); ?>
                     </a>
                 <?php endif; ?>
             </li>

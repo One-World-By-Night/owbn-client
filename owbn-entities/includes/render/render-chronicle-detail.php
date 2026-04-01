@@ -287,7 +287,7 @@ function owc_render_chronicle_links(array $chronicle): string
 {
     $web_url = $chronicle['web_url'] ?? '';
     $social_urls = array_filter($chronicle['social_urls'] ?? [], fn($s) => !empty($s['url']));
-    $email_lists = array_filter($chronicle['email_lists'] ?? [], fn($e) => !empty($e['list_name']) || !empty($e['list_email']));
+    $email_lists = array_filter($chronicle['email_lists'] ?? [], fn($e) => !empty($e['list_name']) || !empty($e['email_address']));
 
     if (empty($web_url) && empty($social_urls) && empty($email_lists)) {
         return '';

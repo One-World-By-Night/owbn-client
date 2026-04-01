@@ -379,11 +379,13 @@ function owc_get_local_coordinator_detail(string $slug)
         'subcoord_list'       => get_post_meta($id, 'subcoord_list', true) ?: [],
         'email_lists'         => get_post_meta($id, 'email_lists', true) ?: [],
         'player_lists'        => get_post_meta($id, 'player_lists', true) ?: [],
-        'social_links'        => get_post_meta($id, 'social_links', true) ?: [],
         'document_links'      => function_exists( 'owbn_format_document_links' )
             ? owbn_format_document_links( get_post_meta( $id, 'document_links', true ) ?: [] )
             : ( get_post_meta( $id, 'document_links', true ) ?: [] ),
-        'web_url'             => get_post_meta($id, 'web_url', true),
+        'web_url'                => get_post_meta($id, 'web_url', true),
+        'term_start_date'        => get_post_meta($id, 'term_start_date', true),
+        'term_end_date'          => get_post_meta($id, 'term_end_date', true),
+        'coordinator_appointment' => get_post_meta($id, 'coordinator_appointment', true),
     ];
 }
 

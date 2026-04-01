@@ -337,7 +337,7 @@ function owc_chron_field_session_list(array $c, string $f): string
     foreach ($list as $s) {
         $parts = array_filter([
             $s['session_type'] ?? '',
-            $s['day_of_week'] ?? '',
+            $s['day'] ?? '',
             $s['frequency'] ?? '',
             $s['start_time'] ?? '',
         ]);
@@ -372,14 +372,14 @@ function owc_chron_field_ooc_locations(array $c, string $f): string
 
 function owc_chron_field_game_sites(array $c, string $f): string
 {
-    $list = array_filter($c['game_site_list'] ?? [], fn($s) => !empty($s['site_name']) || !empty($s['url']));
+    $list = array_filter($c['game_site_list'] ?? [], fn($s) => !empty($s['name']) || !empty($s['url']));
     if (empty($list)) return '';
 
     $items = [];
     foreach ($list as $site) {
-        $name = $site['site_name'] ?? $site['url'] ?? '';
+        $name = $site['name'] ?? $site['url'] ?? '';
         $url = $site['url'] ?? '';
-        $type = $site['site_type'] ?? '';
+        $type = ! empty( $site['online'] ) ? 'Online' : 'In-Person';
 
         $item = '';
         if ($url) {
