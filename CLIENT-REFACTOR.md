@@ -663,3 +663,17 @@ function owc_get_current_coordinator() {
 | **owbn-archivist** | 47 | ~120 | ~13,500 | 0 |
 | **owbn-gateway** | 6 | ~25 | ~2,200 | 0 |
 | **Total** | **175** | **~360** | **~33,300** | **22** |
+
+---
+
+## POST-DEPLOY BACKLOG
+
+Items identified during refactor that should be addressed after production deploy:
+
+- [ ] **Configurable role patterns** — Chronicle staff roles (`hst|cm|staff`) and coordinator roles (`coordinator|sub-coordinator`) are hardcoded in regexes across 8+ files. Should be stored in settings and accessed via helpers like `owc_get_chronicle_staff_suffixes()`.
+- [ ] **Text domain cleanup** — Many files still use `'owbn-client'` text domain. Should be updated to `'owbn-core'`, `'owbn-entities'`, or `'owbn-archivist'` per plugin. Cosmetic — does not affect functionality.
+- [ ] **Edit buttons on remote sites** — Header section widget edit buttons use `current_user_can('edit_post')` which only works on the site that owns the CPT. Remote sites need SSO redirect pattern like the workspace/dashboard widgets use.
+- [ ] **Coordinator grant management for coordinators** — `owc_oat_can_manage_grants()` only allows chronicle staff and exec archivist roles. Full coordinators may need grant management for their genre. Requires business rule confirmation.
+- [ ] **Webhook system** — `owc_fire_webhook()` dispatcher exists but no webhook URLs are configured. Need admin UI to register webhook endpoints for cross-site cache invalidation.
+- [ ] **Gutenberg blocks** — `editor/init.php` registers the `owbn` block category but no blocks exist yet. Future alternative to Elementor widgets.
+- [ ] **API key configuration trap** — accessSchema client stores one API key but the server distinguishes read-only vs read-write keys. Grant/revoke operations need the read-write key. Settings UI should clarify this.
