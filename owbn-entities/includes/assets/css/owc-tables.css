@@ -7,8 +7,10 @@
     line-height: 1.4;
 }
 
-/* Header row */
-.owc-list-header {
+/* Header row — override Elementor global text color and WP Dark Mode in all modes */
+.owc-list-header,
+.elementor-widget-container .owc-list-header,
+.elementor-widget .owc-list-header {
     display: flex;
     background: #2c3e50 !important;
     color: #fff !important;
@@ -17,8 +19,11 @@
 }
 
 .owc-list-header > div,
-.owc-list-header > div a {
+.owc-list-header > div *,
+.elementor-widget-container .owc-list-header > div,
+.elementor-widget-container .owc-list-header > div * {
     color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
 }
 
 .owc-list-header > div {

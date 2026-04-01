@@ -624,7 +624,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 			<?php endif; ?>
 
 			<div class="owc-chronicles-list">
-				<div class="owc-list-header">
+				<div class="owc-list-header wp-dark-mode-ignore" style="background:#2c3e50 !important;color:#fff !important;">
 					<?php if (in_array('title', $columns, true)) : ?>
 						<div class="owc-col-title sort-asc"><?php esc_html_e('Chronicle', 'owbn-client'); ?></div>
 					<?php endif; ?>
