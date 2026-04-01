@@ -611,13 +611,7 @@ function owc_oat_get_entry( $entry_id ) {
         }
 
         // Available actions.
-        $available_actions = array();
-        if ( class_exists( 'OAT_Page_Entry' ) ) {
-            $available_actions = OAT_Page_Entry::get_available_actions( $entry, $user_id, $assignees_raw );
-        } else {
-            // Inline fallback mirroring gateway handler logic.
-            $available_actions = owc_oat_compute_available_actions( $entry, $user_id, $assignees_raw );
-        }
+        $available_actions = owc_oat_compute_available_actions( $entry, $user_id, $assignees_raw );
 
         // Is watching.
         $watchers_raw = OAT_Watcher::for_entry( $entry_id );
@@ -942,15 +936,15 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
             }
             OAT_Timeline::append( array(
                 'entry_id'        => $entry_id,
-                'action_type'     => 'admin_edit',
+                'action_type'     => 'record',
                 'actor_id'        => $user_id,
                 'step'            => $entry->current_step,
                 'visibility_tier' => OAT_Constants::TIER_ARCHIVIST,
-                'note'            => $changes_note,
+                'note'            => 'Admin edit: ' . $changes_note,
             ) );
 
-            // Update entry timestamp.
-            OAT_Entry::update( $entry_id, array( 'updated_at' => time() ) );
+            // Touch entry timestamp via a status re-set (updated_at alone is not in allowed list).
+            OAT_Entry::update_status( $entry_id, $entry->status, $entry->current_step );
 
             return array(
                 'entry_id' => $entry_id,

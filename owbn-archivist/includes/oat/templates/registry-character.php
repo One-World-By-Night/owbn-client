@@ -267,7 +267,7 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
     $form_labels   = array();
     $domain_labels = array();
     if ( class_exists( 'OAT_Form' ) ) {
-        foreach ( OAT_Form::all() as $f ) {
+        foreach ( OAT_Form::get_all() as $f ) {
             $form_labels[ $f->slug ] = $f->label;
         }
     }
