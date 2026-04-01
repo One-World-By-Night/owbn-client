@@ -2,6 +2,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Workspace widget now lives in owbn-core. Skip if already loaded.
+if ( class_exists( 'OWC_OAT_Workspace_Widget' ) ) {
+    return;
+}
+
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 
