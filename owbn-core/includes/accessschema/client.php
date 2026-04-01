@@ -547,7 +547,7 @@ if ( ! function_exists( 'accessSchema_client_local_check_access' ) ) {
 		if ( is_wp_error( $result ) ) {
 			return false;
 		}
-		return ! empty( $result['has_access'] );
+		return ! empty( $result['granted'] );
 	}
 }
 
