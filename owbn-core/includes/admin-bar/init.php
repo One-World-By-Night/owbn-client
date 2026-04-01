@@ -48,7 +48,7 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
     // Default links — stores clean destination URLs.
     // SSO redirect is built at render time for remote sites.
     $default_links = array(
-        array( 'id' => 'owbn-sso',         'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/' ),
+        array( 'id' => 'owbn-sites',       'title' => 'My Sites',     'url' => 'https://sso.owbn.net/site-listing/' ),
         array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',  'url' => 'https://chronicles.owbn.net/' ),
         array( 'id' => 'owbn-council',      'title' => 'Council',     'url' => 'https://council.owbn.net/' ),
         array( 'id' => 'owbn-archivist',    'title' => 'Archivist',   'url' => 'https://archivist.owbn.net/' ),
