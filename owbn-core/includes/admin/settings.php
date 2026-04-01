@@ -47,6 +47,13 @@ function owc_get_settings_tabs() {
             'group'     => $base . '_general',
             'partial'   => __DIR__ . '/settings-tabs/tab-general.php',
         ),
+        'owbn-menu'    => array(
+            'label'     => __( 'OWBN Menu', 'owbn-core' ),
+            'icon'      => 'dashicons-menu',
+            'always_on' => true,
+            'group'     => $base . '_owbn_menu',
+            'partial'   => __DIR__ . '/settings-tabs/tab-owbn-menu.php',
+        ),
         'chronicles'   => array(
             'label'      => __( 'Chronicles', 'owbn-core' ),
             'icon'       => 'dashicons-book-alt',
