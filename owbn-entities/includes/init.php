@@ -8,6 +8,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// ── Shared data singleton (per-request cache) ────────────────────────────
+require_once __DIR__ . '/core/data-singleton.php';
+
 // ── Rewrite rules for entity URLs ──────────────────────────────────────────
 require_once __DIR__ . '/core/rewrites.php';
 

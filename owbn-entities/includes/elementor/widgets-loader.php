@@ -46,14 +46,17 @@ class OWC_Entities_Elementor_Loader {
      * Register all entity Elementor widgets.
      */
     public static function register_widgets( $widgets_manager ): void {
-        require_once __DIR__ . '/class-chronicle-list-widget.php';
-        require_once __DIR__ . '/class-chronicle-detail-widget.php';
-        require_once __DIR__ . '/class-chronicle-field-widget.php';
-        require_once __DIR__ . '/class-coordinator-list-widget.php';
-        require_once __DIR__ . '/class-coordinator-detail-widget.php';
-        require_once __DIR__ . '/class-coordinator-field-widget.php';
-        require_once __DIR__ . '/class-territory-list-widget.php';
-        require_once __DIR__ . '/class-territory-detail-widget.php';
+        $dir = __DIR__;
+
+        // ── Original monolithic widgets (backward compat) ──────────────
+        require_once $dir . '/class-chronicle-list-widget.php';
+        require_once $dir . '/class-chronicle-detail-widget.php';
+        require_once $dir . '/class-chronicle-field-widget.php';
+        require_once $dir . '/class-coordinator-list-widget.php';
+        require_once $dir . '/class-coordinator-detail-widget.php';
+        require_once $dir . '/class-coordinator-field-widget.php';
+        require_once $dir . '/class-territory-list-widget.php';
+        require_once $dir . '/class-territory-detail-widget.php';
 
         $widgets_manager->register( new OWC_Chronicle_List_Widget() );
         $widgets_manager->register( new OWC_Chronicle_Detail_Widget() );
@@ -63,6 +66,56 @@ class OWC_Entities_Elementor_Loader {
         $widgets_manager->register( new OWC_Coordinator_Field_Widget() );
         $widgets_manager->register( new OWC_Territory_List_Widget() );
         $widgets_manager->register( new OWC_Territory_Detail_Widget() );
+
+        // ── Chronicle section widgets (decomposed detail) ──────────────
+        require_once $dir . '/class-chronicle-header-section-widget.php';
+        require_once $dir . '/class-chronicle-in-brief-section-widget.php';
+        require_once $dir . '/class-chronicle-about-section-widget.php';
+        require_once $dir . '/class-chronicle-narrative-section-widget.php';
+        require_once $dir . '/class-chronicle-staff-section-widget.php';
+        require_once $dir . '/class-chronicle-sessions-section-widget.php';
+        require_once $dir . '/class-chronicle-links-section-widget.php';
+        require_once $dir . '/class-chronicle-documents-section-widget.php';
+        require_once $dir . '/class-chronicle-player-lists-section-widget.php';
+        require_once $dir . '/class-chronicle-satellites-section-widget.php';
+        require_once $dir . '/class-chronicle-territories-section-widget.php';
+        require_once $dir . '/class-chronicle-votes-section-widget.php';
+
+        $widgets_manager->register( new OWC_Chronicle_Header_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_In_Brief_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_About_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Narrative_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Staff_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Sessions_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Links_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Documents_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Player_Lists_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Satellites_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Territories_Section_Widget() );
+        $widgets_manager->register( new OWC_Chronicle_Votes_Section_Widget() );
+
+        // ── Coordinator section widgets (decomposed detail) ────────────
+        require_once $dir . '/class-coordinator-header-section-widget.php';
+        require_once $dir . '/class-coordinator-info-section-widget.php';
+        require_once $dir . '/class-coordinator-description-section-widget.php';
+        require_once $dir . '/class-coordinator-subcoords-section-widget.php';
+        require_once $dir . '/class-coordinator-documents-section-widget.php';
+        require_once $dir . '/class-coordinator-hosting-section-widget.php';
+        require_once $dir . '/class-coordinator-contacts-section-widget.php';
+        require_once $dir . '/class-coordinator-player-lists-section-widget.php';
+        require_once $dir . '/class-coordinator-territories-section-widget.php';
+        require_once $dir . '/class-coordinator-votes-section-widget.php';
+
+        $widgets_manager->register( new OWC_Coordinator_Header_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Info_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Description_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Subcoords_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Documents_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Hosting_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Contacts_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Player_Lists_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Territories_Section_Widget() );
+        $widgets_manager->register( new OWC_Coordinator_Votes_Section_Widget() );
     }
 }
 
