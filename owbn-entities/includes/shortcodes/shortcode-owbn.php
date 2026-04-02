@@ -23,6 +23,7 @@ function owbn_shortcode_handler( $atts ) {
         'slug'    => '',
         'id'      => '',
         'label'   => 'true',
+        'link'    => '',
     ), $atts, 'owbn' );
 
     $type    = sanitize_text_field( $atts['type'] );
@@ -31,6 +32,7 @@ function owbn_shortcode_handler( $atts ) {
     $slug    = sanitize_text_field( $atts['slug'] );
     $id      = absint( $atts['id'] );
     $label   = filter_var( $atts['label'], FILTER_VALIDATE_BOOLEAN );
+    $link    = sanitize_text_field( $atts['link'] );
 
     if ( empty( $type ) ) {
         return '';
@@ -48,10 +50,10 @@ function owbn_shortcode_handler( $atts ) {
 
     switch ( $type ) {
         case 'chronicle':
-            return owbn_shortcode_chronicle( $section, $field, $slug, $label );
+            return owbn_shortcode_chronicle( $section, $field, $slug, $label, $link );
 
         case 'coordinator':
-            return owbn_shortcode_coordinator( $section, $field, $slug, $label );
+            return owbn_shortcode_coordinator( $section, $field, $slug, $label, $link );
 
         case 'chronicle-list':
             if ( ! owc_chronicles_enabled() ) return '';
@@ -81,7 +83,7 @@ function owbn_shortcode_handler( $atts ) {
 /**
  * Chronicle section or field.
  */
-function owbn_shortcode_chronicle( $section, $field, $slug, $label ) {
+function owbn_shortcode_chronicle( $section, $field, $slug, $label, $link = '' ) {
     if ( ! owc_chronicles_enabled() ) return '';
 
     if ( empty( $section ) && empty( $field ) ) return '';
@@ -92,7 +94,11 @@ function owbn_shortcode_chronicle( $section, $field, $slug, $label ) {
 
     // Field mode.
     if ( $field ) {
-        return owc_render_chronicle_field( $data, $field, $label );
+        $output = owc_render_chronicle_field( $data, $field, $label );
+        if ( $link && $output ) {
+            $output = owbn_wrap_link( $output, $link, 'chronicle', $slug, $data );
+        }
+        return $output;
     }
 
     // Section mode.
@@ -126,7 +132,7 @@ function owbn_shortcode_chronicle( $section, $field, $slug, $label ) {
 /**
  * Coordinator section or field.
  */
-function owbn_shortcode_coordinator( $section, $field, $slug, $label ) {
+function owbn_shortcode_coordinator( $section, $field, $slug, $label, $link = '' ) {
     if ( ! owc_coordinators_enabled() ) return '';
 
     if ( empty( $section ) && empty( $field ) ) return '';
@@ -137,7 +143,11 @@ function owbn_shortcode_coordinator( $section, $field, $slug, $label ) {
 
     // Field mode.
     if ( $field ) {
-        return owc_render_coordinator_field( $data, $field, $label );
+        $output = owc_render_coordinator_field( $data, $field, $label );
+        if ( $link && $output ) {
+            $output = owbn_wrap_link( $output, $link, 'coordinator', $slug, $data );
+        }
+        return $output;
     }
 
     // Section mode.
@@ -164,4 +174,39 @@ function owbn_shortcode_coordinator( $section, $field, $slug, $label ) {
     }
 
     return '';
+}
+
+/**
+ * Wrap field output in a link.
+ *
+ * @param string $output  Rendered field HTML.
+ * @param string $link    "yes"|"detail" = detail page, "web_url" = entity web_url, or a full URL.
+ * @param string $type    "chronicle" or "coordinator".
+ * @param string $slug    Entity slug.
+ * @param array  $data    Entity data array.
+ * @return string
+ */
+function owbn_wrap_link( $output, $link, $type, $slug, $data ) {
+    $href = '';
+
+    if ( $link === 'yes' || $link === 'detail' ) {
+        $option_key = ( 'chronicle' === $type ) ? 'chronicles_detail_page' : 'coordinators_detail_page';
+        $page_id    = get_option( owc_option_name( $option_key ), 0 );
+        if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
+            $href = add_query_arg( 'slug', $slug, get_permalink( $page_id ) );
+        }
+    } elseif ( $link === 'web_url' ) {
+        $href = $data['web_url'] ?? '';
+    } elseif ( strpos( $link, 'http' ) === 0 ) {
+        $href = $link;
+    } else {
+        // Treat as a data field name.
+        $href = $data[ $link ] ?? '';
+    }
+
+    if ( empty( $href ) ) {
+        return $output;
+    }
+
+    return '<a href="' . esc_url( $href ) . '">' . $output . '</a>';
 }
