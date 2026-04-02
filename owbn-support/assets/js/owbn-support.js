@@ -59,7 +59,7 @@
             }
 
             debounce = setTimeout(function() {
-                $dropdown.html('<div class="owbn-picker-loading">Searching...</div>').show();
+                $dropdown.html('<div class="owbn-picker-loading">' + (owbnSupport.searching || 'Searching...') + '</div>').show();
                 $.get(owbnSupport.ajaxUrl, {
                     action: action,
                     nonce: owbnSupport.nonce,
@@ -75,7 +75,7 @@
         function renderResults(items) {
             $dropdown.empty();
             if (!items.length) {
-                $dropdown.html('<div class="owbn-picker-empty">No results</div>').show();
+                $dropdown.html('<div class="owbn-picker-empty">' + (owbnSupport.noResults || 'No results') + '</div>').show();
                 return;
             }
             items.forEach(function(item) {

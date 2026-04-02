@@ -3,7 +3,7 @@
  * Plugin Name: OWBN Support
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Awesome Support extension — OWBN entity pickers and context fields for user support tickets.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-support
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_SUPPORT_VERSION', '1.0.1' );
+define( 'OWC_SUPPORT_VERSION', '1.0.2' );
 define( 'OWC_SUPPORT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_SUPPORT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -36,8 +36,10 @@ function owbn_support_enqueue() {
     wp_enqueue_style( 'owbn-support', OWC_SUPPORT_URL . 'assets/css/owbn-support.css', array(), OWC_SUPPORT_VERSION );
     wp_enqueue_script( 'owbn-support', OWC_SUPPORT_URL . 'assets/js/owbn-support.js', array( 'jquery' ), OWC_SUPPORT_VERSION, true );
     wp_localize_script( 'owbn-support', 'owbnSupport', array(
-        'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-        'nonce'   => wp_create_nonce( 'owbn_support_nonce' ),
+        'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+        'nonce'      => wp_create_nonce( 'owbn_support_nonce' ),
+        'searching'  => __( 'Searching...', 'owbn-support' ),
+        'noResults'  => __( 'No results', 'owbn-support' ),
     ) );
 }
 
@@ -49,7 +51,9 @@ function owbn_support_enqueue_admin( $hook ) {
     wp_enqueue_style( 'owbn-support', OWC_SUPPORT_URL . 'assets/css/owbn-support.css', array(), OWC_SUPPORT_VERSION );
     wp_enqueue_script( 'owbn-support', OWC_SUPPORT_URL . 'assets/js/owbn-support.js', array( 'jquery' ), OWC_SUPPORT_VERSION, true );
     wp_localize_script( 'owbn-support', 'owbnSupport', array(
-        'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-        'nonce'   => wp_create_nonce( 'owbn_support_nonce' ),
+        'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+        'nonce'      => wp_create_nonce( 'owbn_support_nonce' ),
+        'searching'  => __( 'Searching...', 'owbn-support' ),
+        'noResults'  => __( 'No results', 'owbn-support' ),
     ) );
 }

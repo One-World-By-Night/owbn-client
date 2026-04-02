@@ -78,7 +78,7 @@
             return;
         }
 
-        $btn.prop('disabled', true).text('Processing...');
+        $btn.prop('disabled', true).text(owc_oat_ajax.i18n.processing);
 
         var postData = {
             action: 'owc_oat_process_action',
@@ -105,12 +105,12 @@
             if (response.success) {
                 window.location.reload();
             } else {
-                alert('Error: ' + (response.data || 'Unknown error'));
-                $btn.prop('disabled', false).text($btn.data('label') || 'Submit');
+                alert(owc_oat_ajax.i18n.error + ': ' + (response.data || ''));
+                $btn.prop('disabled', false).text($btn.data('label') || owc_oat_ajax.i18n.submit);
             }
         }).fail(function() {
-            alert('Request failed.');
-            $btn.prop('disabled', false).text($btn.data('label') || 'Submit');
+            alert(owc_oat_ajax.i18n.requestFailed);
+            $btn.prop('disabled', false).text($btn.data('label') || owc_oat_ajax.i18n.submit);
         });
     });
 
@@ -131,13 +131,13 @@
             if (response.success) {
                 var nowWatching = response.data.watching;
                 $btn.data('watching', nowWatching ? '1' : '0')
-                    .text(nowWatching ? 'Unwatch' : 'Watch');
+                    .text(nowWatching ? owc_oat_ajax.i18n.unwatch : owc_oat_ajax.i18n.watch);
             } else {
-                alert('Error: ' + (response.data || 'Unknown error'));
+                alert(owc_oat_ajax.i18n.error + ': ' + (response.data || ''));
             }
             $btn.prop('disabled', false);
         }).fail(function() {
-            alert('Request failed.');
+            alert(owc_oat_ajax.i18n.requestFailed);
             $btn.prop('disabled', false);
         });
     });
@@ -634,10 +634,10 @@
                 var chronSlug  = $ccChronSlug.val();
                 var pcNpc      = $ccPcNpc.val();
 
-                if (!name) { alert('Character name is required.'); return; }
+                if (!name) { alert(owc_oat_ajax.i18n.charRequired); return; }
                 if (!pcNpc) { alert('PC/NPC designation is required.'); return; }
 
-                $btn.prop('disabled', true).text('Creating...');
+                $btn.prop('disabled', true).text(owc_oat_ajax.i18n.creating);
 
                 $.post(owc_oat_ajax.url, {
                     action: 'owc_oat_create_character',
@@ -661,7 +661,7 @@
                     }
                     $btn.prop('disabled', false).text('Create Character');
                 }).fail(function() {
-                    alert('Request failed.');
+                    alert(owc_oat_ajax.i18n.requestFailed);
                     $btn.prop('disabled', false).text('Create Character');
                 });
             });

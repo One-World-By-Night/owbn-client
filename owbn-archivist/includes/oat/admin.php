@@ -240,6 +240,19 @@ function owc_oat_enqueue_assets( $hook ) {
         'currentUserId'         => $current_user && $current_user->ID ? $current_user->ID : 0,
         'isSuperUser'           => $is_super ? '1' : '0',
         'canCreateCharacter'    => owc_oat_can_create_character() ? '1' : '0',
+        'i18n' => array(
+            'processing'    => __( 'Processing...', 'owbn-client' ),
+            'submit'        => __( 'Submit', 'owbn-client' ),
+            'watch'         => __( 'Watch', 'owbn-client' ),
+            'unwatch'       => __( 'Unwatch', 'owbn-client' ),
+            'watching'      => __( 'Watching', 'owbn-client' ),
+            'creating'      => __( 'Creating...', 'owbn-client' ),
+            'charRequired'  => __( 'Character name is required.', 'owbn-client' ),
+            'requestFailed' => __( 'Request failed.', 'owbn-client' ),
+            'showTimeline'  => __( 'Show Timeline', 'owbn-client' ),
+            'hideTimeline'  => __( 'Hide Timeline', 'owbn-client' ),
+            'error'         => __( 'Error', 'owbn-client' ),
+        ),
     ) );
 
     // Creature type picker (works local via AJAX or remote via gateway).

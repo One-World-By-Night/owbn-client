@@ -186,8 +186,32 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			var tabs      = widget.querySelectorAll('.oat-registry-tab');
 			var firstScope = <?php echo wp_json_encode( array_key_first( $all_tabs ) ); ?>;
 			var showActivity = <?php echo $show_activity ? 'true' : 'false'; ?>;
-			var activityCol = showActivity ? '<th data-sort="activity" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Last Activity</th>' : '';
+			var i18n = {
+				character:    <?php echo wp_json_encode( __( 'Character', 'owbn-client' ) ); ?>,
+				chronicle:    <?php echo wp_json_encode( __( 'Chronicle', 'owbn-client' ) ); ?>,
+				type:         <?php echo wp_json_encode( __( 'Type', 'owbn-client' ) ); ?>,
+				pcNpc:        <?php echo wp_json_encode( __( 'PC/NPC', 'owbn-client' ) ); ?>,
+				status:       <?php echo wp_json_encode( __( 'Status', 'owbn-client' ) ); ?>,
+				entries:      <?php echo wp_json_encode( __( 'Entries', 'owbn-client' ) ); ?>,
+				lastActivity: <?php echo wp_json_encode( __( 'Last Activity', 'owbn-client' ) ); ?>,
+				loading:      <?php echo wp_json_encode( __( 'Loading...', 'owbn-client' ) ); ?>,
+				searching:    <?php echo wp_json_encode( __( 'Searching...', 'owbn-client' ) ); ?>,
+				noSections:   <?php echo wp_json_encode( __( 'No sections found.', 'owbn-client' ) ); ?>,
+				noChars:      <?php echo wp_json_encode( __( 'No characters.', 'owbn-client' ) ); ?>,
+				noResults:    <?php echo wp_json_encode( __( 'No characters found.', 'owbn-client' ) ); ?>,
+			};
+			var thStyle = 'style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"';
+			var thStyleC = 'style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;"';
+			var activityCol = showActivity ? '<th data-sort="activity" ' + thStyle + '>' + i18n.lastActivity + '</th>' : '';
 			var activityColCount = showActivity ? 7 : 6;
+			var headerRow = '<thead><tr>'
+				+ '<th data-sort="name" ' + thStyle + '>' + i18n.character + '</th>'
+				+ '<th data-sort="chronicle" ' + thStyle + '>' + i18n.chronicle + '</th>'
+				+ '<th data-sort="type" ' + thStyle + '>' + i18n.type + '</th>'
+				+ '<th data-sort="pcnpc" ' + thStyle + '>' + i18n.pcNpc + '</th>'
+				+ '<th data-sort="status" ' + thStyle + '>' + i18n.status + '</th>'
+				+ '<th data-sort="entries" ' + thStyleC + '>' + i18n.entries + '</th>'
+				+ activityCol + '</tr></thead>';
 			var loadedSections = {};
 
 			function post(action, data, cb) {
@@ -202,13 +226,13 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			}
 
 			function loadTab(scope) {
-				content.innerHTML = '<div class="oat-registry-loading">Loading...</div>';
+				content.innerHTML = '<div class="oat-registry-loading">' + i18n.loading + '</div>';
 				loadedSections = {};
 				tabs.forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-scope') === scope); });
 
 				post('owc_oat_registry_sections', { scope: scope }, function(sections) {
 					if (!sections || !sections.length) {
-						content.innerHTML = '<p>No sections found.</p>';
+						content.innerHTML = '<p>' + i18n.noSections + '</p>';
 						return;
 					}
 					var html = '';
@@ -221,16 +245,8 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 							+ '</div>'
 							+ '<div class="oat-registry-section-body oat-collapsed">'
 							+ '<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">'
-							+ '<thead><tr>'
-							+ '<th data-sort="name" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
-							+ '<th data-sort="chronicle" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
-							+ '<th data-sort="type" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
-							+ '<th data-sort="pcnpc" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
-							+ '<th data-sort="status" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
-							+ '<th data-sort="entries" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
-							+ activityCol
-							+ '</tr></thead>'
-							+ '<tbody><tr><td colspan="' + activityColCount + '" class="oat-registry-loading">Loading...</td></tr></tbody>'
+							+ headerRow
+							+ '<tbody><tr><td colspan="' + activityColCount + '" class="oat-registry-loading">' + i18n.loading + '</td></tr></tbody>'
 							+ '</table></div></div>';
 					}
 					content.innerHTML = html;
@@ -263,7 +279,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 				post('owc_oat_registry_section', { section_key: key }, function(data) {
 					var tbody = sectionEl.querySelector('tbody');
 					if (!data || !data.characters || !data.characters.length) {
-						tbody.innerHTML = '<tr><td colspan="6" style="padding:8px;color:#666;">No characters.</td></tr>';
+						tbody.innerHTML = '<tr><td colspan="' + activityColCount + '" style="padding:8px;color:#666;">' + i18n.noChars + '</td></tr>';
 						return;
 					}
 					var html = '';
@@ -329,22 +345,14 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 					}
 					searchTimer = setTimeout(function() {
 						searchActive = true;
-						content.innerHTML = '<div class="oat-registry-loading">Searching...</div>';
+						content.innerHTML = '<div class="oat-registry-loading">' + i18n.searching + '</div>';
 						post('owc_oat_registry_search', { q: term }, function(data) {
 							if (!data || !data.length) {
-								content.innerHTML = '<p>No characters found.</p>';
+								content.innerHTML = '<p>' + i18n.noResults + '</p>';
 								return;
 							}
 							var html = '<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">'
-								+ '<thead><tr>'
-								+ '<th data-sort="name" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Character</th>'
-								+ '<th data-sort="chronicle" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Chronicle</th>'
-								+ '<th data-sort="type" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Type</th>'
-								+ '<th data-sort="pcnpc" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">PC/NPC</th>'
-								+ '<th data-sort="status" style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;">Status</th>'
-								+ '<th data-sort="entries" style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;">Entries</th>'
-								+ activityCol
-								+ '</tr></thead><tbody>';
+								+ headerRow + '<tbody>';
 							for (var i = 0; i < data.length; i++) {
 								var c = data[i];
 								var url = detailBase + '?character_id=' + (c.id || 0);
