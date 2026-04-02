@@ -23,6 +23,9 @@ require_once __DIR__ . '/accessschema/init.php';
 // ── Player ID ───────────────────────────────────────────────────────────────
 require_once __DIR__ . '/player-id/init.php';
 
+// ── User shortcodes ─────────────────────────────────────────────────────────
+require_once __DIR__ . '/shortcodes.php';
+
 // ── Notifications ───────────────────────────────────────────────────────────
 require_once __DIR__ . '/notifications/change-notify.php';
 

@@ -49,6 +49,9 @@ function owbn_shortcode_handler( $atts ) {
     owc_enqueue_assets();
 
     switch ( $type ) {
+        case 'user':
+            return owbn_shortcode_user( $field );
+
         case 'chronicle':
             return owbn_shortcode_chronicle( $section, $field, $slug, $label, $link );
 
@@ -186,6 +189,44 @@ function owbn_shortcode_coordinator( $section, $field, $slug, $label, $link = ''
     }
 
     return '';
+}
+
+/**
+ * User identity fields.
+ */
+function owbn_shortcode_user( $field ) {
+    if ( ! is_user_logged_in() || empty( $field ) ) return '';
+    $user = wp_get_current_user();
+
+    switch ( $field ) {
+        case 'display_name':
+            return esc_html( $user->display_name );
+        case 'username':
+            return esc_html( $user->user_login );
+        case 'email':
+            return esc_html( $user->user_email );
+        case 'first_name':
+            return esc_html( $user->first_name ?: $user->display_name );
+        case 'last_name':
+            return esc_html( $user->last_name );
+        case 'player_id':
+            $key = defined( 'OWC_PLAYER_ID_META_KEY' ) ? OWC_PLAYER_ID_META_KEY : 'player_id';
+            return esc_html( get_user_meta( $user->ID, $key, true ) );
+        case 'roles':
+            $roles = array();
+            if ( function_exists( 'owc_asc_get_user_roles' ) ) {
+                $asc = owc_asc_get_user_roles( 'oat', $user->user_email );
+                if ( ! is_wp_error( $asc ) && isset( $asc['roles'] ) ) {
+                    $roles = $asc['roles'];
+                }
+            } elseif ( defined( 'OWC_ASC_CACHE_KEY' ) ) {
+                $cached = get_user_meta( $user->ID, OWC_ASC_CACHE_KEY, true );
+                if ( is_array( $cached ) ) $roles = $cached;
+            }
+            return empty( $roles ) ? '' : esc_html( implode( "\n", $roles ) );
+        default:
+            return '';
+    }
 }
 
 /**
