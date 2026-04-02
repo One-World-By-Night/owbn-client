@@ -48,6 +48,9 @@ class OWC_Entities_Elementor_Loader {
     public static function register_widgets( $widgets_manager ): void {
         $dir = __DIR__;
 
+        // Shared style controls helper.
+        require_once $dir . '/class-widget-style-controls.php';
+
         // ── Original monolithic widgets (backward compat) ──────────────
         require_once $dir . '/class-chronicle-list-widget.php';
         require_once $dir . '/class-chronicle-detail-widget.php';

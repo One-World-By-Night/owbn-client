@@ -24,6 +24,9 @@ class OWC_Chronicle_Satellites_Section_Widget extends Widget_Base {
             'description' => __( 'Leave empty to read from URL query parameter.', 'owbn-entities' ),
         ) );
         $this->end_controls_section();
+        OWC_Widget_Style_Controls::add_universal( $this );
+        OWC_Widget_Style_Controls::add_kv( $this );
+    
     }
 
     protected function render() {
