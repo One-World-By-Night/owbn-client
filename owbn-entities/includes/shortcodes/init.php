@@ -13,3 +13,4 @@ defined('ABSPATH') || exit;
 require_once __DIR__ . '/shortcodes.php';
 require_once __DIR__ . '/shortcodes-chronicle.php';
 require_once __DIR__ . '/shortcodes-coordinator.php';
+require_once __DIR__ . '/shortcode-owbn.php';
