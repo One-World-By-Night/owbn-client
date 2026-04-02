@@ -15,14 +15,14 @@ $remote_url = get_option( owc_option_name( 'votes_remote_url' ), '' );
 $remote_key = get_option( owc_option_name( 'votes_remote_api_key' ), '' );
 ?>
 
-<h2><?php esc_html_e( 'Vote History', 'owbn-client' ); ?></h2>
-<p class="description"><?php esc_html_e( 'Shows vote history on chronicle and coordinator detail pages.', 'owbn-client' ); ?></p>
+<h2><?php esc_html_e( 'Vote History', 'owbn-entities' ); ?></h2>
+<p class="description"><?php esc_html_e( 'Shows vote history on chronicle and coordinator detail pages.', 'owbn-entities' ); ?></p>
 
 <form method="post" action="options.php">
     <?php settings_fields( $group ); ?>
     <table class="form-table" role="presentation">
         <tr>
-            <th scope="row"><?php esc_html_e( 'Data Source', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Data Source', 'owbn-entities' ); ?></th>
             <td>
                 <fieldset>
                     <label>
@@ -31,7 +31,7 @@ $remote_key = get_option( owc_option_name( 'votes_remote_api_key' ), '' );
                             class="owc-votes-mode"
                             value="local"
                             <?php checked( $mode, 'local' ); ?> />
-                        <?php esc_html_e( 'Local — Query wp-voting-plugin tables on this site', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'Local — Query wp-voting-plugin tables on this site', 'owbn-entities' ); ?>
                     </label><br>
                     <label>
                         <input type="radio"
@@ -39,13 +39,13 @@ $remote_key = get_option( owc_option_name( 'votes_remote_api_key' ), '' );
                             class="owc-votes-mode"
                             value="remote"
                             <?php checked( $mode, 'remote' ); ?> />
-                        <?php esc_html_e( 'Remote — Fetch from a remote gateway', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'Remote — Fetch from a remote gateway', 'owbn-entities' ); ?>
                     </label>
                 </fieldset>
             </td>
         </tr>
         <tr class="owc-votes-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Remote URL Override', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Remote URL Override', 'owbn-entities' ); ?></th>
             <td>
                 <?php $default_url = get_option( owc_option_name( 'remote_url' ), '' ); ?>
                 <input type="url"
@@ -53,11 +53,11 @@ $remote_key = get_option( owc_option_name( 'votes_remote_api_key' ), '' );
                     value="<?php echo esc_url( $remote_url ); ?>"
                     class="regular-text"
                     placeholder="<?php echo esc_attr( $default_url ? $default_url . ' (default)' : 'No default set' ); ?>" />
-                <p class="description"><?php esc_html_e( 'Only set if vote data comes from a different gateway than the default remote URL.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Only set if vote data comes from a different gateway than the default remote URL.', 'owbn-entities' ); ?></p>
             </td>
         </tr>
         <tr class="owc-votes-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'API Key Override', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'API Key Override', 'owbn-entities' ); ?></th>
             <td>
                 <?php $default_key = get_option( owc_option_name( 'remote_api_key' ), '' ); ?>
                 <input type="text"
@@ -75,7 +75,7 @@ $remote_key = get_option( owc_option_name( 'votes_remote_api_key' ), '' );
 
 <hr />
 
-<h3><?php esc_html_e( 'Status', 'owbn-client' ); ?></h3>
+<h3><?php esc_html_e( 'Status', 'owbn-entities' ); ?></h3>
 <?php
 $default_remote = get_option( owc_option_name( 'remote_url' ), '' );
 $effective_url  = $remote_url ? $remote_url : $default_remote;
@@ -84,7 +84,7 @@ $vplugin_active = function_exists( 'owbn_gateway_query_entity_votes' ) && define
 <table class="widefat owc-tab-status">
     <tbody>
         <tr>
-            <th style="width:200px"><?php esc_html_e( 'Mode', 'owbn-client' ); ?></th>
+            <th style="width:200px"><?php esc_html_e( 'Mode', 'owbn-entities' ); ?></th>
             <td>
                 <span class="owc-mode-badge owc-mode-badge--<?php echo esc_attr( $mode ); ?>">
                     <?php echo esc_html( ucfirst( $mode ) ); ?>
@@ -93,13 +93,13 @@ $vplugin_active = function_exists( 'owbn_gateway_query_entity_votes' ) && define
         </tr>
         <?php if ( $mode === 'local' ) : ?>
         <tr>
-            <th><?php esc_html_e( 'Voting Plugin', 'owbn-client' ); ?></th>
-            <td><?php echo $vplugin_active ? esc_html__( 'Active', 'owbn-client' ) : esc_html__( 'Not installed', 'owbn-client' ); ?></td>
+            <th><?php esc_html_e( 'Voting Plugin', 'owbn-entities' ); ?></th>
+            <td><?php echo $vplugin_active ? esc_html__( 'Active', 'owbn-entities' ) : esc_html__( 'Not installed', 'owbn-entities' ); ?></td>
         </tr>
         <?php endif; ?>
         <?php if ( $mode === 'remote' && $effective_url ) : ?>
         <tr>
-            <th><?php esc_html_e( 'Remote URL', 'owbn-client' ); ?></th>
+            <th><?php esc_html_e( 'Remote URL', 'owbn-entities' ); ?></th>
             <td><?php echo esc_html( $effective_url ); ?></td>
         </tr>
         <?php endif; ?>

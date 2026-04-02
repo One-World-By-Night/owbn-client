@@ -43,37 +43,37 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
     ob_start();
 ?>
     <div id="owc-vote-history" class="owc-vote-history" data-page-id="<?php echo esc_attr($page_id); ?>">
-        <h2><?php esc_html_e('Vote History', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Vote History', 'owbn-entities'); ?></h2>
         <table class="owc-vote-table">
             <thead>
                 <tr>
-                    <th><?php esc_html_e('Title', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('Start Date', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('End Date', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('Status', 'owbn-client'); ?></th>
-                    <th><?php esc_html_e('Vote', 'owbn-client'); ?></th>
+                    <th><?php esc_html_e('Title', 'owbn-entities'); ?></th>
+                    <th><?php esc_html_e('Start Date', 'owbn-entities'); ?></th>
+                    <th><?php esc_html_e('End Date', 'owbn-entities'); ?></th>
+                    <th><?php esc_html_e('Status', 'owbn-entities'); ?></th>
+                    <th><?php esc_html_e('Vote', 'owbn-entities'); ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($votes as $i => $vote) : ?>
                     <tr class="owc-vote-row" data-row="<?php echo (int) $i; ?>"<?php if ($i >= $per_page) echo ' style="display:none;"'; ?>>
-                        <td class="owc-vote-table__title" data-label="<?php esc_attr_e('Title', 'owbn-client'); ?>">
+                        <td class="owc-vote-table__title" data-label="<?php esc_attr_e('Title', 'owbn-entities'); ?>">
                             <?php if (!empty($vote['vote_url'])) : ?>
                                 <a href="<?php echo esc_url($vote['vote_url']); ?>" target="_blank" rel="noopener" class="owc-vote-table__link"><?php echo esc_html($vote['title']); ?></a>
                             <?php else : ?>
                                 <?php echo esc_html($vote['title']); ?>
                             <?php endif; ?>
                         </td>
-                        <td class="owc-vote-table__date" data-label="<?php esc_attr_e('Start', 'owbn-client'); ?>">
+                        <td class="owc-vote-table__date" data-label="<?php esc_attr_e('Start', 'owbn-entities'); ?>">
                             <?php echo esc_html(owc_format_vote_date($vote['open_date'])); ?>
                         </td>
-                        <td class="owc-vote-table__date" data-label="<?php esc_attr_e('End', 'owbn-client'); ?>">
+                        <td class="owc-vote-table__date" data-label="<?php esc_attr_e('End', 'owbn-entities'); ?>">
                             <?php echo esc_html(owc_format_vote_date($vote['close_date'])); ?>
                         </td>
-                        <td class="owc-vote-table__status" data-label="<?php esc_attr_e('Status', 'owbn-client'); ?>">
+                        <td class="owc-vote-table__status" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
                             <?php echo owc_render_vote_stage_badge($vote['stage']); ?>
                         </td>
-                        <td class="owc-vote-table__choice" data-label="<?php esc_attr_e('Vote', 'owbn-client'); ?>">
+                        <td class="owc-vote-table__choice" data-label="<?php esc_attr_e('Vote', 'owbn-entities'); ?>">
                             <?php echo esc_html($vote['choice']); ?>
                         </td>
                     </tr>
@@ -82,11 +82,11 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
         </table>
         <?php if ($total_pages > 1) : ?>
             <div class="owc-vote-pagination" data-per-page="<?php echo (int) $per_page; ?>" data-total="<?php echo (int) $total_votes; ?>">
-                <button type="button" class="owc-vote-page-btn" data-dir="prev" disabled>&laquo; <?php esc_html_e('Prev', 'owbn-client'); ?></button>
+                <button type="button" class="owc-vote-page-btn" data-dir="prev" disabled>&laquo; <?php esc_html_e('Prev', 'owbn-entities'); ?></button>
                 <span class="owc-vote-page-info">
-                    <?php printf(esc_html__('Page %1$s of %2$s', 'owbn-client'), '<span class="owc-vote-page-cur">1</span>', '<span>' . (int) $total_pages . '</span>'); ?>
+                    <?php printf(esc_html__('Page %1$s of %2$s', 'owbn-entities'), '<span class="owc-vote-page-cur">1</span>', '<span>' . (int) $total_pages . '</span>'); ?>
                 </span>
-                <button type="button" class="owc-vote-page-btn" data-dir="next"><?php esc_html_e('Next', 'owbn-client'); ?> &raquo;</button>
+                <button type="button" class="owc-vote-page-btn" data-dir="next"><?php esc_html_e('Next', 'owbn-entities'); ?> &raquo;</button>
             </div>
         <?php endif; ?>
         <?php if ($vote_record_url) : ?>
@@ -94,7 +94,7 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
                 <?php
                 printf(
                     /* translators: %1$s is opening <a> tag, %2$s is closing </a> tag */
-                    esc_html__('For additional vote-specific records, %1$sclick here%2$s.', 'owbn-client'),
+                    esc_html__('For additional vote-specific records, %1$sclick here%2$s.', 'owbn-entities'),
                     '<a href="' . esc_url($vote_record_url) . '" target="_blank" rel="noopener">',
                     '</a>'
                 );
@@ -163,9 +163,9 @@ function owc_format_vote_date($date)
 function owc_render_vote_stage_badge($stage)
 {
     $labels = array(
-        'open'      => __('Open', 'owbn-client'),
-        'completed' => __('Completed', 'owbn-client'),
-        'archived'  => __('Archived', 'owbn-client'),
+        'open'      => __('Open', 'owbn-entities'),
+        'completed' => __('Completed', 'owbn-entities'),
+        'archived'  => __('Archived', 'owbn-entities'),
     );
 
     $label = isset($labels[$stage]) ? $labels[$stage] : ucfirst($stage);

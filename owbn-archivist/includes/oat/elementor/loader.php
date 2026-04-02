@@ -47,7 +47,7 @@ class OWC_OAT_Elementor_Loader
 	public static function register_category( $elements_manager )
 	{
 		$elements_manager->add_category( 'owbn-oat', array(
-			'title' => __( 'Archivist Toolkit', 'owbn-client' ),
+			'title' => __( 'Archivist Toolkit', 'owbn-archivist' ),
 			'icon'  => 'eicon-form-horizontal',
 		) );
 	}

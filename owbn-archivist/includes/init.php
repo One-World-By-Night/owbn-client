@@ -54,13 +54,13 @@ function owc_archivist_register_dashboard_widgets() {
 
     wp_add_dashboard_widget(
         'owc_oat_my_characters_widget',
-        __( 'OAT: My Characters', 'owbn-client' ),
+        __( 'OAT: My Characters', 'owbn-archivist' ),
         'owc_render_oat_my_characters_widget'
     );
 
     wp_add_dashboard_widget(
         'owc_oat_inbox_widget',
-        __( 'OAT: My Inbox', 'owbn-client' ),
+        __( 'OAT: My Inbox', 'owbn-archivist' ),
         'owc_render_oat_inbox_widget'
     );
 }
@@ -70,7 +70,7 @@ function owc_archivist_register_dashboard_widgets() {
  */
 function owc_render_oat_my_characters_widget() {
     if ( ! function_exists( 'owc_oat_get_registry' ) ) {
-        echo '<p>' . esc_html__( 'OAT not available.', 'owbn-client' ) . '</p>';
+        echo '<p>' . esc_html__( 'OAT not available.', 'owbn-archivist' ) . '</p>';
         return;
     }
 
@@ -98,7 +98,7 @@ function owc_render_oat_my_characters_widget() {
     }
 
     if ( empty( $my_chars ) ) {
-        echo '<p style="color:#646970;">' . esc_html__( 'No characters linked to your account.', 'owbn-client' ) . '</p>';
+        echo '<p style="color:#646970;">' . esc_html__( 'No characters linked to your account.', 'owbn-archivist' ) . '</p>';
         return;
     }
 
@@ -159,8 +159,8 @@ function owc_render_oat_my_characters_widget() {
 
     // Footer links.
     echo '<p style="margin:8px 0 0;display:flex;gap:12px;">';
-    echo '<a href="' . esc_url( $oat_base . 'oat-registry/' ) . '" target="_blank">' . esc_html__( 'Full Registry', 'owbn-client' ) . ' &#x29C9;</a>';
-    echo '<a href="' . esc_url( $oat_base . 'oat-submit/' ) . '" target="_blank">' . esc_html__( 'New Submission', 'owbn-client' ) . ' &#x29C9;</a>';
+    echo '<a href="' . esc_url( $oat_base . 'oat-registry/' ) . '" target="_blank">' . esc_html__( 'Full Registry', 'owbn-archivist' ) . ' &#x29C9;</a>';
+    echo '<a href="' . esc_url( $oat_base . 'oat-submit/' ) . '" target="_blank">' . esc_html__( 'New Submission', 'owbn-archivist' ) . ' &#x29C9;</a>';
     echo '</p>';
 }
 
@@ -169,7 +169,7 @@ function owc_render_oat_my_characters_widget() {
  */
 function owc_render_oat_inbox_widget() {
     if ( ! function_exists( 'owc_oat_get_inbox' ) ) {
-        echo '<p>' . esc_html__( 'OAT not available.', 'owbn-client' ) . '</p>';
+        echo '<p>' . esc_html__( 'OAT not available.', 'owbn-archivist' ) . '</p>';
         return;
     }
 
@@ -196,7 +196,7 @@ function owc_render_oat_inbox_widget() {
     // -- Assigned to me.
     if ( ! empty( $assignments ) ) {
         $has_content = true;
-        echo '<h4 style="margin:0 0 6px;">' . esc_html__( 'Assigned to Me', 'owbn-client' );
+        echo '<h4 style="margin:0 0 6px;">' . esc_html__( 'Assigned to Me', 'owbn-archivist' );
         echo ' <span style="color:#646970;font-weight:normal;">(' . count( $assignments ) . ')</span></h4>';
         echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
         $shown = 0;
@@ -204,7 +204,7 @@ function owc_render_oat_inbox_widget() {
             if ( $shown >= 10 ) {
                 echo '<li style="padding:4px 0;font-size:12px;color:#646970;">';
                 /* translators: %d: remaining count */
-                printf( esc_html__( '+ %d more...', 'owbn-client' ), count( $assignments ) - 10 );
+                printf( esc_html__( '+ %d more...', 'owbn-archivist' ), count( $assignments ) - 10 );
                 echo '</li>';
                 break;
             }
@@ -234,14 +234,14 @@ function owc_render_oat_inbox_widget() {
 
     if ( ! empty( $active_submissions ) ) {
         $has_content = true;
-        echo '<h4 style="margin:0 0 6px;">' . esc_html__( 'My Active Submissions', 'owbn-client' );
+        echo '<h4 style="margin:0 0 6px;">' . esc_html__( 'My Active Submissions', 'owbn-archivist' );
         echo ' <span style="color:#646970;font-weight:normal;">(' . count( $active_submissions ) . ')</span></h4>';
         echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
         $shown = 0;
         foreach ( $active_submissions as $e ) {
             if ( $shown >= 5 ) {
                 echo '<li style="padding:4px 0;font-size:12px;color:#646970;">';
-                printf( esc_html__( '+ %d more...', 'owbn-client' ), count( $active_submissions ) - 5 );
+                printf( esc_html__( '+ %d more...', 'owbn-archivist' ), count( $active_submissions ) - 5 );
                 echo '</li>';
                 break;
             }
@@ -262,9 +262,9 @@ function owc_render_oat_inbox_widget() {
     }
 
     if ( ! $has_content ) {
-        echo '<p style="color:#646970;">' . esc_html__( 'No pending items.', 'owbn-client' ) . '</p>';
+        echo '<p style="color:#646970;">' . esc_html__( 'No pending items.', 'owbn-archivist' ) . '</p>';
     }
 
     // Link to full inbox.
-    echo '<p style="margin:8px 0 0;"><a href="' . esc_url( $inbox_url ) . '" target="_blank">' . esc_html__( 'View Full Inbox', 'owbn-client' ) . ' &#x29C9;</a></p>';
+    echo '<p style="margin:8px 0 0;"><a href="' . esc_url( $inbox_url ) . '" target="_blank">' . esc_html__( 'View Full Inbox', 'owbn-archivist' ) . ' &#x29C9;</a></p>';
 }

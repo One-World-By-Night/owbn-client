@@ -51,57 +51,57 @@ function owc_shortcode_handler($atts)
     switch ($type) {
         case 'chronicle-list':
             if (!owc_chronicles_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_list('chronicles');
             return owc_render_chronicles_list($data);
 
         case 'coordinator-list':
             if (!owc_coordinators_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_list('coordinators');
             return owc_render_coordinators_list($data);
 
         case 'territory-list':
             if (!owc_territories_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_list('territories');
             return owc_render_territories_list($data);
 
         case 'chronicle-detail':
             if (!owc_chronicles_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-entities') . '</p>';
             }
             if (empty($slug)) {
-                return '<p class="owc-error">' . esc_html__('No chronicle selected.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('No chronicle selected.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_detail('chronicles', $slug);
             return owc_render_chronicle_detail($data);
 
         case 'coordinator-detail':
             if (!owc_coordinators_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-entities') . '</p>';
             }
             if (empty($slug)) {
-                return '<p class="owc-error">' . esc_html__('No coordinator selected.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('No coordinator selected.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_detail('coordinators', $slug);
             return owc_render_coordinator_detail($data);
 
         case 'territory-detail':
             if (!owc_territories_enabled()) {
-                return '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-entities') . '</p>';
             }
             if (empty($id)) {
-                return '<p class="owc-error">' . esc_html__('No territory selected.', 'owbn-client') . '</p>';
+                return '<p class="owc-error">' . esc_html__('No territory selected.', 'owbn-entities') . '</p>';
             }
             $data = owc_fetch_detail('territories', $id);
             return owc_render_territory_detail($data);
 
         default:
-            return '<p class="owc-error">' . esc_html__('Invalid shortcode type.', 'owbn-client') . '</p>';
+            return '<p class="owc-error">' . esc_html__('Invalid shortcode type.', 'owbn-entities') . '</p>';
     }
 }
 

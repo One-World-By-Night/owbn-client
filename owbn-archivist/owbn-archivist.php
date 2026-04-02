@@ -7,7 +7,7 @@
  * Version: 1.0.3
  * Author: greghacke
  * Author URI: https://www.owbn.net
- * Text Domain: owbn-client
+ * Text Domain: owbn-archivist
  * License: GPL-2.0-or-later
  * Requires Plugins: owbn-core
  */

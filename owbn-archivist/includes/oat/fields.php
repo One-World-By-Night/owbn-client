@@ -456,7 +456,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			printf(
 				'<input type="text" id="%s_search" class="oat-cchub-search regular-text" placeholder="%s" autocomplete="off" />',
 				$id,
-				esc_attr__( 'Search custom content by name...', 'owbn-client' )
+				esc_attr__( 'Search custom content by name...', 'owbn-archivist' )
 			);
 			echo '<div id="' . $id . '_selected" class="oat-cchub-selected"></div>';
 			// Hidden input: stores JSON with entry_id and label.
@@ -544,13 +544,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			printf(
 				'<input type="text" id="%s_search" class="oat-character-search regular-text" placeholder="%s" autocomplete="off" />',
 				$id,
-				esc_attr__( 'Search characters by name...', 'owbn-client' )
+				esc_attr__( 'Search characters by name...', 'owbn-archivist' )
 			);
 			echo '<div id="' . $id . '_results" class="oat-character-results"></div>';
 			// Selected character display.
 			echo '<div id="' . $id . '_selected" class="oat-character-selected" style="display:none;">';
 			echo '<span class="oat-character-selected-name"></span>';
-			echo ' <button type="button" class="button-link oat-character-clear">(' . esc_html__( 'clear', 'owbn-client' ) . ')</button>';
+			echo ' <button type="button" class="button-link oat-character-clear">(' . esc_html__( 'clear', 'owbn-archivist' ) . ')</button>';
 			echo '</div>';
 			// Hidden input: stores character UUID.
 			printf( '<input type="hidden" name="%s" id="%s" value="%s" class="oat-character-uuid" />', $name, $id, esc_attr( $value ) );
@@ -559,32 +559,32 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $can_create ) :
 			echo '<p style="margin-top:6px;">';
 			echo '<button type="button" class="button button-secondary oat-character-create-toggle">';
-			echo esc_html__( 'Create New Character', 'owbn-client' );
+			echo esc_html__( 'Create New Character', 'owbn-archivist' );
 			echo '</button></p>';
 			// Create-new panel (hidden by default).
 			echo '<div class="oat-character-create-panel" style="display:none;border:1px solid #ccd0d4;padding:12px;margin-top:8px;background:#f9f9f9;">';
-			echo '<p><label>' . esc_html__( 'Character Name', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<p><label>' . esc_html__( 'Character Name', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<input type="text" class="oat-cc-name regular-text" /></label></p>';
-			echo '<p><label>' . esc_html__( 'Home Chronicle', 'owbn-client' ) . ' <span class="required">*</span><br>';
-			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-client' ) . '" autocomplete="off" /></label></p>';
+			echo '<p><label>' . esc_html__( 'Home Chronicle', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
+			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-archivist' ) . '" autocomplete="off" /></label></p>';
 			echo '<input type="hidden" class="oat-cc-chronicle-slug" />';
 			// Creature picker — 4-level cascading selects (Genre > Faction > Type > Variant).
 			echo '<div class="oat-cc-creature-picker" data-creature-picker>';
-			echo '<p><label>' . esc_html__( 'Genre', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<p><label>' . esc_html__( 'Genre', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<select name="creature_genre" class="oat-cc-genre" style="width:100%;"></select></label></p>';
-			echo '<p><label>' . esc_html__( 'Faction', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<p><label>' . esc_html__( 'Faction', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<select name="creature_sub_type" class="oat-cc-faction" style="width:100%;"></select></label></p>';
-			echo '<p><label>' . esc_html__( 'Creature Type', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<p><label>' . esc_html__( 'Creature Type', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<select name="creature_type" class="oat-cc-creature-type" style="width:100%;"></select></label></p>';
-			echo '<p class="oat-creature-variant-wrap"><label>' . esc_html__( 'Variant', 'owbn-client' ) . '<br>';
+			echo '<p class="oat-creature-variant-wrap"><label>' . esc_html__( 'Variant', 'owbn-archivist' ) . '<br>';
 			echo '<select name="creature_variant" class="oat-cc-variant" style="width:100%;"></select></label></p>';
 			echo '</div>';
 			// PC / NPC designation (D-056, required for regulation level matching).
-			echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-client' ) . ' <span class="required">*</span><br>';
+			echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<select class="oat-cc-pc-npc">';
-			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-client' ) . '</option>';
-			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-client' ) . '</option>';
-			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-client' ) . '</option>';
+			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-archivist' ) . '</option>';
+			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-archivist' ) . '</option>';
+			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-archivist' ) . '</option>';
 			echo '</select></label></p>';
 			// Hidden inputs for storing values as entry meta.
 			echo '<input type="hidden" name="oat_meta_creature_genre" class="oat-cc-genre-val" />';
@@ -592,8 +592,8 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<input type="hidden" name="oat_meta_creature_sub_type" class="oat-cc-sub-type-val" />';
 			echo '<input type="hidden" name="oat_meta_creature_variant" class="oat-cc-variant-val" />';
 			echo '<input type="hidden" name="oat_meta_pc_npc" class="oat-cc-pc-npc-val" />';
-			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-client' ) . '</button>';
-			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-client' ) . '</button></p>';
+			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-archivist' ) . '</button>';
+			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-archivist' ) . '</button></p>';
 			echo '</div>'; // .oat-character-create-panel
 			endif; // can_create
 			echo '</div>'; // .oat-character-picker-wrap
@@ -615,7 +615,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			printf(
 				'<input type="text" id="%s_search" class="oat-user-search regular-text" placeholder="%s" autocomplete="off" />',
 				$id,
-				esc_attr__( 'Search users by name or email...', 'owbn-client' )
+				esc_attr__( 'Search users by name or email...', 'owbn-archivist' )
 			);
 			// Selected user display.
 			echo '<div class="oat-user-picked" style="display:none;">';
@@ -631,10 +631,10 @@ function owc_oat_render_field( $field, $value = '' ) {
 			// Free-text fallback: email field shown when no user selected.
 			if ( 'free_text' === $fallback ) {
 				echo '<div class="oat-user-freetext" style="display:none;margin-top:6px;">';
-				echo '<p class="description">' . esc_html__( 'User not found in system. Enter their email:', 'owbn-client' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'User not found in system. Enter their email:', 'owbn-archivist' ) . '</p>';
 				printf(
 					'<input type="email" class="oat-user-freetext-email regular-text" placeholder="%s" />',
-					esc_attr__( 'player@example.com', 'owbn-client' )
+					esc_attr__( 'player@example.com', 'owbn-archivist' )
 				);
 				echo '</div>';
 			}
@@ -655,7 +655,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( $value ) {
 				echo esc_html( $value );
 			} else {
-				echo '<em>' . esc_html__( 'Select regulation rules to see coordinators.', 'owbn-client' ) . '</em>';
+				echo '<em>' . esc_html__( 'Select regulation rules to see coordinators.', 'owbn-archivist' ) . '</em>';
 			}
 			echo '</span>';
 			printf( '<input type="hidden" name="%s" id="%s" value="%s" />', $name, $id, esc_attr( $value ) );
@@ -673,7 +673,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<div class="oat-field-label"><label for="' . $id . '">' . esc_html( $label ) . $req_star . '</label></div>';
 			echo '<div class="oat-field-content">';
 			echo '<select id="' . $id . '" name="' . $name . '" class="oat-template-selector" data-target-field="' . esc_attr( $target_field ) . '"' . $req_attr . '>';
-			echo '<option value="">' . esc_html__( '-- Select Template --', 'owbn-client' ) . '</option>';
+			echo '<option value="">' . esc_html__( '-- Select Template --', 'owbn-archivist' ) . '</option>';
 			foreach ( $options as $opt_val => $opt_label_or_content ) {
 				// Options can be simple (label only) or complex (label with template content).
 				// If the value is a JSON string containing template HTML, use the key as label.

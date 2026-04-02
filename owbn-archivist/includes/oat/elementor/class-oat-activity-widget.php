@@ -24,7 +24,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'Archivist Activity Feed', 'owbn-client' );
+		return __( 'Archivist Activity Feed', 'owbn-archivist' );
 	}
 
 	public function get_icon()
@@ -59,12 +59,12 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 		// ── Content Tab ───────────────────────────────────────────────────
 
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Feed Settings', 'owbn-client' ),
+			'label' => __( 'Feed Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'item_count', array(
-			'label'   => __( 'Number of Items', 'owbn-client' ),
+			'label'   => __( 'Number of Items', 'owbn-archivist' ),
 			'type'    => Controls_Manager::NUMBER,
 			'min'     => 1,
 			'max'     => 50,
@@ -72,23 +72,23 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'domain_filter', array(
-			'label'       => __( 'Filter by Domain', 'owbn-client' ),
+			'label'       => __( 'Filter by Domain', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
-			'placeholder' => __( 'Leave blank for all domains', 'owbn-client' ),
+			'placeholder' => __( 'Leave blank for all domains', 'owbn-archivist' ),
 			'default'     => '',
 		) );
 
 		$this->add_control( 'auto_refresh', array(
-			'label'       => __( 'Auto-Refresh Interval (seconds)', 'owbn-client' ),
+			'label'       => __( 'Auto-Refresh Interval (seconds)', 'owbn-archivist' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
 			'max'         => 300,
 			'default'     => 0,
-			'description' => __( 'Set to 0 to disable auto-refresh.', 'owbn-client' ),
+			'description' => __( 'Set to 0 to disable auto-refresh.', 'owbn-archivist' ),
 		) );
 
 		$this->add_control( 'entry_detail_page', array(
-			'label'   => __( 'Entry Detail Page URL', 'owbn-client' ),
+			'label'   => __( 'Entry Detail Page URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/oat-entry/',
 		) );
@@ -98,12 +98,12 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 		// ── Style Tab ─────────────────────────────────────────────────────
 
 		$this->start_controls_section( 'style_items', array(
-			'label' => __( 'Feed Items', 'owbn-client' ),
+			'label' => __( 'Feed Items', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'item_background', array(
-			'label'     => __( 'Item Background', 'owbn-client' ),
+			'label'     => __( 'Item Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-activity-item' => 'background-color: {{VALUE}};',
@@ -117,12 +117,12 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 
 		$this->add_group_control( Group_Control_Typography::get_type(), array(
 			'name'     => 'timestamp_typography',
-			'label'    => __( 'Timestamp Typography', 'owbn-client' ),
+			'label'    => __( 'Timestamp Typography', 'owbn-archivist' ),
 			'selector' => '{{WRAPPER}} .oat-activity-time',
 		) );
 
 		$this->add_control( 'timestamp_color', array(
-			'label'     => __( 'Timestamp Color', 'owbn-client' ),
+			'label'     => __( 'Timestamp Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-activity-time' => 'color: {{VALUE}};',
@@ -137,7 +137,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 	protected function render()
 	{
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view activity.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view activity.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -150,7 +150,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 
 		// Editor placeholder.
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Activity Feed — preview not available in editor.', 'owbn-client' ) . '</div>';
+			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Activity Feed — preview not available in editor.', 'owbn-archivist' ) . '</div>';
 			return;
 		}
 
@@ -168,7 +168,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 			data-domain="<?php echo esc_attr( $domain ); ?>">
 
 			<?php if ( empty( $items ) ) : ?>
-				<p class="oat-inbox-empty"><?php esc_html_e( 'No recent activity.', 'owbn-client' ); ?></p>
+				<p class="oat-inbox-empty"><?php esc_html_e( 'No recent activity.', 'owbn-archivist' ); ?></p>
 			<?php else : ?>
 				<ul class="oat-activity-feed">
 					<?php echo $this->render_items( $items, $detail_url ); ?>
@@ -222,7 +222,7 @@ class OWC_OAT_Activity_Widget extends Widget_Base
 						<?php echo esc_html( $action_lbl ); ?>
 					</span>
 					<?php if ( $actor ) : ?>
-						<span style="font-size:13px;color:#646970;margin-left:6px;"><?php printf( esc_html__( 'by %s', 'owbn-client' ), esc_html( $actor ) ); ?></span>
+						<span style="font-size:13px;color:#646970;margin-left:6px;"><?php printf( esc_html__( 'by %s', 'owbn-archivist' ), esc_html( $actor ) ); ?></span>
 					<?php endif; ?>
 					<?php if ( $entry_id ) : ?>
 						&mdash;

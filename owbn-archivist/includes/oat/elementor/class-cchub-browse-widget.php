@@ -8,7 +8,7 @@ use Elementor\Controls_Manager;
 class OWC_CCHub_Browse_Widget extends Widget_Base {
 
 	public function get_name() { return 'owc_cchub_browse'; }
-	public function get_title() { return __( 'ccHub Browse', 'owbn-client' ); }
+	public function get_title() { return __( 'ccHub Browse', 'owbn-archivist' ); }
 	public function get_icon() { return 'eicon-table'; }
 	public function get_categories() { return array( 'owbn-oat' ); }
 	public function get_keywords() { return array( 'cchub', 'custom', 'content', 'browse', 'table' ); }
@@ -17,18 +17,18 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', array(
-			'label' => __( 'Settings', 'owbn-client' ),
+			'label' => __( 'Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 		$this->add_control( 'per_page', array(
-			'label'   => __( 'Items per page', 'owbn-client' ),
+			'label'   => __( 'Items per page', 'owbn-archivist' ),
 			'type'    => Controls_Manager::NUMBER,
 			'default' => 25,
 			'min'     => 10,
 			'max'     => 100,
 		) );
 		$this->add_control( 'categories_url', array(
-			'label'   => __( 'Back to Categories URL', 'owbn-client' ),
+			'label'   => __( 'Back to Categories URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/cchub/',
 		) );

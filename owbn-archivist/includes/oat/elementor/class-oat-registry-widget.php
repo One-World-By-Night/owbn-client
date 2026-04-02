@@ -12,7 +12,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Archivist Registry', 'owbn-client' );
+		return __( 'Archivist Registry', 'owbn-archivist' );
 	}
 
 	public function get_icon() {
@@ -37,43 +37,43 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Settings', 'owbn-client' ),
+			'label' => __( 'Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'character_detail_url', array(
-			'label'   => __( 'Character Detail Base URL', 'owbn-client' ),
+			'label'   => __( 'Character Detail Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '',
-			'description' => __( 'Leave blank to link to wp-admin character detail.', 'owbn-client' ),
+			'description' => __( 'Leave blank to link to wp-admin character detail.', 'owbn-archivist' ),
 		) );
 
 		$this->add_control( 'scope', array(
-			'label'   => __( 'Scope', 'owbn-client' ),
+			'label'   => __( 'Scope', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'default' => 'all',
 			'options' => array(
-				'all'          => __( 'All (full registry)', 'owbn-client' ),
-				'mine'         => __( 'My Characters only', 'owbn-client' ),
-				'chronicles'   => __( 'My Chronicles only', 'owbn-client' ),
-				'coordinators' => __( 'My Coordinator roles only', 'owbn-client' ),
+				'all'          => __( 'All (full registry)', 'owbn-archivist' ),
+				'mine'         => __( 'My Characters only', 'owbn-archivist' ),
+				'chronicles'   => __( 'My Chronicles only', 'owbn-archivist' ),
+				'coordinators' => __( 'My Coordinator roles only', 'owbn-archivist' ),
 			),
 		) );
 
 		$this->add_control( 'show_search', array(
-			'label'   => __( 'Show Search', 'owbn-client' ),
+			'label'   => __( 'Show Search', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => 'yes',
 		) );
 
 		$this->add_control( 'show_section_filter', array(
-			'label'   => __( 'Show Section Filter', 'owbn-client' ),
+			'label'   => __( 'Show Section Filter', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => 'yes',
 		) );
 
 		$this->add_control( 'show_last_activity', array(
-			'label'   => __( 'Show Last Activity Column', 'owbn-client' ),
+			'label'   => __( 'Show Last Activity Column', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => '',
 		) );
@@ -81,12 +81,12 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_section', array(
-			'label' => __( 'Table', 'owbn-client' ),
+			'label' => __( 'Table', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'header_bg', array(
-			'label'     => __( 'Section Header Background', 'owbn-client' ),
+			'label'     => __( 'Section Header Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-registry-section-header' => 'background-color: {{VALUE}};',
@@ -94,7 +94,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		) );
 
 		$this->add_control( 'row_hover', array(
-			'label'     => __( 'Row Hover Background', 'owbn-client' ),
+			'label'     => __( 'Row Hover Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-registry-table tbody tr:hover' => 'background-color: {{VALUE}};',
@@ -106,13 +106,13 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 
 	protected function render() {
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view the registry.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view the registry.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">'
-				. esc_html__( 'OAT Registry — preview not available in editor.', 'owbn-client' )
+				. esc_html__( 'OAT Registry — preview not available in editor.', 'owbn-archivist' )
 				. '</div>';
 			return;
 		}
@@ -127,10 +127,10 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 
 		// Determine which tabs to show based on widget scope setting.
 		$all_tabs = array(
-			'mine'           => __( 'My Characters', 'owbn-client' ),
-			'chronicles'     => __( 'Chronicles', 'owbn-client' ),
-			'coordinators'   => __( 'Coordinators', 'owbn-client' ),
-			'decommissioned' => __( 'Decommissioned', 'owbn-client' ),
+			'mine'           => __( 'My Characters', 'owbn-archivist' ),
+			'chronicles'     => __( 'Chronicles', 'owbn-archivist' ),
+			'coordinators'   => __( 'Coordinators', 'owbn-archivist' ),
+			'decommissioned' => __( 'Decommissioned', 'owbn-archivist' ),
 		);
 
 		if ( 'all' !== $widget_scope ) {
@@ -158,7 +158,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 		</style>
 		<div class="oat-registry-widget">
 			<div class="oat-registry-header">
-				<h3><?php esc_html_e( 'Registry', 'owbn-client' ); ?></h3>
+				<h3><?php esc_html_e( 'Registry', 'owbn-archivist' ); ?></h3>
 				<?php if ( count( $all_tabs ) > 1 ) : ?>
 					<nav class="oat-registry-tabs" style="margin:8px 0;border-bottom:1px solid #ddd;">
 						<?php foreach ( $all_tabs as $tab_key => $tab_label ) : ?>
@@ -168,7 +168,7 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 				<?php endif; ?>
 				<div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;align-items:center;">
 					<?php if ( $show_search ) : ?>
-						<input type="text" class="oat-registry-search" placeholder="<?php esc_attr_e( 'Search characters...', 'owbn-client' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
+						<input type="text" class="oat-registry-search" placeholder="<?php esc_attr_e( 'Search characters...', 'owbn-archivist' ); ?>" style="flex:1;min-width:200px;max-width:300px;">
 					<?php endif; ?>
 					<button type="button" class="oat-registry-clear" style="padding:4px 12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;">Clear</button>
 				</div>
@@ -187,18 +187,18 @@ class OWC_OAT_Registry_Widget extends Widget_Base {
 			var firstScope = <?php echo wp_json_encode( array_key_first( $all_tabs ) ); ?>;
 			var showActivity = <?php echo $show_activity ? 'true' : 'false'; ?>;
 			var i18n = {
-				character:    <?php echo wp_json_encode( __( 'Character', 'owbn-client' ) ); ?>,
-				chronicle:    <?php echo wp_json_encode( __( 'Chronicle', 'owbn-client' ) ); ?>,
-				type:         <?php echo wp_json_encode( __( 'Type', 'owbn-client' ) ); ?>,
-				pcNpc:        <?php echo wp_json_encode( __( 'PC/NPC', 'owbn-client' ) ); ?>,
-				status:       <?php echo wp_json_encode( __( 'Status', 'owbn-client' ) ); ?>,
-				entries:      <?php echo wp_json_encode( __( 'Entries', 'owbn-client' ) ); ?>,
-				lastActivity: <?php echo wp_json_encode( __( 'Last Activity', 'owbn-client' ) ); ?>,
-				loading:      <?php echo wp_json_encode( __( 'Loading...', 'owbn-client' ) ); ?>,
-				searching:    <?php echo wp_json_encode( __( 'Searching...', 'owbn-client' ) ); ?>,
-				noSections:   <?php echo wp_json_encode( __( 'No sections found.', 'owbn-client' ) ); ?>,
-				noChars:      <?php echo wp_json_encode( __( 'No characters.', 'owbn-client' ) ); ?>,
-				noResults:    <?php echo wp_json_encode( __( 'No characters found.', 'owbn-client' ) ); ?>,
+				character:    <?php echo wp_json_encode( __( 'Character', 'owbn-archivist' ) ); ?>,
+				chronicle:    <?php echo wp_json_encode( __( 'Chronicle', 'owbn-archivist' ) ); ?>,
+				type:         <?php echo wp_json_encode( __( 'Type', 'owbn-archivist' ) ); ?>,
+				pcNpc:        <?php echo wp_json_encode( __( 'PC/NPC', 'owbn-archivist' ) ); ?>,
+				status:       <?php echo wp_json_encode( __( 'Status', 'owbn-archivist' ) ); ?>,
+				entries:      <?php echo wp_json_encode( __( 'Entries', 'owbn-archivist' ) ); ?>,
+				lastActivity: <?php echo wp_json_encode( __( 'Last Activity', 'owbn-archivist' ) ); ?>,
+				loading:      <?php echo wp_json_encode( __( 'Loading...', 'owbn-archivist' ) ); ?>,
+				searching:    <?php echo wp_json_encode( __( 'Searching...', 'owbn-archivist' ) ); ?>,
+				noSections:   <?php echo wp_json_encode( __( 'No sections found.', 'owbn-archivist' ) ); ?>,
+				noChars:      <?php echo wp_json_encode( __( 'No characters.', 'owbn-archivist' ) ); ?>,
+				noResults:    <?php echo wp_json_encode( __( 'No characters found.', 'owbn-archivist' ) ); ?>,
 			};
 			var thStyle = 'style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"';
 			var thStyleC = 'style="text-align:center;padding:6px 8px;border-bottom:2px solid #ddd;"';

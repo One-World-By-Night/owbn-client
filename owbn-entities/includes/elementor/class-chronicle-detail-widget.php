@@ -24,7 +24,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 
 	public function get_title(): string
 	{
-		return __('Chronicle Detail', 'owbn-client');
+		return __('Chronicle Detail', 'owbn-entities');
 	}
 
 	public function get_icon(): string
@@ -58,7 +58,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __('Content', 'owbn-client'),
+				'label' => __('Content', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -66,11 +66,11 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'slug_source',
 			[
-				'label'   => __('Chronicle Source', 'owbn-client'),
+				'label'   => __('Chronicle Source', 'owbn-entities'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'url'   => __('From URL Parameter (?slug=)', 'owbn-client'),
-					'fixed' => __('Fixed Chronicle', 'owbn-client'),
+					'url'   => __('From URL Parameter (?slug=)', 'owbn-entities'),
+					'fixed' => __('Fixed Chronicle', 'owbn-entities'),
 				],
 				'default' => 'url',
 			]
@@ -79,7 +79,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'fixed_slug',
 			[
-				'label'       => __('Chronicle Slug', 'owbn-client'),
+				'label'       => __('Chronicle Slug', 'owbn-entities'),
 				'type'        => Controls_Manager::TEXT,
 				'placeholder' => 'chronicle-slug',
 				'condition'   => [
@@ -94,7 +94,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_container',
 			[
-				'label' => __('Container', 'owbn-client'),
+				'label' => __('Container', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -102,7 +102,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'container_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-chronicle-detail' => 'background-color: {{VALUE}};',
@@ -113,7 +113,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'container_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', '%'],
 				'selectors'  => [
@@ -128,7 +128,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_header',
 			[
-				'label' => __('Header', 'owbn-client'),
+				'label' => __('Header', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -136,7 +136,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'header_title_color',
 			[
-				'label'     => __('Title Color', 'owbn-client'),
+				'label'     => __('Title Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-chronicle-header h1' => 'color: {{VALUE}};',
@@ -158,7 +158,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_sections',
 			[
-				'label' => __('Sections', 'owbn-client'),
+				'label' => __('Sections', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -166,7 +166,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'section_heading_color',
 			[
-				'label'     => __('Section Heading Color', 'owbn-client'),
+				'label'     => __('Section Heading Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-section-heading' => 'color: {{VALUE}};',
@@ -185,7 +185,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'section_content_color',
 			[
-				'label'     => __('Content Text Color', 'owbn-client'),
+				'label'     => __('Content Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-chronicle-detail' => 'color: {{VALUE}};',
@@ -210,7 +210,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 
 		// Check if chronicles are enabled
 		if (!owc_chronicles_enabled()) {
-			echo '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-client') . '</p>';
+			echo '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-entities') . '</p>';
 			return;
 		}
 
@@ -225,9 +225,9 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 		// Validate slug
 		if (empty($slug)) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('No chronicle selected. Set a fixed slug or use ?slug= parameter.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('No chronicle selected. Set a fixed slug or use ?slug= parameter.', 'owbn-entities') . '</p>';
 			} else {
-				echo '<p class="owc-error">' . esc_html__('No chronicle specified.', 'owbn-client') . '</p>';
+				echo '<p class="owc-error">' . esc_html__('No chronicle specified.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -237,7 +237,7 @@ class OWC_Chronicle_Detail_Widget extends Widget_Base
 
 		// Handle error
 		if (isset($data['error']) || empty($data)) {
-			echo '<p class="owc-error">' . esc_html($data['error'] ?? __('Chronicle not found.', 'owbn-client')) . '</p>';
+			echo '<p class="owc-error">' . esc_html($data['error'] ?? __('Chronicle not found.', 'owbn-entities')) . '</p>';
 			return;
 		}
 

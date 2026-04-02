@@ -33,12 +33,12 @@ function owc_render_territory_box(array $territories, string $context = '', stri
     <div class="owc-territory-box" id="<?php echo esc_attr($container_id); ?>">
         <div class="owc-terr-controls">
             <label>
-                <?php esc_html_e('Sort:', 'owbn-client'); ?>
+                <?php esc_html_e('Sort:', 'owbn-entities'); ?>
                 <select class="owc-terr-sort">
-                    <option value="title-asc"><?php esc_html_e('Title (A–Z)', 'owbn-client'); ?></option>
-                    <option value="title-desc"><?php esc_html_e('Title (Z–A)', 'owbn-client'); ?></option>
-                    <option value="country-asc"><?php esc_html_e('Country (A–Z)', 'owbn-client'); ?></option>
-                    <option value="country-desc"><?php esc_html_e('Country (Z–A)', 'owbn-client'); ?></option>
+                    <option value="title-asc"><?php esc_html_e('Title (A–Z)', 'owbn-entities'); ?></option>
+                    <option value="title-desc"><?php esc_html_e('Title (Z–A)', 'owbn-entities'); ?></option>
+                    <option value="country-asc"><?php esc_html_e('Country (A–Z)', 'owbn-entities'); ?></option>
+                    <option value="country-desc"><?php esc_html_e('Country (Z–A)', 'owbn-entities'); ?></option>
                 </select>
             </label>
         </div>
@@ -145,19 +145,19 @@ function owc_render_territory_box(array $territories, string $context = '', stri
                 let html = `<h3>${escHtml(item.title)}</h3>`;
 
                 if (item.countries && item.countries.length) {
-                    html += `<p><strong><?php esc_html_e('Countries:', 'owbn-client'); ?></strong> ${escHtml(item.country_names)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Countries:', 'owbn-entities'); ?></strong> ${escHtml(item.country_names)}</p>`;
                 }
                 if (item.region) {
-                    html += `<p><strong><?php esc_html_e('Region:', 'owbn-client'); ?></strong> ${escHtml(item.region)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Region:', 'owbn-entities'); ?></strong> ${escHtml(item.region)}</p>`;
                 }
                 if (item.location) {
-                    html += `<p><strong><?php esc_html_e('Location:', 'owbn-client'); ?></strong> ${escHtml(item.location)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Location:', 'owbn-entities'); ?></strong> ${escHtml(item.location)}</p>`;
                 }
                 if (item.detail) {
-                    html += `<p><strong><?php esc_html_e('Detail:', 'owbn-client'); ?></strong> ${escHtml(item.detail)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Detail:', 'owbn-entities'); ?></strong> ${escHtml(item.detail)}</p>`;
                 }
                 if (item.owner) {
-                    html += `<p><strong><?php esc_html_e('Owner:', 'owbn-client'); ?></strong> ${escHtml(item.owner)}</p>`;
+                    html += `<p><strong><?php esc_html_e('Owner:', 'owbn-entities'); ?></strong> ${escHtml(item.owner)}</p>`;
                 }
 
                 // Slugs with links (exclude current)
@@ -165,12 +165,12 @@ function owc_render_territory_box(array $territories, string $context = '', stri
                     const otherSlugs = item.slugs.filter(s => s !== currentSlug);
                     if (otherSlugs.length) {
                         const slugLinks = otherSlugs.map(buildSlugLink).join(', ');
-                        html += `<p><strong><?php esc_html_e('Also claimed by:', 'owbn-client'); ?></strong> ${slugLinks}</p>`;
+                        html += `<p><strong><?php esc_html_e('Also claimed by:', 'owbn-entities'); ?></strong> ${slugLinks}</p>`;
                     }
                 }
 
                 if (item.description) {
-                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-client'); ?></strong><div>${decodeHtml(item.description)}</div></div>`;
+                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-entities'); ?></strong><div>${decodeHtml(item.description)}</div></div>`;
                 }
 
                 modalContent.innerHTML = html;

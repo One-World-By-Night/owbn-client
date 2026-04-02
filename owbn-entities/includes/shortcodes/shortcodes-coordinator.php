@@ -141,33 +141,33 @@ function owc_coord_field_wrapper(string $field, string $content, bool $show_labe
 {
     $labels = [
         // Basic
-        'title'                  => __('Office', 'owbn-client'),
-        'coordinator_title'      => __('Office', 'owbn-client'),
-        'coordinator_slug'       => __('Slug', 'owbn-client'),
-        'slug'                   => __('Slug', 'owbn-client'),
-        'coordinator_type'       => __('Type', 'owbn-client'),
-        'coordinator_appointment' => __('Appointment', 'owbn-client'),
-        'web_url'                => __('Website', 'owbn-client'),
+        'title'                  => __('Office', 'owbn-entities'),
+        'coordinator_title'      => __('Office', 'owbn-entities'),
+        'coordinator_slug'       => __('Slug', 'owbn-entities'),
+        'slug'                   => __('Slug', 'owbn-entities'),
+        'coordinator_type'       => __('Type', 'owbn-entities'),
+        'coordinator_appointment' => __('Appointment', 'owbn-entities'),
+        'web_url'                => __('Website', 'owbn-entities'),
 
         // Content/WYSIWYG
-        'content'                => __('Content', 'owbn-client'),
-        'office_description'     => __('About', 'owbn-client'),
+        'content'                => __('Content', 'owbn-entities'),
+        'office_description'     => __('About', 'owbn-entities'),
 
         // Coordinator Info
-        'coord_info'             => __('Coordinator', 'owbn-client'),
-        'subcoord_list'          => __('Subcoordinators', 'owbn-client'),
+        'coord_info'             => __('Coordinator', 'owbn-entities'),
+        'subcoord_list'          => __('Subcoordinators', 'owbn-entities'),
 
         // Dates
-        'term_start_date'        => __('Term Started', 'owbn-client'),
-        'term_end_date'          => __('Term Ends', 'owbn-client'),
+        'term_start_date'        => __('Term Started', 'owbn-entities'),
+        'term_end_date'          => __('Term Ends', 'owbn-entities'),
 
         // Links & Lists
-        'document_links'         => __('Documents', 'owbn-client'),
-        'email_lists'            => __('Contact Lists', 'owbn-client'),
-        'player_lists'           => __('Player Lists', 'owbn-client'),
+        'document_links'         => __('Documents', 'owbn-entities'),
+        'email_lists'            => __('Contact Lists', 'owbn-entities'),
+        'player_lists'           => __('Player Lists', 'owbn-entities'),
 
         // Related
-        'hosting_chronicle'      => __('Hosting Chronicle', 'owbn-client'),
+        'hosting_chronicle'      => __('Hosting Chronicle', 'owbn-entities'),
     ];
 
     $label_text = $labels[$field] ?? ucwords(str_replace('_', ' ', $field));
@@ -253,9 +253,9 @@ function owc_coord_field_subcoords(array $c, string $f): string
 ?>
     <div class="owc-subcoord-table">
         <div class="owc-subcoord-row owc-subcoord-header">
-            <span class="owc-subcoord-name"><?php esc_html_e('Name', 'owbn-client'); ?></span>
-            <span class="owc-subcoord-role"><?php esc_html_e('Role', 'owbn-client'); ?></span>
-            <span class="owc-subcoord-email"><?php esc_html_e('Contact', 'owbn-client'); ?></span>
+            <span class="owc-subcoord-name"><?php esc_html_e('Name', 'owbn-entities'); ?></span>
+            <span class="owc-subcoord-role"><?php esc_html_e('Role', 'owbn-entities'); ?></span>
+            <span class="owc-subcoord-email"><?php esc_html_e('Contact', 'owbn-entities'); ?></span>
         </div>
         <?php foreach ($list as $sub) : ?>
             <div class="owc-subcoord-row">

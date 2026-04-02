@@ -22,7 +22,7 @@ function owc_render_territories_list(array $territories, string $context = ''): 
     }
 
     if (empty($territories)) {
-        return '<div class="owc-notice">' . esc_html__('No territories found.', 'owbn-client') . '</div>';
+        return '<div class="owc-notice">' . esc_html__('No territories found.', 'owbn-entities') . '</div>';
     }
 
     $container_id = 'owc-territories-' . wp_unique_id();
@@ -33,14 +33,14 @@ function owc_render_territories_list(array $territories, string $context = ''): 
     <div class="owc-territories-list" id="<?php echo esc_attr($container_id); ?>">
         <div class="owc-terr-controls">
             <div class="owc-terr-search">
-                <input type="text" class="owc-terr-search-input" placeholder="<?php esc_attr_e('Search territories...', 'owbn-client'); ?>">
+                <input type="text" class="owc-terr-search-input" placeholder="<?php esc_attr_e('Search territories...', 'owbn-entities'); ?>">
             </div>
             <div class="owc-terr-sort-wrap">
                 <label>
-                    <?php esc_html_e('Sort:', 'owbn-client'); ?>
+                    <?php esc_html_e('Sort:', 'owbn-entities'); ?>
                     <select class="owc-terr-sort">
-                        <option value="title-asc"><?php esc_html_e('Title (A–Z)', 'owbn-client'); ?></option>
-                        <option value="title-desc"><?php esc_html_e('Title (Z–A)', 'owbn-client'); ?></option>
+                        <option value="title-asc"><?php esc_html_e('Title (A–Z)', 'owbn-entities'); ?></option>
+                        <option value="title-desc"><?php esc_html_e('Title (Z–A)', 'owbn-entities'); ?></option>
                     </select>
                 </label>
             </div>
@@ -49,18 +49,18 @@ function owc_render_territories_list(array $territories, string $context = ''): 
         <table class="owc-territories-table">
             <thead>
                 <tr>
-                    <th class="owc-col-title"><?php esc_html_e('Title', 'owbn-client'); ?></th>
-                    <th class="owc-col-detail"><?php esc_html_e('Detail', 'owbn-client'); ?></th>
-                    <th class="owc-col-slugs"><?php esc_html_e('Assigned To', 'owbn-client'); ?></th>
+                    <th class="owc-col-title"><?php esc_html_e('Title', 'owbn-entities'); ?></th>
+                    <th class="owc-col-detail"><?php esc_html_e('Detail', 'owbn-entities'); ?></th>
+                    <th class="owc-col-slugs"><?php esc_html_e('Assigned To', 'owbn-entities'); ?></th>
                 </tr>
             </thead>
             <tbody class="owc-terr-tbody"></tbody>
         </table>
 
         <div class="owc-terr-pagination">
-            <button type="button" class="owc-terr-prev" disabled>&laquo; <?php esc_html_e('Prev', 'owbn-client'); ?></button>
+            <button type="button" class="owc-terr-prev" disabled>&laquo; <?php esc_html_e('Prev', 'owbn-entities'); ?></button>
             <span class="owc-terr-page-info"></span>
-            <button type="button" class="owc-terr-next"><?php esc_html_e('Next', 'owbn-client'); ?> &raquo;</button>
+            <button type="button" class="owc-terr-next"><?php esc_html_e('Next', 'owbn-entities'); ?> &raquo;</button>
         </div>
 
         <div class="owc-territories-count"></div>
@@ -178,13 +178,13 @@ function owc_render_territories_list(array $territories, string $context = ''): 
             `).join('');
 
                 pageInfo.textContent = pages > 0 ?
-                    `<?php esc_html_e('Page', 'owbn-client'); ?> ${page} / ${pages}` :
+                    `<?php esc_html_e('Page', 'owbn-entities'); ?> ${page} / ${pages}` :
                     '';
 
                 const endIdx = Math.min(start + perPage, total);
                 countInfo.textContent = total > 0 ?
-                    `<?php esc_html_e('Showing', 'owbn-client'); ?> ${start + 1}–${endIdx} <?php esc_html_e('of', 'owbn-client'); ?> ${total} <?php esc_html_e('territories', 'owbn-client'); ?>` :
-                    '<?php esc_html_e('No territories found.', 'owbn-client'); ?>';
+                    `<?php esc_html_e('Showing', 'owbn-entities'); ?> ${start + 1}–${endIdx} <?php esc_html_e('of', 'owbn-entities'); ?> ${total} <?php esc_html_e('territories', 'owbn-entities'); ?>` :
+                    '<?php esc_html_e('No territories found.', 'owbn-entities'); ?>';
 
                 prevBtn.disabled = page <= 1;
                 nextBtn.disabled = page >= pages;
@@ -208,56 +208,56 @@ function owc_render_territories_list(array $territories, string $context = ''): 
                 <div class="owc-territory-meta">
                     ${t.country_names ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Country', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Country', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.country_names)}</span>
                         </div>
                     ` : ''}
                     ${t.region ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Region', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Region', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.region)}</span>
                         </div>
                     ` : ''}
                     ${t.location ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Location', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Location', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.location)}</span>
                         </div>
                     ` : ''}
                     ${t.detail ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Detail', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Detail', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.detail)}</span>
                         </div>
                     ` : ''}
                     ${t.owner ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Owner', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Owner', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.owner)}</span>
                         </div>
                     ` : ''}
                     ${t.slugs && t.slugs.length ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Assigned To', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Assigned To', 'owbn-entities'); ?></span>
                             <span class="owc-value">${renderSlugLinks(t.slugs)}</span>
                         </div>
                     ` : ''}
                     ${t.update_date ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Last Updated', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Last Updated', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.update_date)}</span>
                         </div>
                     ` : ''}
                     ${t.update_user ? `
                         <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Updated By', 'owbn-client'); ?></span>
+                            <span class="owc-label"><?php esc_html_e('Updated By', 'owbn-entities'); ?></span>
                             <span class="owc-value">${escapeHtml(t.update_user)}</span>
                         </div>
                     ` : ''}
                 </div>
                 ${t.description ? `
                     <div class="owc-territory-description">
-                        <h3><?php esc_html_e('Description & Approval Parameters', 'owbn-client'); ?></h3>
+                        <h3><?php esc_html_e('Description & Approval Parameters', 'owbn-entities'); ?></h3>
                         <div class="owc-content">${decodeHtml(t.description)}</div>
                     </div>
                 ` : ''}

@@ -21,7 +21,7 @@ function owc_asc_add_users_column( $columns ) {
 	if ( isset( $columns['accessschema_asc_roles'] ) ) {
 		return $columns;
 	}
-	$columns['owc_asc_roles'] = __( 'ASC Roles', 'owbn-client' );
+	$columns['owc_asc_roles'] = __( 'ASC Roles', 'owbn-core' );
 	return $columns;
 }
 add_filter( 'manage_users_columns', 'owc_asc_add_users_column' );
@@ -57,11 +57,11 @@ function owc_asc_render_users_column( $output, $column_name, $user_id ) {
 	$refresh_link = sprintf(
 		' <a href="%s" class="owc-asc-refresh-link" title="%s">&#x21bb;</a>',
 		esc_url( $refresh_url ),
-		esc_attr__( 'Refresh ASC roles from server', 'owbn-client' )
+		esc_attr__( 'Refresh ASC roles from server', 'owbn-core' )
 	);
 
 	if ( empty( $user_roles ) ) {
-		return '<span class="owc-asc-no-roles">' . esc_html__( 'None', 'owbn-client' ) . '</span>' . $refresh_link;
+		return '<span class="owc-asc-no-roles">' . esc_html__( 'None', 'owbn-core' ) . '</span>' . $refresh_link;
 	}
 
 	// Group roles by top-level category (first path segment).
@@ -236,12 +236,12 @@ function owc_asc_users_filter_ui( $which ) {
 
 	?>
 	<label class="screen-reader-text" for="owc_asc_role">
-		<?php esc_html_e( 'Filter by ASC role', 'owbn-client' ); ?>
+		<?php esc_html_e( 'Filter by ASC role', 'owbn-core' ); ?>
 	</label>
 	<select name="owc_asc_role" id="owc_asc_role" style="min-width: 250px;">
-		<option value=""><?php esc_html_e( 'All ASC Roles', 'owbn-client' ); ?></option>
+		<option value=""><?php esc_html_e( 'All ASC Roles', 'owbn-core' ); ?></option>
 		<option value="__none__" <?php selected( $current_role, '__none__' ); ?>>
-			<?php esc_html_e( '— No ASC Roles —', 'owbn-client' ); ?>
+			<?php esc_html_e( '— No ASC Roles —', 'owbn-core' ); ?>
 		</option>
 		<?php foreach ( $all_paths as $path ) : ?>
 			<option value="<?php echo esc_attr( $path ); ?>"
@@ -453,7 +453,7 @@ add_action( 'admin_init', 'owc_asc_handle_user_refresh' );
  * Add "Refresh ASC Roles" to the bulk actions dropdown.
  */
 function owc_asc_bulk_actions( $actions ) {
-	$actions['owc_asc_refresh_all'] = __( 'Refresh ASC Roles', 'owbn-client' );
+	$actions['owc_asc_refresh_all'] = __( 'Refresh ASC Roles', 'owbn-core' );
 	return $actions;
 }
 add_filter( 'bulk_actions-users', 'owc_asc_bulk_actions' );
@@ -496,7 +496,7 @@ function owc_asc_bulk_refresh_notice() {
 	printf(
 		'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
 		esc_html( sprintf(
-			_n( 'Refreshed ASC roles for %d user.', 'Refreshed ASC roles for %d users.', $count, 'owbn-client' ),
+			_n( 'Refreshed ASC roles for %d user.', 'Refreshed ASC roles for %d users.', $count, 'owbn-core' ),
 			$count
 		) )
 	);

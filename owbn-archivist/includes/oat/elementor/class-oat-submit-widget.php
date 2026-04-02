@@ -25,7 +25,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'Archivist Submit Form', 'owbn-client' );
+		return __( 'Archivist Submit Form', 'owbn-archivist' );
 	}
 
 	public function get_icon()
@@ -60,38 +60,38 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		// ── Content Tab ───────────────────────────────────────────────────
 
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Form Settings', 'owbn-client' ),
+			'label' => __( 'Form Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'domain_mode', array(
-			'label'   => __( 'Domain Mode', 'owbn-client' ),
+			'label'   => __( 'Domain Mode', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'options' => array(
-				'selector' => __( 'User Selects Domain', 'owbn-client' ),
-				'fixed'    => __( 'Fixed Domain', 'owbn-client' ),
+				'selector' => __( 'User Selects Domain', 'owbn-archivist' ),
+				'fixed'    => __( 'Fixed Domain', 'owbn-archivist' ),
 			),
 			'default' => 'selector',
 		) );
 
 		$this->add_control( 'fixed_domain', array(
-			'label'       => __( 'Fixed Domain Slug', 'owbn-client' ),
+			'label'       => __( 'Fixed Domain Slug', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'placeholder' => 'character_lifecycle',
 			'condition'   => array( 'domain_mode' => 'fixed' ),
 		) );
 
 		$this->add_control( 'submit_button_text', array(
-			'label'   => __( 'Submit Button Text', 'owbn-client' ),
+			'label'   => __( 'Submit Button Text', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => __( 'Submit Request', 'owbn-client' ),
+			'default' => __( 'Submit Request', 'owbn-archivist' ),
 		) );
 
 		$this->add_control( 'redirect_url', array(
-			'label'       => __( 'Redirect After Submit', 'owbn-client' ),
+			'label'       => __( 'Redirect After Submit', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '/oat-entry/',
-			'description' => __( 'Entry ID appended as ?oat_entry=ID', 'owbn-client' ),
+			'description' => __( 'Entry ID appended as ?oat_entry=ID', 'owbn-archivist' ),
 		) );
 
 		$this->end_controls_section();
@@ -99,12 +99,12 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		// ── Style Tab ─────────────────────────────────────────────────────
 
 		$this->start_controls_section( 'style_form', array(
-			'label' => __( 'Form', 'owbn-client' ),
+			'label' => __( 'Form', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'form_background', array(
-			'label'     => __( 'Form Background', 'owbn-client' ),
+			'label'     => __( 'Form Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-frontend-form' => 'background-color: {{VALUE}};',
@@ -113,18 +113,18 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 		$this->add_group_control( Group_Control_Typography::get_type(), array(
 			'name'     => 'label_typography',
-			'label'    => __( 'Label Typography', 'owbn-client' ),
+			'label'    => __( 'Label Typography', 'owbn-archivist' ),
 			'selector' => '{{WRAPPER}} .oat-field-label',
 		) );
 
 		$this->add_group_control( Group_Control_Border::get_type(), array(
 			'name'     => 'input_border',
-			'label'    => __( 'Input Border', 'owbn-client' ),
+			'label'    => __( 'Input Border', 'owbn-archivist' ),
 			'selector' => '{{WRAPPER}} .oat-frontend-form input, {{WRAPPER}} .oat-frontend-form select, {{WRAPPER}} .oat-frontend-form textarea',
 		) );
 
 		$this->add_control( 'input_focus_color', array(
-			'label'     => __( 'Input Focus Color', 'owbn-client' ),
+			'label'     => __( 'Input Focus Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-frontend-form input:focus,
@@ -134,7 +134,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'button_background', array(
-			'label'     => __( 'Button Background', 'owbn-client' ),
+			'label'     => __( 'Button Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-submit-btn' => 'background-color: {{VALUE}};',
@@ -142,7 +142,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'button_background_hover', array(
-			'label'     => __( 'Button Background (Hover)', 'owbn-client' ),
+			'label'     => __( 'Button Background (Hover)', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-submit-btn:hover' => 'background-color: {{VALUE}};',
@@ -150,7 +150,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'error_color', array(
-			'label'     => __( 'Error Message Color', 'owbn-client' ),
+			'label'     => __( 'Error Message Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-submit-error' => 'color: {{VALUE}};',
@@ -166,12 +166,12 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 	protected function render()
 	{
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to submit a request.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to submit a request.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Submit Form — preview not available in editor.', 'owbn-client' ) . '</div>';
+			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Submit Form — preview not available in editor.', 'owbn-archivist' ) . '</div>';
 			return;
 		}
 
@@ -182,7 +182,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		$settings    = $this->get_settings_for_display();
 		$domain_mode = $settings['domain_mode'] ?: 'selector';
 		$fixed_slug  = sanitize_key( $settings['fixed_domain'] ?: '' );
-		$btn_text    = $settings['submit_button_text'] ?: __( 'Submit Request', 'owbn-client' );
+		$btn_text    = $settings['submit_button_text'] ?: __( 'Submit Request', 'owbn-archivist' );
 		$redirect    = esc_url( $settings['redirect_url'] ?: '/oat-entry/' );
 
 		// Enqueue extras needed for rich field types.
@@ -214,11 +214,11 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				<?php if ( 'selector' === $domain_mode ) : ?>
 					<div class="oat-field-row">
 						<label class="oat-field-label" for="oat-domain-select">
-							<?php esc_html_e( 'Domain', 'owbn-client' ); ?>
+							<?php esc_html_e( 'Domain', 'owbn-archivist' ); ?>
 							<span class="oat-required">*</span>
 						</label>
 						<select id="oat-domain-select" name="oat_domain" required>
-							<option value=""><?php esc_html_e( 'Select a domain…', 'owbn-client' ); ?></option>
+							<option value=""><?php esc_html_e( 'Select a domain…', 'owbn-archivist' ); ?></option>
 							<?php foreach ( $domains as $d ) : ?>
 								<option value="<?php echo esc_attr( $d['slug'] ); ?>">
 									<?php echo esc_html( $d['label'] ); ?>
@@ -232,11 +232,11 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 				<div id="oat-form-picker-row" class="oat-field-row" style="display:none;">
 					<label class="oat-field-label" for="oat-form-select">
-						<?php esc_html_e( 'Form', 'owbn-client' ); ?>
+						<?php esc_html_e( 'Form', 'owbn-archivist' ); ?>
 						<span class="oat-required">*</span>
 					</label>
 					<select id="oat-form-select" name="oat_form_slug">
-						<option value=""><?php esc_html_e( 'Select a form…', 'owbn-client' ); ?></option>
+						<option value=""><?php esc_html_e( 'Select a form…', 'owbn-archivist' ); ?></option>
 					</select>
 				</div>
 
@@ -262,7 +262,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 
 			function loadFields(params) {
 				var $container = $('#oat-domain-fields-container');
-				$container.html('<p style="color:#646970;padding:10px 0;"><?php echo esc_js( __( 'Loading fields…', 'owbn-client' ) ); ?></p>');
+				$container.html('<p style="color:#646970;padding:10px 0;"><?php echo esc_js( __( 'Loading fields…', 'owbn-archivist' ) ); ?></p>');
 				params.action = 'owc_oat_get_domain_fields';
 				params.nonce  = owc_oat_ajax.nonce;
 				$.post(owc_oat_ajax.url, params, function(response) {
@@ -270,10 +270,10 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 						$container.html(response.data.html);
 						$(document).trigger('oat-fields-loaded', [$container]);
 					} else {
-						$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Could not load fields for this domain.', 'owbn-client' ) ); ?></p>');
+						$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Could not load fields for this domain.', 'owbn-archivist' ) ); ?></p>');
 					}
 				}).fail(function() {
-					$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-client' ) ); ?></p>');
+					$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-archivist' ) ); ?></p>');
 				});
 			}
 
@@ -281,7 +281,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				var domain = $(this).val();
 				$('#oat-domain-fields-container').empty();
 				$('#oat-form-picker-row').hide();
-				$('#oat-form-select').html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+				$('#oat-form-select').html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-archivist' ) ); ?></option>');
 
 				if (!domain) { return; }
 
@@ -293,7 +293,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					var forms = (response.success && response.data) ? response.data : [];
 					if (forms.length > 1) {
 						var $sel = $('#oat-form-select');
-						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-archivist' ) ); ?></option>');
 						$.each(forms, function(i, f) {
 							$sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
 						});
@@ -325,7 +325,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				var $btn  = $('#oat-submit-btn');
 				var $feedback = $('#oat-submit-feedback');
 
-				$btn.prop('disabled', true).text('<?php echo esc_js( __( 'Submitting…', 'owbn-client' ) ); ?>');
+				$btn.prop('disabled', true).text('<?php echo esc_js( __( 'Submitting…', 'owbn-archivist' ) ); ?>');
 				$feedback.html('');
 
 				var formData = $form.serializeArray();
@@ -348,12 +348,12 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 							window.location.href = redirect + '?oat_entry=' + response.data.entry_id + '&created=1';
 						}
 					} else {
-						var msg = response.data || '<?php echo esc_js( __( 'Submission failed. Please check the form and try again.', 'owbn-client' ) ); ?>';
+						var msg = response.data || '<?php echo esc_js( __( 'Submission failed. Please check the form and try again.', 'owbn-archivist' ) ); ?>';
 						$feedback.html('<div class="oat-submit-error">' + msg + '</div>');
 						$btn.prop('disabled', false).text(<?php echo wp_json_encode( $btn_text ); ?>);
 					}
 				}).fail(function() {
-					$feedback.html('<div class="oat-submit-error"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-client' ) ); ?></div>');
+					$feedback.html('<div class="oat-submit-error"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-archivist' ) ); ?></div>');
 					$btn.prop('disabled', false).text(<?php echo wp_json_encode( $btn_text ); ?>);
 				});
 			});
@@ -369,7 +369,7 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					var forms = (response.success && response.data) ? response.data : [];
 					if (forms.length > 1) {
 						var $sel = $('#oat-form-select');
-						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-client' ) ); ?></option>');
+						$sel.html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-archivist' ) ); ?></option>');
 						$.each(forms, function(i, f) {
 							$sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
 						});

@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 function owc_render_chronicle_detail(array $chronicle): string
 {
     if (empty($chronicle) || isset($chronicle['error'])) {
-        return '<p class="owc-error">' . esc_html($chronicle['error'] ?? __('Chronicle not found.', 'owbn-client')) . '</p>';
+        return '<p class="owc-error">' . esc_html($chronicle['error'] ?? __('Chronicle not found.', 'owbn-entities')) . '</p>';
     }
 
     // Use list page if configured, otherwise fall back to slug-based URL
@@ -24,7 +24,7 @@ function owc_render_chronicle_detail(array $chronicle): string
     <div id="owc-chronicle-detail" class="owc-chronicle-detail">
 
         <div id="owc-back-link" class="owc-back-link">
-            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('← Back to Chronicles', 'owbn-client'); ?></a>
+            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('← Back to Chronicles', 'owbn-entities'); ?></a>
         </div>
 
         <?php echo owc_render_chronicle_header($chronicle); ?>
@@ -65,10 +65,10 @@ function owc_render_chronicle_header(array $chronicle): string
 
     $badges = [];
     if (!empty($chronicle['chronicle_probationary']) && $chronicle['chronicle_probationary'] !== '0') {
-        $badges[] = '<span class="owc-badge owc-badge-probationary">' . esc_html__('Probationary', 'owbn-client') . '</span>';
+        $badges[] = '<span class="owc-badge owc-badge-probationary">' . esc_html__('Probationary', 'owbn-entities') . '</span>';
     }
     if (!empty($chronicle['chronicle_satellite']) && $chronicle['chronicle_satellite'] !== '0') {
-        $badges[] = '<span class="owc-badge owc-badge-satellite">' . esc_html__('Satellite', 'owbn-client') . '</span>';
+        $badges[] = '<span class="owc-badge owc-badge-satellite">' . esc_html__('Satellite', 'owbn-entities') . '</span>';
     }
 
     ob_start();
@@ -96,21 +96,21 @@ function owc_render_in_brief(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-in-brief" class="owc-info-box owc-in-brief">
-        <h3><?php esc_html_e('In Brief', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('In Brief', 'owbn-entities'); ?></h3>
         <?php if ($location) : ?>
             <div class="owc-brief-item"><?php echo esc_html($location); ?></div>
         <?php endif; ?>
         <?php if ($genres_display) : ?>
-            <div class="owc-brief-item"><strong><?php esc_html_e('Genre(s):', 'owbn-client'); ?></strong> <?php echo esc_html($genres_display); ?></div>
+            <div class="owc-brief-item"><strong><?php esc_html_e('Genre(s):', 'owbn-entities'); ?></strong> <?php echo esc_html($genres_display); ?></div>
         <?php endif; ?>
         <?php if (!empty($chronicle['game_type'])) : ?>
-            <div class="owc-brief-item"><strong><?php esc_html_e('Game Type:', 'owbn-client'); ?></strong> <?php echo esc_html($chronicle['game_type']); ?></div>
+            <div class="owc-brief-item"><strong><?php esc_html_e('Game Type:', 'owbn-entities'); ?></strong> <?php echo esc_html($chronicle['game_type']); ?></div>
         <?php endif; ?>
         <?php if (!empty($chronicle['active_player_count'])) : ?>
-            <div class="owc-brief-item"><strong><?php esc_html_e('Number of Players:', 'owbn-client'); ?></strong> <?php echo esc_html($chronicle['active_player_count']); ?></div>
+            <div class="owc-brief-item"><strong><?php esc_html_e('Number of Players:', 'owbn-entities'); ?></strong> <?php echo esc_html($chronicle['active_player_count']); ?></div>
         <?php endif; ?>
         <?php if (!empty($chronicle['chronicle_region'])) : ?>
-            <div class="owc-brief-item"><strong><?php esc_html_e('OWBN Region:', 'owbn-client'); ?></strong> <?php echo esc_html($chronicle['chronicle_region']); ?></div>
+            <div class="owc-brief-item"><strong><?php esc_html_e('OWBN Region:', 'owbn-entities'); ?></strong> <?php echo esc_html($chronicle['chronicle_region']); ?></div>
         <?php endif; ?>
     </div>
 <?php
@@ -130,7 +130,7 @@ function owc_render_chronicle_about(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-about" class="owc-chronicle-about">
-        <h2><?php esc_html_e('About', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('About', 'owbn-entities'); ?></h2>
         <div class="owc-content"><?php echo wp_kses_post($content); ?></div>
     </div>
 <?php
@@ -154,10 +154,10 @@ function owc_render_chronicle_narrative(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-narrative" class="owc-chronicle-narrative">
-        <?php echo owc_render_narrative_section(__('Premise', 'owbn-client'), $premise); ?>
-        <?php echo owc_render_narrative_section(__('Theme', 'owbn-client'), $theme); ?>
-        <?php echo owc_render_narrative_section(__('Mood', 'owbn-client'), $mood); ?>
-        <?php echo owc_render_narrative_section(__('Information for Travelers', 'owbn-client'), $traveler); ?>
+        <?php echo owc_render_narrative_section(__('Premise', 'owbn-entities'), $premise); ?>
+        <?php echo owc_render_narrative_section(__('Theme', 'owbn-entities'), $theme); ?>
+        <?php echo owc_render_narrative_section(__('Mood', 'owbn-entities'), $mood); ?>
+        <?php echo owc_render_narrative_section(__('Information for Travelers', 'owbn-entities'), $traveler); ?>
     </div>
 <?php
     return ob_get_clean();
@@ -202,13 +202,13 @@ function owc_render_chronicle_staff(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-staff" class="owc-chronicle-staff">
-        <h2><?php esc_html_e('Staff', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Staff', 'owbn-entities'); ?></h2>
         <div class="owc-staff-list">
-            <?php echo owc_render_staff_line(__('Head Storyteller', 'owbn-client'), $hst); ?>
-            <?php echo owc_render_staff_line(__('Council Member', 'owbn-client'), $cm); ?>
-            <?php echo owc_render_staff_line(__('Admin Contact', 'owbn-client'), $admin); ?>
+            <?php echo owc_render_staff_line(__('Head Storyteller', 'owbn-entities'), $hst); ?>
+            <?php echo owc_render_staff_line(__('Council Member', 'owbn-entities'), $cm); ?>
+            <?php echo owc_render_staff_line(__('Admin Contact', 'owbn-entities'), $admin); ?>
             <?php foreach ($ast_list as $ast) : ?>
-                <?php echo owc_render_staff_line($ast['role'] ?? __('AST', 'owbn-client'), $ast); ?>
+                <?php echo owc_render_staff_line($ast['role'] ?? __('AST', 'owbn-entities'), $ast); ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -253,7 +253,7 @@ function owc_render_game_sessions_box(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-game-sessions-box" class="owc-info-box owc-game-sessions-box">
-        <h3><?php esc_html_e('Game Sessions', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Game Sessions', 'owbn-entities'); ?></h3>
         <?php foreach ($sessions as $session) : ?>
             <div class="owc-session-item">
                 <?php
@@ -268,10 +268,10 @@ function owc_render_game_sessions_box(array $chronicle): string
                     <div class="owc-session-type"><?php echo esc_html($session['session_type']); ?></div>
                 <?php endif; ?>
                 <?php if (!empty($session['checkin_time'])) : ?>
-                    <div class="owc-session-time"><?php esc_html_e('Check-in:', 'owbn-client'); ?> <?php echo esc_html($session['checkin_time']); ?></div>
+                    <div class="owc-session-time"><?php esc_html_e('Check-in:', 'owbn-entities'); ?> <?php echo esc_html($session['checkin_time']); ?></div>
                 <?php endif; ?>
                 <?php if (!empty($session['start_time'])) : ?>
-                    <div class="owc-session-time"><?php esc_html_e('Start:', 'owbn-client'); ?> <?php echo esc_html($session['start_time']); ?></div>
+                    <div class="owc-session-time"><?php esc_html_e('Start:', 'owbn-entities'); ?> <?php echo esc_html($session['start_time']); ?></div>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
@@ -296,7 +296,7 @@ function owc_render_chronicle_links(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-links" class="owc-chronicle-links">
-        <h2><?php esc_html_e('Links & Resources', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Links & Resources', 'owbn-entities'); ?></h2>
         <?php if ($web_url) : ?>
             <div class="owc-link-item"><a href="<?php echo esc_url($web_url); ?>" target="_blank" rel="noopener"><?php echo esc_html($web_url); ?></a></div>
         <?php endif; ?>
@@ -336,7 +336,7 @@ function owc_render_chronicle_documents(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-documents" class="owc-chronicle-documents">
-        <h2><?php esc_html_e('Documents', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Documents', 'owbn-entities'); ?></h2>
         <?php echo owc_render_document_links($docs); ?>
     </div>
 <?php
@@ -358,7 +358,7 @@ function owc_render_chronicle_player_lists(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-player-lists" class="owc-chronicle-player-lists">
-        <h2><?php esc_html_e('Player Lists', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Player Lists', 'owbn-entities'); ?></h2>
         <?php echo owc_render_player_lists($lists); ?>
     </div>
 <?php
@@ -388,7 +388,7 @@ function owc_render_satellite_parent(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-satellite-parent" class="owc-satellite-parent">
-        <strong><?php esc_html_e('Satellite Parent:', 'owbn-client'); ?></strong>
+        <strong><?php esc_html_e('Satellite Parent:', 'owbn-entities'); ?></strong>
         <a href="<?php echo esc_url($parent_url); ?>"><?php echo esc_html($parent_title); ?></a>
     </div>
 <?php
@@ -414,7 +414,7 @@ function owc_render_chronicle_territories(array $chronicle): string
     ob_start();
 ?>
     <div id="owc-chronicle-territories" class="owc-chronicle-territories">
-        <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Territories', 'owbn-entities'); ?></h2>
         <?php echo owc_render_territory_box($territories, 'chronicle', $chronicle['slug'] ?? ''); ?>
     </div>
 <?php

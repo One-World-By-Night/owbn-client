@@ -23,7 +23,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 
 	public function get_title(): string
 	{
-		return __('Coordinator Field', 'owbn-client');
+		return __('Coordinator Field', 'owbn-entities');
 	}
 
 	public function get_icon(): string
@@ -52,7 +52,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __('Content', 'owbn-client'),
+				'label' => __('Content', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -60,11 +60,11 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_control(
 			'slug_source',
 			[
-				'label'   => __('Coordinator Source', 'owbn-client'),
+				'label'   => __('Coordinator Source', 'owbn-entities'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'url'   => __('From URL Parameter (?slug=)', 'owbn-client'),
-					'fixed' => __('Fixed Coordinator', 'owbn-client'),
+					'url'   => __('From URL Parameter (?slug=)', 'owbn-entities'),
+					'fixed' => __('Fixed Coordinator', 'owbn-entities'),
 				],
 				'default' => 'url',
 			]
@@ -73,7 +73,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_control(
 			'fixed_slug',
 			[
-				'label'       => __('Coordinator Slug', 'owbn-client'),
+				'label'       => __('Coordinator Slug', 'owbn-entities'),
 				'type'        => Controls_Manager::TEXT,
 				'placeholder' => 'coordinator-slug',
 				'condition'   => [
@@ -85,21 +85,21 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_control(
 			'field',
 			[
-				'label'       => __('Field to Display', 'owbn-client'),
+				'label'       => __('Field to Display', 'owbn-entities'),
 				'type'        => Controls_Manager::SELECT,
 				'options'     => $this->get_field_options(),
 				'default'     => 'title',
-				'description' => __('Select which coordinator field to display', 'owbn-client'),
+				'description' => __('Select which coordinator field to display', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'show_label',
 			[
-				'label'        => __('Show Label', 'owbn-client'),
+				'label'        => __('Show Label', 'owbn-entities'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => __('Show', 'owbn-client'),
-				'label_off'    => __('Hide', 'owbn-client'),
+				'label_on'     => __('Show', 'owbn-entities'),
+				'label_off'    => __('Hide', 'owbn-entities'),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -111,7 +111,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_section',
 			[
-				'label' => __('Style', 'owbn-client'),
+				'label' => __('Style', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -119,7 +119,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_control(
 			'label_color',
 			[
-				'label'     => __('Label Color', 'owbn-client'),
+				'label'     => __('Label Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-field-label' => 'color: {{VALUE}};',
@@ -144,7 +144,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_control(
 			'content_color',
 			[
-				'label'     => __('Content Color', 'owbn-client'),
+				'label'     => __('Content Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-field-content' => 'color: {{VALUE}};',
@@ -164,7 +164,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'field_spacing',
 			[
-				'label'      => __('Spacing', 'owbn-client'),
+				'label'      => __('Spacing', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -182,7 +182,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 
 		// Check if coordinators are enabled
 		if (!owc_coordinators_enabled()) {
-			echo '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-client') . '</p>';
+			echo '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-entities') . '</p>';
 			return;
 		}
 
@@ -197,7 +197,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 		// Validate slug
 		if (empty($slug)) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('No coordinator selected. Set a fixed slug or use ?slug= parameter.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('No coordinator selected. Set a fixed slug or use ?slug= parameter.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -211,7 +211,7 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 
 		if (!$coordinator || isset($coordinator['error'])) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('Coordinator not found.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('Coordinator not found.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -227,31 +227,31 @@ class OWC_Coordinator_Field_Widget extends Widget_Base
 	{
 		return [
 			// Basic
-			'title'                  => __('Office Title', 'owbn-client'),
-			'coordinator_slug'       => __('Slug', 'owbn-client'),
-			'coordinator_type'       => __('Type', 'owbn-client'),
-			'coordinator_appointment' => __('Appointment', 'owbn-client'),
-			'web_url'                => __('Website URL', 'owbn-client'),
+			'title'                  => __('Office Title', 'owbn-entities'),
+			'coordinator_slug'       => __('Slug', 'owbn-entities'),
+			'coordinator_type'       => __('Type', 'owbn-entities'),
+			'coordinator_appointment' => __('Appointment', 'owbn-entities'),
+			'web_url'                => __('Website URL', 'owbn-entities'),
 
 			// Content/WYSIWYG
-			'content'                => __('Content', 'owbn-client'),
-			'office_description'     => __('Office Description', 'owbn-client'),
+			'content'                => __('Content', 'owbn-entities'),
+			'office_description'     => __('Office Description', 'owbn-entities'),
 
 			// Coordinator Info
-			'coord_info'             => __('Coordinator Info', 'owbn-client'),
-			'subcoord_list'          => __('Subcoordinators', 'owbn-client'),
+			'coord_info'             => __('Coordinator Info', 'owbn-entities'),
+			'subcoord_list'          => __('Subcoordinators', 'owbn-entities'),
 
 			// Dates
-			'term_start_date'        => __('Term Start Date', 'owbn-client'),
-			'term_end_date'          => __('Term End Date', 'owbn-client'),
+			'term_start_date'        => __('Term Start Date', 'owbn-entities'),
+			'term_end_date'          => __('Term End Date', 'owbn-entities'),
 
 			// Links & Lists
-			'document_links'         => __('Documents', 'owbn-client'),
-			'email_lists'            => __('Contact Lists', 'owbn-client'),
-			'player_lists'           => __('Player Lists', 'owbn-client'),
+			'document_links'         => __('Documents', 'owbn-entities'),
+			'email_lists'            => __('Contact Lists', 'owbn-entities'),
+			'player_lists'           => __('Player Lists', 'owbn-entities'),
 
 			// Related
-			'hosting_chronicle'      => __('Hosting Chronicle', 'owbn-client'),
+			'hosting_chronicle'      => __('Hosting Chronicle', 'owbn-entities'),
 		];
 	}
 }

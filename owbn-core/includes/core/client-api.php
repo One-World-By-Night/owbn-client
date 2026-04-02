@@ -145,13 +145,13 @@ function owc_remote_request(string $url, string $api_key, array $body = [])
     if ($code !== 200) {
         return new WP_Error(
             'owc_api_error',
-            $data['message'] ?? __('API request failed', 'owbn-client'),
+            $data['message'] ?? __('API request failed', 'owbn-core'),
             ['status' => $code]
         );
     }
 
     if (!is_array($data)) {
-        return new WP_Error('owc_api_error', __('Invalid JSON response from API', 'owbn-client'));
+        return new WP_Error('owc_api_error', __('Invalid JSON response from API', 'owbn-core'));
     }
 
     return $data;
@@ -162,7 +162,7 @@ if ( ! function_exists( 'owc_get_local_chronicles' ) ) :
 function owc_get_local_chronicles()
 {
     if (!post_type_exists('owbn_chronicle')) {
-        return new WP_Error('no_cpt', __('Chronicle post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Chronicle post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([
@@ -199,7 +199,7 @@ if ( ! function_exists( 'owc_get_local_coordinators' ) ) :
 function owc_get_local_coordinators()
 {
     if (!post_type_exists('owbn_coordinator')) {
-        return new WP_Error('no_cpt', __('Coordinator post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Coordinator post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([
@@ -231,7 +231,7 @@ if ( ! function_exists( 'owc_get_local_territories' ) ) :
 function owc_get_local_territories()
 {
     if (!post_type_exists('owbn_territory')) {
-        return new WP_Error('no_cpt', __('Territory post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Territory post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([
@@ -271,7 +271,7 @@ if ( ! function_exists( 'owc_get_local_chronicle_detail' ) ) :
 function owc_get_local_chronicle_detail(string $slug)
 {
     if (!post_type_exists('owbn_chronicle')) {
-        return new WP_Error('no_cpt', __('Chronicle post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Chronicle post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([
@@ -287,7 +287,7 @@ function owc_get_local_chronicle_detail(string $slug)
     ]);
 
     if (empty($posts)) {
-        return new WP_Error('not_found', __('Chronicle not found.', 'owbn-client'));
+        return new WP_Error('not_found', __('Chronicle not found.', 'owbn-core'));
     }
 
     $post = $posts[0];
@@ -344,7 +344,7 @@ if ( ! function_exists( 'owc_get_local_coordinator_detail' ) ) :
 function owc_get_local_coordinator_detail(string $slug)
 {
     if (!post_type_exists('owbn_coordinator')) {
-        return new WP_Error('no_cpt', __('Coordinator post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Coordinator post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([
@@ -360,7 +360,7 @@ function owc_get_local_coordinator_detail(string $slug)
     ]);
 
     if (empty($posts)) {
-        return new WP_Error('not_found', __('Coordinator not found.', 'owbn-client'));
+        return new WP_Error('not_found', __('Coordinator not found.', 'owbn-core'));
     }
 
     $post = $posts[0];
@@ -396,7 +396,7 @@ function owc_get_local_territory_detail(int $id)
 {
     $post = get_post($id);
     if (!$post || $post->post_type !== 'owbn_territory') {
-        return new WP_Error('not_found', __('Territory not found.', 'owbn-client'));
+        return new WP_Error('not_found', __('Territory not found.', 'owbn-core'));
     }
 
     $countries = get_post_meta($id, '_owbn_tm_countries', true);
@@ -423,7 +423,7 @@ if ( ! function_exists( 'owc_get_local_territories_by_slug' ) ) :
 function owc_get_local_territories_by_slug(string $slug)
 {
     if (!post_type_exists('owbn_territory')) {
-        return new WP_Error('no_cpt', __('Territory post type not available.', 'owbn-client'));
+        return new WP_Error('no_cpt', __('Territory post type not available.', 'owbn-core'));
     }
 
     $posts = get_posts([

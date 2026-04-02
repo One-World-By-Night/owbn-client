@@ -33,17 +33,17 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
 $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
 ?>
 
-<h2><?php esc_html_e( 'General Settings', 'owbn-client' ); ?></h2>
+<h2><?php esc_html_e( 'General Settings', 'owbn-core' ); ?></h2>
 
 <form method="post" action="options.php">
     <?php settings_fields( $group ); ?>
 
     <!-- ── API Gateway ────────────────────────────────────────────────── -->
-    <h3><?php esc_html_e( 'API Gateway', 'owbn-client' ); ?></h3>
-    <p class="description"><?php esc_html_e( 'Expose local data via the unified owbn/v1/ REST namespace. Enable this on sites that serve data to other OWBN sites.', 'owbn-client' ); ?></p>
+    <h3><?php esc_html_e( 'API Gateway', 'owbn-core' ); ?></h3>
+    <p class="description"><?php esc_html_e( 'Expose local data via the unified owbn/v1/ REST namespace. Enable this on sites that serve data to other OWBN sites.', 'owbn-core' ); ?></p>
     <table class="form-table" role="presentation">
         <tr>
-            <th scope="row"><?php esc_html_e( 'Enable Gateway', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Enable Gateway', 'owbn-core' ); ?></th>
             <td>
                 <label>
                     <input type="hidden" name="owbn_gateway_enabled" value="0" />
@@ -52,36 +52,36 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
                         id="owbn_gateway_enabled"
                         value="1"
                         <?php checked( $gw_enabled ); ?> />
-                    <?php esc_html_e( 'Enable the API Gateway', 'owbn-client' ); ?>
+                    <?php esc_html_e( 'Enable the API Gateway', 'owbn-core' ); ?>
                 </label>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Gateway Base URL', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Gateway Base URL', 'owbn-core' ); ?></th>
             <td>
                 <code><?php echo esc_html( $gw_base_url ); ?></code>
-                <p class="description"><?php esc_html_e( 'Read-only. This is the base URL consumers will use.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Read-only. This is the base URL consumers will use.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-core' ); ?></th>
             <td>
                 <input type="text"
                     name="owbn_gateway_api_key"
                     id="owbn_gateway_api_key"
                     value="<?php echo $gw_api_key ? esc_attr( str_repeat( '●', 12 ) . substr( $gw_api_key, -4 ) ) : ''; ?>"
-                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-core' ); ?>"
                     class="regular-text code"
                     onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
                 <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
-                    <?php esc_html_e( 'Generate', 'owbn-client' ); ?>
+                    <?php esc_html_e( 'Generate', 'owbn-core' ); ?>
                 </button>
-                <p class="description"><?php esc_html_e( 'One key for all endpoints. Share this with consumer sites.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'One key for all endpoints. Share this with consumer sites.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Auth Methods', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Auth Methods', 'owbn-core' ); ?></th>
             <td>
                 <fieldset>
                     <label>
@@ -89,31 +89,31 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
                             name="owbn_gateway_auth_methods[]"
                             value="api_key"
                             <?php checked( in_array( 'api_key', (array) $gw_auth, true ) ); ?> />
-                        <?php esc_html_e( 'API Key (x-api-key header)', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'API Key (x-api-key header)', 'owbn-core' ); ?>
                     </label><br>
                     <label>
                         <input type="checkbox"
                             name="owbn_gateway_auth_methods[]"
                             value="app_password"
                             <?php checked( in_array( 'app_password', (array) $gw_auth, true ) ); ?> />
-                        <?php esc_html_e( 'Application Password (Authorization: Basic)', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'Application Password (Authorization: Basic)', 'owbn-core' ); ?>
                     </label>
                 </fieldset>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Domain Whitelist', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Domain Whitelist', 'owbn-core' ); ?></th>
             <td>
                 <textarea
                     name="owbn_gateway_domain_whitelist"
                     rows="4"
                     class="regular-text"
                     placeholder="council.owbn.net"><?php echo esc_textarea( implode( "\n", (array) $gw_whitelist ) ); ?></textarea>
-                <p class="description"><?php esc_html_e( 'One domain per line. Leave empty to allow all origins.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'One domain per line. Leave empty to allow all origins.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Request Logging', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Request Logging', 'owbn-core' ); ?></th>
             <td>
                 <label>
                     <input type="hidden" name="owbn_gateway_logging_enabled" value="0" />
@@ -121,36 +121,36 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
                         name="owbn_gateway_logging_enabled"
                         value="1"
                         <?php checked( $gw_logging ); ?> />
-                    <?php esc_html_e( 'Log gateway requests to PHP error log', 'owbn-client' ); ?>
+                    <?php esc_html_e( 'Log gateway requests to PHP error log', 'owbn-core' ); ?>
                 </label>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'SSO Server URL', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'SSO Server URL', 'owbn-core' ); ?></th>
             <td>
                 <input type="url"
                     name="owbn_gateway_sso_url"
                     value="<?php echo esc_url( $gw_sso_url ); ?>"
                     class="regular-text"
                     placeholder="https://sso.owbn.net" />
-                <p class="description"><?php esc_html_e( 'SSO server to verify users for JIT provisioning. Only needed on sites that receive OAT API requests.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'SSO server to verify users for JIT provisioning. Only needed on sites that receive OAT API requests.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'SSO API Key', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'SSO API Key', 'owbn-core' ); ?></th>
             <td>
                 <input type="text"
                     name="owbn_gateway_sso_api_key"
                     value="<?php echo $gw_sso_key ? esc_attr( str_repeat( '●', 12 ) . substr( $gw_sso_key, -4 ) ) : ''; ?>"
-                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-core' ); ?>"
                     class="regular-text code"
                     onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
-                <p class="description"><?php esc_html_e( 'API key for the SSO server gateway.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'API key for the SSO server gateway.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Data Sources', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Data Sources', 'owbn-core' ); ?></th>
             <td>
                 <?php
                 $gw_sources = apply_filters( 'owbn_gateway_data_sources', array() );
@@ -165,7 +165,7 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
                     <?php endforeach; ?>
                 </ul>
                 <?php else : ?>
-                <p style="color:#999;"><?php esc_html_e( 'No data source plugins detected. Install Chronicle Manager and/or Territory Manager on this site.', 'owbn-client' ); ?></p>
+                <p style="color:#999;"><?php esc_html_e( 'No data source plugins detected. Install Chronicle Manager and/or Territory Manager on this site.', 'owbn-core' ); ?></p>
                 <?php endif; ?>
             </td>
         </tr>
@@ -174,31 +174,31 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
     <hr />
 
     <!-- ── Default Remote Gateway ─────────────────────────────────────── -->
-    <h3><?php esc_html_e( 'Default Remote Gateway', 'owbn-client' ); ?></h3>
-    <p class="description"><?php esc_html_e( 'Default remote gateway for data types set to "Remote" mode. Individual data types can override this with their own remote URL and key.', 'owbn-client' ); ?></p>
+    <h3><?php esc_html_e( 'Default Remote Gateway', 'owbn-core' ); ?></h3>
+    <p class="description"><?php esc_html_e( 'Default remote gateway for data types set to "Remote" mode. Individual data types can override this with their own remote URL and key.', 'owbn-core' ); ?></p>
     <table class="form-table" role="presentation">
         <tr>
-            <th scope="row"><?php esc_html_e( 'Remote URL', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Remote URL', 'owbn-core' ); ?></th>
             <td>
                 <input type="url"
                     name="<?php echo esc_attr( owc_option_name( 'remote_url' ) ); ?>"
                     value="<?php echo esc_url( $remote_url ); ?>"
                     class="regular-text"
                     placeholder="https://chronicles.owbn.net" />
-                <p class="description"><?php esc_html_e( 'Base URL of the default producer site. Used for any remote data type that does not specify its own URL.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Base URL of the default producer site. Used for any remote data type that does not specify its own URL.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr>
-            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-core' ); ?></th>
             <td>
                 <input type="text"
                     name="<?php echo esc_attr( owc_option_name( 'remote_api_key' ) ); ?>"
                     value="<?php echo $remote_api_key ? esc_attr( str_repeat( '●', 12 ) . substr( $remote_api_key, -4 ) ) : ''; ?>"
-                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-core' ); ?>"
                     class="regular-text code"
                     onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
-                <p class="description"><?php esc_html_e( 'API key for the default remote gateway.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'API key for the default remote gateway.', 'owbn-core' ); ?></p>
             </td>
         </tr>
     </table>
@@ -206,8 +206,8 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
     <hr />
 
     <!-- ── Data Sources Enable/Disable ────────────────────────────────── -->
-    <h3><?php esc_html_e( 'Data Sources', 'owbn-client' ); ?></h3>
-    <p class="description"><?php esc_html_e( 'Enable or disable data sources. Configure each source on its own tab.', 'owbn-client' ); ?></p>
+    <h3><?php esc_html_e( 'Data Sources', 'owbn-core' ); ?></h3>
+    <p class="description"><?php esc_html_e( 'Enable or disable data sources. Configure each source on its own tab.', 'owbn-core' ); ?></p>
     <?php
     $data_sources = array(
         array( 'label' => 'Chronicles',   'enable_key' => 'enable_chronicles',   'mode_key' => 'chronicles_mode' ),
@@ -223,9 +223,9 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
     <table class="widefat owc-data-sources-table">
         <thead>
             <tr>
-                <th><?php esc_html_e( 'Feature', 'owbn-client' ); ?></th>
-                <th><?php esc_html_e( 'Enabled', 'owbn-client' ); ?></th>
-                <th><?php esc_html_e( 'Mode', 'owbn-client' ); ?></th>
+                <th><?php esc_html_e( 'Feature', 'owbn-core' ); ?></th>
+                <th><?php esc_html_e( 'Enabled', 'owbn-core' ); ?></th>
+                <th><?php esc_html_e( 'Mode', 'owbn-core' ); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -259,17 +259,17 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
     <hr />
 
     <!-- ── Cache Settings ─────────────────────────────────────────────── -->
-    <h3><?php esc_html_e( 'Cache Settings', 'owbn-client' ); ?></h3>
+    <h3><?php esc_html_e( 'Cache Settings', 'owbn-core' ); ?></h3>
     <table class="form-table" role="presentation">
         <tr>
-            <th scope="row"><?php esc_html_e( 'Cache TTL (seconds)', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Cache TTL (seconds)', 'owbn-core' ); ?></th>
             <td>
                 <input type="number"
                     name="<?php echo esc_attr( owc_option_name( 'cache_ttl' ) ); ?>"
                     value="<?php echo esc_attr( $cache_ttl ); ?>"
                     class="small-text"
                     min="0" />
-                <p class="description"><?php esc_html_e( '0 = no caching. Default: 3600 (1 hour)', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( '0 = no caching. Default: 3600 (1 hour)', 'owbn-core' ); ?></p>
             </td>
         </tr>
     </table>
@@ -294,7 +294,7 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
 <hr />
 
 <!-- ── Status ─────────────────────────────────────────────────────────── -->
-<h3><?php esc_html_e( 'Status', 'owbn-client' ); ?></h3>
+<h3><?php esc_html_e( 'Status', 'owbn-core' ); ?></h3>
 
 <?php
 // Plugin presence.
@@ -351,25 +351,25 @@ $elementor_active = did_action( 'elementor/loaded' );
 <table class="widefat owc-tab-status">
     <thead>
         <tr>
-            <th><?php esc_html_e( 'Feature', 'owbn-client' ); ?></th>
-            <th><?php esc_html_e( 'Status', 'owbn-client' ); ?></th>
-            <th><?php esc_html_e( 'Source', 'owbn-client' ); ?></th>
+            <th><?php esc_html_e( 'Feature', 'owbn-core' ); ?></th>
+            <th><?php esc_html_e( 'Status', 'owbn-core' ); ?></th>
+            <th><?php esc_html_e( 'Source', 'owbn-core' ); ?></th>
         </tr>
     </thead>
     <tbody>
     <tr>
-        <td><strong><?php esc_html_e( 'Chronicles', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Chronicles', 'owbn-core' ); ?></strong></td>
         <td>
             <?php
             if ( ! $chron_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } elseif ( $chron_mode === 'local' && $manager_active ) {
                 $count = is_array( $chronicles_cache ) ? count( $chronicles_cache ) : 0;
-                echo absint( $count ) . ' ' . esc_html__( 'records cached', 'owbn-client' );
+                echo absint( $count ) . ' ' . esc_html__( 'records cached', 'owbn-core' );
             } elseif ( is_array( $chronicles_cache ) ) {
-                echo absint( count( $chronicles_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-client' );
+                echo absint( count( $chronicles_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-core' );
             } else {
-                esc_html_e( 'Enabled — no cached data', 'owbn-client' );
+                esc_html_e( 'Enabled — no cached data', 'owbn-core' );
             }
             ?>
         </td>
@@ -383,15 +383,15 @@ $elementor_active = did_action( 'elementor/loaded' );
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Coordinators', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Coordinators', 'owbn-core' ); ?></strong></td>
         <td>
             <?php
             if ( ! $coord_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } elseif ( is_array( $coordinators_cache ) ) {
-                echo absint( count( $coordinators_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-client' );
+                echo absint( count( $coordinators_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-core' );
             } else {
-                esc_html_e( 'Enabled — no cached data', 'owbn-client' );
+                esc_html_e( 'Enabled — no cached data', 'owbn-core' );
             }
             ?>
         </td>
@@ -405,17 +405,17 @@ $elementor_active = did_action( 'elementor/loaded' );
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Territories', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Territories', 'owbn-core' ); ?></strong></td>
         <td>
             <?php
             if ( ! $terr_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } elseif ( $terr_mode === 'local' && $tm_active ) {
-                echo absint( $territory_cpt_count ) . ' ' . esc_html__( 'published', 'owbn-client' );
+                echo absint( $territory_cpt_count ) . ' ' . esc_html__( 'published', 'owbn-core' );
             } elseif ( is_array( $territories_cache ) ) {
-                echo absint( count( $territories_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-client' );
+                echo absint( count( $territories_cache ) ) . ' ' . esc_html__( 'records cached', 'owbn-core' );
             } else {
-                esc_html_e( 'Enabled — no cached data', 'owbn-client' );
+                esc_html_e( 'Enabled — no cached data', 'owbn-core' );
             }
             ?>
         </td>
@@ -429,13 +429,13 @@ $elementor_active = did_action( 'elementor/loaded' );
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Vote History', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Vote History', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( ! $vh_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } else {
-                echo esc_html( ucfirst( $vh_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-client' );
+                echo esc_html( ucfirst( $vh_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-core' );
                 if ( $vh_mode === 'remote' && $vh_effective_url ) {
                     echo ' — ' . esc_html( $vh_effective_url );
                 }
@@ -444,25 +444,25 @@ $elementor_active = did_action( 'elementor/loaded' );
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Player ID', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Player ID', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( ! $pid_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } else {
-                echo esc_html( ucfirst( $pid_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-client' );
+                echo esc_html( ucfirst( $pid_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-core' );
             }
             ?>
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'OAT', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'OAT', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( ! $oat_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } else {
-                echo esc_html( ucfirst( $oat_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-client' );
+                echo esc_html( ucfirst( $oat_mode ) ) . ' ' . esc_html__( 'mode', 'owbn-core' );
                 if ( $oat_mode === 'remote' && $oat_effective_url ) {
                     echo ' — ' . esc_html( $oat_effective_url );
                 }
@@ -472,28 +472,28 @@ $elementor_active = did_action( 'elementor/loaded' );
     </tr>
     <?php if ( $oat_enabled && $oat_mode === 'remote' ) : ?>
     <tr>
-        <td><strong><?php esc_html_e( 'OAT Rules Cache', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'OAT Rules Cache', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( is_array( $oat_rules_cache ) ) {
-                printf( esc_html__( '%d rules cached', 'owbn-client' ), count( $oat_rules_cache ) );
+                printf( esc_html__( '%d rules cached', 'owbn-core' ), count( $oat_rules_cache ) );
             } else {
-                esc_html_e( 'Not cached — will fetch on first use', 'owbn-client' );
+                esc_html_e( 'Not cached — will fetch on first use', 'owbn-core' );
             }
             ?>
         </td>
     </tr>
     <?php endif; ?>
     <tr>
-        <td><strong><?php esc_html_e( 'accessSchema', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'accessSchema', 'owbn-core' ); ?></strong></td>
         <td>
             <?php
             if ( ! $asc_enabled ) {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             } elseif ( is_array( $asc_roles_cache ) && isset( $asc_roles_cache['total'] ) ) {
-                echo absint( $asc_roles_cache['total'] ) . ' ' . esc_html__( 'roles cached', 'owbn-client' );
+                echo absint( $asc_roles_cache['total'] ) . ' ' . esc_html__( 'roles cached', 'owbn-core' );
             } else {
-                esc_html_e( 'Enabled — no cached data', 'owbn-client' );
+                esc_html_e( 'Enabled — no cached data', 'owbn-core' );
             }
             ?>
         </td>
@@ -509,44 +509,44 @@ $elementor_active = did_action( 'elementor/loaded' );
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Default Remote', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Default Remote', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( $remote_url ) {
                 echo esc_html( $remote_url );
             } else {
-                esc_html_e( 'Not configured', 'owbn-client' );
+                esc_html_e( 'Not configured', 'owbn-core' );
             }
             ?>
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Gateway (this site)', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Gateway (this site)', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( $gw_enabled ) {
-                echo esc_html__( 'Active', 'owbn-client' ) . ' — ' . esc_html( $gw_base_url );
+                echo esc_html__( 'Active', 'owbn-core' ) . ' — ' . esc_html( $gw_base_url );
             } else {
-                esc_html_e( 'Disabled', 'owbn-client' );
+                esc_html_e( 'Disabled', 'owbn-core' );
             }
             ?>
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'C&C Manager', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'C&C Manager', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
-            <?php echo $manager_active ? esc_html__( 'Active', 'owbn-client' ) : esc_html__( 'Not installed', 'owbn-client' ); ?>
+            <?php echo $manager_active ? esc_html__( 'Active', 'owbn-core' ) : esc_html__( 'Not installed', 'owbn-core' ); ?>
         </td>
     </tr>
     <tr>
-        <td><strong><?php esc_html_e( 'Territory Manager', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Territory Manager', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
-            <?php echo $tm_active ? esc_html__( 'Active', 'owbn-client' ) : esc_html__( 'Not installed', 'owbn-client' ); ?>
+            <?php echo $tm_active ? esc_html__( 'Active', 'owbn-core' ) : esc_html__( 'Not installed', 'owbn-core' ); ?>
         </td>
     </tr>
     <?php if ( ! empty( $gw_data_sources ) ) : ?>
     <tr>
-        <td><strong><?php esc_html_e( 'Gateway Sources', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Gateway Sources', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             $labels = array();
@@ -559,13 +559,13 @@ $elementor_active = did_action( 'elementor/loaded' );
     </tr>
     <?php endif; ?>
     <tr>
-        <td><strong><?php esc_html_e( 'Elementor', 'owbn-client' ); ?></strong></td>
+        <td><strong><?php esc_html_e( 'Elementor', 'owbn-core' ); ?></strong></td>
         <td colspan="2">
             <?php
             if ( $elementor_active ) {
-                esc_html_e( 'Active — widgets available', 'owbn-client' );
+                esc_html_e( 'Active — widgets available', 'owbn-core' );
             } else {
-                esc_html_e( 'Not active — using shortcodes only', 'owbn-client' );
+                esc_html_e( 'Not active — using shortcodes only', 'owbn-core' );
             }
             ?>
         </td>
@@ -576,38 +576,38 @@ $elementor_active = did_action( 'elementor/loaded' );
 <hr />
 
 <!-- ── Cache Management ───────────────────────────────────────────────── -->
-<h3><?php esc_html_e( 'Cache Management', 'owbn-client' ); ?></h3>
-<p class="description"><?php esc_html_e( 'Clear cached data to fetch fresh content from data sources.', 'owbn-client' ); ?></p>
+<h3><?php esc_html_e( 'Cache Management', 'owbn-core' ); ?></h3>
+<p class="description"><?php esc_html_e( 'Clear cached data to fetch fresh content from data sources.', 'owbn-core' ); ?></p>
 
 <table class="form-table" role="presentation">
     <tr>
-        <th scope="row"><?php esc_html_e( 'Clear Cache', 'owbn-client' ); ?></th>
+        <th scope="row"><?php esc_html_e( 'Clear Cache', 'owbn-core' ); ?></th>
         <td>
             <form method="post" style="display:inline;">
                 <?php wp_nonce_field( 'owc_clear_cache_action' ); ?>
-                <?php submit_button( __( 'Clear All Cache', 'owbn-client' ), 'secondary', 'owc_clear_cache', false ); ?>
+                <?php submit_button( __( 'Clear All Cache', 'owbn-core' ), 'secondary', 'owc_clear_cache', false ); ?>
             </form>
-            <p class="description"><?php esc_html_e( 'Removes all cached data. Next page load will fetch fresh data.', 'owbn-client' ); ?></p>
+            <p class="description"><?php esc_html_e( 'Removes all cached data. Next page load will fetch fresh data.', 'owbn-core' ); ?></p>
         </td>
     </tr>
     <tr>
-        <th scope="row"><?php esc_html_e( 'Refresh Cache', 'owbn-client' ); ?></th>
+        <th scope="row"><?php esc_html_e( 'Refresh Cache', 'owbn-core' ); ?></th>
         <td>
             <form method="post" style="display:inline;">
                 <?php wp_nonce_field( 'owc_refresh_cache_action' ); ?>
-                <?php submit_button( __( 'Refresh All Cache', 'owbn-client' ), 'secondary', 'owc_refresh_cache', false ); ?>
+                <?php submit_button( __( 'Refresh All Cache', 'owbn-core' ), 'secondary', 'owc_refresh_cache', false ); ?>
             </form>
-            <p class="description"><?php esc_html_e( 'Clears and immediately re-fetches all data from sources.', 'owbn-client' ); ?></p>
+            <p class="description"><?php esc_html_e( 'Clears and immediately re-fetches all data from sources.', 'owbn-core' ); ?></p>
         </td>
     </tr>
     <tr>
-        <th scope="row"><?php esc_html_e( 'Entity Cache', 'owbn-client' ); ?></th>
+        <th scope="row"><?php esc_html_e( 'Entity Cache', 'owbn-core' ); ?></th>
         <td>
             <form method="post" style="display:inline;">
                 <?php wp_nonce_field( 'owc_refresh_entity_cache_action' ); ?>
-                <?php submit_button( __( 'Refresh Entity Cache', 'owbn-client' ), 'secondary', 'owc_refresh_entity_cache', false ); ?>
+                <?php submit_button( __( 'Refresh Entity Cache', 'owbn-core' ), 'secondary', 'owc_refresh_entity_cache', false ); ?>
             </form>
-            <p class="description"><?php esc_html_e( 'Rebuilds the slug↔title lookup index for chronicles and coordinators.', 'owbn-client' ); ?></p>
+            <p class="description"><?php esc_html_e( 'Rebuilds the slug↔title lookup index for chronicles and coordinators.', 'owbn-core' ); ?></p>
         </td>
     </tr>
 </table>

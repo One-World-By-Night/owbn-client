@@ -19,7 +19,7 @@ function owc_register_dashboard_widgets() {
 	if ( get_option( owc_option_name( 'asc_enabled' ), false ) ) {
 		wp_add_dashboard_widget(
 			'owc_my_cc_widget',
-			__( 'My Chronicles & Coordinators', 'owbn-client' ),
+			__( 'My Chronicles & Coordinators', 'owbn-core' ),
 			'owc_render_my_cc_widget'
 		);
 	}
@@ -33,7 +33,7 @@ function owc_register_dashboard_widgets() {
 function owc_render_my_cc_widget() {
 	$user = wp_get_current_user();
 	if ( ! $user || ! $user->ID ) {
-		echo '<p>' . esc_html__( 'Please log in.', 'owbn-client' ) . '</p>';
+		echo '<p>' . esc_html__( 'Please log in.', 'owbn-core' ) . '</p>';
 		return;
 	}
 
@@ -87,12 +87,12 @@ function owc_render_my_cc_widget() {
 
 	// Role labels.
 	$role_labels = array(
-		'hst'              => __( 'HST', 'owbn-client' ),
-		'cm'               => __( 'CM', 'owbn-client' ),
-		'ast'              => __( 'AST', 'owbn-client' ),
-		'staff'            => __( 'Staff', 'owbn-client' ),
-		'coordinator'      => __( 'Coordinator', 'owbn-client' ),
-		'sub-coordinator'  => __( 'Sub-Coordinator', 'owbn-client' ),
+		'hst'              => __( 'HST', 'owbn-core' ),
+		'cm'               => __( 'CM', 'owbn-core' ),
+		'ast'              => __( 'AST', 'owbn-core' ),
+		'staff'            => __( 'Staff', 'owbn-core' ),
+		'coordinator'      => __( 'Coordinator', 'owbn-core' ),
+		'sub-coordinator'  => __( 'Sub-Coordinator', 'owbn-core' ),
 	);
 
 	$has_content = false;
@@ -100,7 +100,7 @@ function owc_render_my_cc_widget() {
 	// ── Chronicles ───────────────────────────────────────────────────
 	if ( ! empty( $my_chronicles ) ) {
 		$has_content = true;
-		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Chronicles', 'owbn-client' ) . '</h4>';
+		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Chronicles', 'owbn-core' ) . '</h4>';
 		echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
 		foreach ( $my_chronicles as $slug => $pos ) {
 			$title = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $slug ) : '';
@@ -114,13 +114,13 @@ function owc_render_my_cc_widget() {
 			echo ' <span style="color:#646970;font-size:12px;">(' . esc_html( $badge ) . ')</span>';
 			echo '</span>';
 			echo '<span style="white-space:nowrap;">';
-			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-client' ) . '</a>';
+			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-core' ) . '</a>';
 			if ( $chron_site ) {
 				// Get post ID for edit link.
 				$post_id = owc_cc_widget_get_post_id( 'chronicle', $slug );
 				if ( $post_id ) {
 					$edit_url = $chron_site . 'wp-admin/post.php?post=' . $post_id . '&action=edit';
-					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-client' ) . ' &#x29C9;</a>';
+					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-core' ) . ' &#x29C9;</a>';
 				}
 			}
 			echo '</span>';
@@ -132,7 +132,7 @@ function owc_render_my_cc_widget() {
 	// ── Coordinators ─────────────────────────────────────────────────
 	if ( ! empty( $my_coordinators ) ) {
 		$has_content = true;
-		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Coordinators', 'owbn-client' ) . '</h4>';
+		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Coordinators', 'owbn-core' ) . '</h4>';
 		echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
 		foreach ( $my_coordinators as $slug => $pos ) {
 			$title = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'coordinator', $slug ) : '';
@@ -146,12 +146,12 @@ function owc_render_my_cc_widget() {
 			echo ' <span style="color:#646970;font-size:12px;">(' . esc_html( $badge ) . ')</span>';
 			echo '</span>';
 			echo '<span style="white-space:nowrap;">';
-			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-client' ) . '</a>';
+			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-core' ) . '</a>';
 			if ( $coord_site ) {
 				$post_id = owc_cc_widget_get_post_id( 'coordinator', $slug );
 				if ( $post_id ) {
 					$edit_url = $coord_site . 'wp-admin/post.php?post=' . $post_id . '&action=edit';
-					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-client' ) . ' &#x29C9;</a>';
+					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-core' ) . ' &#x29C9;</a>';
 				}
 			}
 			echo '</span>';
@@ -163,7 +163,7 @@ function owc_render_my_cc_widget() {
 	// ── Exec Roles (map to coordinator posts) ────────────────────────
 	if ( ! empty( $my_exec ) ) {
 		$has_content = true;
-		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Executive Team', 'owbn-client' ) . '</h4>';
+		echo '<h4 style="margin:0 0 8px;">' . esc_html__( 'Executive Team', 'owbn-core' ) . '</h4>';
 		echo '<ul style="margin:0 0 12px;padding:0;list-style:none;">';
 		foreach ( $my_exec as $slug => $label ) {
 			$title = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'coordinator', $slug ) : '';
@@ -173,12 +173,12 @@ function owc_render_my_cc_widget() {
 			echo '<li style="padding:4px 0;border-bottom:1px solid #f0f0f1;display:flex;align-items:center;justify-content:space-between;gap:8px;">';
 			echo '<span>' . esc_html( $display ) . ' <span style="color:#646970;font-size:12px;">(Exec)</span></span>';
 			echo '<span style="white-space:nowrap;">';
-			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-client' ) . '</a>';
+			echo '<a href="' . esc_url( $view_url ) . '" style="text-decoration:none;font-size:12px;">' . esc_html__( 'View', 'owbn-core' ) . '</a>';
 			if ( $coord_site ) {
 				$post_id = owc_cc_widget_get_post_id( 'coordinator', $slug );
 				if ( $post_id ) {
 					$edit_url = $coord_site . 'wp-admin/post.php?post=' . $post_id . '&action=edit';
-					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-client' ) . ' &#x29C9;</a>';
+					echo ' <a href="' . esc_url( $edit_url ) . '" target="_blank" style="text-decoration:none;font-size:12px;margin-left:6px;">' . esc_html__( 'Edit', 'owbn-core' ) . ' &#x29C9;</a>';
 				}
 			}
 			echo '</span>';
@@ -188,7 +188,7 @@ function owc_render_my_cc_widget() {
 	}
 
 	if ( ! $has_content ) {
-		echo '<p style="color:#646970;">' . esc_html__( 'No chronicle or coordinator roles found.', 'owbn-client' ) . '</p>';
+		echo '<p style="color:#646970;">' . esc_html__( 'No chronicle or coordinator roles found.', 'owbn-core' ) . '</p>';
 	}
 }
 

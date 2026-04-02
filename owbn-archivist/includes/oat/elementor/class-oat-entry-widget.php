@@ -24,7 +24,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'Archivist Entry Detail', 'owbn-client' );
+		return __( 'Archivist Entry Detail', 'owbn-archivist' );
 	}
 
 	public function get_icon()
@@ -59,29 +59,29 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		// ── Content Tab ───────────────────────────────────────────────────
 
 		$this->start_controls_section( 'content_source', array(
-			'label' => __( 'Entry Source', 'owbn-client' ),
+			'label' => __( 'Entry Source', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'entry_source', array(
-			'label'   => __( 'Entry Source', 'owbn-client' ),
+			'label'   => __( 'Entry Source', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'options' => array(
-				'url_param' => __( 'URL Parameter', 'owbn-client' ),
-				'fixed'     => __( 'Fixed Entry ID', 'owbn-client' ),
+				'url_param' => __( 'URL Parameter', 'owbn-archivist' ),
+				'fixed'     => __( 'Fixed Entry ID', 'owbn-archivist' ),
 			),
 			'default' => 'url_param',
 		) );
 
 		$this->add_control( 'url_param_name', array(
-			'label'     => __( 'URL Parameter Name', 'owbn-client' ),
+			'label'     => __( 'URL Parameter Name', 'owbn-archivist' ),
 			'type'      => Controls_Manager::TEXT,
 			'default'   => 'oat_entry',
 			'condition' => array( 'entry_source' => 'url_param' ),
 		) );
 
 		$this->add_control( 'fixed_entry_id', array(
-			'label'     => __( 'Fixed Entry ID', 'owbn-client' ),
+			'label'     => __( 'Fixed Entry ID', 'owbn-archivist' ),
 			'type'      => Controls_Manager::NUMBER,
 			'min'       => 1,
 			'condition' => array( 'entry_source' => 'fixed' ),
@@ -90,62 +90,62 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'content_sections', array(
-			'label' => __( 'Sections', 'owbn-client' ),
+			'label' => __( 'Sections', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'show_meta', array(
-			'label'        => __( 'Show Details Section', 'owbn-client' ),
+			'label'        => __( 'Show Details Section', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_rules', array(
-			'label'        => __( 'Show Regulation Rules', 'owbn-client' ),
+			'label'        => __( 'Show Regulation Rules', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_assignees', array(
-			'label'        => __( 'Show Assignees', 'owbn-client' ),
+			'label'        => __( 'Show Assignees', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_timeline', array(
-			'label'        => __( 'Show Timeline', 'owbn-client' ),
+			'label'        => __( 'Show Timeline', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'timeline_default', array(
-			'label'     => __( 'Timeline Default State', 'owbn-client' ),
+			'label'     => __( 'Timeline Default State', 'owbn-archivist' ),
 			'type'      => Controls_Manager::SELECT,
 			'options'   => array(
-				'expanded'  => __( 'Expanded', 'owbn-client' ),
-				'collapsed' => __( 'Collapsed', 'owbn-client' ),
+				'expanded'  => __( 'Expanded', 'owbn-archivist' ),
+				'collapsed' => __( 'Collapsed', 'owbn-archivist' ),
 			),
 			'default'   => 'expanded',
 			'condition' => array( 'show_timeline' => 'yes' ),
 		) );
 
 		$this->add_control( 'show_actions', array(
-			'label'        => __( 'Show Actions Panel', 'owbn-client' ),
+			'label'        => __( 'Show Actions Panel', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
@@ -155,7 +155,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		// ── Style Tab ─────────────────────────────────────────────────────
 
 		$this->start_controls_section( 'style_header', array(
-			'label' => __( 'Header', 'owbn-client' ),
+			'label' => __( 'Header', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
@@ -165,7 +165,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'header_color', array(
-			'label'     => __( 'Title Color', 'owbn-client' ),
+			'label'     => __( 'Title Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-entry-title' => 'color: {{VALUE}};',
@@ -175,12 +175,12 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_meta', array(
-			'label' => __( 'Meta Grid', 'owbn-client' ),
+			'label' => __( 'Meta Grid', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_responsive_control( 'meta_grid_gap', array(
-			'label'      => __( 'Grid Gap', 'owbn-client' ),
+			'label'      => __( 'Grid Gap', 'owbn-archivist' ),
 			'type'       => Controls_Manager::DIMENSIONS,
 			'size_units' => array( 'px', 'em' ),
 			'selectors'  => array(
@@ -189,7 +189,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'meta_item_background', array(
-			'label'     => __( 'Item Background', 'owbn-client' ),
+			'label'     => __( 'Item Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-entry-meta-item' => 'background-color: {{VALUE}};',
@@ -199,13 +199,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_timeline', array(
-			'label'     => __( 'Timeline', 'owbn-client' ),
+			'label'     => __( 'Timeline', 'owbn-archivist' ),
 			'tab'       => Controls_Manager::TAB_STYLE,
 			'condition' => array( 'show_timeline' => 'yes' ),
 		) );
 
 		$this->add_control( 'timeline_line_color', array(
-			'label'     => __( 'Line Color', 'owbn-client' ),
+			'label'     => __( 'Line Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-timeline' => 'border-left-color: {{VALUE}};',
@@ -213,7 +213,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'timeline_dot_color', array(
-			'label'     => __( 'Dot Color (default)', 'owbn-client' ),
+			'label'     => __( 'Dot Color (default)', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-timeline-event::before' => 'background: {{VALUE}};',
@@ -223,13 +223,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_actions', array(
-			'label'     => __( 'Action Buttons', 'owbn-client' ),
+			'label'     => __( 'Action Buttons', 'owbn-archivist' ),
 			'tab'       => Controls_Manager::TAB_STYLE,
 			'condition' => array( 'show_actions' => 'yes' ),
 		) );
 
 		$this->add_control( 'action_approve_color', array(
-			'label'     => __( 'Approve Background', 'owbn-client' ),
+			'label'     => __( 'Approve Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-action-btn-approve' => 'background-color: {{VALUE}};',
@@ -237,7 +237,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'action_deny_color', array(
-			'label'     => __( 'Deny Background', 'owbn-client' ),
+			'label'     => __( 'Deny Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-action-btn-deny' => 'background-color: {{VALUE}};',
@@ -245,7 +245,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'action_changes_color', array(
-			'label'     => __( 'Request Changes Background', 'owbn-client' ),
+			'label'     => __( 'Request Changes Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-action-btn-request_changes' => 'background-color: {{VALUE}};',
@@ -260,7 +260,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	protected function render()
 	{
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view this entry.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view this entry.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -285,7 +285,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		}
 
 		if ( ! $entry_id ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'No entry specified.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'No entry specified.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -301,7 +301,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		}
 
 		if ( empty( $bundle['entry'] ) ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Entry not found or access denied.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Entry not found or access denied.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -559,7 +559,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 					</span>
 					<?php if ( $step_label ) : ?>
 						<span style="margin-left:12px; color:#646970; font-size:14px;">
-							<?php echo esc_html__( 'Step:', 'owbn-client' ) . ' ' . esc_html( $step_label ); ?>
+							<?php echo esc_html__( 'Step:', 'owbn-archivist' ) . ' ' . esc_html( $step_label ); ?>
 						</span>
 					<?php endif; ?>
 				</div>
@@ -567,7 +567,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 					<button type="button"
 						class="oat-watch-btn<?php echo $is_watching ? ' watching' : ''; ?>"
 						data-entry-id="<?php echo esc_attr( $entry_id ); ?>">
-						<?php echo $is_watching ? esc_html__( 'Watching', 'owbn-client' ) : esc_html__( 'Watch', 'owbn-client' ); ?>
+						<?php echo $is_watching ? esc_html__( 'Watching', 'owbn-archivist' ) : esc_html__( 'Watch', 'owbn-archivist' ); ?>
 					</button>
 				<?php endif; ?>
 			</div>
@@ -590,30 +590,30 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		?>
 		<div class="oat-entry-meta-grid oat-entry-section">
 			<div class="oat-entry-meta-item">
-				<span class="oat-entry-meta-label"><?php esc_html_e( 'Originator', 'owbn-client' ); ?></span>
+				<span class="oat-entry-meta-label"><?php esc_html_e( 'Originator', 'owbn-archivist' ); ?></span>
 				<span class="oat-entry-meta-value"><?php echo esc_html( $originator ); ?></span>
 			</div>
 			<?php if ( $chronicle ) : ?>
 				<div class="oat-entry-meta-item">
-					<span class="oat-entry-meta-label"><?php esc_html_e( 'Chronicle', 'owbn-client' ); ?></span>
+					<span class="oat-entry-meta-label"><?php esc_html_e( 'Chronicle', 'owbn-archivist' ); ?></span>
 					<span class="oat-entry-meta-value"><?php echo esc_html( $chronicle ); ?></span>
 				</div>
 			<?php endif; ?>
 			<?php if ( $coord_genre ) : ?>
 				<div class="oat-entry-meta-item">
-					<span class="oat-entry-meta-label"><?php esc_html_e( 'Coordinator Genre', 'owbn-client' ); ?></span>
+					<span class="oat-entry-meta-label"><?php esc_html_e( 'Coordinator Genre', 'owbn-archivist' ); ?></span>
 					<span class="oat-entry-meta-value"><?php echo esc_html( $coord_genre ); ?></span>
 				</div>
 			<?php endif; ?>
 			<?php if ( $created_at ) : ?>
 				<div class="oat-entry-meta-item">
-					<span class="oat-entry-meta-label"><?php esc_html_e( 'Created', 'owbn-client' ); ?></span>
+					<span class="oat-entry-meta-label"><?php esc_html_e( 'Created', 'owbn-archivist' ); ?></span>
 					<span class="oat-entry-meta-value"><?php echo esc_html( $created_at ); ?></span>
 				</div>
 			<?php endif; ?>
 			<?php if ( $updated_at ) : ?>
 				<div class="oat-entry-meta-item">
-					<span class="oat-entry-meta-label"><?php esc_html_e( 'Updated', 'owbn-client' ); ?></span>
+					<span class="oat-entry-meta-label"><?php esc_html_e( 'Updated', 'owbn-archivist' ); ?></span>
 					<span class="oat-entry-meta-value"><?php echo esc_html( $updated_at ); ?></span>
 				</div>
 			<?php endif; ?>
@@ -654,7 +654,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		);
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Details', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Details', 'owbn-archivist' ); ?></div>
 			<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields_readonly' ) ) : ?>
 				<div class="oat-frontend-form">
 					<?php owc_oat_render_fields_readonly( $domain_fields, $meta ); ?>
@@ -714,16 +714,16 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		ob_start();
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Linked Regulation Rules', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Linked Regulation Rules', 'owbn-archivist' ); ?></div>
 			<table class="oat-rules-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'ID', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Genre', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Category', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Condition', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'PC Level', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Elevated', 'owbn-client' ); ?></th>
+						<th><?php esc_html_e( 'ID', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Genre', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Category', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Condition', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'PC Level', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Elevated', 'owbn-archivist' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -734,7 +734,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 							<td><?php echo esc_html( $r['category'] ); ?></td>
 							<td><?php echo esc_html( $r['condition'] ); ?></td>
 							<td><?php echo esc_html( $r['pc_level'] ? ucfirst( str_replace( '_', ' ', $r['pc_level'] ) ) : '—' ); ?></td>
-							<td><?php echo (int) $r['elevation'] ? '<strong>' . esc_html__( 'Yes', 'owbn-client' ) . '</strong>' : esc_html__( 'No', 'owbn-client' ); ?></td>
+							<td><?php echo (int) $r['elevation'] ? '<strong>' . esc_html__( 'Yes', 'owbn-archivist' ) . '</strong>' : esc_html__( 'No', 'owbn-archivist' ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>
@@ -753,10 +753,10 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		?>
 		<div class="oat-timer-section oat-entry-section">
 			<span class="oat-timer-label">
-				<?php printf( esc_html__( 'Active Timer: %s', 'owbn-client' ), esc_html( ucfirst( str_replace( '_', ' ', $timer['type'] ) ) ) ); ?>
+				<?php printf( esc_html__( 'Active Timer: %s', 'owbn-archivist' ), esc_html( ucfirst( str_replace( '_', ' ', $timer['type'] ) ) ) ); ?>
 			</span>
 			<div class="oat-timer-expires">
-				<?php printf( esc_html__( 'Expires: %s', 'owbn-client' ), esc_html( $timer['expires_at'] ) ); ?>
+				<?php printf( esc_html__( 'Expires: %s', 'owbn-archivist' ), esc_html( $timer['expires_at'] ) ); ?>
 				&mdash; <?php echo esc_html( ucfirst( $timer['status'] ) ); ?>
 			</div>
 		</div>
@@ -777,38 +777,38 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$entry_id = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
 
 		$action_labels = array(
-			'submit'           => __( 'Resubmit', 'owbn-client' ),
-			'approve'          => __( 'Approve', 'owbn-client' ),
-			'deny'             => __( 'Deny', 'owbn-client' ),
-			'request_changes'  => __( 'Request Changes', 'owbn-client' ),
-			'cancel'           => __( 'Cancel / Withdraw', 'owbn-client' ),
-			'bump'             => __( 'Bump', 'owbn-client' ),
-			'reassign'         => __( 'Reassign', 'owbn-client' ),
-			'delegate'         => __( 'Delegate', 'owbn-client' ),
-			'hold'             => __( 'Hold', 'owbn-client' ),
-			'resume'           => __( 'Resume', 'owbn-client' ),
-			'record'           => __( 'Log', 'owbn-client' ),
-			'council_override' => __( 'Council Override', 'owbn-client' ),
-			'timer_extend'     => __( 'Extend Timer', 'owbn-client' ),
-			'admin_edit'       => __( 'Admin Edit', 'owbn-client' ),
+			'submit'           => __( 'Resubmit', 'owbn-archivist' ),
+			'approve'          => __( 'Approve', 'owbn-archivist' ),
+			'deny'             => __( 'Deny', 'owbn-archivist' ),
+			'request_changes'  => __( 'Request Changes', 'owbn-archivist' ),
+			'cancel'           => __( 'Cancel / Withdraw', 'owbn-archivist' ),
+			'bump'             => __( 'Bump', 'owbn-archivist' ),
+			'reassign'         => __( 'Reassign', 'owbn-archivist' ),
+			'delegate'         => __( 'Delegate', 'owbn-archivist' ),
+			'hold'             => __( 'Hold', 'owbn-archivist' ),
+			'resume'           => __( 'Resume', 'owbn-archivist' ),
+			'record'           => __( 'Log', 'owbn-archivist' ),
+			'council_override' => __( 'Council Override', 'owbn-archivist' ),
+			'timer_extend'     => __( 'Extend Timer', 'owbn-archivist' ),
+			'admin_edit'       => __( 'Admin Edit', 'owbn-archivist' ),
 		);
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Actions', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Actions', 'owbn-archivist' ); ?></div>
 			<div class="oat-actions">
 
 				<?php if ( $bbp_eligible ) : ?>
 					<div class="oat-action-card oat-bbp-card">
 						<strong style="display:block;margin-bottom:8px;color:#2271b1;">
-							<?php esc_html_e( 'Auto-Approve (BBP)', 'owbn-client' ); ?>
+							<?php esc_html_e( 'Auto-Approve (BBP)', 'owbn-archivist' ); ?>
 						</strong>
-						<p style="margin:0 0 8px;font-size:13px;"><?php esc_html_e( 'This entry is eligible for Bump Bump Pass auto-approval.', 'owbn-client' ); ?></p>
+						<p style="margin:0 0 8px;font-size:13px;"><?php esc_html_e( 'This entry is eligible for Bump Bump Pass auto-approval.', 'owbn-archivist' ); ?></p>
 						<form class="oat-action-form">
 							<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
 							<input type="hidden" name="action_type" value="auto_approve">
-							<textarea name="note" placeholder="<?php esc_attr_e( 'Note (optional)', 'owbn-client' ); ?>" rows="2" style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
+							<textarea name="note" placeholder="<?php esc_attr_e( 'Note (optional)', 'owbn-archivist' ); ?>" rows="2" style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
 							<button type="submit" class="oat-action-btn oat-action-btn-approve">
-								<?php esc_html_e( 'Invoke Auto-Approve', 'owbn-client' ); ?>
+								<?php esc_html_e( 'Invoke Auto-Approve', 'owbn-archivist' ); ?>
 							</button>
 						</form>
 					</div>
@@ -828,10 +828,10 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 								<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
 								<input type="hidden" name="action_type" value="submit">
 								<strong style="display:block;margin-bottom:12px;font-size:15px;color:#2271b1;">
-									<?php esc_html_e( 'Edit & Resubmit', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Edit & Resubmit', 'owbn-archivist' ); ?>
 								</strong>
 								<p style="margin:0 0 12px;font-size:13px;color:#646970;">
-									<?php esc_html_e( 'Update the fields below and resubmit your entry.', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Update the fields below and resubmit your entry.', 'owbn-archivist' ); ?>
 								</p>
 								<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields' ) ) : ?>
 									<div class="oat-frontend-form" style="margin-bottom:12px;">
@@ -839,11 +839,11 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 									</div>
 								<?php endif; ?>
 								<textarea name="note"
-									placeholder="<?php esc_attr_e( 'Note about changes (optional)', 'owbn-client' ); ?>"
+									placeholder="<?php esc_attr_e( 'Note about changes (optional)', 'owbn-archivist' ); ?>"
 									rows="2"
 									style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
 								<button type="submit" class="oat-action-btn oat-action-btn-approve">
-									<?php esc_html_e( 'Resubmit', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Resubmit', 'owbn-archivist' ); ?>
 								</button>
 							</form>
 						</div>
@@ -855,10 +855,10 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 								<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
 								<input type="hidden" name="action_type" value="admin_edit">
 								<strong style="display:block;margin-bottom:12px;font-size:15px;color:#7a5700;">
-									<?php esc_html_e( 'Admin Edit', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Admin Edit', 'owbn-archivist' ); ?>
 								</strong>
 								<p style="margin:0 0 12px;font-size:13px;color:#646970;">
-									<?php esc_html_e( 'Edit entry fields directly. Changes are logged in the timeline.', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Edit entry fields directly. Changes are logged in the timeline.', 'owbn-archivist' ); ?>
 								</p>
 								<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields' ) ) : ?>
 									<div class="oat-frontend-form" style="margin-bottom:12px;">
@@ -866,12 +866,12 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 									</div>
 								<?php endif; ?>
 								<textarea name="note"
-									placeholder="<?php esc_attr_e( 'Reason for edit (required)', 'owbn-client' ); ?>"
+									placeholder="<?php esc_attr_e( 'Reason for edit (required)', 'owbn-archivist' ); ?>"
 									rows="2"
 									style="width:100%;box-sizing:border-box;margin:6px 0;"
 									required></textarea>
 								<button type="submit" class="oat-action-btn" style="background:#c9920e;color:#fff;border-color:#a07608;">
-									<?php esc_html_e( 'Save Changes', 'owbn-client' ); ?>
+									<?php esc_html_e( 'Save Changes', 'owbn-archivist' ); ?>
 								</button>
 							</form>
 						</div>
@@ -885,14 +885,14 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 							<?php if ( 'council_override' === $action_type ) : ?>
 								<input type="text" name="vote_reference"
-									placeholder="<?php esc_attr_e( 'Vote reference (required)', 'owbn-client' ); ?>"
+									placeholder="<?php esc_attr_e( 'Vote reference (required)', 'owbn-archivist' ); ?>"
 									style="width:100%;box-sizing:border-box;margin-bottom:6px;" required>
 							<?php endif; ?>
 
 							<?php if ( 'timer_extend' === $action_type ) : ?>
 								<div class="oat-timer-extend-fields">
-									<label><?php esc_html_e( 'Days:', 'owbn-client' ); ?> <input type="number" name="extend_days" min="0" max="90" value="0" style="width:60px;"></label>
-									<label><?php esc_html_e( 'Hours:', 'owbn-client' ); ?> <input type="number" name="extend_hours" min="0" max="23" value="0" style="width:60px;"></label>
+									<label><?php esc_html_e( 'Days:', 'owbn-archivist' ); ?> <input type="number" name="extend_days" min="0" max="90" value="0" style="width:60px;"></label>
+									<label><?php esc_html_e( 'Hours:', 'owbn-archivist' ); ?> <input type="number" name="extend_hours" min="0" max="23" value="0" style="width:60px;"></label>
 									<input type="hidden" name="additional_seconds" value="0">
 								</div>
 							<?php endif; ?>
@@ -901,7 +901,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 								<div class="oat-user-picker" style="margin-bottom:6px;">
 									<input type="text" class="oat-user-search"
 										style="width:100%;box-sizing:border-box;"
-										placeholder="<?php esc_attr_e( 'Search by name, login, or role path', 'owbn-client' ); ?>">
+										placeholder="<?php esc_attr_e( 'Search by name, login, or role path', 'owbn-archivist' ); ?>">
 									<input type="hidden" name="new_user_id" value="" required>
 									<span class="oat-user-picked"></span>
 								</div>
@@ -911,7 +911,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 								<div class="oat-user-picker" style="margin-bottom:6px;">
 									<input type="text" class="oat-user-search"
 										style="width:100%;box-sizing:border-box;"
-										placeholder="<?php esc_attr_e( 'Search by name, login, or role path', 'owbn-client' ); ?>">
+										placeholder="<?php esc_attr_e( 'Search by name, login, or role path', 'owbn-archivist' ); ?>">
 									<input type="hidden" name="delegate_user_id" value="" required>
 									<span class="oat-user-picked"></span>
 								</div>
@@ -938,9 +938,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 											$ts = ! empty( $sig_data['timestamp'] ) ? $sig_data['timestamp'] : '';
 											echo '<div style="margin:8px 0;padding:6px;background:#f7f7f7;border-left:3px solid #0073aa;font-size:13px;">';
 											echo '<strong>' . esc_html( isset( $rf['label'] ) ? $rf['label'] : $rf_key ) . ':</strong> ';
-											printf( esc_html__( 'Signed by %1$s%2$s', 'owbn-client' ),
+											printf( esc_html__( 'Signed by %1$s%2$s', 'owbn-archivist' ),
 												esc_html( $sig_data['name'] ),
-												$ts ? ' ' . esc_html__( 'on', 'owbn-client' ) . ' ' . esc_html( $ts ) : ''
+												$ts ? ' ' . esc_html__( 'on', 'owbn-archivist' ) . ' ' . esc_html( $ts ) : ''
 											);
 											echo '</div>';
 										}
@@ -957,7 +957,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 							?>
 
 							<textarea name="note"
-								placeholder="<?php echo $note_req ? esc_attr__( 'Note (required)', 'owbn-client' ) : esc_attr__( 'Note (optional)', 'owbn-client' ); ?>"
+								placeholder="<?php echo $note_req ? esc_attr__( 'Note (required)', 'owbn-archivist' ) : esc_attr__( 'Note (optional)', 'owbn-archivist' ); ?>"
 								rows="2"
 								style="width:100%;box-sizing:border-box;margin:6px 0;"
 								<?php echo $note_req ? 'required' : ''; ?>></textarea>
@@ -979,15 +979,15 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						<form class="oat-action-form">
 							<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
 							<input type="hidden" name="action_type" value="me_too">
-							<strong style="display:block;margin-bottom:8px;"><?php esc_html_e( 'Add Me-Too', 'owbn-client' ); ?></strong>
-							<p style="margin:0 0 8px;font-size:13px;"><?php esc_html_e( 'Create a linked DA entry for another chronicle executing the same action.', 'owbn-client' ); ?></p>
+							<strong style="display:block;margin-bottom:8px;"><?php esc_html_e( 'Add Me-Too', 'owbn-archivist' ); ?></strong>
+							<p style="margin:0 0 8px;font-size:13px;"><?php esc_html_e( 'Create a linked DA entry for another chronicle executing the same action.', 'owbn-archivist' ); ?></p>
 							<textarea name="note"
-								placeholder="<?php esc_attr_e( 'Chronicle and details for the me-too entry', 'owbn-client' ); ?>"
+								placeholder="<?php esc_attr_e( 'Chronicle and details for the me-too entry', 'owbn-archivist' ); ?>"
 								rows="2"
 								style="width:100%;box-sizing:border-box;margin:6px 0;"
 								required></textarea>
 							<button type="submit" class="oat-action-btn oat-action-btn-record">
-								<?php esc_html_e( 'Add Me-Too Entry', 'owbn-client' ); ?>
+								<?php esc_html_e( 'Add Me-Too Entry', 'owbn-archivist' ); ?>
 							</button>
 						</form>
 					</div>
@@ -1007,13 +1007,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		ob_start();
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Assignees', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Assignees', 'owbn-archivist' ); ?></div>
 			<table class="oat-assignees-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'User', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Step', 'owbn-client' ); ?></th>
-						<th><?php esc_html_e( 'Status', 'owbn-client' ); ?></th>
+						<th><?php esc_html_e( 'User', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Step', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'owbn-archivist' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1051,11 +1051,11 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		ob_start();
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Linked Entries', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Linked Entries', 'owbn-archivist' ); ?></div>
 
 			<?php if ( $has_parents ) : ?>
 				<p>
-					<strong><?php esc_html_e( 'Parent:', 'owbn-client' ); ?></strong>
+					<strong><?php esc_html_e( 'Parent:', 'owbn-archivist' ); ?></strong>
 					<?php foreach ( $relationships['parents'] as $rel ) : ?>
 						<a href="<?php echo esc_url( add_query_arg( $param, $rel['entry_id'], $base_url ) ); ?>">
 							#<?php echo esc_html( $rel['entry_id'] ); ?>
@@ -1091,9 +1091,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$collapsed_class = $tl_collapsed ? ' collapsed' : '';
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Timeline', 'owbn-client' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Timeline', 'owbn-archivist' ); ?></div>
 			<button type="button" class="oat-timeline-toggle">
-				<?php echo $tl_collapsed ? esc_html__( 'Show Timeline', 'owbn-client' ) : esc_html__( 'Hide Timeline', 'owbn-client' ); ?>
+				<?php echo $tl_collapsed ? esc_html__( 'Show Timeline', 'owbn-archivist' ) : esc_html__( 'Hide Timeline', 'owbn-archivist' ); ?>
 			</button>
 			<div class="oat-timeline<?php echo esc_attr( $collapsed_class ); ?>">
 				<?php foreach ( $timeline as $event ) :
@@ -1109,7 +1109,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						<div class="oat-timeline-meta">
 							<span class="oat-timeline-date"><?php echo esc_html( $date ); ?></span>
 							<span class="oat-timeline-action"><?php echo esc_html( $action_lbl ); ?></span>
-							<span class="oat-timeline-actor"><?php printf( esc_html__( 'by %s', 'owbn-client' ), esc_html( $actor ) ); ?></span>
+							<span class="oat-timeline-actor"><?php printf( esc_html__( 'by %s', 'owbn-archivist' ), esc_html( $actor ) ); ?></span>
 							<span class="oat-timeline-tier">[<?php echo esc_html( $tier ); ?>]</span>
 						</div>
 						<?php if ( $note ) : ?>

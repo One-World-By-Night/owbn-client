@@ -25,7 +25,7 @@ function owc_sanitize_remote_url( $url ) {
         add_settings_error(
             'owc_remote_url',
             'owc_ssrf_blocked',
-            __( 'The remote URL was rejected because it points to a local or private network address.', 'owbn-client' ),
+            __( 'The remote URL was rejected because it points to a local or private network address.', 'owbn-core' ),
             'error'
         );
         return '';
@@ -454,7 +454,7 @@ function owc_render_settings_page()
     // Handle cache clear.
     if (isset($_POST['owc_clear_cache']) && check_admin_referer('owc_clear_cache_action')) {
         owc_clear_all_caches();
-        add_settings_error('owc_settings', 'cache_cleared', __('Cache cleared successfully.', 'owbn-client'), 'success');
+        add_settings_error('owc_settings', 'cache_cleared', __('Cache cleared successfully.', 'owbn-core'), 'success');
     }
 
     // Handle cache refresh.
@@ -463,7 +463,7 @@ function owc_render_settings_page()
         if (is_wp_error($result)) {
             add_settings_error('owc_settings', 'cache_refresh_failed', $result->get_error_message(), 'error');
         } else {
-            add_settings_error('owc_settings', 'cache_refreshed', __('Cache refreshed successfully.', 'owbn-client'), 'success');
+            add_settings_error('owc_settings', 'cache_refreshed', __('Cache refreshed successfully.', 'owbn-core'), 'success');
         }
     }
 
@@ -471,9 +471,9 @@ function owc_render_settings_page()
     if (isset($_POST['owc_refresh_entity_cache']) && check_admin_referer('owc_refresh_entity_cache_action')) {
         if ( function_exists( 'owc_entity_refresh' ) ) {
             owc_entity_refresh();
-            add_settings_error('owc_settings', 'entity_cache_refreshed', __('Entity resolution cache refreshed.', 'owbn-client'), 'success');
+            add_settings_error('owc_settings', 'entity_cache_refreshed', __('Entity resolution cache refreshed.', 'owbn-core'), 'success');
         } else {
-            add_settings_error('owc_settings', 'entity_cache_unavailable', __('Entity resolution module not loaded.', 'owbn-client'), 'error');
+            add_settings_error('owc_settings', 'entity_cache_unavailable', __('Entity resolution module not loaded.', 'owbn-core'), 'error');
         }
     }
 
@@ -489,7 +489,7 @@ function owc_render_settings_page()
 
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('OWBN Client Settings', 'owbn-client'); ?></h1>
+        <h1><?php esc_html_e('OWBN Client Settings', 'owbn-core'); ?></h1>
 
         <?php settings_errors(); ?>
 
@@ -512,7 +512,7 @@ function owc_render_settings_page()
                         <span class="dashicons <?php echo esc_attr( $tab['icon'] ?? 'dashicons-admin-generic' ); ?>"></span>
                         <?php echo esc_html( $tab['label'] ); ?>
                         <?php if ( ! $is_enabled && empty( $tab['always_on'] ) ) : ?>
-                            <span class="owc-tab-badge"><?php esc_html_e( 'Off', 'owbn-client' ); ?></span>
+                            <span class="owc-tab-badge"><?php esc_html_e( 'Off', 'owbn-core' ); ?></span>
                         <?php endif; ?>
                     </a>
                 </li>
@@ -532,11 +532,11 @@ function owc_render_settings_page()
                         '<div class="owc-tab-disabled-notice"><p>%s</p><p><a href="%s" class="button">%s</a></p></div>',
                         esc_html( sprintf(
                             /* translators: %s: feature name */
-                            __( '%s is currently disabled. Enable it on the General tab to configure.', 'owbn-client' ),
+                            __( '%s is currently disabled. Enable it on the General tab to configure.', 'owbn-core' ),
                             $tab_config['label']
                         ) ),
                         esc_url( add_query_arg( 'tab', 'general', $page_url ) ),
-                        esc_html__( 'Go to General Settings', 'owbn-client' )
+                        esc_html__( 'Go to General Settings', 'owbn-core' )
                     );
                 } else {
                     $group = $tab_config['group'];

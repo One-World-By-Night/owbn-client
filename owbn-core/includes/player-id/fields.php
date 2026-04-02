@@ -19,10 +19,10 @@ function owc_pid_show_field($user) {
     $mode      = get_option(owc_option_name('player_id_mode'), 'client');
     $can_edit  = ($mode === 'server') && current_user_can('manage_options');
     ?>
-    <h3><?php esc_html_e('Player Information', 'owbn-client'); ?></h3>
+    <h3><?php esc_html_e('Player Information', 'owbn-core'); ?></h3>
     <table class="form-table">
         <tr>
-            <th><label for="owc_player_id"><?php esc_html_e('Player ID', 'owbn-client'); ?></label></th>
+            <th><label for="owc_player_id"><?php esc_html_e('Player ID', 'owbn-core'); ?></label></th>
             <td>
                 <?php if ($can_edit) : ?>
                     <input type="text"
@@ -30,13 +30,13 @@ function owc_pid_show_field($user) {
                            id="owc_player_id"
                            value="<?php echo esc_attr($player_id); ?>"
                            class="regular-text" />
-                    <p class="description"><?php esc_html_e('Must be unique across all users.', 'owbn-client'); ?></p>
+                    <p class="description"><?php esc_html_e('Must be unique across all users.', 'owbn-core'); ?></p>
                 <?php else : ?>
-                    <strong><?php echo esc_html($player_id ?: __('Not set', 'owbn-client')); ?></strong>
+                    <strong><?php echo esc_html($player_id ?: __('Not set', 'owbn-core')); ?></strong>
                     <?php if ($mode === 'client') : ?>
-                        <p class="description"><?php esc_html_e('Managed by SSO server.', 'owbn-client'); ?></p>
+                        <p class="description"><?php esc_html_e('Managed by SSO server.', 'owbn-core'); ?></p>
                     <?php else : ?>
-                        <p class="description"><?php esc_html_e('Contact an administrator to change.', 'owbn-client'); ?></p>
+                        <p class="description"><?php esc_html_e('Contact an administrator to change.', 'owbn-core'); ?></p>
                     <?php endif; ?>
                 <?php endif; ?>
             </td>
@@ -90,13 +90,13 @@ function owc_asc_profile_roles_section( $user ) {
 		'owc_asc_profile_refresh_' . $user->ID
 	);
 	?>
-	<h3><?php esc_html_e( 'AccessSchema Roles', 'owbn-client' ); ?></h3>
+	<h3><?php esc_html_e( 'AccessSchema Roles', 'owbn-core' ); ?></h3>
 	<?php if ( $refreshed ) : ?>
-		<div class="notice notice-success inline"><p><?php esc_html_e( 'Roles refreshed.', 'owbn-client' ); ?></p></div>
+		<div class="notice notice-success inline"><p><?php esc_html_e( 'Roles refreshed.', 'owbn-core' ); ?></p></div>
 	<?php endif; ?>
 	<table class="form-table">
 		<tr>
-			<th><?php esc_html_e( 'Current Roles', 'owbn-client' ); ?></th>
+			<th><?php esc_html_e( 'Current Roles', 'owbn-core' ); ?></th>
 			<td>
 				<?php if ( ! empty( $roles ) ) : ?>
 					<ul style="margin:0;padding:0;list-style:none;">
@@ -105,7 +105,7 @@ function owc_asc_profile_roles_section( $user ) {
 						<?php endforeach; ?>
 					</ul>
 				<?php else : ?>
-					<em><?php esc_html_e( 'No roles found.', 'owbn-client' ); ?></em>
+					<em><?php esc_html_e( 'No roles found.', 'owbn-core' ); ?></em>
 				<?php endif; ?>
 			</td>
 		</tr>
@@ -114,9 +114,9 @@ function owc_asc_profile_roles_section( $user ) {
 			<th></th>
 			<td>
 				<a href="<?php echo esc_url( $refresh_url ); ?>" class="button">
-					<?php esc_html_e( 'Refresh Roles', 'owbn-client' ); ?>
+					<?php esc_html_e( 'Refresh Roles', 'owbn-core' ); ?>
 				</a>
-				<p class="description"><?php esc_html_e( 'Clears cached roles and fetches fresh from the server.', 'owbn-client' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Clears cached roles and fetches fresh from the server.', 'owbn-core' ); ?></p>
 			</td>
 		</tr>
 		<?php endif; ?>
@@ -148,7 +148,7 @@ function owc_pid_save_field($user_id) {
                 'owc_player_id_duplicate',
                 sprintf(
                     /* translators: %s: the duplicate player ID */
-                    __('Player ID "%s" is already in use.', 'owbn-client'),
+                    __('Player ID "%s" is already in use.', 'owbn-core'),
                     esc_html($new_id)
                 )
             );
@@ -189,7 +189,7 @@ function owc_pid_registration_field() {
     $value = isset($_POST['owc_player_id']) ? sanitize_text_field(wp_unslash($_POST['owc_player_id'])) : '';
     ?>
     <p>
-        <label for="owc_player_id"><?php esc_html_e('Player ID', 'owbn-client'); ?><br />
+        <label for="owc_player_id"><?php esc_html_e('Player ID', 'owbn-core'); ?><br />
             <input type="text" name="owc_player_id" id="owc_player_id"
                    class="input" value="<?php echo esc_attr($value); ?>"
                    size="25" required />
@@ -200,14 +200,14 @@ function owc_pid_registration_field() {
 
 function owc_pid_registration_errors($errors, $sanitized_user_login, $user_email) {
     if (empty($_POST['owc_player_id'])) {
-        $errors->add('owc_pid_empty', __('Player ID is required.', 'owbn-client'));
+        $errors->add('owc_pid_empty', __('Player ID is required.', 'owbn-core'));
         return $errors;
     }
 
     $player_id = sanitize_text_field(wp_unslash($_POST['owc_player_id']));
     if (!owc_pid_is_unique($player_id)) {
         $errors->add('owc_pid_duplicate', sprintf(
-            __('Player ID "%s" is already in use.', 'owbn-client'),
+            __('Player ID "%s" is already in use.', 'owbn-core'),
             esc_html($player_id)
         ));
     }
@@ -224,7 +224,7 @@ function owc_pid_registration_save($user_id) {
 // ── Admin User List Column ───────────────────────────────────────────────────
 
 add_filter('manage_users_columns', function ($columns) {
-    $columns['player_id'] = __('Player ID', 'owbn-client');
+    $columns['player_id'] = __('Player ID', 'owbn-core');
     return $columns;
 });
 
@@ -256,7 +256,7 @@ add_action('admin_notices', function () {
 
     if (empty($player_id)) {
         echo '<div class="notice notice-warning"><p>';
-        esc_html_e('Your Player ID is not set. Contact an administrator or log in via SSO to sync it.', 'owbn-client');
+        esc_html_e('Your Player ID is not set. Contact an administrator or log in via SSO to sync it.', 'owbn-core');
         echo '</p></div>';
     }
 });

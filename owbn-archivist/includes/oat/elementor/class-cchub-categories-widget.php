@@ -8,7 +8,7 @@ use Elementor\Controls_Manager;
 class OWC_CCHub_Categories_Widget extends Widget_Base {
 
 	public function get_name() { return 'owc_cchub_categories'; }
-	public function get_title() { return __( 'ccHub Categories', 'owbn-client' ); }
+	public function get_title() { return __( 'ccHub Categories', 'owbn-archivist' ); }
 	public function get_icon() { return 'eicon-folder-o'; }
 	public function get_categories() { return array( 'owbn-oat' ); }
 	public function get_keywords() { return array( 'cchub', 'custom', 'content', 'categories' ); }
@@ -16,16 +16,16 @@ class OWC_CCHub_Categories_Widget extends Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', array(
-			'label' => __( 'Settings', 'owbn-client' ),
+			'label' => __( 'Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 		$this->add_control( 'browse_url', array(
-			'label'   => __( 'Browse Page URL', 'owbn-client' ),
+			'label'   => __( 'Browse Page URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/cchub/browse/',
 		) );
 		$this->add_control( 'show_counts', array(
-			'label'   => __( 'Show Counts', 'owbn-client' ),
+			'label'   => __( 'Show Counts', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => 'yes',
 		) );

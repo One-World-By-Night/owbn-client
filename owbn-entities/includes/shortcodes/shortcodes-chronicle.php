@@ -157,46 +157,46 @@ function owc_chron_field_wrapper(string $field, string $content, bool $show_labe
 {
     $labels = [
         // Basic
-        'title'                  => __('Chronicle', 'owbn-client'),
-        'chronicle_slug'         => __('Slug', 'owbn-client'),
-        'slug'                   => __('Slug', 'owbn-client'),
-        'genres'                 => __('Genres', 'owbn-client'),
-        'game_type'              => __('Game Type', 'owbn-client'),
-        'active_player_count'    => __('Active Players', 'owbn-client'),
-        'web_url'                => __('Website', 'owbn-client'),
+        'title'                  => __('Chronicle', 'owbn-entities'),
+        'chronicle_slug'         => __('Slug', 'owbn-entities'),
+        'slug'                   => __('Slug', 'owbn-entities'),
+        'genres'                 => __('Genres', 'owbn-entities'),
+        'game_type'              => __('Game Type', 'owbn-entities'),
+        'active_player_count'    => __('Active Players', 'owbn-entities'),
+        'web_url'                => __('Website', 'owbn-entities'),
 
         // Content/WYSIWYG
-        'content'                => __('About', 'owbn-client'),
-        'description'            => __('About', 'owbn-client'),
-        'premise'                => __('Premise', 'owbn-client'),
-        'game_theme'             => __('Theme', 'owbn-client'),
-        'game_mood'              => __('Mood', 'owbn-client'),
-        'traveler_info'          => __('Traveler Information', 'owbn-client'),
+        'content'                => __('About', 'owbn-entities'),
+        'description'            => __('About', 'owbn-entities'),
+        'premise'                => __('Premise', 'owbn-entities'),
+        'game_theme'             => __('Theme', 'owbn-entities'),
+        'game_mood'              => __('Mood', 'owbn-entities'),
+        'traveler_info'          => __('Traveler Information', 'owbn-entities'),
 
         // Staff
-        'hst_info'               => __('Head Storyteller', 'owbn-client'),
-        'cm_info'                => __('Chronicle Manager', 'owbn-client'),
-        'ast_list'               => __('Assistant Storytellers', 'owbn-client'),
+        'hst_info'               => __('Head Storyteller', 'owbn-entities'),
+        'cm_info'                => __('Chronicle Manager', 'owbn-entities'),
+        'ast_list'               => __('Assistant Storytellers', 'owbn-entities'),
 
         // Locations
-        'ooc_locations'          => __('Location', 'owbn-client'),
-        'game_site_list'         => __('Game Sites', 'owbn-client'),
+        'ooc_locations'          => __('Location', 'owbn-entities'),
+        'game_site_list'         => __('Game Sites', 'owbn-entities'),
 
         // Sessions
-        'session_list'           => __('Game Sessions', 'owbn-client'),
+        'session_list'           => __('Game Sessions', 'owbn-entities'),
 
         // Links & Lists
-        'document_links'         => __('Documents', 'owbn-client'),
-        'social_urls'            => __('Social Links', 'owbn-client'),
-        'email_lists'            => __('Mailing Lists', 'owbn-client'),
-        'player_lists'           => __('Player Lists', 'owbn-client'),
+        'document_links'         => __('Documents', 'owbn-entities'),
+        'social_urls'            => __('Social Links', 'owbn-entities'),
+        'email_lists'            => __('Mailing Lists', 'owbn-entities'),
+        'player_lists'           => __('Player Lists', 'owbn-entities'),
 
         // Metadata
-        'chronicle_region'       => __('Region', 'owbn-client'),
-        'chronicle_start_date'   => __('Start Date', 'owbn-client'),
-        'chronicle_probationary' => __('Probationary', 'owbn-client'),
-        'chronicle_satellite'    => __('Satellite', 'owbn-client'),
-        'chronicle_parent'       => __('Parent Chronicle', 'owbn-client'),
+        'chronicle_region'       => __('Region', 'owbn-entities'),
+        'chronicle_start_date'   => __('Start Date', 'owbn-entities'),
+        'chronicle_probationary' => __('Probationary', 'owbn-entities'),
+        'chronicle_satellite'    => __('Satellite', 'owbn-entities'),
+        'chronicle_parent'       => __('Parent Chronicle', 'owbn-entities'),
     ];
 
     $label_text = $labels[$field] ?? ucwords(str_replace('_', ' ', $field));
@@ -273,9 +273,9 @@ function owc_chron_field_boolean(array $c, string $f): string
 
     // Handle various boolean representations
     if ($val === '1' || $val === 1 || $val === true || $val === 'yes' || $val === 'true') {
-        return esc_html__('Yes', 'owbn-client');
+        return esc_html__('Yes', 'owbn-entities');
     }
-    return esc_html__('No', 'owbn-client');
+    return esc_html__('No', 'owbn-entities');
 }
 
 function owc_chron_field_hst_info(array $c, string $f): string

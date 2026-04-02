@@ -43,7 +43,7 @@ add_action( 'admin_bar_menu', function( $wp_admin_bar ) {
 	$wp_admin_bar->add_node( array(
 		'parent' => 'user-actions',
 		'id'     => 'owc-asc-refresh',
-		'title'  => __( 'Refresh my Roles', 'owbn-client' ),
+		'title'  => __( 'Refresh my Roles', 'owbn-core' ),
 		'href'   => wp_nonce_url( add_query_arg( 'owc_asc_self_refresh', '1' ), 'owc_asc_self_refresh' ),
 	) );
 }, 100 );

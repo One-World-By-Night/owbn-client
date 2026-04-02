@@ -20,7 +20,7 @@ function owc_render_coordinators_list(array $coordinators): string
     }
 
     if (empty($coordinators)) {
-        return '<p class="owc-no-results">' . esc_html__('No coordinators found.', 'owbn-client') . '</p>';
+        return '<p class="owc-no-results">' . esc_html__('No coordinators found.', 'owbn-entities') . '</p>';
     }
 
     // Group by coordinator_type
@@ -65,9 +65,9 @@ function owc_render_coordinators_list(array $coordinators): string
                     </div>
 
                     <div class="owc-list-header">
-                        <div class="owc-col-office"><?php esc_html_e('Office', 'owbn-client'); ?></div>
-                        <div class="owc-col-coordinator"><?php esc_html_e('Coordinator', 'owbn-client'); ?></div>
-                        <div class="owc-col-email"><?php esc_html_e('Contact', 'owbn-client'); ?></div>
+                        <div class="owc-col-office"><?php esc_html_e('Office', 'owbn-entities'); ?></div>
+                        <div class="owc-col-coordinator"><?php esc_html_e('Coordinator', 'owbn-entities'); ?></div>
+                        <div class="owc-col-email"><?php esc_html_e('Contact', 'owbn-entities'); ?></div>
                     </div>
 
                     <?php foreach ($group as $coordinator) : ?>
@@ -91,7 +91,7 @@ function owc_render_coordinators_list(array $coordinators): string
 function owc_render_coordinator_row(array $coordinator, string $base_url): string
 {
     $slug = $coordinator['slug'] ?? '';
-    $title = $coordinator['title'] ?? $coordinator['coordinator_title'] ?? __('Untitled', 'owbn-client');
+    $title = $coordinator['title'] ?? $coordinator['coordinator_title'] ?? __('Untitled', 'owbn-entities');
     $url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
     // Coordinator info
@@ -105,10 +105,10 @@ function owc_render_coordinator_row(array $coordinator, string $base_url): strin
         <div class="owc-col-office">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
-        <div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-client'); ?>">
+        <div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-entities'); ?>">
             <?php echo esc_html($name ?: '—'); ?>
         </div>
-        <div class="owc-col-email" data-label="<?php esc_attr_e('Contact', 'owbn-client'); ?>">
+        <div class="owc-col-email" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
             <?php if ($email) : ?>
                 <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
             <?php else : ?>

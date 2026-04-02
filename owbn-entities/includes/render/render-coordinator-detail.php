@@ -13,7 +13,7 @@ defined('ABSPATH') || exit;
 function owc_render_coordinator_detail(array $coordinator): string
 {
     if (empty($coordinator) || isset($coordinator['error'])) {
-        return '<p class="owc-error">' . esc_html($coordinator['error'] ?? __('Coordinator not found.', 'owbn-client')) . '</p>';
+        return '<p class="owc-error">' . esc_html($coordinator['error'] ?? __('Coordinator not found.', 'owbn-entities')) . '</p>';
     }
 
     $list_page_id = get_option(owc_option_name('coordinators_list_page'), 0);
@@ -30,7 +30,7 @@ function owc_render_coordinator_detail(array $coordinator): string
     <div id="owc-coordinator-detail" class="owc-coordinator-detail">
 
         <div id="owc-back-link" class="owc-back-link">
-            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('← Back to Coordinators', 'owbn-client'); ?></a>
+            <a href="<?php echo esc_url($back_url); ?>"><?php esc_html_e('← Back to Coordinators', 'owbn-entities'); ?></a>
         </div>
 
         <?php echo owc_render_coordinator_header($coordinator); ?>
@@ -95,7 +95,7 @@ function owc_render_coordinator_description(array $coordinator): string
         <?php endif; ?>
         <?php if (!empty(trim($office))) : ?>
             <div class="owc-office-description">
-                <h4><?php esc_html_e('Office Description', 'owbn-client'); ?></h4>
+                <h4><?php esc_html_e('Office Description', 'owbn-entities'); ?></h4>
                 <div class="owc-content"><?php echo wp_kses_post($office); ?></div>
             </div>
         <?php endif; ?>
@@ -120,7 +120,7 @@ function owc_render_coordinator_info(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-info">
-        <h3><?php esc_html_e('Coordinator', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Coordinator', 'owbn-entities'); ?></h3>
         <div class="owc-inline-table">
             <div class="owc-inline-row">
                 <span class="owc-inline-name"><?php echo esc_html($name); ?></span>
@@ -149,12 +149,12 @@ function owc_render_coordinator_subcoords(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-subcoords">
-        <h3><?php esc_html_e('Subcoordinators', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Subcoordinators', 'owbn-entities'); ?></h3>
         <div class="owc-inline-table">
             <div class="owc-inline-row owc-inline-header">
-                <span class="owc-inline-name"><?php esc_html_e('Name', 'owbn-client'); ?></span>
-                <span class="owc-inline-role"><?php esc_html_e('Role', 'owbn-client'); ?></span>
-                <span class="owc-inline-email"><?php esc_html_e('Contact', 'owbn-client'); ?></span>
+                <span class="owc-inline-name"><?php esc_html_e('Name', 'owbn-entities'); ?></span>
+                <span class="owc-inline-role"><?php esc_html_e('Role', 'owbn-entities'); ?></span>
+                <span class="owc-inline-email"><?php esc_html_e('Contact', 'owbn-entities'); ?></span>
             </div>
             <?php foreach ($subcoords as $subcoord) : ?>
                 <div class="owc-inline-row">
@@ -200,21 +200,21 @@ function owc_render_coordinator_documents(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-documents owc-info-box">
-        <h3><?php esc_html_e('Genre Documents', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Genre Documents', 'owbn-entities'); ?></h3>
         <?php foreach ($documents as $doc) : ?>
             <div class="owc-document-item">
                 <?php if ($is_logged_in) : ?>
                     <a href="<?php echo esc_url($doc['url']); ?>" target="_blank" rel="noopener"><?php echo esc_html($doc['title'] ?: $doc['url']); ?></a>
                 <?php else : ?>
-                    <?php echo esc_html($doc['title'] ?: __('Document', 'owbn-client')); ?>
+                    <?php echo esc_html($doc['title'] ?: __('Document', 'owbn-entities')); ?>
                 <?php endif; ?>
                 <?php if (!empty($doc['last_updated'])) : ?>
-                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-client'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
+                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-entities'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
         <?php if (!$is_logged_in) : ?>
-            <p class="owc-auth-notice"><?php esc_html_e('Downloads only available to authenticated users.', 'owbn-client'); ?></p>
+            <p class="owc-auth-notice"><?php esc_html_e('Downloads only available to authenticated users.', 'owbn-entities'); ?></p>
         <?php endif; ?>
     </div>
 <?php
@@ -236,14 +236,14 @@ function owc_render_coordinator_player_lists(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-player-lists">
-        <h3><?php esc_html_e('Player Lists', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Player Lists', 'owbn-entities'); ?></h3>
         <div class="owc-player-list-table">
             <div class="owc-player-list-row owc-player-list-header">
-                <span class="owc-pl-name"><?php esc_html_e('Name', 'owbn-client'); ?></span>
-                <span class="owc-pl-access"><?php esc_html_e('Access', 'owbn-client'); ?></span>
-                <span class="owc-pl-type"><?php esc_html_e('IC/OOC', 'owbn-client'); ?></span>
-                <span class="owc-pl-moderator"><?php esc_html_e('Moderator', 'owbn-client'); ?></span>
-                <span class="owc-pl-link"><?php esc_html_e('Link', 'owbn-client'); ?></span>
+                <span class="owc-pl-name"><?php esc_html_e('Name', 'owbn-entities'); ?></span>
+                <span class="owc-pl-access"><?php esc_html_e('Access', 'owbn-entities'); ?></span>
+                <span class="owc-pl-type"><?php esc_html_e('IC/OOC', 'owbn-entities'); ?></span>
+                <span class="owc-pl-moderator"><?php esc_html_e('Moderator', 'owbn-entities'); ?></span>
+                <span class="owc-pl-link"><?php esc_html_e('Link', 'owbn-entities'); ?></span>
             </div>
             <?php foreach ($lists as $list) : ?>
                 <div class="owc-player-list-row">
@@ -263,7 +263,7 @@ function owc_render_coordinator_player_lists(array $coordinator): string
                     </span>
                     <span class="owc-pl-link">
                         <?php if (!empty($list['signup_url'])) : ?>
-                            <a href="<?php echo esc_url($list['signup_url']); ?>" target="_blank" rel="noopener"><?php esc_html_e('Link', 'owbn-client'); ?></a>
+                            <a href="<?php echo esc_url($list['signup_url']); ?>" target="_blank" rel="noopener"><?php esc_html_e('Link', 'owbn-entities'); ?></a>
                         <?php endif; ?>
                     </span>
                 </div>
@@ -289,7 +289,7 @@ function owc_render_coordinator_contact_lists(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-contact-lists owc-info-box">
-        <h3><?php esc_html_e('Contact Lists', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Contact Lists', 'owbn-entities'); ?></h3>
         <?php foreach ($lists as $list) : ?>
             <div class="owc-contact-item">
                 <?php if (!empty($list['email_address'])) : ?>
@@ -338,13 +338,13 @@ function owc_render_coordinator_hosting_chronicle(array $coordinator): string
     ob_start();
 ?>
     <div class="owc-coordinator-hosting-chronicle owc-info-box">
-        <h3><?php esc_html_e('Hosting Chronicle', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Hosting Chronicle', 'owbn-entities'); ?></h3>
         <div class="owc-hosting-link">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
         <?php if ($house_rules_url) : ?>
             <div class="owc-hosting-house-rules">
-                <a href="<?php echo esc_url($house_rules_url); ?>" target="_blank" rel="noopener"><?php esc_html_e('House Rules', 'owbn-client'); ?></a>
+                <a href="<?php echo esc_url($house_rules_url); ?>" target="_blank" rel="noopener"><?php esc_html_e('House Rules', 'owbn-entities'); ?></a>
             </div>
         <?php endif; ?>
     </div>
@@ -371,7 +371,7 @@ function owc_render_coordinator_territories(array $coordinator): string
     ob_start();
 ?>
     <div id="owc-coordinator-territories" class="owc-coordinator-territories">
-        <h2><?php esc_html_e('Territories', 'owbn-client'); ?></h2>
+        <h2><?php esc_html_e('Territories', 'owbn-entities'); ?></h2>
         <?php echo owc_render_territory_box($territories, 'coordinator', $coordinator['slug'] ?? ''); ?>
     </div>
 <?php

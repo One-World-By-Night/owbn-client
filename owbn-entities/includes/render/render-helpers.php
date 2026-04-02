@@ -57,7 +57,7 @@ function owc_render_ast_list(array $ast_list): string
     ob_start();
 ?>
     <div id="owc-staff-ast-list" class="owc-staff-ast-list">
-        <h3><?php esc_html_e('Assistant Storytellers', 'owbn-client'); ?></h3>
+        <h3><?php esc_html_e('Assistant Storytellers', 'owbn-entities'); ?></h3>
         <div class="owc-ast-grid">
             <?php foreach ($ast_list as $ast) : ?>
                 <div class="owc-ast-item">
@@ -133,12 +133,12 @@ function owc_render_session_item(array $session): string
             <span class="owc-session-times">
                 <?php if (!empty($session['checkin_time'])) : ?>
                     <span class="owc-session-checkin">
-                        <?php esc_html_e('Check-in:', 'owbn-client'); ?> <?php echo esc_html($session['checkin_time']); ?>
+                        <?php esc_html_e('Check-in:', 'owbn-entities'); ?> <?php echo esc_html($session['checkin_time']); ?>
                     </span>
                 <?php endif; ?>
                 <?php if (!empty($session['start_time'])) : ?>
                     <span class="owc-session-start">
-                        <?php esc_html_e('Start:', 'owbn-client'); ?> <?php echo esc_html($session['start_time']); ?>
+                        <?php esc_html_e('Start:', 'owbn-entities'); ?> <?php echo esc_html($session['start_time']); ?>
                     </span>
                 <?php endif; ?>
             </span>
@@ -199,7 +199,7 @@ function owc_render_document_links(array $links): string
                     <?php echo esc_html($doc['title'] ?: $url); ?>
                 </a>
                 <?php if (!empty($doc['last_updated'])) : ?>
-                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-client'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
+                    <span class="owc-document-updated">(<?php esc_html_e('Updated:', 'owbn-entities'); ?> <?php echo esc_html($doc['last_updated']); ?>)</span>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>
@@ -357,7 +357,7 @@ function owc_render_player_lists(array $lists): string
                     <a class="owc-player-list-email" href="mailto:<?php echo esc_attr($list['address']); ?>"><?php echo esc_html($list['address']); ?></a>
                 <?php endif; ?>
                 <?php if (!empty($list['signup_url'])) : ?>
-                    <a class="owc-player-list-signup" href="<?php echo esc_url($list['signup_url']); ?>" target="_blank" rel="noopener"><?php esc_html_e('Sign Up', 'owbn-client'); ?></a>
+                    <a class="owc-player-list-signup" href="<?php echo esc_url($list['signup_url']); ?>" target="_blank" rel="noopener"><?php esc_html_e('Sign Up', 'owbn-entities'); ?></a>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>

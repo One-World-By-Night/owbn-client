@@ -554,7 +554,7 @@ function owc_asc_render_entity_picker( $args ) {
 		printf(
 			'<input type="text" id="%s_search" class="oat-entity-search regular-text" placeholder="%s" autocomplete="off"%s />',
 			esc_attr( $id ),
-			esc_attr__( 'Type to search chronicles & coordinators...', 'owbn-client' ),
+			esc_attr__( 'Type to search chronicles & coordinators...', 'owbn-core' ),
 			( '' !== $pre_label ) ? ' style="display:none;"' : ''
 		);
 		printf(

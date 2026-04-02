@@ -24,6 +24,7 @@ add_action( 'plugins_loaded', function() {
     }
     require_once OWC_SUPPORT_DIR . 'includes/fields.php';
     require_once OWC_SUPPORT_DIR . 'includes/ajax.php';
+    require_once OWC_SUPPORT_DIR . 'includes/metabox.php';
 }, 20 );
 
 // Enqueue assets on ticket pages.

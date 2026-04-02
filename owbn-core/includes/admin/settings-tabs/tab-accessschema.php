@@ -16,14 +16,14 @@ $remote_key = get_option( owc_option_name( 'asc_remote_api_key' ), '' );
 $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
 ?>
 
-<h2><?php esc_html_e( 'accessSchema', 'owbn-client' ); ?></h2>
-<p class="description"><?php esc_html_e( 'Centralized accessSchema client. Provides role-based access control for all OWBN plugins through a single configuration.', 'owbn-client' ); ?></p>
+<h2><?php esc_html_e( 'accessSchema', 'owbn-core' ); ?></h2>
+<p class="description"><?php esc_html_e( 'Centralized accessSchema client. Provides role-based access control for all OWBN plugins through a single configuration.', 'owbn-core' ); ?></p>
 
 <form method="post" action="options.php">
     <?php settings_fields( $group ); ?>
     <table class="form-table" role="presentation">
         <tr>
-            <th scope="row"><?php esc_html_e( 'Mode', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Mode', 'owbn-core' ); ?></th>
             <td>
                 <fieldset>
                     <label>
@@ -32,7 +32,7 @@ $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
                             class="owc-asc-mode"
                             value="local"
                             <?php checked( $mode, 'local' ); ?> />
-                        <?php esc_html_e( 'Local — accessSchema server plugin is installed on this site', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'Local — accessSchema server plugin is installed on this site', 'owbn-core' ); ?>
                     </label><br>
                     <label>
                         <input type="radio"
@@ -40,44 +40,44 @@ $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
                             class="owc-asc-mode"
                             value="remote"
                             <?php checked( $mode, 'remote' ); ?> />
-                        <?php esc_html_e( 'Remote — Connect to a remote accessSchema server', 'owbn-client' ); ?>
+                        <?php esc_html_e( 'Remote — Connect to a remote accessSchema server', 'owbn-core' ); ?>
                     </label>
                 </fieldset>
             </td>
         </tr>
         <tr class="owc-asc-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'Server URL', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Server URL', 'owbn-core' ); ?></th>
             <td>
                 <input type="url"
                     name="<?php echo esc_attr( owc_option_name( 'asc_remote_url' ) ); ?>"
                     value="<?php echo esc_url( $remote_url ); ?>"
                     class="regular-text"
                     placeholder="https://council.owbn.net" />
-                <p class="description"><?php esc_html_e( 'Base URL of the site running the accessSchema server plugin.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'Base URL of the site running the accessSchema server plugin.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owc-asc-remote" <?php echo $mode === 'remote' ? '' : 'style="display:none;"'; ?>>
-            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'API Key', 'owbn-core' ); ?></th>
             <td>
                 <input type="text"
                     name="<?php echo esc_attr( owc_option_name( 'asc_remote_api_key' ) ); ?>"
                     value="<?php echo $remote_key ? esc_attr( str_repeat( '●', 12 ) . substr( $remote_key, -4 ) ) : ''; ?>"
-                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-client' ); ?>"
+                    placeholder="<?php echo esc_attr__( 'Enter API key', 'owbn-core' ); ?>"
                     class="regular-text code"
                     onfocus="if(this.value.indexOf('●')!==-1){this.value='';this.type='password';}"
                     autocomplete="new-password" />
-                <p class="description"><?php esc_html_e( 'API key for the accessSchema server.', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'API key for the accessSchema server.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr>
-            <th scope="row"><?php esc_html_e( 'Role Cache TTL (seconds)', 'owbn-client' ); ?></th>
+            <th scope="row"><?php esc_html_e( 'Role Cache TTL (seconds)', 'owbn-core' ); ?></th>
             <td>
                 <input type="number"
                     name="<?php echo esc_attr( owc_option_name( 'asc_cache_ttl' ) ); ?>"
                     value="<?php echo esc_attr( $cache_ttl ); ?>"
                     class="small-text"
                     min="0" />
-                <p class="description"><?php esc_html_e( 'How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)', 'owbn-client' ); ?></p>
+                <p class="description"><?php esc_html_e( 'How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)', 'owbn-core' ); ?></p>
             </td>
         </tr>
     </table>
@@ -89,11 +89,11 @@ $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
 <?php
 $asc_roles_cache = get_transient( 'owc_asc_roles_all' );
 ?>
-<h3><?php esc_html_e( 'Status', 'owbn-client' ); ?></h3>
+<h3><?php esc_html_e( 'Status', 'owbn-core' ); ?></h3>
 <table class="widefat owc-tab-status">
     <tbody>
         <tr>
-            <th style="width:200px"><?php esc_html_e( 'Mode', 'owbn-client' ); ?></th>
+            <th style="width:200px"><?php esc_html_e( 'Mode', 'owbn-core' ); ?></th>
             <td>
                 <span class="owc-mode-badge owc-mode-badge--<?php echo esc_attr( $mode ); ?>">
                     <?php echo esc_html( ucfirst( $mode ) ); ?>
@@ -102,25 +102,25 @@ $asc_roles_cache = get_transient( 'owc_asc_roles_all' );
         </tr>
         <?php if ( $mode === 'remote' && $remote_url ) : ?>
         <tr>
-            <th><?php esc_html_e( 'Server URL', 'owbn-client' ); ?></th>
+            <th><?php esc_html_e( 'Server URL', 'owbn-core' ); ?></th>
             <td><?php echo esc_html( $remote_url ); ?></td>
         </tr>
         <?php endif; ?>
         <tr>
-            <th><?php esc_html_e( 'Roles Cache', 'owbn-client' ); ?></th>
+            <th><?php esc_html_e( 'Roles Cache', 'owbn-core' ); ?></th>
             <td>
                 <?php
                 if ( is_array( $asc_roles_cache ) && isset( $asc_roles_cache['total'] ) ) {
-                    echo absint( $asc_roles_cache['total'] ) . ' ' . esc_html__( 'roles cached', 'owbn-client' );
+                    echo absint( $asc_roles_cache['total'] ) . ' ' . esc_html__( 'roles cached', 'owbn-core' );
                 } else {
-                    esc_html_e( 'Empty — will populate on first access', 'owbn-client' );
+                    esc_html_e( 'Empty — will populate on first access', 'owbn-core' );
                 }
                 ?>
             </td>
         </tr>
         <?php if ( function_exists( 'owc_asc_get_clients' ) ) : ?>
         <tr>
-            <th><?php esc_html_e( 'Registered Clients', 'owbn-client' ); ?></th>
+            <th><?php esc_html_e( 'Registered Clients', 'owbn-core' ); ?></th>
             <td>
                 <?php
                 $asc_clients = owc_asc_get_clients();
@@ -135,7 +135,7 @@ $asc_roles_cache = get_transient( 'owc_asc_roles_all' );
                     <?php endforeach; ?>
                 </ul>
                 <?php else : ?>
-                <p style="color:#999;"><?php esc_html_e( 'No plugins have registered with the centralized ASC module yet.', 'owbn-client' ); ?></p>
+                <p style="color:#999;"><?php esc_html_e( 'No plugins have registered with the centralized ASC module yet.', 'owbn-core' ); ?></p>
                 <?php endif; ?>
             </td>
         </tr>
@@ -144,9 +144,9 @@ $asc_roles_cache = get_transient( 'owc_asc_roles_all' );
 </table>
 
 <div class="owc-data-search" data-action="owc_search_asc_roles">
-    <h3><?php esc_html_e( 'Search Data', 'owbn-client' ); ?></h3>
+    <h3><?php esc_html_e( 'Search Data', 'owbn-core' ); ?></h3>
     <input type="text" class="owc-data-search-input"
-        placeholder="<?php esc_attr_e( 'Search roles...', 'owbn-client' ); ?>"
+        placeholder="<?php esc_attr_e( 'Search roles...', 'owbn-core' ); ?>"
         data-columns='[{"key":"path","label":"Path"},{"key":"name","label":"Name"},{"key":"depth","label":"Depth"}]' />
     <div class="owc-data-search-results"></div>
 </div>

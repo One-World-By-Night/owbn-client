@@ -630,14 +630,14 @@ function owc_oat_ajax_submit_entry_frontend() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
     if ( ! is_user_logged_in() ) {
-        wp_send_json_error( __( 'You must be logged in to submit.', 'owbn-client' ) );
+        wp_send_json_error( __( 'You must be logged in to submit.', 'owbn-archivist' ) );
     }
 
     $domain    = isset( $_POST['oat_domain'] ) ? sanitize_key( $_POST['oat_domain'] ) : '';
     $form_slug = isset( $_POST['oat_form_slug'] ) ? sanitize_key( $_POST['oat_form_slug'] ) : '';
 
     if ( ! $domain ) {
-        wp_send_json_error( __( 'Please select a domain.', 'owbn-client' ) );
+        wp_send_json_error( __( 'Please select a domain.', 'owbn-archivist' ) );
     }
 
     $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug' );

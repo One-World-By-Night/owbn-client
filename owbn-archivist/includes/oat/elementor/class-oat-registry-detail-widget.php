@@ -12,7 +12,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Archivist Registry Detail', 'owbn-client' );
+		return __( 'Archivist Registry Detail', 'owbn-archivist' );
 	}
 
 	public function get_icon() {
@@ -37,18 +37,18 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Settings', 'owbn-client' ),
+			'label' => __( 'Settings', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'registry_url', array(
-			'label'   => __( 'Back to Registry URL', 'owbn-client' ),
+			'label'   => __( 'Back to Registry URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/oat-registry/',
 		) );
 
 		$this->add_control( 'entry_detail_url', array(
-			'label'   => __( 'Entry Detail Base URL', 'owbn-client' ),
+			'label'   => __( 'Entry Detail Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/oat-entry/',
 		) );
@@ -58,13 +58,13 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 	protected function render() {
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view character details.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view character details.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">'
-				. esc_html__( 'OAT Registry Detail — reads ?character_id= from URL.', 'owbn-client' )
+				. esc_html__( 'OAT Registry Detail — reads ?character_id= from URL.', 'owbn-archivist' )
 				. '</div>';
 			return;
 		}
@@ -75,7 +75,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 		$character_id = isset( $_GET['character_id'] ) ? absint( $_GET['character_id'] ) : 0;
 		if ( ! $character_id ) {
-			echo '<p>' . esc_html__( 'No character specified.', 'owbn-client' ) . '</p>';
+			echo '<p>' . esc_html__( 'No character specified.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -208,7 +208,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 		};
 		?>
 		<div class="oat-registry-detail">
-			<p><a href="<?php echo esc_url( $registry_url ); ?>">&larr; <?php esc_html_e( 'Back to Registry', 'owbn-client' ); ?></a></p>
+			<p><a href="<?php echo esc_url( $registry_url ); ?>">&larr; <?php esc_html_e( 'Back to Registry', 'owbn-archivist' ); ?></a></p>
 
 			<h2><?php echo esc_html( $char_name ); ?></h2>
 
@@ -251,12 +251,12 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 			<table style="width:100%;border-collapse:collapse;">
 				<?php
-				$field_row( __( 'Character Name', 'owbn-client' ), 'character_name', $char_name );
+				$field_row( __( 'Character Name', 'owbn-archivist' ), 'character_name', $char_name );
 				?>
 
 				<!-- Chronicle: entity picker for editable, text for read-only -->
 				<tr>
-					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'Chronicle', 'owbn-client' ); ?></td>
+					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'Chronicle', 'owbn-archivist' ); ?></td>
 					<td style="padding:4px 8px;">
 					<?php if ( $editable['chronicle_slug'] && $any_editable && function_exists( 'owc_asc_render_entity_picker' ) ) :
 						$is_npc_char = $pc_npc === 'npc';
@@ -282,19 +282,19 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				</tr>
 
 				<?php
-				$field_row( __( 'Creature Type', 'owbn-client' ), 'creature_type', $creature );
-				$field_row( __( 'Sub-Type', 'owbn-client' ), 'creature_sub_type', $creature_sub );
-				$field_row( __( 'PC/NPC', 'owbn-client' ), 'pc_npc', $pc_npc, 'select', array( 'pc' => __( 'PC', 'owbn-client' ), 'npc' => __( 'NPC', 'owbn-client' ) ) );
-				$field_row( __( 'Status', 'owbn-client' ), 'status', $char_status, 'select', array(
-					'active' => __( 'Active', 'owbn-client' ), 'inactive' => __( 'Inactive', 'owbn-client' ), 'dead' => __( 'Dead', 'owbn-client' ), 'shelved' => __( 'Shelved', 'owbn-client' ),
+				$field_row( __( 'Creature Type', 'owbn-archivist' ), 'creature_type', $creature );
+				$field_row( __( 'Sub-Type', 'owbn-archivist' ), 'creature_sub_type', $creature_sub );
+				$field_row( __( 'PC/NPC', 'owbn-archivist' ), 'pc_npc', $pc_npc, 'select', array( 'pc' => __( 'PC', 'owbn-archivist' ), 'npc' => __( 'NPC', 'owbn-archivist' ) ) );
+				$field_row( __( 'Status', 'owbn-archivist' ), 'status', $char_status, 'select', array(
+					'active' => __( 'Active', 'owbn-archivist' ), 'inactive' => __( 'Inactive', 'owbn-archivist' ), 'dead' => __( 'Dead', 'owbn-archivist' ), 'shelved' => __( 'Shelved', 'owbn-archivist' ),
 				) );
 				?>
 
 				<!-- PC-only fields -->
 				<tbody class="oat-pc-fields" style="<?php echo $pc_npc !== 'pc' ? 'display:none;' : ''; ?>">
 				<?php
-				$field_row( __( 'Player Name', 'owbn-client' ), 'player_name', $player_name );
-				$field_row( __( 'Player Email', 'owbn-client' ), 'player_email', $player_email, 'email' );
+				$field_row( __( 'Player Name', 'owbn-archivist' ), 'player_name', $player_name );
+				$field_row( __( 'Player Email', 'owbn-archivist' ), 'player_email', $player_email, 'email' );
 				?>
 				<?php if ( $edit_scope === 'archivist' ) :
 					$linked_user = $character['wp_user_id'] ?? 0;
@@ -305,17 +305,17 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					}
 				?>
 				<tr>
-					<td style="padding:4px 8px;font-weight:bold;"><?php esc_html_e( 'Linked Player', 'owbn-client' ); ?></td>
+					<td style="padding:4px 8px;font-weight:bold;"><?php esc_html_e( 'Linked Player', 'owbn-archivist' ); ?></td>
 					<td style="padding:4px 8px;">
 						<?php if ( $linked_user && $linked_name ) : ?>
 							<span><?php echo esc_html( $linked_name ); ?></span>
 							<input type="hidden" name="wp_user_id" value="<?php echo (int) $linked_user; ?>">
 						<?php else : ?>
-							<input type="text" id="player_search" placeholder="<?php esc_attr_e( 'Search by name or email...', 'owbn-client' ); ?>" autocomplete="off" style="width:100%;max-width:400px;">
+							<input type="text" id="player_search" placeholder="<?php esc_attr_e( 'Search by name or email...', 'owbn-archivist' ); ?>" autocomplete="off" style="width:100%;max-width:400px;">
 							<input type="hidden" name="wp_user_id" id="wp_user_id" value="0">
 							<div id="player_search_result" style="display:none;margin-top:4px;">
 								<span id="player_search_name"></span>
-								<button type="button" onclick="document.getElementById('wp_user_id').value='0';this.parentElement.style.display='none';document.getElementById('player_search').style.display='';" class="button-link">(<?php esc_html_e( 'clear', 'owbn-client' ); ?>)</button>
+								<button type="button" onclick="document.getElementById('wp_user_id').value='0';this.parentElement.style.display='none';document.getElementById('player_search').style.display='';" class="button-link">(<?php esc_html_e( 'clear', 'owbn-archivist' ); ?>)</button>
 							</div>
 						<?php endif; ?>
 					</td>
@@ -327,7 +327,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				<tbody class="oat-npc-fields" style="<?php echo $pc_npc !== 'npc' ? 'display:none;' : ''; ?>">
 				<?php if ( $any_editable && function_exists( 'owc_asc_render_entity_picker' ) ) : ?>
 				<tr>
-					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'NPC Owner', 'owbn-client' ); ?></td>
+					<td style="padding:4px 8px;font-weight:bold;width:160px;"><?php esc_html_e( 'NPC Owner', 'owbn-archivist' ); ?></td>
 					<td style="padding:4px 8px;">
 						<?php
 						$npc_typed = '';
@@ -352,7 +352,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				<?php else : ?>
 					<?php if ( $npc_coordinator ) : ?>
 					<tr>
-						<td style="padding:4px 8px;font-weight:bold;"><?php esc_html_e( 'NPC Owner', 'owbn-client' ); ?></td>
+						<td style="padding:4px 8px;font-weight:bold;"><?php esc_html_e( 'NPC Owner', 'owbn-archivist' ); ?></td>
 						<td style="padding:4px 8px;"><?php echo esc_html( ucfirst( $npc_coordinator ) . ( $npc_type ? ' (' . $npc_type . ')' : '' ) ); ?></td>
 					</tr>
 					<?php endif; ?>
@@ -361,24 +361,24 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			</table>
 
 			<?php if ( $any_editable ) : ?>
-				<p><button type="submit" name="owc_oat_update_character" value="1" class="oat-btn oat-btn-primary"><?php esc_html_e( 'Update Character', 'owbn-client' ); ?></button></p>
+				<p><button type="submit" name="owc_oat_update_character" value="1" class="oat-btn oat-btn-primary"><?php esc_html_e( 'Update Character', 'owbn-archivist' ); ?></button></p>
 			</form>
 			<?php endif; ?>
 
 			<hr style="margin:20px 0;">
 
 			<!-- Active Grants -->
-			<h3><?php printf( esc_html__( 'Active Grants (%d)', 'owbn-client' ), count( $active_grants ) ); ?></h3>
+			<h3><?php printf( esc_html__( 'Active Grants (%d)', 'owbn-archivist' ), count( $active_grants ) ); ?></h3>
 			<?php if ( empty( $active_grants ) ) : ?>
-				<p><?php esc_html_e( 'No active grants.', 'owbn-client' ); ?></p>
+				<p><?php esc_html_e( 'No active grants.', 'owbn-archivist' ); ?></p>
 			<?php else : ?>
 				<table class="oat-registry-table" style="width:100%;border-collapse:collapse;">
 					<thead><tr>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Type', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Value', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Created', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Expires', 'owbn-client' ); ?></th>
-						<?php if ( $can_revoke ) : ?><th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Action', 'owbn-client' ); ?></th><?php endif; ?>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Type', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Value', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Created', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Expires', 'owbn-archivist' ); ?></th>
+						<?php if ( $can_revoke ) : ?><th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Action', 'owbn-archivist' ); ?></th><?php endif; ?>
 					</tr></thead>
 					<tbody>
 					<?php foreach ( $active_grants as $g ) : ?>
@@ -392,7 +392,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 								<form method="post" style="display:inline;">
 									<?php wp_nonce_field( 'owc_oat_revoke_grant' ); ?>
 									<input type="hidden" name="grant_id" value="<?php echo (int)( $g['id'] ?? 0 ); ?>">
-									<button type="submit" name="owc_oat_revoke_grant" value="1" class="oat-btn oat-btn-small" onclick="return confirm('<?php echo esc_js( __( 'Revoke this grant?', 'owbn-client' ) ); ?>');"><?php esc_html_e( 'Revoke', 'owbn-client' ); ?></button>
+									<button type="submit" name="owc_oat_revoke_grant" value="1" class="oat-btn oat-btn-small" onclick="return confirm('<?php echo esc_js( __( 'Revoke this grant?', 'owbn-archivist' ) ); ?>');"><?php esc_html_e( 'Revoke', 'owbn-archivist' ); ?></button>
 								</form>
 							</td>
 							<?php endif; ?>
@@ -403,7 +403,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<?php endif; ?>
 
 			<?php if ( $can_manage ) : ?>
-			<h4><?php esc_html_e( 'Add Grant', 'owbn-client' ); ?></h4>
+			<h4><?php esc_html_e( 'Add Grant', 'owbn-archivist' ); ?></h4>
 			<form method="post" style="margin-bottom:20px;">
 				<?php wp_nonce_field( 'owc_oat_create_grant' ); ?>
 				<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
@@ -424,11 +424,11 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 						?>
 					</div>
 					<div>
-						<label style="font-size:0.85em;"><?php esc_html_e( 'Expires', 'owbn-client' ); ?><br>
+						<label style="font-size:0.85em;"><?php esc_html_e( 'Expires', 'owbn-archivist' ); ?><br>
 						<input type="date" name="expires_at" title="Leave blank for no expiry"></label>
 					</div>
 					<div>
-						<button type="submit" name="owc_oat_create_grant" value="1" class="oat-btn oat-btn-secondary"><?php esc_html_e( 'Add Grant', 'owbn-client' ); ?></button>
+						<button type="submit" name="owc_oat_create_grant" value="1" class="oat-btn oat-btn-secondary"><?php esc_html_e( 'Add Grant', 'owbn-archivist' ); ?></button>
 					</div>
 				</div>
 			</form>
@@ -436,13 +436,13 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 			<?php if ( ! empty( $expired_grants ) ) : ?>
 			<details style="margin-bottom:20px;">
-				<summary><?php printf( esc_html__( 'Grant History (%d)', 'owbn-client' ), count( $expired_grants ) ); ?></summary>
+				<summary><?php printf( esc_html__( 'Grant History (%d)', 'owbn-archivist' ), count( $expired_grants ) ); ?></summary>
 				<table class="oat-registry-table" style="width:100%;border-collapse:collapse;margin-top:8px;">
 					<thead><tr>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Type', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Value', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Created', 'owbn-client' ); ?></th>
-						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Expired', 'owbn-client' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Type', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Value', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Created', 'owbn-archivist' ); ?></th>
+						<th style="text-align:left;padding:6px 8px;border-bottom:2px solid #ddd;"><?php esc_html_e( 'Expired', 'owbn-archivist' ); ?></th>
 					</tr></thead>
 					<tbody>
 					<?php foreach ( $expired_grants as $g ) : ?>
@@ -473,7 +473,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			}
 			if ( ! empty( $created_content ) ) : ?>
 				<hr style="margin:20px 0;">
-				<h3><?php printf( esc_html__( 'Custom Content Created (%d)', 'owbn-client' ), count( $created_content ) ); ?></h3>
+				<h3><?php printf( esc_html__( 'Custom Content Created (%d)', 'owbn-archivist' ), count( $created_content ) ); ?></h3>
 				<ul style="margin:0;padding-left:20px;">
 					<?php foreach ( $created_content as $cc ) :
 						$cc_meta = array();
@@ -506,9 +506,9 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			<hr style="margin:20px 0;">
 
 			<!-- Registry Entries -->
-			<h3><?php printf( esc_html__( 'Registry Entries (%d)', 'owbn-client' ), count( $entries ) ); ?></h3>
+			<h3><?php printf( esc_html__( 'Registry Entries (%d)', 'owbn-archivist' ), count( $entries ) ); ?></h3>
 			<?php if ( empty( $entries ) ) : ?>
-				<p><?php esc_html_e( 'No approved entries for this character.', 'owbn-client' ); ?></p>
+				<p><?php esc_html_e( 'No approved entries for this character.', 'owbn-archivist' ); ?></p>
 			<?php else : ?>
 				<?php foreach ( $entries as $e ) :
 					$e_id      = (int)( $e['id'] ?? 0 );
@@ -561,14 +561,14 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					</div>
 					<div style="display:none;padding:8px 12px;border:1px solid #eee;border-top:0;background:#fafafa;">
 						<table style="width:100%;border-collapse:collapse;font-size:0.9em;">
-							<tr><td style="padding:3px 8px;font-weight:bold;width:140px;"><?php esc_html_e( 'Entry ID', 'owbn-client' ); ?></td><td style="padding:3px 8px;">#<?php echo $e_id; ?></td></tr>
-							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Domain', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_domain ); ?></td></tr>
-							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Form', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_form ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;width:140px;"><?php esc_html_e( 'Entry ID', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;">#<?php echo $e_id; ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Domain', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_domain ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Form', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_form ); ?></td></tr>
 							<?php if ( $e_coord ) : ?>
-								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Approving Authority', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( ucfirst( $e_coord ) ); ?></td></tr>
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Approving Authority', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( ucfirst( $e_coord ) ); ?></td></tr>
 							<?php endif; ?>
 							<?php if ( $reg_level ) : ?>
-								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Regulation Level', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $reg_level ); ?></td></tr>
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Regulation Level', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $reg_level ); ?></td></tr>
 							<?php endif; ?>
 							<?php if ( $item_desc ) :
 								// Try to find the source custom content entry to link to.
@@ -609,7 +609,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 									}
 								}
 							?>
-								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Item', 'owbn-client' ); ?></td><td style="padding:3px 8px;">
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Item', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;">
 									<?php if ( $item_link ) : ?>
 										<a href="<?php echo $item_link; ?>" target="_blank"><?php echo esc_html( $item_desc ); ?> &#x29C9;</a>
 									<?php elseif ( $item_missing ) : ?>
@@ -619,8 +619,8 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 									<?php endif; ?>
 								</td></tr>
 							<?php endif; ?>
-							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Status', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_status ); ?></td></tr>
-							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Created', 'owbn-client' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_created ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Status', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_status ); ?></td></tr>
+							<tr><td style="padding:3px 8px;font-weight:bold;"><?php esc_html_e( 'Created', 'owbn-archivist' ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $e_created ); ?></td></tr>
 							<?php
 							// Show any other meta
 							$skip_keys = array( 'item_description', 'regulation_level', 'drupal_ru_id', 'drupal_subtype_id', 'action_type' );

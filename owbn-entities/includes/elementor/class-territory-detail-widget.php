@@ -22,7 +22,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 
 	public function get_title(): string
 	{
-		return __('Territory Detail', 'owbn-client');
+		return __('Territory Detail', 'owbn-entities');
 	}
 
 	public function get_icon(): string
@@ -56,7 +56,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __('Content', 'owbn-client'),
+				'label' => __('Content', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -64,11 +64,11 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'id_source',
 			[
-				'label'   => __('Territory Source', 'owbn-client'),
+				'label'   => __('Territory Source', 'owbn-entities'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'url'   => __('From URL Parameter (?id=)', 'owbn-client'),
-					'fixed' => __('Fixed Territory', 'owbn-client'),
+					'url'   => __('From URL Parameter (?id=)', 'owbn-entities'),
+					'fixed' => __('Fixed Territory', 'owbn-entities'),
 				],
 				'default' => 'url',
 			]
@@ -77,7 +77,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'fixed_id',
 			[
-				'label'       => __('Territory ID', 'owbn-client'),
+				'label'       => __('Territory ID', 'owbn-entities'),
 				'type'        => Controls_Manager::NUMBER,
 				'placeholder' => '123',
 				'condition'   => [
@@ -92,7 +92,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_container',
 			[
-				'label' => __('Container', 'owbn-client'),
+				'label' => __('Container', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -100,7 +100,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'container_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-territory-detail' => 'background-color: {{VALUE}};',
@@ -111,7 +111,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'container_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', '%'],
 				'selectors'  => [
@@ -126,7 +126,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_typography',
 			[
-				'label' => __('Typography', 'owbn-client'),
+				'label' => __('Typography', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -134,7 +134,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'title_color',
 			[
-				'label'     => __('Title Color', 'owbn-client'),
+				'label'     => __('Title Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-territory-detail h1' => 'color: {{VALUE}};',
@@ -153,7 +153,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		$this->add_control(
 			'content_color',
 			[
-				'label'     => __('Content Color', 'owbn-client'),
+				'label'     => __('Content Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-territory-detail' => 'color: {{VALUE}};',
@@ -179,7 +179,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 
 		// Check if territories are enabled
 		if (!owc_territories_enabled()) {
-			echo '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-client') . '</p>';
+			echo '<p class="owc-error">' . esc_html__('Territories are not enabled.', 'owbn-entities') . '</p>';
 			return;
 		}
 
@@ -194,9 +194,9 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 		// Validate ID
 		if (empty($territory_id)) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('No territory selected. Set a fixed ID or use ?id= parameter.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('No territory selected. Set a fixed ID or use ?id= parameter.', 'owbn-entities') . '</p>';
 			} else {
-				echo '<p class="owc-error">' . esc_html__('No territory specified.', 'owbn-client') . '</p>';
+				echo '<p class="owc-error">' . esc_html__('No territory specified.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -206,7 +206,7 @@ class OWC_Territory_Detail_Widget extends Widget_Base
 
 		// Handle error
 		if (isset($data['error']) || empty($data)) {
-			echo '<p class="owc-error">' . esc_html($data['error'] ?? __('Territory not found.', 'owbn-client')) . '</p>';
+			echo '<p class="owc-error">' . esc_html($data['error'] ?? __('Territory not found.', 'owbn-entities')) . '</p>';
 			return;
 		}
 

@@ -14,7 +14,7 @@ function owc_handle_test_api()
     check_ajax_referer('owc_test_api_nonce', 'nonce');
 
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(['message' => __('Permission denied.', 'owbn-client')]);
+        wp_send_json_error(['message' => __('Permission denied.', 'owbn-core')]);
     }
 
     $type = sanitize_text_field($_POST['type'] ?? '');
@@ -22,11 +22,11 @@ function owc_handle_test_api()
     $key  = sanitize_text_field($_POST['api_key'] ?? '');
 
     if (!in_array($type, ['chronicles', 'coordinators', 'territories'], true)) {
-        wp_send_json_error(['message' => __('Invalid type.', 'owbn-client')]);
+        wp_send_json_error(['message' => __('Invalid type.', 'owbn-core')]);
     }
 
     if (empty($url)) {
-        wp_send_json_error(['message' => __('URL is required.', 'owbn-client')]);
+        wp_send_json_error(['message' => __('URL is required.', 'owbn-core')]);
     }
 
     // Build endpoint
@@ -44,7 +44,7 @@ function owc_handle_test_api()
     if (is_wp_error($response)) {
         wp_send_json_error([
             'message' => sprintf(
-                __('Connection failed: %s', 'owbn-client'),
+                __('Connection failed: %s', 'owbn-core'),
                 $response->get_error_message()
             )
         ]);
@@ -58,17 +58,17 @@ function owc_handle_test_api()
         $count = is_array($data) ? count($data) : 0;
         wp_send_json_success([
             'message' => sprintf(
-                __('Success! Found %d %s.', 'owbn-client'),
+                __('Success! Found %d %s.', 'owbn-core'),
                 $count,
                 $type
             )
         ]);
     } elseif ($code === 403) {
-        wp_send_json_error(['message' => __('Invalid API key.', 'owbn-client')]);
+        wp_send_json_error(['message' => __('Invalid API key.', 'owbn-core')]);
     } else {
         wp_send_json_error([
             'message' => sprintf(
-                __('API returned status %d.', 'owbn-client'),
+                __('API returned status %d.', 'owbn-core'),
                 $code
             )
         ]);

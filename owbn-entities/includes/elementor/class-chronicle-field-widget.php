@@ -23,7 +23,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 
 	public function get_title(): string
 	{
-		return __('Chronicle Field', 'owbn-client');
+		return __('Chronicle Field', 'owbn-entities');
 	}
 
 	public function get_icon(): string
@@ -52,7 +52,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __('Content', 'owbn-client'),
+				'label' => __('Content', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -60,11 +60,11 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_control(
 			'slug_source',
 			[
-				'label'   => __('Chronicle Source', 'owbn-client'),
+				'label'   => __('Chronicle Source', 'owbn-entities'),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
-					'url'   => __('From URL Parameter (?slug=)', 'owbn-client'),
-					'fixed' => __('Fixed Chronicle', 'owbn-client'),
+					'url'   => __('From URL Parameter (?slug=)', 'owbn-entities'),
+					'fixed' => __('Fixed Chronicle', 'owbn-entities'),
 				],
 				'default' => 'url',
 			]
@@ -73,7 +73,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_control(
 			'fixed_slug',
 			[
-				'label'       => __('Chronicle Slug', 'owbn-client'),
+				'label'       => __('Chronicle Slug', 'owbn-entities'),
 				'type'        => Controls_Manager::TEXT,
 				'placeholder' => 'chronicle-slug',
 				'condition'   => [
@@ -85,21 +85,21 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_control(
 			'field',
 			[
-				'label'       => __('Field to Display', 'owbn-client'),
+				'label'       => __('Field to Display', 'owbn-entities'),
 				'type'        => Controls_Manager::SELECT,
 				'options'     => $this->get_field_options(),
 				'default'     => 'title',
-				'description' => __('Select which chronicle field to display', 'owbn-client'),
+				'description' => __('Select which chronicle field to display', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'show_label',
 			[
-				'label'        => __('Show Label', 'owbn-client'),
+				'label'        => __('Show Label', 'owbn-entities'),
 				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => __('Show', 'owbn-client'),
-				'label_off'    => __('Hide', 'owbn-client'),
+				'label_on'     => __('Show', 'owbn-entities'),
+				'label_off'    => __('Hide', 'owbn-entities'),
 				'return_value' => 'yes',
 				'default'      => 'yes',
 			]
@@ -111,7 +111,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_section',
 			[
-				'label' => __('Style', 'owbn-client'),
+				'label' => __('Style', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -119,7 +119,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_control(
 			'label_color',
 			[
-				'label'     => __('Label Color', 'owbn-client'),
+				'label'     => __('Label Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-field-label' => 'color: {{VALUE}};',
@@ -144,7 +144,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_control(
 			'content_color',
 			[
-				'label'     => __('Content Color', 'owbn-client'),
+				'label'     => __('Content Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-field-content' => 'color: {{VALUE}};',
@@ -164,7 +164,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'field_spacing',
 			[
-				'label'      => __('Spacing', 'owbn-client'),
+				'label'      => __('Spacing', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -182,7 +182,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 
 		// Check if chronicles are enabled
 		if (!owc_chronicles_enabled()) {
-			echo '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-client') . '</p>';
+			echo '<p class="owc-error">' . esc_html__('Chronicles are not enabled.', 'owbn-entities') . '</p>';
 			return;
 		}
 
@@ -197,7 +197,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 		// Validate slug
 		if (empty($slug)) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('No chronicle selected. Set a fixed slug or use ?slug= parameter.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('No chronicle selected. Set a fixed slug or use ?slug= parameter.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -211,7 +211,7 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 
 		if (!$chronicle || isset($chronicle['error'])) {
 			if (\Elementor\Plugin::$instance->editor->is_edit_mode()) {
-				echo '<p class="owc-notice">' . esc_html__('Chronicle not found.', 'owbn-client') . '</p>';
+				echo '<p class="owc-notice">' . esc_html__('Chronicle not found.', 'owbn-entities') . '</p>';
 			}
 			return;
 		}
@@ -227,44 +227,44 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 	{
 		return [
 			// Basic
-			'title'                  => __('Title', 'owbn-client'),
-			'chronicle_slug'         => __('Slug', 'owbn-client'),
-			'genres'                 => __('Genres', 'owbn-client'),
-			'game_type'              => __('Game Type', 'owbn-client'),
-			'active_player_count'    => __('Active Player Count', 'owbn-client'),
-			'web_url'                => __('Website URL', 'owbn-client'),
+			'title'                  => __('Title', 'owbn-entities'),
+			'chronicle_slug'         => __('Slug', 'owbn-entities'),
+			'genres'                 => __('Genres', 'owbn-entities'),
+			'game_type'              => __('Game Type', 'owbn-entities'),
+			'active_player_count'    => __('Active Player Count', 'owbn-entities'),
+			'web_url'                => __('Website URL', 'owbn-entities'),
 
 			// Content/WYSIWYG
-			'content'                => __('About/Content', 'owbn-client'),
-			'premise'                => __('Premise', 'owbn-client'),
-			'game_theme'             => __('Theme', 'owbn-client'),
-			'game_mood'              => __('Mood', 'owbn-client'),
-			'traveler_info'          => __('Traveler Information', 'owbn-client'),
+			'content'                => __('About/Content', 'owbn-entities'),
+			'premise'                => __('Premise', 'owbn-entities'),
+			'game_theme'             => __('Theme', 'owbn-entities'),
+			'game_mood'              => __('Mood', 'owbn-entities'),
+			'traveler_info'          => __('Traveler Information', 'owbn-entities'),
 
 			// Staff
-			'hst_info'               => __('Head Storyteller', 'owbn-client'),
-			'cm_info'                => __('Chronicle Manager', 'owbn-client'),
-			'ast_list'               => __('Assistant Storytellers', 'owbn-client'),
+			'hst_info'               => __('Head Storyteller', 'owbn-entities'),
+			'cm_info'                => __('Chronicle Manager', 'owbn-entities'),
+			'ast_list'               => __('Assistant Storytellers', 'owbn-entities'),
 
 			// Locations
-			'ooc_locations'          => __('Location (OOC)', 'owbn-client'),
-			'game_site_list'         => __('Game Sites', 'owbn-client'),
+			'ooc_locations'          => __('Location (OOC)', 'owbn-entities'),
+			'game_site_list'         => __('Game Sites', 'owbn-entities'),
 
 			// Sessions
-			'session_list'           => __('Game Sessions', 'owbn-client'),
+			'session_list'           => __('Game Sessions', 'owbn-entities'),
 
 			// Links & Lists
-			'document_links'         => __('Documents', 'owbn-client'),
-			'social_urls'            => __('Social Links', 'owbn-client'),
-			'email_lists'            => __('Mailing Lists', 'owbn-client'),
-			'player_lists'           => __('Player Lists', 'owbn-client'),
+			'document_links'         => __('Documents', 'owbn-entities'),
+			'social_urls'            => __('Social Links', 'owbn-entities'),
+			'email_lists'            => __('Mailing Lists', 'owbn-entities'),
+			'player_lists'           => __('Player Lists', 'owbn-entities'),
 
 			// Metadata
-			'chronicle_region'       => __('Region', 'owbn-client'),
-			'chronicle_start_date'   => __('Start Date', 'owbn-client'),
-			'chronicle_probationary' => __('Probationary Status', 'owbn-client'),
-			'chronicle_satellite'    => __('Satellite Status', 'owbn-client'),
-			'chronicle_parent'       => __('Parent Chronicle', 'owbn-client'),
+			'chronicle_region'       => __('Region', 'owbn-entities'),
+			'chronicle_start_date'   => __('Start Date', 'owbn-entities'),
+			'chronicle_probationary' => __('Probationary Status', 'owbn-entities'),
+			'chronicle_satellite'    => __('Satellite Status', 'owbn-entities'),
+			'chronicle_parent'       => __('Parent Chronicle', 'owbn-entities'),
 		];
 	}
 }

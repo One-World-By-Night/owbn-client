@@ -23,7 +23,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Archivist Workspace', 'owbn-client' );
+		return __( 'Archivist Workspace', 'owbn-archivist' );
 	}
 
 	public function get_icon() {
@@ -44,58 +44,58 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Section', 'owbn-client' ),
+			'label' => __( 'Section', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'section', array(
-			'label'   => __( 'Show Section', 'owbn-client' ),
+			'label'   => __( 'Show Section', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'default' => 'self',
 			'options' => array(
-				'sites'       => __( 'OWBN Sites (SSO buttons)', 'owbn-client' ),
-				'self'        => __( 'My Stuff', 'owbn-client' ),
-				'chronicles'  => __( 'My Chronicles', 'owbn-client' ),
-				'coordinators' => __( 'My Coordinator Roles', 'owbn-client' ),
-				'exec'        => __( 'Executive Roles', 'owbn-client' ),
+				'sites'       => __( 'OWBN Sites (SSO buttons)', 'owbn-archivist' ),
+				'self'        => __( 'My Stuff', 'owbn-archivist' ),
+				'chronicles'  => __( 'My Chronicles', 'owbn-archivist' ),
+				'coordinators' => __( 'My Coordinator Roles', 'owbn-archivist' ),
+				'exec'        => __( 'Executive Roles', 'owbn-archivist' ),
 			),
 		) );
 
 		$this->add_control( 'section_title', array(
-			'label'       => __( 'Section Title', 'owbn-client' ),
+			'label'       => __( 'Section Title', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '',
-			'placeholder' => __( 'Auto (based on section)', 'owbn-client' ),
-			'description' => __( 'Leave blank to use the default title for the section.', 'owbn-client' ),
+			'placeholder' => __( 'Auto (based on section)', 'owbn-archivist' ),
+			'description' => __( 'Leave blank to use the default title for the section.', 'owbn-archivist' ),
 		) );
 
 		$this->add_control( 'show_inbox_count', array(
-			'label'     => __( 'Show Inbox Count', 'owbn-client' ),
+			'label'     => __( 'Show Inbox Count', 'owbn-archivist' ),
 			'type'      => Controls_Manager::SWITCHER,
 			'default'   => 'yes',
 			'condition' => array( 'section' => 'self' ),
 		) );
 
 		$this->add_control( 'council_base_url', array(
-			'label'   => __( 'Council Base URL', 'owbn-client' ),
+			'label'   => __( 'Council Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'https://council.owbn.net',
 		) );
 
 		$this->add_control( 'chronicles_base_url', array(
-			'label'   => __( 'Chronicles Base URL', 'owbn-client' ),
+			'label'   => __( 'Chronicles Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'https://chronicles.owbn.net',
 		) );
 
 		$this->add_control( 'archivist_base_url', array(
-			'label'   => __( 'Archivist Base URL', 'owbn-client' ),
+			'label'   => __( 'Archivist Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'https://archivist.owbn.net',
 		) );
 
 		$this->add_control( 'players_base_url', array(
-			'label'   => __( 'Players Base URL', 'owbn-client' ),
+			'label'   => __( 'Players Base URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'https://players.owbn.net',
 		) );
@@ -104,51 +104,51 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 		// Custom cards.
 		$this->start_controls_section( 'custom_cards_section', array(
-			'label' => __( 'Custom Cards', 'owbn-client' ),
+			'label' => __( 'Custom Cards', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$repeater = new \Elementor\Repeater();
 
 		$repeater->add_control( 'card_title', array(
-			'label'       => __( 'Card Name', 'owbn-client' ),
+			'label'       => __( 'Card Name', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Resources',
-			'description' => __( 'Links with the same card name are grouped together.', 'owbn-client' ),
+			'description' => __( 'Links with the same card name are grouped together.', 'owbn-archivist' ),
 		) );
 
 		$repeater->add_control( 'link_label', array(
-			'label' => __( 'Link Label', 'owbn-client' ),
+			'label' => __( 'Link Label', 'owbn-archivist' ),
 			'type'  => Controls_Manager::TEXT,
 		) );
 
 		$repeater->add_control( 'link_url', array(
-			'label'         => __( 'Link URL', 'owbn-client' ),
+			'label'         => __( 'Link URL', 'owbn-archivist' ),
 			'type'          => Controls_Manager::URL,
 			'default'       => array( 'url' => '', 'is_external' => true, 'nofollow' => false ),
 			'show_external' => true,
 		) );
 
 		$repeater->add_control( 'link_sso', array(
-			'label'   => __( 'Route through SSO', 'owbn-client' ),
+			'label'   => __( 'Route through SSO', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SWITCHER,
 			'default' => 'yes',
 		) );
 
 		$repeater->add_control( 'card_visibility', array(
-			'label'   => __( 'Show to', 'owbn-client' ),
+			'label'   => __( 'Show to', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'default' => 'everyone',
 			'options' => array(
-				'everyone'    => __( 'Everyone (logged in)', 'owbn-client' ),
-				'chronicle'   => __( 'Chronicle staff only', 'owbn-client' ),
-				'coordinator' => __( 'Coordinators only', 'owbn-client' ),
-				'exec'        => __( 'Exec only', 'owbn-client' ),
+				'everyone'    => __( 'Everyone (logged in)', 'owbn-archivist' ),
+				'chronicle'   => __( 'Chronicle staff only', 'owbn-archivist' ),
+				'coordinator' => __( 'Coordinators only', 'owbn-archivist' ),
+				'exec'        => __( 'Exec only', 'owbn-archivist' ),
 			),
 		) );
 
 		$this->add_control( 'custom_links', array(
-			'label'       => __( 'Custom Cards', 'owbn-client' ),
+			'label'       => __( 'Custom Cards', 'owbn-archivist' ),
 			'type'        => Controls_Manager::REPEATER,
 			'fields'      => $repeater->get_controls(),
 			'title_field' => '{{{ card_title }}} — {{{ link_label }}}',
@@ -158,12 +158,12 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 		// Style.
 		$this->start_controls_section( 'style_section', array(
-			'label' => __( 'Style', 'owbn-client' ),
+			'label' => __( 'Style', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'section_heading_color', array(
-			'label'     => __( 'Heading Color', 'owbn-client' ),
+			'label'     => __( 'Heading Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array( '{{WRAPPER}} .owc-ws-section h3' => 'color: {{VALUE}};' ),
 		) );
@@ -258,7 +258,7 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 
 	protected function render() {
 		if ( ! is_user_logged_in() ) {
-			echo '<p>' . esc_html__( 'Please log in.', 'owbn-client' ) . '</p>';
+			echo '<p>' . esc_html__( 'Please log in.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 

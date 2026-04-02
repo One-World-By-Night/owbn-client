@@ -24,7 +24,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 
 	public function get_title(): string
 	{
-		return __('Coordinator List', 'owbn-client');
+		return __('Coordinator List', 'owbn-entities');
 	}
 
 	public function get_icon(): string
@@ -58,7 +58,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __('Content', 'owbn-client'),
+				'label' => __('Content', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -66,13 +66,13 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'types_to_display',
 			[
-				'label'       => __('Types to Display', 'owbn-client'),
+				'label'       => __('Types to Display', 'owbn-entities'),
 				'type'        => Controls_Manager::SELECT2,
 				'multiple'    => true,
 				'options'     => [
-					'Administrative' => __('Administrative', 'owbn-client'),
-					'Genre'          => __('Genre', 'owbn-client'),
-					'Clan'           => __('Clan', 'owbn-client'),
+					'Administrative' => __('Administrative', 'owbn-entities'),
+					'Genre'          => __('Genre', 'owbn-entities'),
+					'Clan'           => __('Clan', 'owbn-entities'),
 				],
 				'default'     => ['Administrative', 'Genre', 'Clan'],
 			]
@@ -81,21 +81,21 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'detail_page',
 			[
-				'label'       => __('Detail Page', 'owbn-client'),
+				'label'       => __('Detail Page', 'owbn-entities'),
 				'type'        => Controls_Manager::SELECT2,
 				'options'     => $this->get_pages_options(),
 				'default'     => get_option(owc_option_name('coordinators_detail_page'), 0),
-				'description' => __('Page to link to for coordinator details (uses ?slug= parameter)', 'owbn-client'),
+				'description' => __('Page to link to for coordinator details (uses ?slug= parameter)', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'empty_message',
 			[
-				'label'       => __('Empty Message', 'owbn-client'),
+				'label'       => __('Empty Message', 'owbn-entities'),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => __('No coordinators found.', 'owbn-client'),
-				'placeholder' => __('No coordinators found.', 'owbn-client'),
+				'default'     => __('No coordinators found.', 'owbn-entities'),
+				'placeholder' => __('No coordinators found.', 'owbn-entities'),
 			]
 		);
 
@@ -105,7 +105,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_container',
 			[
-				'label' => __('Container', 'owbn-client'),
+				'label' => __('Container', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -113,7 +113,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'container_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-coordinators-list' => 'background-color: {{VALUE}};',
@@ -132,7 +132,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'container_border_radius',
 			[
-				'label'      => __('Border Radius', 'owbn-client'),
+				'label'      => __('Border Radius', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', '%'],
 				'selectors'  => [
@@ -152,7 +152,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'container_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em', '%'],
 				'selectors'  => [
@@ -167,7 +167,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_group_header',
 			[
-				'label' => __('Group Headers', 'owbn-client'),
+				'label' => __('Group Headers', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -175,7 +175,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'group_header_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-coord-group-header' => 'background-color: {{VALUE}};',
@@ -186,7 +186,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'group_header_text_color',
 			[
-				'label'     => __('Text Color', 'owbn-client'),
+				'label'     => __('Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-coord-group-header' => 'color: {{VALUE}};',
@@ -205,7 +205,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'group_header_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -217,7 +217,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'group_header_margin',
 			[
-				'label'      => __('Margin', 'owbn-client'),
+				'label'      => __('Margin', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -232,7 +232,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_header',
 			[
-				'label' => __('Table Header', 'owbn-client'),
+				'label' => __('Table Header', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -240,7 +240,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'header_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-header' => 'background-color: {{VALUE}};',
@@ -251,7 +251,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'header_text_color',
 			[
-				'label'     => __('Text Color', 'owbn-client'),
+				'label'     => __('Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-header' => 'color: {{VALUE}};',
@@ -270,7 +270,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'header_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -285,7 +285,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_rows',
 			[
-				'label' => __('Rows', 'owbn-client'),
+				'label' => __('Rows', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -296,14 +296,14 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_tab(
 			'row_normal',
 			[
-				'label' => __('Normal', 'owbn-client'),
+				'label' => __('Normal', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'row_background',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row' => 'background-color: {{VALUE}};',
@@ -314,7 +314,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'row_text_color',
 			[
-				'label'     => __('Text Color', 'owbn-client'),
+				'label'     => __('Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row' => 'color: {{VALUE}};',
@@ -328,14 +328,14 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_tab(
 			'row_hover',
 			[
-				'label' => __('Hover', 'owbn-client'),
+				'label' => __('Hover', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'row_background_hover',
 			[
-				'label'     => __('Background Color', 'owbn-client'),
+				'label'     => __('Background Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row:hover' => 'background-color: {{VALUE}};',
@@ -346,7 +346,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_control(
 			'row_text_color_hover',
 			[
-				'label'     => __('Text Color', 'owbn-client'),
+				'label'     => __('Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row:hover' => 'color: {{VALUE}};',
@@ -370,7 +370,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->add_responsive_control(
 			'row_padding',
 			[
-				'label'      => __('Padding', 'owbn-client'),
+				'label'      => __('Padding', 'owbn-entities'),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => ['px', 'em'],
 				'selectors'  => [
@@ -385,7 +385,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_section(
 			'style_links',
 			[
-				'label' => __('Links', 'owbn-client'),
+				'label' => __('Links', 'owbn-entities'),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -395,14 +395,14 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_tab(
 			'link_normal',
 			[
-				'label' => __('Normal', 'owbn-client'),
+				'label' => __('Normal', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'link_color',
 			[
-				'label'     => __('Color', 'owbn-client'),
+				'label'     => __('Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row a' => 'color: {{VALUE}};',
@@ -415,14 +415,14 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		$this->start_controls_tab(
 			'link_hover',
 			[
-				'label' => __('Hover', 'owbn-client'),
+				'label' => __('Hover', 'owbn-entities'),
 			]
 		);
 
 		$this->add_control(
 			'link_color_hover',
 			[
-				'label'     => __('Color', 'owbn-client'),
+				'label'     => __('Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .owc-list-row a:hover' => 'color: {{VALUE}};',
@@ -455,7 +455,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 
 		// Check if coordinators are enabled
 		if (!owc_coordinators_enabled()) {
-			echo '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-client') . '</p>';
+			echo '<p class="owc-error">' . esc_html__('Coordinators are not enabled.', 'owbn-entities') . '</p>';
 			return;
 		}
 
@@ -467,7 +467,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 
 		// Handle empty data
 		if (empty($data)) {
-			$empty_msg = $settings['empty_message'] ?: __('No coordinators found.', 'owbn-client');
+			$empty_msg = $settings['empty_message'] ?: __('No coordinators found.', 'owbn-entities');
 			echo '<p class="owc-no-results">' . esc_html($empty_msg) . '</p>';
 			return;
 		}
@@ -528,9 +528,9 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 							</div>
 
 							<div class="owc-list-header">
-								<div class="owc-col-office"><?php esc_html_e('Office', 'owbn-client'); ?></div>
-								<div class="owc-col-coordinator"><?php esc_html_e('Coordinator', 'owbn-client'); ?></div>
-								<div class="owc-col-email"><?php esc_html_e('Contact', 'owbn-client'); ?></div>
+								<div class="owc-col-office"><?php esc_html_e('Office', 'owbn-entities'); ?></div>
+								<div class="owc-col-coordinator"><?php esc_html_e('Coordinator', 'owbn-entities'); ?></div>
+								<div class="owc-col-email"><?php esc_html_e('Contact', 'owbn-entities'); ?></div>
 							</div>
 
 							<?php foreach ($group as $coordinator) : ?>
@@ -550,7 +550,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 	private function render_coordinator_row(array $coordinator, string $base_url): string
 	{
 		$slug = $coordinator['slug'] ?? '';
-		$title = $coordinator['title'] ?? $coordinator['coordinator_title'] ?? __('Untitled', 'owbn-client');
+		$title = $coordinator['title'] ?? $coordinator['coordinator_title'] ?? __('Untitled', 'owbn-entities');
 		$url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
 		// Coordinator info
@@ -564,10 +564,10 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 			<div class="owc-col-office">
 				<a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
 			</div>
-			<div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-client'); ?>">
+			<div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-entities'); ?>">
 				<?php echo esc_html($name ?: '—'); ?>
 			</div>
-			<div class="owc-col-email" data-label="<?php esc_attr_e('Contact', 'owbn-client'); ?>">
+			<div class="owc-col-email" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
 				<?php if ($email) : ?>
 					<a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
 				<?php else : ?>
@@ -582,7 +582,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 	private function get_pages_options(): array
 	{
 		$pages = get_pages(['sort_column' => 'post_title']);
-		$options = ['' => __('— Select Page —', 'owbn-client')];
+		$options = ['' => __('— Select Page —', 'owbn-entities')];
 
 		foreach ($pages as $page) {
 			$options[$page->ID] = $page->post_title;

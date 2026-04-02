@@ -25,7 +25,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'Archivist Dashboard', 'owbn-client' );
+		return __( 'Archivist Dashboard', 'owbn-archivist' );
 	}
 
 	public function get_icon()
@@ -60,54 +60,54 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		// ── Content Tab ───────────────────────────────────────────────────
 
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Display', 'owbn-client' ),
+			'label' => __( 'Display', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'show_pending', array(
-			'label'        => __( 'Show Pending Actions Count', 'owbn-client' ),
+			'label'        => __( 'Show Pending Actions Count', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_submissions', array(
-			'label'        => __( 'Show My Submissions Count', 'owbn-client' ),
+			'label'        => __( 'Show My Submissions Count', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_watching', array(
-			'label'        => __( 'Show Watching Count', 'owbn-client' ),
+			'label'        => __( 'Show Watching Count', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'submit_page_url', array(
-			'label'   => __( 'Submit Page URL', 'owbn-client' ),
+			'label'   => __( 'Submit Page URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/oat-submit/',
 		) );
 
 		$this->add_control( 'inbox_page_url', array(
-			'label'   => __( 'Inbox Page URL', 'owbn-client' ),
+			'label'   => __( 'Inbox Page URL', 'owbn-archivist' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => '/oat-inbox/',
 		) );
 
 		$this->add_control( 'registry_page_url', array(
-			'label'       => __( 'Registry Page URL', 'owbn-client' ),
+			'label'       => __( 'Registry Page URL', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '',
-			'description' => __( 'Leave blank to link to wp-admin Registry page.', 'owbn-client' ),
+			'description' => __( 'Leave blank to link to wp-admin Registry page.', 'owbn-archivist' ),
 		) );
 
 		$this->end_controls_section();
@@ -115,12 +115,12 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		// ── Style Tab ─────────────────────────────────────────────────────
 
 		$this->start_controls_section( 'style_cards', array(
-			'label' => __( 'Count Cards', 'owbn-client' ),
+			'label' => __( 'Count Cards', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'card_background', array(
-			'label'     => __( 'Card Background', 'owbn-client' ),
+			'label'     => __( 'Card Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-dashboard-card' => 'background-color: {{VALUE}};',
@@ -133,7 +133,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		) );
 
 		$this->add_responsive_control( 'card_padding', array(
-			'label'      => __( 'Card Padding', 'owbn-client' ),
+			'label'      => __( 'Card Padding', 'owbn-archivist' ),
 			'type'       => Controls_Manager::DIMENSIONS,
 			'size_units' => array( 'px', 'em' ),
 			'selectors'  => array(
@@ -148,12 +148,12 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 
 		$this->add_group_control( Group_Control_Typography::get_type(), array(
 			'name'     => 'count_typography',
-			'label'    => __( 'Count Typography', 'owbn-client' ),
+			'label'    => __( 'Count Typography', 'owbn-archivist' ),
 			'selector' => '{{WRAPPER}} .oat-dashboard-count',
 		) );
 
 		$this->add_control( 'count_color', array(
-			'label'     => __( 'Count Color', 'owbn-client' ),
+			'label'     => __( 'Count Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-dashboard-count' => 'color: {{VALUE}};',
@@ -162,12 +162,12 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 
 		$this->add_group_control( Group_Control_Typography::get_type(), array(
 			'name'     => 'label_typography',
-			'label'    => __( 'Label Typography', 'owbn-client' ),
+			'label'    => __( 'Label Typography', 'owbn-archivist' ),
 			'selector' => '{{WRAPPER}} .oat-dashboard-label',
 		) );
 
 		$this->add_control( 'label_color', array(
-			'label'     => __( 'Label Color', 'owbn-client' ),
+			'label'     => __( 'Label Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-dashboard-label' => 'color: {{VALUE}};',
@@ -177,12 +177,12 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_buttons', array(
-			'label' => __( 'Action Buttons', 'owbn-client' ),
+			'label' => __( 'Action Buttons', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'btn_primary_bg', array(
-			'label'     => __( 'Primary Button Background', 'owbn-client' ),
+			'label'     => __( 'Primary Button Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-btn-primary' => 'background-color: {{VALUE}};',
@@ -190,7 +190,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'btn_secondary_bg', array(
-			'label'     => __( 'Secondary Button Background', 'owbn-client' ),
+			'label'     => __( 'Secondary Button Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-btn-secondary' => 'background-color: {{VALUE}};',
@@ -205,7 +205,7 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 	protected function render()
 	{
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view your dashboard.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to view your dashboard.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
@@ -246,34 +246,34 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 			<?php if ( $show_pending ) : ?>
 				<div class="oat-dashboard-card">
 					<span class="oat-dashboard-count"><?php echo esc_html( $counts['assigned'] ); ?></span>
-					<span class="oat-dashboard-label"><?php esc_html_e( 'Pending Actions', 'owbn-client' ); ?></span>
+					<span class="oat-dashboard-label"><?php esc_html_e( 'Pending Actions', 'owbn-archivist' ); ?></span>
 				</div>
 			<?php endif; ?>
 
 			<?php if ( $show_submissions ) : ?>
 				<div class="oat-dashboard-card">
 					<span class="oat-dashboard-count"><?php echo esc_html( $counts['submissions'] ); ?></span>
-					<span class="oat-dashboard-label"><?php esc_html_e( 'My Submissions', 'owbn-client' ); ?></span>
+					<span class="oat-dashboard-label"><?php esc_html_e( 'My Submissions', 'owbn-archivist' ); ?></span>
 				</div>
 			<?php endif; ?>
 
 			<?php if ( $show_watching ) : ?>
 				<div class="oat-dashboard-card">
 					<span class="oat-dashboard-count"><?php echo esc_html( $counts['watching'] ); ?></span>
-					<span class="oat-dashboard-label"><?php esc_html_e( 'Watching', 'owbn-client' ); ?></span>
+					<span class="oat-dashboard-label"><?php esc_html_e( 'Watching', 'owbn-archivist' ); ?></span>
 				</div>
 			<?php endif; ?>
 		</div>
 
 		<div class="oat-dashboard-actions">
 			<a href="<?php echo esc_url( $submit_url ); ?>" class="oat-btn oat-btn-primary">
-				<?php esc_html_e( 'New Submission', 'owbn-client' ); ?>
+				<?php esc_html_e( 'New Submission', 'owbn-archivist' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $inbox_url ); ?>" class="oat-btn oat-btn-secondary">
-				<?php esc_html_e( 'View Inbox', 'owbn-client' ); ?>
+				<?php esc_html_e( 'View Inbox', 'owbn-archivist' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $registry_url ); ?>" class="oat-btn oat-btn-secondary">
-				<?php esc_html_e( 'Registry', 'owbn-client' ); ?>
+				<?php esc_html_e( 'Registry', 'owbn-archivist' ); ?>
 			</a>
 		</div>
 		<?php

@@ -23,7 +23,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 
 	public function get_title()
 	{
-		return __( 'Archivist Inbox', 'owbn-client' );
+		return __( 'Archivist Inbox', 'owbn-archivist' );
 	}
 
 	public function get_icon()
@@ -58,23 +58,23 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		// ── Content Tab ───────────────────────────────────────────────────
 
 		$this->start_controls_section( 'content_section', array(
-			'label' => __( 'Content', 'owbn-client' ),
+			'label' => __( 'Content', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_CONTENT,
 		) );
 
 		$this->add_control( 'default_tab', array(
-			'label'   => __( 'Default Tab', 'owbn-client' ),
+			'label'   => __( 'Default Tab', 'owbn-archivist' ),
 			'type'    => Controls_Manager::SELECT,
 			'options' => array(
-				'assigned'    => __( 'Assigned to Me', 'owbn-client' ),
-				'submissions' => __( 'My Submissions', 'owbn-client' ),
-				'watching'    => __( 'Watching', 'owbn-client' ),
+				'assigned'    => __( 'Assigned to Me', 'owbn-archivist' ),
+				'submissions' => __( 'My Submissions', 'owbn-archivist' ),
+				'watching'    => __( 'Watching', 'owbn-archivist' ),
 			),
 			'default' => 'assigned',
 		) );
 
 		$this->add_control( 'per_page', array(
-			'label'   => __( 'Entries Per Page', 'owbn-client' ),
+			'label'   => __( 'Entries Per Page', 'owbn-archivist' ),
 			'type'    => Controls_Manager::NUMBER,
 			'min'     => 5,
 			'max'     => 100,
@@ -82,37 +82,37 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'show_domain_filter', array(
-			'label'        => __( 'Show Domain Filter', 'owbn-client' ),
+			'label'        => __( 'Show Domain Filter', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_status_filter', array(
-			'label'        => __( 'Show Status Filter', 'owbn-client' ),
+			'label'        => __( 'Show Status Filter', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'show_search', array(
-			'label'        => __( 'Show Search', 'owbn-client' ),
+			'label'        => __( 'Show Search', 'owbn-archivist' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => __( 'Show', 'owbn-client' ),
-			'label_off'    => __( 'Hide', 'owbn-client' ),
+			'label_on'     => __( 'Show', 'owbn-archivist' ),
+			'label_off'    => __( 'Hide', 'owbn-archivist' ),
 			'return_value' => 'yes',
 			'default'      => 'yes',
 		) );
 
 		$this->add_control( 'entry_detail_page', array(
-			'label'       => __( 'Entry Detail Page URL', 'owbn-client' ),
+			'label'       => __( 'Entry Detail Page URL', 'owbn-archivist' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '/oat-entry/',
-			'description' => __( 'Entry ID appended as ?oat_entry=ID', 'owbn-client' ),
+			'description' => __( 'Entry ID appended as ?oat_entry=ID', 'owbn-archivist' ),
 		) );
 
 		$this->end_controls_section();
@@ -120,12 +120,12 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		// ── Style Tab ─────────────────────────────────────────────────────
 
 		$this->start_controls_section( 'style_table', array(
-			'label' => __( 'Table', 'owbn-client' ),
+			'label' => __( 'Table', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'table_header_bg', array(
-			'label'     => __( 'Header Background', 'owbn-client' ),
+			'label'     => __( 'Header Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-inbox-table thead th' => 'background-color: {{VALUE}};',
@@ -133,7 +133,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'table_header_color', array(
-			'label'     => __( 'Header Text Color', 'owbn-client' ),
+			'label'     => __( 'Header Text Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-inbox-table thead th' => 'color: {{VALUE}};',
@@ -141,7 +141,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		) );
 
 		$this->add_control( 'table_row_hover', array(
-			'label'     => __( 'Row Hover Background', 'owbn-client' ),
+			'label'     => __( 'Row Hover Background', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-inbox-table tbody tr:hover' => 'background-color: {{VALUE}};',
@@ -156,12 +156,12 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'style_tabs', array(
-			'label' => __( 'Tabs', 'owbn-client' ),
+			'label' => __( 'Tabs', 'owbn-archivist' ),
 			'tab'   => Controls_Manager::TAB_STYLE,
 		) );
 
 		$this->add_control( 'tab_active_color', array(
-			'label'     => __( 'Active Tab Color', 'owbn-client' ),
+			'label'     => __( 'Active Tab Color', 'owbn-archivist' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => array(
 				'{{WRAPPER}} .oat-inbox-tab.active'               => 'color: {{VALUE}};',
@@ -182,12 +182,12 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 	protected function render()
 	{
 		if ( ! is_user_logged_in() ) {
-			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to access your inbox.', 'owbn-client' ) . '</p>';
+			echo '<p class="oat-login-prompt">' . esc_html__( 'Please log in to access your inbox.', 'owbn-archivist' ) . '</p>';
 			return;
 		}
 
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Inbox — preview not available in editor.', 'owbn-client' ) . '</div>';
+			echo '<div style="padding:20px;border:1px dashed #ccc;text-align:center;color:#646970;">' . esc_html__( 'OAT Inbox — preview not available in editor.', 'owbn-archivist' ) . '</div>';
 			return;
 		}
 
@@ -228,9 +228,9 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 
 			<!-- Tab navigation -->
 			<nav class="oat-inbox-tabs" role="tablist">
-				<?php $this->render_tab( 'assigned', __( 'Assigned to Me', 'owbn-client' ), count( $assignments ), $default_tab ); ?>
-				<?php $this->render_tab( 'submissions', __( 'My Submissions', 'owbn-client' ), count( $my_entries ), $default_tab ); ?>
-				<?php $this->render_tab( 'watching', __( 'Watching', 'owbn-client' ), count( $watched ), $default_tab ); ?>
+				<?php $this->render_tab( 'assigned', __( 'Assigned to Me', 'owbn-archivist' ), count( $assignments ), $default_tab ); ?>
+				<?php $this->render_tab( 'submissions', __( 'My Submissions', 'owbn-archivist' ), count( $my_entries ), $default_tab ); ?>
+				<?php $this->render_tab( 'watching', __( 'Watching', 'owbn-archivist' ), count( $watched ), $default_tab ); ?>
 			</nav>
 
 			<!-- Filter bar -->
@@ -238,7 +238,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 				<div class="oat-inbox-filters">
 					<?php if ( $show_domain && ! empty( $domains ) ) : ?>
 						<select class="oat-filter-domain">
-							<option value=""><?php esc_html_e( 'All Domains', 'owbn-client' ); ?></option>
+							<option value=""><?php esc_html_e( 'All Domains', 'owbn-archivist' ); ?></option>
 							<?php foreach ( $domains as $d ) : ?>
 								<option value="<?php echo esc_attr( $d['slug'] ); ?>">
 									<?php echo esc_html( $d['label'] ); ?>
@@ -248,7 +248,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 					<?php endif; ?>
 					<?php if ( $show_status && ! empty( $statuses ) ) : ?>
 						<select class="oat-filter-status">
-							<option value=""><?php esc_html_e( 'All Statuses', 'owbn-client' ); ?></option>
+							<option value=""><?php esc_html_e( 'All Statuses', 'owbn-archivist' ); ?></option>
 							<?php foreach ( $statuses as $slug => $label ) : ?>
 								<option value="<?php echo esc_attr( $slug ); ?>">
 									<?php echo esc_html( $label ); ?>
@@ -258,7 +258,7 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 					<?php endif; ?>
 					<?php if ( $show_search ) : ?>
 						<input type="text" class="oat-filter-search"
-							placeholder="<?php esc_attr_e( 'Search entries…', 'owbn-client' ); ?>">
+							placeholder="<?php esc_attr_e( 'Search entries…', 'owbn-archivist' ); ?>">
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
@@ -310,19 +310,19 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 		?>
 		<div class="oat-inbox-panel" data-panel="<?php echo esc_attr( $slug ); ?>"<?php echo $display; ?>>
 			<?php if ( empty( $rows ) ) : ?>
-				<p class="oat-inbox-empty"><?php esc_html_e( 'No entries found.', 'owbn-client' ); ?></p>
+				<p class="oat-inbox-empty"><?php esc_html_e( 'No entries found.', 'owbn-archivist' ); ?></p>
 			<?php else : ?>
 				<table class="oat-inbox-table">
 					<thead>
 						<tr>
-							<th data-sort="id"><?php esc_html_e( 'Entry', 'owbn-client' ); ?> <span class="oat-sort-icon"></span></th>
-							<th data-sort="domain"><?php esc_html_e( 'Domain', 'owbn-client' ); ?> <span class="oat-sort-icon"></span></th>
-							<th data-sort="status"><?php esc_html_e( 'Status', 'owbn-client' ); ?> <span class="oat-sort-icon"></span></th>
+							<th data-sort="id"><?php esc_html_e( 'Entry', 'owbn-archivist' ); ?> <span class="oat-sort-icon"></span></th>
+							<th data-sort="domain"><?php esc_html_e( 'Domain', 'owbn-archivist' ); ?> <span class="oat-sort-icon"></span></th>
+							<th data-sort="status"><?php esc_html_e( 'Status', 'owbn-archivist' ); ?> <span class="oat-sort-icon"></span></th>
 							<?php if ( $show_step ) : ?>
-								<th data-sort="step"><?php esc_html_e( 'Step', 'owbn-client' ); ?> <span class="oat-sort-icon"></span></th>
+								<th data-sort="step"><?php esc_html_e( 'Step', 'owbn-archivist' ); ?> <span class="oat-sort-icon"></span></th>
 							<?php endif; ?>
-							<th data-sort="date"><?php esc_html_e( 'Date', 'owbn-client' ); ?> <span class="oat-sort-icon"></span></th>
-							<th><?php esc_html_e( 'Action', 'owbn-client' ); ?></th>
+							<th data-sort="date"><?php esc_html_e( 'Date', 'owbn-archivist' ); ?> <span class="oat-sort-icon"></span></th>
+							<th><?php esc_html_e( 'Action', 'owbn-archivist' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -342,43 +342,43 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 							<tr data-domain="<?php echo esc_attr( $domain_slug ); ?>"
 								data-status="<?php echo esc_attr( $status ); ?>"
 								<?php echo $row_hidden; ?>>
-								<td data-label="<?php esc_attr_e( 'Entry', 'owbn-client' ); ?>"
+								<td data-label="<?php esc_attr_e( 'Entry', 'owbn-archivist' ); ?>"
 									data-sort-value="<?php echo esc_attr( $entry_id ); ?>">
 									<a href="<?php echo esc_url( $entry_url ); ?>">
 										<strong><?php echo $subject; ?></strong>
 									</a>
 									<span style="color:#999;font-size:11px;margin-left:6px;">#<?php echo esc_html( $entry_id ); ?></span>
 								</td>
-								<td data-label="<?php esc_attr_e( 'Domain', 'owbn-client' ); ?>"
+								<td data-label="<?php esc_attr_e( 'Domain', 'owbn-archivist' ); ?>"
 									data-sort-value="<?php echo esc_attr( $domain_lbl ); ?>">
 									<?php echo esc_html( $domain_lbl ); ?>
 								</td>
-								<td data-label="<?php esc_attr_e( 'Status', 'owbn-client' ); ?>"
+								<td data-label="<?php esc_attr_e( 'Status', 'owbn-archivist' ); ?>"
 									data-sort-value="<?php echo esc_attr( $status ); ?>">
 									<span class="oat-status oat-status-<?php echo esc_attr( $status ); ?>">
 										<?php echo esc_html( ucfirst( str_replace( '_', ' ', $status ) ) ); ?>
 									</span>
 								</td>
 								<?php if ( $show_step ) : ?>
-									<td data-label="<?php esc_attr_e( 'Step', 'owbn-client' ); ?>"
+									<td data-label="<?php esc_attr_e( 'Step', 'owbn-archivist' ); ?>"
 										data-sort-value="<?php echo esc_attr( $step ); ?>">
 										<?php echo esc_html( str_replace( '_', ' ', $step ) ); ?>
 									</td>
 								<?php endif; ?>
-								<td data-label="<?php esc_attr_e( 'Date', 'owbn-client' ); ?>"
+								<td data-label="<?php esc_attr_e( 'Date', 'owbn-archivist' ); ?>"
 									data-sort-value="<?php echo esc_attr( $date_col ); ?>">
 									<?php echo esc_html( $date_col ); ?>
 								</td>
 								<td>
 									<a href="<?php echo esc_url( $entry_url ); ?>" class="oat-btn oat-btn-secondary" style="font-size:12px;padding:4px 10px;">
-										<?php esc_html_e( 'View', 'owbn-client' ); ?>
+										<?php esc_html_e( 'View', 'owbn-archivist' ); ?>
 									</a>
 								</td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				<p class="oat-inbox-empty" style="display:none;"><?php esc_html_e( 'No entries match your filters.', 'owbn-client' ); ?></p>
+				<p class="oat-inbox-empty" style="display:none;"><?php esc_html_e( 'No entries match your filters.', 'owbn-archivist' ); ?></p>
 
 				<?php if ( count( $rows ) > $per_page ) : ?>
 					<?php echo $this->render_pagination( count( $rows ), $per_page ); ?>

@@ -89,19 +89,19 @@ function owc_create_default_pages()
 {
     $pages = [
         'chronicles_list_page' => [
-            'title'   => __('Chronicles', 'owbn-client'),
+            'title'   => __('Chronicles', 'owbn-core'),
             'content' => '[owc-client type="chronicle-list"]',
         ],
         'chronicles_detail_page' => [
-            'title'   => __('Chronicle Detail', 'owbn-client'),
+            'title'   => __('Chronicle Detail', 'owbn-core'),
             'content' => '[owc-client type="chronicle-detail"]',
         ],
         'coordinators_list_page' => [
-            'title'   => __('Coordinators', 'owbn-client'),
+            'title'   => __('Coordinators', 'owbn-core'),
             'content' => '[owc-client type="coordinator-list"]',
         ],
         'coordinators_detail_page' => [
-            'title'   => __('Coordinator Detail', 'owbn-client'),
+            'title'   => __('Coordinator Detail', 'owbn-core'),
             'content' => '[owc-client type="coordinator-detail"]',
         ],
     ];

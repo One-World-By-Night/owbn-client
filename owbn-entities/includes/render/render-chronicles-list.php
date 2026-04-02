@@ -25,7 +25,7 @@ function owc_render_chronicles_list(array $chronicles): string
     $chronicles = array_values( $chronicles );
 
     if (empty($chronicles)) {
-        return '<p class="owc-no-results">' . esc_html__('No chronicles found.', 'owbn-client') . '</p>';
+        return '<p class="owc-no-results">' . esc_html__('No chronicles found.', 'owbn-entities') . '</p>';
     }
 
     // Sort by title ascending by default
@@ -39,22 +39,22 @@ function owc_render_chronicles_list(array $chronicles): string
     ob_start();
 ?>
     <div class="owc-chronicles-filters">
-        <input type="text" id="owc-filter-genres" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Genres...', 'owbn-client'); ?>" data-column="1">
-        <input type="text" id="owc-filter-region" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Region...', 'owbn-client'); ?>" data-column="2">
-        <input type="text" id="owc-filter-state" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter State...', 'owbn-client'); ?>" data-column="3">
-        <input type="text" id="owc-filter-type" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Type...', 'owbn-client'); ?>" data-column="5">
-        <button type="button" id="owc-clear-filters" class="owc-clear-filters"><?php esc_html_e('Clear', 'owbn-client'); ?></button>
+        <input type="text" id="owc-filter-genres" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Genres...', 'owbn-entities'); ?>" data-column="1">
+        <input type="text" id="owc-filter-region" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Region...', 'owbn-entities'); ?>" data-column="2">
+        <input type="text" id="owc-filter-state" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter State...', 'owbn-entities'); ?>" data-column="3">
+        <input type="text" id="owc-filter-type" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Type...', 'owbn-entities'); ?>" data-column="5">
+        <button type="button" id="owc-clear-filters" class="owc-clear-filters"><?php esc_html_e('Clear', 'owbn-entities'); ?></button>
     </div>
 
     <div class="owc-chronicles-list">
         <div class="owc-list-header">
-            <div class="owc-col-title sort-asc"><?php esc_html_e('Chronicle', 'owbn-client'); ?></div>
-            <div class="owc-col-genres"><?php esc_html_e('Genres', 'owbn-client'); ?></div>
-            <div class="owc-col-region"><?php esc_html_e('Region', 'owbn-client'); ?></div>
-            <div class="owc-col-state"><?php esc_html_e('State/Province', 'owbn-client'); ?></div>
-            <div class="owc-col-city"><?php esc_html_e('City', 'owbn-client'); ?></div>
-            <div class="owc-col-type"><?php esc_html_e('Type', 'owbn-client'); ?></div>
-            <div class="owc-col-status"><?php esc_html_e('Status', 'owbn-client'); ?></div>
+            <div class="owc-col-title sort-asc"><?php esc_html_e('Chronicle', 'owbn-entities'); ?></div>
+            <div class="owc-col-genres"><?php esc_html_e('Genres', 'owbn-entities'); ?></div>
+            <div class="owc-col-region"><?php esc_html_e('Region', 'owbn-entities'); ?></div>
+            <div class="owc-col-state"><?php esc_html_e('State/Province', 'owbn-entities'); ?></div>
+            <div class="owc-col-city"><?php esc_html_e('City', 'owbn-entities'); ?></div>
+            <div class="owc-col-type"><?php esc_html_e('Type', 'owbn-entities'); ?></div>
+            <div class="owc-col-status"><?php esc_html_e('Status', 'owbn-entities'); ?></div>
         </div>
 
         <?php foreach ($chronicles as $chronicle) : ?>
@@ -62,7 +62,7 @@ function owc_render_chronicles_list(array $chronicles): string
         <?php endforeach; ?>
     </div>
 
-    <p class="owc-no-results-filtered" style="display:none;"><?php esc_html_e('No chronicles match your filters.', 'owbn-client'); ?></p>
+    <p class="owc-no-results-filtered" style="display:none;"><?php esc_html_e('No chronicles match your filters.', 'owbn-entities'); ?></p>
 <?php
     return ob_get_clean();
 }
@@ -77,7 +77,7 @@ function owc_render_chronicles_list(array $chronicles): string
 function owc_render_chronicle_row(array $chronicle, string $base_url): string
 {
     $slug = $chronicle['slug'] ?? $chronicle['chronicle_slug'] ?? '';
-    $title = $chronicle['title'] ?? __('Untitled', 'owbn-client');
+    $title = $chronicle['title'] ?? __('Untitled', 'owbn-entities');
     $url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
     // Location fields
@@ -104,22 +104,22 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
         <div class="owc-col-title">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
-        <div class="owc-col-genres" data-label="<?php esc_attr_e('Genres', 'owbn-client'); ?>">
+        <div class="owc-col-genres" data-label="<?php esc_attr_e('Genres', 'owbn-entities'); ?>">
             <?php echo esc_html($genres_display ?: '—'); ?>
         </div>
-        <div class="owc-col-region" data-label="<?php esc_attr_e('Region', 'owbn-client'); ?>">
+        <div class="owc-col-region" data-label="<?php esc_attr_e('Region', 'owbn-entities'); ?>">
             <?php echo esc_html($region ?: '—'); ?>
         </div>
-        <div class="owc-col-state" data-label="<?php esc_attr_e('State/Province', 'owbn-client'); ?>">
+        <div class="owc-col-state" data-label="<?php esc_attr_e('State/Province', 'owbn-entities'); ?>">
             <?php echo esc_html($state ?: '—'); ?>
         </div>
-        <div class="owc-col-city" data-label="<?php esc_attr_e('City', 'owbn-client'); ?>">
+        <div class="owc-col-city" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
             <?php echo esc_html($city ?: '—'); ?>
         </div>
-        <div class="owc-col-type" data-label="<?php esc_attr_e('Type', 'owbn-client'); ?>">
+        <div class="owc-col-type" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
             <?php echo esc_html($game_type ?: '—'); ?>
         </div>
-        <div class="owc-col-status" data-label="<?php esc_attr_e('Status', 'owbn-client'); ?>">
+        <div class="owc-col-status" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
             <?php echo esc_html($status ?: '—'); ?>
         </div>
     </div>
@@ -138,15 +138,15 @@ function owc_format_status(array $chronicle): string
     $flags = [];
 
     if (!empty($chronicle['chronicle_probationary']) && $chronicle['chronicle_probationary'] !== '0') {
-        $flags[] = __('Probationary', 'owbn-client');
+        $flags[] = __('Probationary', 'owbn-entities');
     }
 
     if (!empty($chronicle['chronicle_satellite']) && $chronicle['chronicle_satellite'] !== '0') {
-        $flags[] = __('Satellite', 'owbn-client');
+        $flags[] = __('Satellite', 'owbn-entities');
     }
 
     if (empty($flags)) {
-        $flags[] = __('Full Member', 'owbn-client');
+        $flags[] = __('Full Member', 'owbn-entities');
     }
 
     return implode(', ', $flags);

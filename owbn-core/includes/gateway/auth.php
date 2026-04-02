@@ -55,7 +55,7 @@ function owbn_gateway_authenticate( $request ) {
     if ( ! $authenticated ) {
         return new WP_Error(
             'owbn_gateway_unauthorized',
-            __( 'Authentication required.', 'owbn-client' ),
+            __( 'Authentication required.', 'owbn-core' ),
             array( 'status' => 401 )
         );
     }
@@ -85,7 +85,7 @@ function owbn_gateway_authenticate( $request ) {
             if ( ! $allowed ) {
                 return new WP_Error(
                     'owbn_gateway_forbidden',
-                    __( 'Request origin not permitted.', 'owbn-client' ),
+                    __( 'Request origin not permitted.', 'owbn-core' ),
                     array( 'status' => 403 )
                 );
             }
