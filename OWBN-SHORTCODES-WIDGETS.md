@@ -58,11 +58,31 @@ Each section shows a block of related information. Using Kings of New York (kony
 **`[owbn type="chronicle" section="about" slug="kony"]`**
 > *(The chronicle's full description/about text)*
 
-**`[owbn type="chronicle" section="narrative" slug="kony"]`**
+**`[owbn type="chronicle" section="narrative" slug="kony"]`** — all four combined
 > **Premise** — The Sabbat has held New York for decades...
 > **Theme** — Political intrigue and religious fanaticism...
 > **Mood** — Dark, paranoid, violent...
 > **Traveler Info** — Our game runs on Discord. Contact the HST...
+
+You can also show each one individually as its own section (with heading):
+
+**`[owbn type="chronicle" section="premise" slug="kony"]`**
+> **Premise**
+> The Sabbat has held New York for decades...
+
+**`[owbn type="chronicle" section="theme" slug="kony"]`**
+> **Theme**
+> Political intrigue and religious fanaticism...
+
+**`[owbn type="chronicle" section="mood" slug="kony"]`**
+> **Mood**
+> Dark, paranoid, violent...
+
+**`[owbn type="chronicle" section="traveler-info" slug="kony"]`**
+> **Information for Travelers**
+> Our game runs on Discord. Contact the HST...
+
+> **section vs field:** `section="premise"` renders with a heading and styled container. `field="premise"` renders just the raw text with an optional label. Use `section` when you want it to look like a standalone block. Use `field` when you're building a custom layout and want just the content.
 
 **`[owbn type="chronicle" section="staff" slug="kony"]`**
 > **Head Storyteller:** Adam Sartori — SuperSabbatST@gmail.com
@@ -464,7 +484,11 @@ If probationary or satellite, a badge appears next to the title.
 | `header` | Title with badges |
 | `in-brief` | Quick facts box |
 | `about` | Description text |
-| `narrative` | Premise, theme, mood, traveler info |
+| `narrative` | Premise, theme, mood, traveler info (all four combined) |
+| `premise` | Just the premise (with heading) |
+| `theme` | Just the theme (with heading) |
+| `mood` | Just the mood (with heading) |
+| `traveler-info` | Just the traveler info (with heading) |
 | `staff` | HST, CM, ASTs |
 | `sessions` | Game schedule |
 | `links` | Website, social, email lists |
