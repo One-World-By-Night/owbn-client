@@ -506,9 +506,15 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 		}
 		unset($group);
 
-		// Get detail page URL
-		$detail_page_id = $settings['detail_page'] ?: get_option(owc_option_name('coordinators_detail_page'), 0);
-		$base_url = $detail_page_id ? get_permalink($detail_page_id) : '';
+		// Get detail page URL — validate saved page exists, fall back to option.
+		$detail_page_id = $settings['detail_page'] ?? 0;
+		if ( $detail_page_id && 'publish' !== get_post_status( $detail_page_id ) ) {
+			$detail_page_id = 0;
+		}
+		if ( ! $detail_page_id ) {
+			$detail_page_id = get_option( owc_option_name( 'coordinators_detail_page' ), 0 );
+		}
+		$base_url = $detail_page_id ? get_permalink( $detail_page_id ) : '';
 
 		// Render output
 		?>
