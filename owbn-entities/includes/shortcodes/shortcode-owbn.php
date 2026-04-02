@@ -101,6 +101,18 @@ function owbn_shortcode_chronicle( $section, $field, $slug, $label, $link = '' )
         return $output;
     }
 
+    // Individual narrative sub-sections.
+    $narrative_map = array(
+        'premise'       => array( 'key' => 'premise',       'label' => __( 'Premise', 'owbn-entities' ) ),
+        'theme'         => array( 'key' => 'game_theme',    'label' => __( 'Theme', 'owbn-entities' ) ),
+        'mood'          => array( 'key' => 'game_mood',     'label' => __( 'Mood', 'owbn-entities' ) ),
+        'traveler-info' => array( 'key' => 'traveler_info', 'label' => __( 'Information for Travelers', 'owbn-entities' ) ),
+    );
+    if ( isset( $narrative_map[ $section ] ) && function_exists( 'owc_render_narrative_section' ) ) {
+        $n = $narrative_map[ $section ];
+        return owc_render_narrative_section( $n['label'], $data[ $n['key'] ] ?? '' );
+    }
+
     // Section mode.
     $sections = array(
         'header'       => 'owc_render_chronicle_header',
