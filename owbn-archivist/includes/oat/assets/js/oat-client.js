@@ -657,12 +657,12 @@
                         $wrap.find('.oat-character-create-panel').hide();
                         $wrap.find('.oat-cc-name').val('');
                     } else {
-                        alert('Error: ' + (response.data || 'Failed to create character.'));
+                        alert(owc_oat_ajax.i18n.error + ': ' + (response.data || ''));
                     }
-                    $btn.prop('disabled', false).text('Create Character');
+                    $btn.prop('disabled', false).text(owc_oat_ajax.i18n.creating || 'Create Character');
                 }).fail(function() {
                     alert(owc_oat_ajax.i18n.requestFailed);
-                    $btn.prop('disabled', false).text('Create Character');
+                    $btn.prop('disabled', false).text(owc_oat_ajax.i18n.creating || 'Create Character');
                 });
             });
         });

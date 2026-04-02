@@ -252,6 +252,9 @@ function owc_oat_enqueue_assets( $hook ) {
             'showTimeline'  => __( 'Show Timeline', 'owbn-client' ),
             'hideTimeline'  => __( 'Hide Timeline', 'owbn-client' ),
             'error'         => __( 'Error', 'owbn-client' ),
+            'rulePrefix'    => __( 'Rule #', 'owbn-client' ),
+            'searchRules'   => __( 'Search rules or type free text, then press Enter...', 'owbn-client' ),
+            'addPrefix'     => __( 'Add: ', 'owbn-client' ),
         ),
     ) );
 

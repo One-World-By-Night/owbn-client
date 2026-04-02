@@ -214,7 +214,7 @@
 						$form.data('submitting', false);
 					}
 				}).fail(function () {
-					alert('Request failed. Please try again.');
+					alert(owc_oat_ajax.i18n && owc_oat_ajax.i18n.requestFailed || 'Request failed.');
 					$btn.prop('disabled', false).css('opacity', '');
 					$form.data('submitting', false);
 				});
@@ -238,7 +238,7 @@
 					if (response.success) {
 						var isWatching = response.data && response.data.watching;
 						$btn.toggleClass('watching', isWatching);
-						$btn.text(isWatching ? 'Watching' : 'Watch');
+						$btn.text(isWatching ? (owc_oat_ajax.i18n && owc_oat_ajax.i18n.watching || 'Watching') : (owc_oat_ajax.i18n && owc_oat_ajax.i18n.watch || 'Watch'));
 					}
 					$btn.prop('disabled', false);
 				}).fail(function () {
@@ -256,7 +256,7 @@
 				var collapsed = $timeline.hasClass('collapsed');
 
 				$timeline.toggleClass('collapsed', !collapsed);
-				$btn.text(collapsed ? 'Hide Timeline' : 'Show Timeline');
+				$btn.text(collapsed ? (owc_oat_ajax.i18n && owc_oat_ajax.i18n.hideTimeline || 'Hide Timeline') : (owc_oat_ajax.i18n && owc_oat_ajax.i18n.showTimeline || 'Show Timeline'));
 			});
 		},
 

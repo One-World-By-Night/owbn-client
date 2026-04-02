@@ -26,7 +26,7 @@
                     // Free-text rule entry.
                     selectedRules.push({ id: null, label: item.text, freeText: true });
                 } else {
-                    selectedRules.push({ id: parseInt(item, 10), label: 'Rule #' + item });
+                    selectedRules.push({ id: parseInt(item, 10), label: (owc_oat_ajax.i18n && owc_oat_ajax.i18n.rulePrefix || 'Rule #') + item });
                 }
             });
             renderSelectedRules();
@@ -34,7 +34,7 @@
 
         // Update placeholder for super users.
         if (isSuperUser) {
-            $search.attr('placeholder', 'Search rules or type free text, then press Enter...');
+            $search.attr('placeholder', owc_oat_ajax.i18n && owc_oat_ajax.i18n.searchRules || 'Search rules or type free text, then press Enter...');
         }
 
         $search.autocomplete({
@@ -48,7 +48,7 @@
                     if (isSuperUser && request.term.length >= 2) {
                         data.push({
                             id: null,
-                            label: 'Add: ' + request.term,
+                            label: (owc_oat_ajax.i18n && owc_oat_ajax.i18n.addPrefix || 'Add: ') + request.term,
                             value: request.term,
                             freeText: true
                         });

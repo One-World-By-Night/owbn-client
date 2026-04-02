@@ -78,7 +78,7 @@
             return;
         }
 
-        $btn.prop('disabled', true).text('Processing...');
+        $btn.prop('disabled', true).text(owc_oat_ajax.i18n && owc_oat_ajax.i18n.processing || 'Processing...');
 
         var postData = {
             action: 'owc_oat_process_action',
@@ -105,12 +105,12 @@
             if (response.success) {
                 window.location.reload();
             } else {
-                alert('Error: ' + (response.data || 'Unknown error'));
-                $btn.prop('disabled', false).text($btn.data('label') || 'Submit');
+                alert((owc_oat_ajax.i18n && owc_oat_ajax.i18n.error || 'Error') + ': ' + (response.data || ''));
+                $btn.prop('disabled', false).text($btn.data('label') || (owc_oat_ajax.i18n && owc_oat_ajax.i18n.submit || 'Submit'));
             }
         }).fail(function() {
-            alert('Request failed.');
-            $btn.prop('disabled', false).text($btn.data('label') || 'Submit');
+            alert(owc_oat_ajax.i18n && owc_oat_ajax.i18n.requestFailed || 'Request failed.');
+            $btn.prop('disabled', false).text($btn.data('label') || (owc_oat_ajax.i18n && owc_oat_ajax.i18n.submit || 'Submit'));
         });
     });
 
@@ -133,11 +133,11 @@
                 $btn.data('watching', nowWatching ? '1' : '0')
                     .text(nowWatching ? 'Unwatch' : 'Watch');
             } else {
-                alert('Error: ' + (response.data || 'Unknown error'));
+                alert((owc_oat_ajax.i18n && owc_oat_ajax.i18n.error || 'Error') + ': ' + (response.data || ''));
             }
             $btn.prop('disabled', false);
         }).fail(function() {
-            alert('Request failed.');
+            alert(owc_oat_ajax.i18n && owc_oat_ajax.i18n.requestFailed || 'Request failed.');
             $btn.prop('disabled', false);
         });
     });
@@ -661,7 +661,7 @@
                     }
                     $btn.prop('disabled', false).text('Create Character');
                 }).fail(function() {
-                    alert('Request failed.');
+                    alert(owc_oat_ajax.i18n && owc_oat_ajax.i18n.requestFailed || 'Request failed.');
                     $btn.prop('disabled', false).text('Create Character');
                 });
             });
