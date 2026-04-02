@@ -3,7 +3,7 @@
  * Plugin Name: OWBN Support
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Awesome Support extension — OWBN entity pickers and context fields for user support tickets.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-support
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_SUPPORT_VERSION', '1.0.0' );
+define( 'OWC_SUPPORT_VERSION', '1.0.1' );
 define( 'OWC_SUPPORT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_SUPPORT_URL', plugin_dir_url( __FILE__ ) );
 
