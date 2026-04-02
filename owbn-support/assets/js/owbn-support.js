@@ -9,7 +9,7 @@
     var cache = {};
 
     function initPicker($select) {
-        var entity = $select.data('entity');
+        var entity = $select.data('owbn-picker');
         var placeholder = $select.data('placeholder') || 'Search...';
 
         if (!entity || !owbnSupport) return;
@@ -120,14 +120,14 @@
 
     // Auto-init all pickers.
     $(function() {
-        $('.owbn-entity-picker').each(function() {
+        $('[data-owbn-picker]').each(function() {
             initPicker($(this));
         });
     });
 
     // Re-init on dynamic content (AS sometimes loads fields via AJAX).
     $(document).on('wpas-field-loaded', function() {
-        $('.owbn-entity-picker').not('.owbn-picker-init').each(function() {
+        $('[data-owbn-picker]').not('.owbn-picker-init').each(function() {
             $(this).addClass('owbn-picker-init');
             initPicker($(this));
         });

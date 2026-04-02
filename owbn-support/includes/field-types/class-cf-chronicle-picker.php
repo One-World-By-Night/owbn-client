@@ -12,7 +12,7 @@ class WPAS_CF_Chronicle_Picker extends WPAS_Custom_Field {
         $label = $this->resolve_label( $value );
 
         $output  = '<label {{label_atts}}>{{label}}</label>';
-        $output .= '<select {{atts}} class="owbn-entity-picker" data-entity="chronicle" data-placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-support' ) . '">';
+        $output .= '<select {{atts}} data-owbn-picker="chronicle" data-placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-support' ) . '">';
         $output .= '<option value="">' . esc_html__( '— Select Chronicle —', 'owbn-support' ) . '</option>';
         if ( $value ) {
             $output .= '<option value="' . esc_attr( $value ) . '" selected>' . esc_html( $label ) . '</option>';

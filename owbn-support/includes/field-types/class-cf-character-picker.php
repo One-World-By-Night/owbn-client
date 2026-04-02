@@ -12,7 +12,7 @@ class WPAS_CF_Character_Picker extends WPAS_Custom_Field {
         $label = $this->resolve_label( $value );
 
         $output  = '<label {{label_atts}}>{{label}}</label>';
-        $output .= '<select {{atts}} class="owbn-entity-picker" data-entity="character" data-placeholder="' . esc_attr__( 'Search characters...', 'owbn-support' ) . '">';
+        $output .= '<select {{atts}} data-owbn-picker="character" data-placeholder="' . esc_attr__( 'Search characters...', 'owbn-support' ) . '">';
         $output .= '<option value="">' . esc_html__( '— Select Character —', 'owbn-support' ) . '</option>';
         if ( $value ) {
             $output .= '<option value="' . esc_attr( $value ) . '" selected>' . esc_html( $label ) . '</option>';
