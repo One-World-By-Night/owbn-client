@@ -45,21 +45,63 @@ Shows a filterable table of all chronicles or coordinators.
 
 Each section shows a block of related information. Using Kings of New York (kony) as the example:
 
-| Shortcode | What You See |
-|-----------|-------------|
-| `[owbn type="chronicle" section="header" slug="kony"]` | "New York City, NY - USA, Kings of New York" |
-| `[owbn type="chronicle" section="in-brief" slug="kony"]` | Quick facts: Virtual game, New York and New England region, Sabbat, 40+ players |
-| `[owbn type="chronicle" section="about" slug="kony"]` | The chronicle's description/about text |
-| `[owbn type="chronicle" section="narrative" slug="kony"]` | Premise, Theme, Mood, and Traveler Info sections |
-| `[owbn type="chronicle" section="staff" slug="kony"]` | Head Storyteller: Adam Sartori, CM: Adam Sartori, plus 6 ASTs with roles and emails |
-| `[owbn type="chronicle" section="sessions" slug="kony"]` | Game schedule: day, time, frequency, type |
-| `[owbn type="chronicle" section="links" slug="kony"]` | Website link, social media, mailing lists |
-| `[owbn type="chronicle" section="documents" slug="kony"]` | House rules, resource packets, other documents (3 docs) |
-| `[owbn type="chronicle" section="player-lists" slug="kony"]` | Player mailing lists with access level and signup links |
-| `[owbn type="chronicle" section="satellites" slug="kony"]` | Shows parent chronicle if this is a satellite (KONY is not) |
-| `[owbn type="chronicle" section="territories" slug="kony"]` | Territory assignments for this chronicle |
-| `[owbn type="chronicle" section="votes" slug="kony"]` | Council vote history for this chronicle |
-| `[owbn type="chronicle" section="detail" slug="kony"]` | Everything above combined on one page |
+**`[owbn type="chronicle" section="header" slug="kony"]`**
+> **New York City, NY - USA, Kings of New York**
+
+**`[owbn type="chronicle" section="in-brief" slug="kony"]`**
+> Location: New York City, NY, USA
+> Genres: Sabbat
+> Game Type: Virtual
+> Players: 40+
+> Region: New York and New England
+
+**`[owbn type="chronicle" section="about" slug="kony"]`**
+> *(The chronicle's full description/about text)*
+
+**`[owbn type="chronicle" section="narrative" slug="kony"]`**
+> **Premise** — The Sabbat has held New York for decades...
+> **Theme** — Political intrigue and religious fanaticism...
+> **Mood** — Dark, paranoid, violent...
+> **Traveler Info** — Our game runs on Discord. Contact the HST...
+
+**`[owbn type="chronicle" section="staff" slug="kony"]`**
+> **Head Storyteller:** Adam Sartori — SuperSabbatST@gmail.com
+> **Council Member:** Adam Sartori — KONY-CM@owbn.net
+> **Assistant Storytellers:**
+> Joan Sartori (Assistant ST) — cloud.gazing@gmail.com
+> Daniel Hansen (Assistant ST) — danhansen27@gmail.com
+> Derek Howard (Assistant ST) — the.other.king.of.new.york@gmail.com
+> Amina Patterson (Assistant ST) — mfsnakesmfplane@gmail.com
+> Nick Lamb (Assistant ST) — stakeaphobic@gmail.com
+> Caity Grace (Assistant ST) — caity.ast.kony@gmail.com
+
+**`[owbn type="chronicle" section="sessions" slug="kony"]`**
+> 4th Monday — Game — 8:00 PM
+
+**`[owbn type="chronicle" section="links" slug="kony"]`**
+> Website: kony.ne-gamer.com
+> Discord: discord.gg/fVdEksr
+> KONY Staff: kony-staff@googlegroups.com
+
+**`[owbn type="chronicle" section="documents" slug="kony"]`**
+> Premise (Google Drive link)
+> Traveller Information (Google Drive link)
+> House Rules (kony.ne-gamer.com/wiki)
+
+**`[owbn type="chronicle" section="player-lists" slug="kony"]`**
+> *(Player mailing lists with name, access level, and signup link)*
+
+**`[owbn type="chronicle" section="satellites" slug="kony"]`**
+> *(Shows parent chronicle if satellite — KONY is not a satellite)*
+
+**`[owbn type="chronicle" section="territories" slug="kony"]`**
+> *(Territory boxes for territories assigned to this chronicle)*
+
+**`[owbn type="chronicle" section="votes" slug="kony"]`**
+> *(Table of council votes involving this chronicle)*
+
+**`[owbn type="chronicle" section="detail" slug="kony"]`**
+> *(Everything above combined on one page)*
 
 **Elementor Widget Names:** Chronicle Header, Chronicle In Brief, Chronicle About, Chronicle Narrative, Chronicle Staff, Chronicle Sessions, Chronicle Links, Chronicle Documents, Chronicle Player Lists, Chronicle Satellites, Chronicle Territories, Chronicle Votes, Chronicle Detail
 
@@ -101,19 +143,50 @@ Each field shows a single piece of information. Useful for building custom layou
 
 Using the Sabbat Coordinator as the example:
 
-| Shortcode | What You See |
-|-----------|-------------|
-| `[owbn type="coordinator" section="header" slug="sabbat"]` | "Sabbat Coordinator" |
-| `[owbn type="coordinator" section="description" slug="sabbat"]` | Office description and responsibilities |
-| `[owbn type="coordinator" section="info" slug="sabbat"]` | Adam Sartori — sabbat@owbn.net |
-| `[owbn type="coordinator" section="subcoords" slug="sabbat"]` | 7 sub-coordinators with names, roles, and emails |
-| `[owbn type="coordinator" section="documents" slug="sabbat"]` | 6 documents (genre packets, etc.) |
-| `[owbn type="coordinator" section="contacts" slug="sabbat"]` | 2 contact email lists |
-| `[owbn type="coordinator" section="player-lists" slug="sabbat"]` | Player mailing lists with access and signup |
-| `[owbn type="coordinator" section="hosting" slug="sabbat"]` | Hosting chronicle and house rules link |
-| `[owbn type="coordinator" section="territories" slug="sabbat"]` | Territory assignments |
-| `[owbn type="coordinator" section="votes" slug="sabbat"]` | Council vote history |
-| `[owbn type="coordinator" section="detail" slug="sabbat"]` | Everything above combined |
+**`[owbn type="coordinator" section="header" slug="sabbat"]`**
+> **Sabbat Coordinator**
+
+**`[owbn type="coordinator" section="description" slug="sabbat"]`**
+> *(Office description and responsibilities text)*
+
+**`[owbn type="coordinator" section="info" slug="sabbat"]`**
+> Coordinator: Adam Sartori
+> Email: sabbat@owbn.net
+
+**`[owbn type="coordinator" section="subcoords" slug="sabbat"]`**
+> | Name | Role | Email |
+> | Marcus A Frehr | Factions 2 | mfrehr25@gmail.com |
+> | Chase J | Assistant Sabbat Coordinator | almostincharge@owbn.net |
+> | Lex Lopez | Black Hand | theeyeofautochthon@gmail.com |
+> | Jackie Corbin | NPCs/Scenes | chernobogsdancepartner@gmail.com |
+> | *...3 more* | | |
+
+**`[owbn type="coordinator" section="documents" slug="sabbat"]`**
+> SABBAT: Factions
+> SABBAT: Heretics
+> SABBAT: Panders
+> SABBAT: Religious Guide
+> SABBAT: Status Guide
+> SABBAT: Thaumaturgy
+
+**`[owbn type="coordinator" section="contacts" slug="sabbat"]`**
+> Team Sabbat: team-sabbat@googlegroups.com
+> Team Associates (Infernal): team-sabbat-associates@googlegroups.com
+
+**`[owbn type="coordinator" section="player-lists" slug="sabbat"]`**
+> *(Player mailing lists with name, access level, and signup link)*
+
+**`[owbn type="coordinator" section="hosting" slug="sabbat"]`**
+> *(Hosting chronicle name with link, plus house rules document)*
+
+**`[owbn type="coordinator" section="territories" slug="sabbat"]`**
+> *(Territory boxes for territories assigned to this coordinator)*
+
+**`[owbn type="coordinator" section="votes" slug="sabbat"]`**
+> *(Table of council votes involving this coordinator)*
+
+**`[owbn type="coordinator" section="detail" slug="sabbat"]`**
+> *(Everything above combined on one page)*
 
 **Elementor Widget Names:** Coordinator Header, Coordinator Description, Coordinator Info, Coordinator Sub-Coordinators, Coordinator Documents, Coordinator Contacts, Coordinator Player Lists, Coordinator Hosting, Coordinator Territories, Coordinator Votes, Coordinator Detail
 
@@ -198,6 +271,294 @@ These are in the **Archivist Toolkit** category in Elementor.
 - **Use `label="false"`** to hide the field label and just show the value
 - **Use `section="detail"`** to show everything at once on a single page
 - Widgets can be styled individually in Elementor's Style tab — colors, fonts, borders, spacing
+
+---
+
+## Widget Previews
+
+What each widget looks like with real data.
+
+### Chronicle Header
+```
+┌─────────────────────────────────────────────────┐
+│  New York City, NY - USA, Kings of New York     │
+└─────────────────────────────────────────────────┘
+```
+If probationary or satellite, a badge appears next to the title.
+
+### Chronicle In Brief
+```
+┌─────────────────────────────────────────────────┐
+│  Location     New York City, NY, USA            │
+│  Genres       Sabbat                            │
+│  Game Type    Virtual                           │
+│  Players      40+ players                       │
+│  Region       New York and New England          │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle Staff
+```
+┌─────────────────────────────────────────────────┐
+│  STAFF                                          │
+│─────────────────────────────────────────────────│
+│  Head Storyteller                               │
+│    Adam Sartori          kony-hst@owbn.net      │
+│                                                 │
+│  Council Member                                 │
+│    Adam Sartori          kony-cm@owbn.net       │
+│                                                 │
+│  Assistant Storytellers                         │
+│    John Doe (Sabbat)     kony-ast@owbn.net      │
+│    Jane Smith (Camarilla) kony-ast@owbn.net     │
+│    ... 4 more                                   │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle Narrative
+```
+┌─────────────────────────────────────────────────┐
+│  PREMISE                                        │
+│  The Sabbat has held New York for decades...    │
+│                                                 │
+│  THEME                                          │
+│  Political intrigue and religious fanaticism... │
+│                                                 │
+│  MOOD                                           │
+│  Dark, paranoid, violent...                     │
+│                                                 │
+│  TRAVELER INFO                                  │
+│  Our game runs on Discord. Contact the HST...  │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle Sessions
+```
+┌─────────────────────────────────────────────────┐
+│  GAME SESSIONS                                  │
+│─────────────────────────────────────────────────│
+│  Biweekly - Saturday - Online - 7:00 PM EST    │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle Documents
+```
+┌─────────────────────────────────────────────────┐
+│  DOCUMENTS                                      │
+│─────────────────────────────────────────────────│
+│  📄 House Rules                                 │
+│  📄 New Player Guide                            │
+│  📄 Accessibility Policy                        │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle Links
+```
+┌─────────────────────────────────────────────────┐
+│  LINKS                                          │
+│─────────────────────────────────────────────────│
+│  🌐 Website: kony.ne-gamer.com                  │
+│  💬 Discord                                     │
+│  📧 Mailing List: kony-ooc@owbn.net             │
+└─────────────────────────────────────────────────┘
+```
+
+### Coordinator Info
+```
+┌─────────────────────────────────────────────────┐
+│  Coordinator    Adam Sartori                    │
+│  Email          sabbat@owbn.net                 │
+└─────────────────────────────────────────────────┘
+```
+
+### Coordinator Sub-Coordinators
+```
+┌─────────────────────────────────────────────────┐
+│  Name              Role              Email      │
+│─────────────────────────────────────────────────│
+│  Jane Doe          Caine             sub@owbn   │
+│  John Smith        Lasombra          sub@owbn   │
+│  ... 5 more                                     │
+└─────────────────────────────────────────────────┘
+```
+
+### Chronicle/Coordinator List
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  [Filter: Region ▼] [Filter: Genre ▼] [Search...]              │
+│──────────────────────────────────────────────────────────────────│
+│  ▸ Great Lakes (12)                                              │
+│  ▾ New York and New England (8)                                  │
+│    ┌──────────────────────┬────────────┬──────────┬─────────┐   │
+│    │ Chronicle            │ Genres     │ Type     │ Status  │   │
+│    ├──────────────────────┼────────────┼──────────┼─────────┤   │
+│    │ Kings of New York    │ Sabbat     │ Virtual  │ Active  │   │
+│    │ Hartford             │ Camarilla  │ Hybrid   │ Active  │   │
+│    └──────────────────────┴────────────┴──────────┴─────────┘   │
+│  ▸ Southeast (15)                                                │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Archivist Registry
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  [My Characters] [Chronicles] [Coordinators] [Decommissioned]   │
+│  [Search characters...] [Clear]                                  │
+│──────────────────────────────────────────────────────────────────│
+│  ▸ KONY (156)                                                    │
+│  ▾ TOBG (42)                                                     │
+│    ┌──────────────┬────────┬──────────┬───────┬────────┬──────┐ │
+│    │ Character    │ Chron  │ Type     │ PC/NPC│ Status │ Ent. │ │
+│    ├──────────────┼────────┼──────────┼───────┼────────┼──────┤ │
+│    │ Stovros T.   │ TOBG   │ Tremere  │ PC    │ Active │  3   │ │
+│    │ Nico White   │ TOBG   │ Ghoul    │ PC    │ Active │  1   │ │
+│    └──────────────┴────────┴──────────┴───────┴────────┴──────┘ │
+└──────────────────────────────────────────────────────────────────┘
+  Click any column header to sort. Search queries the server.
+```
+
+### Archivist Workspace
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  OWBN Sites                                                      │
+│  [Players] [Chronicles] [Council] [Archivist]  ← SSO buttons    │
+│──────────────────────────────────────────────────────────────────│
+│  My Stuff                                                        │
+│  ┌──────────────────────┐                                        │
+│  │ Archivist Dashboard  │                                        │
+│  │ • My Characters,     │                                        │
+│  │   Inbox & Submissions│                                        │
+│  └──────────────────────┘                                        │
+│──────────────────────────────────────────────────────────────────│
+│  My Chronicles                                                   │
+│  ┌──────────────────────┐ ┌──────────────────────┐              │
+│  │ Kings of New York    │ │ Marble City          │              │
+│  │ [HST] [CM]           │ │ [HST]                │              │
+│  │ • View Chronicle     │ │ • View Chronicle     │              │
+│  │ • Edit Chronicle     │ │ • Edit Chronicle     │              │
+│  │ • Archivist Dashboard│ │ • Archivist Dashboard│              │
+│  │ • Council Votes      │ │ • Council Votes      │              │
+│  └──────────────────────┘ └──────────────────────┘              │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Quick Reference — All Options
+
+### type
+
+| Value | What It Does |
+|-------|-------------|
+| `chronicle` | Single chronicle data (needs `section` or `field`) |
+| `coordinator` | Single coordinator data (needs `section` or `field`) |
+| `chronicle-list` | Table of all chronicles |
+| `coordinator-list` | Table of all coordinators |
+| `territory-list` | Table of all territories |
+| `territory` | Single territory (uses `id` instead of `slug`) |
+
+### section (for `type="chronicle"`)
+
+| Value | What It Shows |
+|-------|--------------|
+| `header` | Title with badges |
+| `in-brief` | Quick facts box |
+| `about` | Description text |
+| `narrative` | Premise, theme, mood, traveler info |
+| `staff` | HST, CM, ASTs |
+| `sessions` | Game schedule |
+| `links` | Website, social, email lists |
+| `documents` | Document links |
+| `player-lists` | Player mailing lists |
+| `satellites` | Parent chronicle |
+| `territories` | Territory assignments |
+| `votes` | Council vote history |
+| `detail` | All of the above |
+
+### section (for `type="coordinator"`)
+
+| Value | What It Shows |
+|-------|--------------|
+| `header` | Title |
+| `description` | Office description |
+| `info` | Coordinator name and email |
+| `subcoords` | Sub-coordinators table |
+| `documents` | Document links |
+| `contacts` | Contact email lists |
+| `player-lists` | Player mailing lists |
+| `hosting` | Hosting chronicle |
+| `territories` | Territory assignments |
+| `votes` | Council vote history |
+| `detail` | All of the above |
+
+### field (for `type="chronicle"`)
+
+| Value | What You Get |
+|-------|-------------|
+| `title` | Chronicle name |
+| `slug` | URL slug |
+| `genres` | Genre list |
+| `game_type` | Online/Hybrid/In-Person |
+| `active_player_count` | Player count |
+| `chronicle_region` | Region name |
+| `chronicle_start_date` | Start date |
+| `web_url` | Website link |
+| `content` | About text |
+| `premise` | Premise text |
+| `game_theme` | Theme text |
+| `game_mood` | Mood text |
+| `traveler_info` | Visitor info |
+| `hst_info` | HST name + email |
+| `cm_info` | CM name + email |
+| `admin_contact` | Admin contact |
+| `ast_list` | AST listing |
+| `ooc_locations` | Location text |
+| `game_site_list` | Game sites |
+| `session_list` | Session schedule |
+| `document_links` | Documents |
+| `social_urls` | Social links |
+| `email_lists` | Mailing lists |
+| `player_lists` | Player lists |
+| `chronicle_probationary` | Yes/No |
+| `chronicle_satellite` | Yes/No |
+| `chronicle_parent` | Parent link |
+
+### field (for `type="coordinator"`)
+
+| Value | What You Get |
+|-------|-------------|
+| `title` | Coordinator name |
+| `slug` | URL slug |
+| `coordinator_type` | Admin/Genre/Clan |
+| `coordinator_appointment` | How appointed |
+| `web_url` | Website link |
+| `content` | Description text |
+| `office_description` | Office description |
+| `coord_info` | Name + email |
+| `subcoord_list` | Sub-coordinators |
+| `term_start_date` | Term start |
+| `term_end_date` | Term end |
+| `document_links` | Documents |
+| `email_lists` | Contact lists |
+| `player_lists` | Player lists |
+| `hosting_chronicle` | Hosting chronicle |
+
+### label
+
+| Value | What It Does |
+|-------|-------------|
+| `true` | Shows the field name above the value (default) |
+| `false` | Shows just the value with no label |
+
+### link
+
+| Value | What It Does |
+|-------|-------------|
+| `yes` or `detail` | Makes the output clickable — goes to the detail page |
+| `web_url` | Makes the output clickable — goes to their website |
+| `https://...` | Makes the output clickable — goes to that URL |
+| *(any field name)* | Links to whatever URL is in that field |
+| *(omitted)* | Plain text, not clickable |
 
 ---
 
