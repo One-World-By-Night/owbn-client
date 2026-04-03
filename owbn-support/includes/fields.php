@@ -20,8 +20,38 @@ add_filter( 'wpas_cf_field_types', function( $types ) {
     return $types;
 } );
 
-// Register fields on init (after AS loads).
+// Register taxonomy + seed terms.
+add_action( 'init', 'owbn_support_register_taxonomy', 5 );
+
+function owbn_support_register_taxonomy() {
+    register_taxonomy( 'support_category', 'ticket', array(
+        'labels'            => array( 'name' => __( 'Categories', 'owbn-support' ), 'singular_name' => __( 'Category', 'owbn-support' ) ),
+        'public'            => true,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'hierarchical'      => true,
+        'rewrite'           => false,
+    ) );
+    owbn_support_seed_categories();
+}
+
+// Register AS custom fields on init (after AS loads).
 add_action( 'init', 'owbn_support_register_fields', 20 );
+
+// Preserve support_category on ticket save — AS doesn't handle our taxonomy.
+add_action( 'save_post_ticket', 'owbn_support_save_category', 10, 2 );
+
+function owbn_support_save_category( $post_id, $post ) {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    // AS prefixes all field names with wpas_
+    $key = isset( $_POST['wpas_support_category'] ) ? 'wpas_support_category' : 'support_category';
+    if ( isset( $_POST[ $key ] ) ) {
+        $term_id = absint( $_POST[ $key ] );
+        if ( $term_id ) {
+            wp_set_object_terms( $post_id, $term_id, 'support_category' );
+        }
+    }
+}
 
 function owbn_support_register_fields() {
     if ( ! function_exists( 'wpas_add_custom_field' ) ) return;
@@ -37,9 +67,6 @@ function owbn_support_register_fields() {
         'filterable'         => true,
         'order'              => 1,
     ) );
-
-    // Seed default terms.
-    owbn_support_seed_categories();
 
     // Player ID — auto-filled, read-only.
     wpas_add_custom_field( 'owbn_player_id', array(

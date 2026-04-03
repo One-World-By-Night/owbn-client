@@ -3,7 +3,7 @@
  * Plugin Name: OWBN Support
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Awesome Support extension — OWBN entity pickers and context fields for user support tickets.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-support
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_SUPPORT_VERSION', '1.2.0' );
+define( 'OWC_SUPPORT_VERSION', '1.3.0' );
 define( 'OWC_SUPPORT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_SUPPORT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -43,6 +43,7 @@ add_action( 'plugins_loaded', function() {
     require_once OWC_SUPPORT_DIR . 'includes/assignment.php';
     require_once OWC_SUPPORT_DIR . 'includes/notifications.php';
     require_once OWC_SUPPORT_DIR . 'includes/agent-sync.php';
+    require_once OWC_SUPPORT_DIR . 'includes/email-inbound.php';
 }, 20 );
 
 // Enqueue assets on ticket pages.
