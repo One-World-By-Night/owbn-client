@@ -143,6 +143,14 @@ function owc_render_session_item(array $session): string
                 <?php endif; ?>
             </span>
         <?php endif; ?>
+
+        <?php if (!empty($session['genres']) && is_array($session['genres'])) : ?>
+            <span class="owc-session-genres"><?php echo esc_html(implode(', ', $session['genres'])); ?></span>
+        <?php endif; ?>
+
+        <?php if (!empty($session['notes'])) : ?>
+            <div class="owc-session-notes"><?php echo wp_kses_post(wpautop($session['notes'])); ?></div>
+        <?php endif; ?>
     </div>
 <?php
     return ob_get_clean();

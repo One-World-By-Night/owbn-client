@@ -112,7 +112,11 @@ function owc_oat_page_submit( $embedded = false ) {
                 if ( ! empty( $batch['meta']['chronicle_slug'] ) ) {
                     $submit_data['chronicle_slug'] = $batch['meta']['chronicle_slug'];
                 }
-                if ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
+                // Coordinator override takes priority over auto-derived.
+                $coord_override = ! empty( $_POST['oat_coordinator_override'] ) ? sanitize_text_field( $_POST['oat_coordinator_override'] ) : '';
+                if ( $coord_override ) {
+                    $submit_data['coordinator_genre'] = $coord_override;
+                } elseif ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
                     $submit_data['coordinator_genre'] = $batch['meta']['coordinator_genre'];
                 }
                 if ( isset( $batch['meta']['title'] ) ) {

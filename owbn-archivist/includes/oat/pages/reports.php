@@ -75,6 +75,7 @@ function owc_oat_reports_user_scope() {
         'chronicles' => array_unique( $chronicles ),
         'genres'     => array_unique( $genres ),
         'is_global'  => $is_global,
+        'da_global'  => true, // Binary: any qualifying role sees ALL DAs.
     );
 }
 
@@ -166,6 +167,9 @@ function owc_oat_render_report( $report, $filters, $scope ) {
         }
         $entry_scope = ! empty( $conditions ) ? ' AND (' . implode( ' OR ', $conditions ) . ')' : ' AND 1=0';
     }
+
+    // DA visibility is binary: any qualifying role sees ALL DAs.
+    $da_entry_scope = ! empty( $scope['da_global'] ) ? '' : $entry_scope;
 
     // Optional filters.
     $f_chronicle = '';
@@ -429,7 +433,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 "SELECT COUNT(*)
                  FROM {$prefix}oat_entries e
                  LEFT JOIN {$prefix}oat_entry_meta m_status ON e.id = m_status.entry_id AND m_status.meta_key = 'da_status'
-                 WHERE e.domain = 'disciplinary_actions' {$entry_scope} {$f_entry_chronicle} {$f_status}"
+                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status}"
             );
             $rows = $wpdb->get_results(
                 "SELECT e.id, e.chronicle_slug, e.created_at,
@@ -446,7 +450,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                  LEFT JOIN {$prefix}oat_entry_meta m_date ON e.id = m_date.entry_id AND m_date.meta_key = 'da_date'
                  LEFT JOIN {$prefix}oat_entry_meta m_type ON e.id = m_type.entry_id AND m_type.meta_key = 'da_type'
                  LEFT JOIN {$prefix}oat_entry_meta m_status ON e.id = m_status.entry_id AND m_status.meta_key = 'da_status'
-                 WHERE e.domain = 'disciplinary_actions' {$entry_scope} {$f_entry_chronicle} {$f_status}
+                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status}
                  ORDER BY m_name.meta_value ASC, m_date.meta_value DESC
                  LIMIT {$per} OFFSET {$offset}"
             );
@@ -504,7 +508,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 "SELECT IFNULL(m.meta_value, 'unknown') as da_level, COUNT(*) as cnt
                  FROM {$prefix}oat_entries e
                  LEFT JOIN {$prefix}oat_entry_meta m ON e.id = m.entry_id AND m.meta_key = 'da_level'
-                 WHERE e.domain = 'disciplinary_actions' {$entry_scope}
+                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope}
                  GROUP BY da_level ORDER BY cnt DESC"
             );
             $level_labels = array(

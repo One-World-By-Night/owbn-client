@@ -28,6 +28,7 @@ add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' 
 add_action( 'wp_ajax_owc_oat_registry_search', 'owc_oat_ajax_registry_search' );
 add_action( 'wp_ajax_owc_oat_save_registry_columns', 'owc_oat_ajax_save_registry_columns' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
+add_action( 'wp_ajax_owc_oat_lookup_wp_user', 'owc_oat_ajax_lookup_wp_user' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
 /**
@@ -887,4 +888,31 @@ function owc_oat_ajax_save_registry_columns() {
 
     update_user_meta( get_current_user_id(), 'owc_oat_registry_columns', $columns );
     wp_send_json_success();
+}
+
+/**
+ * AJAX: Look up a WP user by email for character association.
+ */
+function owc_oat_ajax_lookup_wp_user() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    if ( ! current_user_can( 'edit_users' ) && ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Permission denied.' );
+    }
+
+    $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    if ( ! $email ) {
+        wp_send_json_error( 'No email provided.' );
+    }
+
+    $user = get_user_by( 'email', $email );
+    if ( ! $user ) {
+        wp_send_json_success( array( 'user_id' => 0 ) );
+    }
+
+    wp_send_json_success( array(
+        'user_id'      => $user->ID,
+        'display_name' => $user->display_name,
+        'email'        => $user->user_email,
+    ) );
 }

@@ -28,6 +28,12 @@ $player_email    = isset( $character['player_email'] ) ? $character['player_emai
 $player_name     = isset( $character['player_name'] ) ? $character['player_name'] : '';
 $npc_coordinator = isset( $character['npc_coordinator'] ) ? $character['npc_coordinator'] : '';
 $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : '';
+$wp_user_id      = isset( $character['wp_user_id'] ) ? (int) $character['wp_user_id'] : 0;
+$wp_user_display = '';
+if ( $wp_user_id ) {
+    $linked_user = get_userdata( $wp_user_id );
+    $wp_user_display = $linked_user ? $linked_user->display_name . ' (' . $linked_user->user_email . ')' : "User #{$wp_user_id} (not found)";
+}
 ?>
 <div class="wrap">
     <h1><?php echo esc_html( $char_name ); ?> — Registry</h1>
@@ -54,6 +60,18 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
                 <tr>
                     <th><label for="player_email">Player Email</label></th>
                     <td><input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e( 'Linked WP User', 'owbn-archivist' ); ?></th>
+                    <td>
+                        <input type="hidden" name="wp_user_id" id="wp_user_id" value="<?php echo esc_attr( $wp_user_id ); ?>">
+                        <span id="wp_user_display"><?php echo $wp_user_id ? esc_html( $wp_user_display ) : '<em>' . esc_html__( 'Not linked', 'owbn-archivist' ) . '</em>'; ?></span>
+                        <button type="button" class="button button-small" id="owc-lookup-wp-user" style="margin-left:8px;"><?php esc_html_e( 'Lookup by Email', 'owbn-archivist' ); ?></button>
+                        <?php if ( $wp_user_id ) : ?>
+                            <button type="button" class="button button-small" id="owc-unlink-wp-user" style="margin-left:4px;"><?php esc_html_e( 'Unlink', 'owbn-archivist' ); ?></button>
+                        <?php endif; ?>
+                        <p class="description"><?php esc_html_e( 'Links this character to a WordPress user account for "My Characters" in the registry.', 'owbn-archivist' ); ?></p>
+                    </td>
                 </tr>
                 <tr>
                     <th><label for="chronicle_slug">Chronicle</label></th>
@@ -393,5 +411,38 @@ $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : ''
         if ( el ) el.value = value;
     }
 })();
+</script>
+<?php endif; ?>
+
+<?php if ( ! empty( $can_edit ) ) : ?>
+<script>
+jQuery(function($) {
+    $('#owc-lookup-wp-user').on('click', function() {
+        var email = $('#player_email').val();
+        if (!email) { alert('Enter a player email first.'); return; }
+
+        $(this).prop('disabled', true).text('Looking up...');
+        $.post(ajaxurl, {
+            action: 'owc_oat_lookup_wp_user',
+            nonce: typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '',
+            email: email
+        }, function(resp) {
+            $('#owc-lookup-wp-user').prop('disabled', false).text('Lookup by Email');
+            if (resp.success && resp.data.user_id) {
+                $('#wp_user_id').val(resp.data.user_id);
+                $('#wp_user_display').text(resp.data.display_name + ' (' + resp.data.email + ')');
+            } else {
+                $('#wp_user_display').html('<em>No WP user found for that email</em>');
+                $('#wp_user_id').val('0');
+            }
+        });
+    });
+
+    $('#owc-unlink-wp-user').on('click', function() {
+        $('#wp_user_id').val('0');
+        $('#wp_user_display').html('<em>Not linked</em>');
+        $(this).remove();
+    });
+});
 </script>
 <?php endif; ?>

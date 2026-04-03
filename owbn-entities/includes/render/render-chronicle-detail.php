@@ -273,6 +273,12 @@ function owc_render_game_sessions_box(array $chronicle): string
                 <?php if (!empty($session['start_time'])) : ?>
                     <div class="owc-session-time"><?php esc_html_e('Start:', 'owbn-entities'); ?> <?php echo esc_html($session['start_time']); ?></div>
                 <?php endif; ?>
+                <?php if (!empty($session['genres']) && is_array($session['genres'])) : ?>
+                    <div class="owc-session-genres"><?php echo esc_html(implode(', ', $session['genres'])); ?></div>
+                <?php endif; ?>
+                <?php if (!empty($session['notes'])) : ?>
+                    <div class="owc-session-notes"><?php echo wp_kses_post(wpautop($session['notes'])); ?></div>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </div>

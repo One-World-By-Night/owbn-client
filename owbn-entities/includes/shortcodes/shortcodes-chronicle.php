@@ -337,11 +337,15 @@ function owc_chron_field_session_list(array $c, string $f): string
     foreach ($list as $s) {
         $parts = array_filter([
             $s['session_type'] ?? '',
-            $s['day'] ?? '',
             $s['frequency'] ?? '',
+            $s['day'] ?? '',
             $s['start_time'] ?? '',
         ]);
-        $items[] = esc_html(implode(' - ', $parts));
+        $line = esc_html(implode(' - ', $parts));
+        if (!empty($s['genres']) && is_array($s['genres'])) {
+            $line .= ' <span class="owc-session-genres">(' . esc_html(implode(', ', $s['genres'])) . ')</span>';
+        }
+        $items[] = $line;
     }
     return implode('<br>', $items);
 }

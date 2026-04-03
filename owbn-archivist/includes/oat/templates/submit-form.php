@@ -58,6 +58,56 @@ defined( 'ABSPATH' ) || exit;
             ?>
         </div>
 
+        <!-- Coordinator override — coordinators and archivists only -->
+        <?php
+        $show_coord_override = false;
+        if ( current_user_can( 'manage_options' ) ) {
+            $show_coord_override = true;
+        } elseif ( function_exists( 'owc_oat_get_user_asc_roles' ) ) {
+            foreach ( owc_oat_get_user_asc_roles( get_current_user_id() ) as $_role ) {
+                if ( preg_match( '#^coordinator/[^/]+/(coordinator|sub-coordinator)$#i', $_role )
+                  || preg_match( '#^exec/(archivist|web|head-coordinator|admin|ahc1|ahc2)/coordinator$#i', $_role ) ) {
+                    $show_coord_override = true;
+                    break;
+                }
+            }
+        }
+        ?>
+        <?php if ( $show_coord_override ) : ?>
+        <div id="oat-coordinator-override-row" style="display:none;margin-top:12px;">
+            <table class="form-table">
+                <tr>
+                    <th><label for="oat_coordinator_override"><?php esc_html_e( 'Coordinator Override', 'owbn-archivist' ); ?></label></th>
+                    <td>
+                        <select name="oat_coordinator_override" id="oat_coordinator_override">
+                            <option value=""><?php esc_html_e( '— Use auto-detected coordinator —', 'owbn-archivist' ); ?></option>
+                            <?php
+                            if ( function_exists( 'owc_get_coordinators' ) ) {
+                                $coordinators = owc_get_coordinators();
+                                if ( ! is_wp_error( $coordinators ) ) {
+                                    foreach ( $coordinators as $coord ) {
+                                        $coord = (array) $coord;
+                                        $slug  = $coord['slug'] ?? '';
+                                        $title = $coord['title'] ?? ucfirst( $slug );
+                                        if ( $slug ) {
+                                            printf(
+                                                '<option value="%s">%s</option>',
+                                                esc_attr( $slug ),
+                                                esc_html( $title )
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                            ?>
+                        </select>
+                        <p class="description"><?php esc_html_e( 'Leave blank to use the auto-detected coordinator. Set this to manually route the entry to a specific coordinator.', 'owbn-archivist' ); ?></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <?php endif; ?>
+
         <?php submit_button( 'Submit Entry' ); ?>
     </form>
 <?php if ( empty( $embedded ) ) : ?></div><?php endif; ?>
@@ -125,6 +175,17 @@ jQuery(function($) {
         if (formSlug) {
             loadFields({ form_slug: formSlug, domain: domain });
         }
+    });
+
+    // Show coordinator override once domain fields load.
+    $(document).on('oat-fields-loaded', function() {
+        $('#oat-coordinator-override-row').show();
+    });
+
+    // Hide override when domain changes (re-shown after new fields load).
+    $('#oat_domain').on('change', function() {
+        $('#oat-coordinator-override-row').hide();
+        $('#oat_coordinator_override').val('');
     });
 
     // If domain is pre-selected on page load, check for forms
