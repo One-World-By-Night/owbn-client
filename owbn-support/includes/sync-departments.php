@@ -30,6 +30,11 @@ function owbn_support_do_sync_departments() {
 
     $desired = array();
 
+    // Slugs to collapse into a single department.
+    $collapse_rules = array(
+        'mediation' => '/^m[ns]a\d+$/',  // mna1, mna2, msa1, etc. → "Mediation"
+    );
+
     // Pull coordinators.
     if ( function_exists( 'owc_get_coordinators' ) ) {
         $coords = owc_get_coordinators( true ); // force refresh
@@ -38,7 +43,18 @@ function owbn_support_do_sync_departments() {
                 $co   = (array) $co;
                 $slug = $co['slug'] ?? '';
                 $name = $co['title'] ?? ucfirst( $slug );
-                if ( $slug ) {
+                if ( ! $slug ) continue;
+
+                // Check collapse rules.
+                $collapsed = false;
+                foreach ( $collapse_rules as $group_slug => $pattern ) {
+                    if ( preg_match( $pattern, $slug ) ) {
+                        $desired[ $group_slug ] = ucfirst( $group_slug );
+                        $collapsed = true;
+                        break;
+                    }
+                }
+                if ( ! $collapsed ) {
                     $desired[ $slug ] = $name;
                 }
             }
