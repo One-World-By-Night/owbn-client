@@ -312,6 +312,7 @@ function owc_get_local_chronicle_detail(string $slug)
         'chronicle_region'       => get_post_meta($id, 'chronicle_region', true),
         'genres'                 => get_post_meta($id, 'genres', true) ?: [],
         'game_type'              => get_post_meta($id, 'game_type', true),
+        'post_status'            => $post->post_status,
         'chronicle_probationary' => get_post_meta($id, 'chronicle_probationary', true),
         'chronicle_satellite'    => get_post_meta($id, 'chronicle_satellite', true),
         'chronicle_parent_id'    => $parent_id,
