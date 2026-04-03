@@ -26,6 +26,7 @@ add_action( 'wp_ajax_owc_oat_get_recent_activity', 'owc_oat_ajax_get_recent_acti
 add_action( 'wp_ajax_owc_oat_registry_sections', 'owc_oat_ajax_registry_sections' );
 add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
 add_action( 'wp_ajax_owc_oat_registry_search', 'owc_oat_ajax_registry_search' );
+add_action( 'wp_ajax_owc_oat_save_registry_columns', 'owc_oat_ajax_save_registry_columns' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
@@ -860,4 +861,30 @@ function owc_oat_ajax_registry_search() {
     }
 
     wp_send_json_success( $data );
+}
+
+/**
+ * AJAX: Save registry column preferences for current user.
+ */
+function owc_oat_ajax_save_registry_columns() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $columns = isset( $_POST['columns'] ) ? json_decode( stripslashes( $_POST['columns'] ), true ) : array();
+    if ( ! is_array( $columns ) ) {
+        wp_send_json_error( 'Invalid columns.' );
+    }
+
+    // Sanitize — only allow known column keys.
+    $allowed = array( 'character', 'player', 'chronicle', 'type', 'pcnpc', 'status', 'entries', 'my_entries', 'last_activity' );
+    $columns = array_values( array_intersect( $columns, $allowed ) );
+
+    // Ensure mandatory columns.
+    foreach ( array( 'character', 'chronicle', 'status' ) as $mandatory ) {
+        if ( ! in_array( $mandatory, $columns, true ) ) {
+            $columns[] = $mandatory;
+        }
+    }
+
+    update_user_meta( get_current_user_id(), 'owc_oat_registry_columns', $columns );
+    wp_send_json_success();
 }

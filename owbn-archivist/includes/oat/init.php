@@ -27,6 +27,9 @@ require_once __DIR__ . '/admin.php';
 // AJAX handlers.
 require_once __DIR__ . '/ajax.php';
 
+// Registry shared shell (used by widget + backend template).
+require_once __DIR__ . '/registry-shell.php';
+
 // Elementor widgets (only when Elementor is active).
 if ( did_action( 'elementor/loaded' ) ) {
 	require_once __DIR__ . '/elementor/loader.php';
