@@ -3,7 +3,7 @@
  * Plugin Name: OWBN Support
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Awesome Support extension — OWBN entity pickers and context fields for user support tickets.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-support
@@ -13,9 +13,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_SUPPORT_VERSION', '1.0.2' );
+define( 'OWC_SUPPORT_VERSION', '1.0.3' );
 define( 'OWC_SUPPORT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_SUPPORT_URL', plugin_dir_url( __FILE__ ) );
+
+// On activation: seed departments + products.
+register_activation_hook( __FILE__, function() {
+    // Defer to after AS registers its taxonomies.
+    add_action( 'init', function() {
+        require_once OWC_SUPPORT_DIR . 'includes/sync-departments.php';
+        owbn_support_do_sync_departments();
+        owbn_support_seed_products();
+    }, 999 );
+} );
 
 // Wait for Awesome Support to load.
 add_action( 'plugins_loaded', function() {
@@ -25,6 +35,7 @@ add_action( 'plugins_loaded', function() {
     require_once OWC_SUPPORT_DIR . 'includes/fields.php';
     require_once OWC_SUPPORT_DIR . 'includes/ajax.php';
     require_once OWC_SUPPORT_DIR . 'includes/metabox.php';
+    require_once OWC_SUPPORT_DIR . 'includes/sync-departments.php';
 }, 20 );
 
 // Enqueue assets on ticket pages.
