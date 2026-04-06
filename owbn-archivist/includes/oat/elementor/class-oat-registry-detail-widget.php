@@ -105,6 +105,18 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 		$entries = isset( $result['entries'] ) ? array_map( function( $e ) { return is_object( $e ) ? (array) $e : $e; }, $result['entries'] ) : array();
 		$grants  = isset( $result['grants'] ) ? array_map( function( $g ) { return is_object( $g ) ? (array) $g : $g; }, $result['grants'] ) : array();
 
+		// Build form label lookup so entries show human-readable names.
+		$_form_labels = [];
+		if ( class_exists( 'OAT_Form' ) ) {
+			foreach ( OAT_Form::get_all() as $_f ) { $_form_labels[ $_f->slug ] = $_f->label; }
+		}
+		foreach ( $entries as &$_ent ) {
+			if ( ! isset( $_ent['form_label'] ) && isset( $_ent['form_slug'] ) ) {
+				$_ent['form_label'] = $_form_labels[ $_ent['form_slug'] ] ?? ucwords( str_replace( '_', ' ', $_ent['form_slug'] ) );
+			}
+		}
+		unset( $_ent );
+
 		$now            = time();
 		$active_grants  = array();
 		$expired_grants = array();
@@ -515,7 +527,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					$e_coord   = $e['coordinator_genre'] ?? '';
 					$e_status  = ucfirst( str_replace( '_', ' ', $e['status'] ?? '' ) );
 					$e_domain  = $e['domain'] ?? '';
-					$e_form    = str_replace( '_', ' ', $e['form_slug'] ?? '' );
+					$e_form    = $e['form_label'] ?? ucwords( str_replace( '_', ' ', $e['form_slug'] ?? '' ) );
 					$e_created = $fmt( $e['created_at'] ?? '' );
 
 					// Get entry meta for detail
@@ -543,6 +555,20 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 						$cc_type = $e_meta['content_type'] ?? '';
 						$cc_name = $e_meta['content_name'] ?? '';
 						$header_label = $cc_name ? 'Custom ' . $cc_type . ': ' . $cc_name : ( $cc_type ?: $e_form );
+					} elseif ( ! empty( $e_meta['learned_content'] ) ) {
+						$lc_raw = $e_meta['learned_content'];
+						$lc = null;
+						for ( $i = 0; $i < 5 && $lc === null && $lc_raw; $i++ ) {
+							$lc = json_decode( $lc_raw, true );
+							if ( $lc === null ) $lc_raw = stripslashes( $lc_raw );
+						}
+						$lc_label = is_array( $lc ) ? ( $lc['label'] ?? '' ) : '';
+						if ( $lc_label ) {
+							$lc_clean = preg_replace( '/\s*\x{2014}\s*.+Coordinator$/u', '', $lc_label );
+							$header_label = $e_form . ': ' . $lc_clean;
+						} else {
+							$header_label = $e_form;
+						}
 					} else {
 						$header_label = $item_desc ?: $e_form;
 					}
@@ -626,8 +652,59 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 							$skip_keys = array( 'item_description', 'regulation_level', 'drupal_ru_id', 'drupal_subtype_id', 'action_type' );
 							foreach ( $e_meta as $mk => $mv ) {
 								if ( in_array( $mk, $skip_keys, true ) || ! $mv ) continue;
+								// Resolve UUIDs to character names.
+								$display_val = $mv;
+								if ( is_string( $mv ) && preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $mv ) ) {
+									if ( class_exists( 'OAT_Character' ) ) {
+										global $wpdb;
+										$_ch = $wpdb->get_row( $wpdb->prepare( 'SELECT character_name FROM ' . $wpdb->prefix . 'oat_characters WHERE uuid = %s LIMIT 1', $mv ) );
+										if ( $_ch ) $display_val = $_ch->character_name;
+									} elseif ( function_exists( 'owc_oat_request' ) ) {
+										$_ch = owc_oat_request( 'registry/character-by-uuid/' . $mv );
+										if ( ! is_wp_error( $_ch ) && isset( $_ch['character_name'] ) ) $display_val = $_ch['character_name'];
+									}
+								}
+								// Parse JSON meta values to show human-readable content.
+								if ( is_string( $mv ) && ( $mv[0] === '{' || $mv[0] === '[' || $mv[0] === '\\' ) ) {
+									$try = $mv;
+									$parsed = null;
+									for ( $j = 0; $j < 5 && $parsed === null && $try; $j++ ) {
+										$parsed = json_decode( $try, true );
+										if ( $parsed === null ) $try = stripslashes( $try );
+									}
+									if ( is_array( $parsed ) && isset( $parsed['label'] ) ) {
+										$display_val = $parsed['label'];
+									} elseif ( is_array( $parsed ) && $mk === 'regulation_rules' ) {
+										// Resolve rule IDs to human-readable labels.
+										$rule_labels = [];
+										foreach ( $parsed as $rule_id ) {
+											$rid = absint( $rule_id );
+											if ( ! $rid ) continue;
+											if ( class_exists( 'OAT_Regulation_Rule' ) ) {
+												$rule = OAT_Regulation_Rule::find( $rid );
+											} else {
+												global $wpdb;
+												$rule = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $wpdb->prefix . 'oat_regulation_rules WHERE id = %d', $rid ) );
+											}
+											if ( $rule ) {
+												$rl = $rule->section_ref ? $rule->section_ref . ' ' : '';
+												$parts = array_filter( [ $rule->genre, $rule->category, $rule->subcategory ] );
+												$rl .= implode( ', ', $parts );
+												if ( $rule->condition_name ) $rl .= ': ' . $rule->condition_name;
+												if ( $rule->controlling_coordinator ) $rl .= ' — ' . $rule->controlling_coordinator;
+												if ( empty( $rule->active ) ) $rl .= ' (Inactive)';
+												$rule_labels[] = $rl;
+											} else {
+												$rule_labels[] = '#' . $rid;
+											}
+										}
+										$display_val = $rule_labels ? implode( '; ', $rule_labels ) : $mv;
+									} elseif ( is_array( $parsed ) ) {
+										$display_val = implode( ', ', array_filter( $parsed, 'is_string' ) ) ?: $mv;
+									}
+								}
 							?>
-								<tr><td style="padding:3px 8px;font-weight:bold;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $mk ) ) ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $mv ); ?></td></tr>
+								<tr><td style="padding:3px 8px;font-weight:bold;"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $mk ) ) ); ?></td><td style="padding:3px 8px;"><?php echo esc_html( $display_val ); ?></td></tr>
 							<?php } ?>
 						</table>
 					</div>

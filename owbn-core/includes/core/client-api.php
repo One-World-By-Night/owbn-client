@@ -276,7 +276,7 @@ function owc_get_local_chronicle_detail(string $slug)
 
     $posts = get_posts([
         'post_type'      => 'owbn_chronicle',
-        'post_status'    => 'publish',
+        'post_status'    => array( 'publish', 'decommissioned' ),
         'posts_per_page' => 1,
         'meta_query'     => [
             [

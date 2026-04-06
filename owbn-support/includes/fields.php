@@ -60,7 +60,7 @@ function owbn_support_register_fields() {
     wpas_add_custom_taxonomy( 'support_category', array(
         'label'              => __( 'Category', 'owbn-support' ),
         'label_plural'       => __( 'Categories', 'owbn-support' ),
-        'required'           => true,
+        'required'           => false,
         'show_column'        => true,
         'taxo_std'           => true,
         'sortable_column'    => true,

@@ -198,20 +198,16 @@ function owbn_support_process_message( $conn, $msg_num ) {
         return true;
     }
 
-    // Whitelist: sender must be a registered WP user.
+    // Look up sender — may be null for guests.
     $wp_user = get_user_by( 'email', $from_email );
-    if ( ! $wp_user ) {
-        error_log( 'OWBN Support IMAP: Rejected email from unregistered user: ' . $from_email );
-        return true; // Not an error — just skip.
-    }
 
     // Check for reply pattern: [#123] in subject.
-    if ( preg_match( '/\[#(\d+)\]/', $subject, $matches ) ) {
-        return owbn_support_process_reply( (int) $matches[1], $wp_user, $body );
+    if ( preg_match( '/\[.*?#(\d+)\]/', $subject, $matches ) ) {
+        return owbn_support_process_reply( (int) $matches[1], $wp_user, $from_email, $body );
     }
 
     // New ticket.
-    return owbn_support_process_new_ticket( $wp_user, $subject, $body );
+    return owbn_support_process_new_ticket( $wp_user, $from_email, $subject, $body );
 }
 
 /**
@@ -298,7 +294,7 @@ function owbn_support_strip_signature( $body ) {
  * Uses wp_insert_post directly instead of wpas_open_ticket()
  * because AS's function does wp_redirect (breaks in cron/CLI).
  */
-function owbn_support_process_new_ticket( $wp_user, $subject, $body ) {
+function owbn_support_process_new_ticket( $wp_user, $from_email, $subject, $body ) {
     $title   = $subject ?: __( '(No subject)', 'owbn-support' );
     $content = $body ?: __( '(Empty message)', 'owbn-support' );
 
@@ -307,7 +303,7 @@ function owbn_support_process_new_ticket( $wp_user, $subject, $body ) {
         'post_status'  => 'queued',
         'post_title'   => sanitize_text_field( $title ),
         'post_content' => wp_kses_post( nl2br( $content ) ),
-        'post_author'  => $wp_user->ID,
+        'post_author'  => $wp_user ? $wp_user->ID : 0,
     ), true );
 
     if ( is_wp_error( $ticket_id ) ) {
@@ -317,6 +313,7 @@ function owbn_support_process_new_ticket( $wp_user, $subject, $body ) {
     // Set AS meta so it recognizes this as a proper ticket.
     update_post_meta( $ticket_id, '_wpas_status', 'open' );
     update_post_meta( $ticket_id, '_wpas_channel', 'email' );
+    update_post_meta( $ticket_id, '_wpas_sender_email', $from_email );
     update_post_meta( $ticket_id, '_wpas_last_reply_date', '' );
     update_post_meta( $ticket_id, '_wpas_last_reply_date_gmt', '' );
 
@@ -334,26 +331,33 @@ function owbn_support_process_new_ticket( $wp_user, $subject, $body ) {
     // Fire the AS hook so notifications work.
     do_action( 'wpas_open_ticket_after', $ticket_id, array() );
 
-    error_log( 'OWBN Support IMAP: Created ticket #' . $ticket_id . ' from ' . $wp_user->user_email );
+    error_log( 'OWBN Support IMAP: Created ticket #' . $ticket_id . ' from ' . $from_email );
     return $ticket_id;
 }
 
 /**
  * Append a reply to an existing ticket.
  */
-function owbn_support_process_reply( $ticket_id, $wp_user, $body ) {
+function owbn_support_process_reply( $ticket_id, $wp_user, $from_email, $body ) {
     $ticket = get_post( $ticket_id );
     if ( ! $ticket || 'ticket' !== $ticket->post_type ) {
         return new WP_Error( 'no_ticket', 'Ticket #' . $ticket_id . ' not found.' );
     }
 
-    // Verify sender is authorized (ticket author or assigned agent).
-    $author   = (int) $ticket->post_author;
-    $agent_id = (int) get_post_meta( $ticket_id, '_wpas_assignee', true );
-
-    if ( $wp_user->ID !== $author && $wp_user->ID !== $agent_id && ! user_can( $wp_user, 'edit_ticket' ) ) {
-        error_log( 'OWBN Support IMAP: Unauthorized reply from ' . $wp_user->user_email . ' on ticket #' . $ticket_id );
-        return true; // Skip silently.
+    // Verify sender: registered user must be ticket author or agent. Guests must match sender email.
+    if ( $wp_user ) {
+        $author   = (int) $ticket->post_author;
+        $agent_id = (int) get_post_meta( $ticket_id, '_wpas_assignee', true );
+        if ( $wp_user->ID !== $author && $wp_user->ID !== $agent_id && ! user_can( $wp_user, 'edit_ticket' ) ) {
+            error_log( 'OWBN Support IMAP: Unauthorized reply from ' . $from_email . ' on ticket #' . $ticket_id );
+            return true;
+        }
+    } else {
+        $ticket_email = get_post_meta( $ticket_id, '_wpas_sender_email', true );
+        if ( strtolower( $from_email ) !== strtolower( $ticket_email ) ) {
+            error_log( 'OWBN Support IMAP: Guest reply from ' . $from_email . ' does not match ticket #' . $ticket_id . ' sender ' . $ticket_email );
+            return true;
+        }
     }
 
     $content = $body ?: __( '(Empty reply)', 'owbn-support' );
@@ -363,7 +367,7 @@ function owbn_support_process_reply( $ticket_id, $wp_user, $body ) {
         'post_status'  => 'unread',
         'post_parent'  => $ticket_id,
         'post_content' => wp_kses_post( nl2br( $content ) ),
-        'post_author'  => $wp_user->ID,
+        'post_author'  => $wp_user ? $wp_user->ID : 0,
     ), true );
 
     if ( is_wp_error( $reply_id ) ) {
@@ -379,6 +383,6 @@ function owbn_support_process_reply( $ticket_id, $wp_user, $body ) {
     do_action( 'wpas_add_reply_after', $reply_id, array( 'post_parent' => $ticket_id ) );
     do_action( 'wpas_add_reply_complete', $reply_id, array( 'post_parent' => $ticket_id ) );
 
-    error_log( 'OWBN Support IMAP: Reply added to ticket #' . $ticket_id . ' by ' . $wp_user->user_email );
+    error_log( 'OWBN Support IMAP: Reply added to ticket #' . $ticket_id . ' by ' . $from_email );
     return $reply_id;
 }
