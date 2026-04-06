@@ -74,6 +74,7 @@ class OWC_OAT_Elementor_Loader
 			'class-oat-workspace-widget.php'       => 'OWC_OAT_Workspace_Widget',
 			'class-cchub-categories-widget.php'    => 'OWC_CCHub_Categories_Widget',
 			'class-cchub-browse-widget.php'        => 'OWC_CCHub_Browse_Widget',
+			'class-oat-fame-registry-widget.php'   => 'OWC_OAT_Fame_Registry_Widget',
 		);
 
 		foreach ( $widgets as $file => $class ) {
@@ -134,6 +135,22 @@ class OWC_OAT_Elementor_Loader
 			'owc-oat-frontend',
 			$base_url . 'js/oat-frontend.js',
 			array( 'jquery', 'owc-oat-client' ),
+			$version,
+			true
+		);
+
+		// Fame Registry assets (no jQuery dependency — vanilla JS).
+		wp_register_style(
+			'owc-oat-fame-registry',
+			$base_url . 'css/oat-fame-registry.css',
+			array( 'owc-oat-frontend' ),
+			$version
+		);
+
+		wp_register_script(
+			'oat-fame-registry',
+			$base_url . 'js/oat-fame-registry.js',
+			array(),
 			$version,
 			true
 		);

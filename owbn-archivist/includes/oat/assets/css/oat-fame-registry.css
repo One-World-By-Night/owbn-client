@@ -1,0 +1,221 @@
+/* OAT Fame Registry
+ *
+ * Div-based sortable/filterable table for public fame data.
+ * Builds on oat-frontend.css conventions.
+ */
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+
+.oat-fame-registry {
+	max-width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* ── Filter ──────────────────────────────────────────────────────────────── */
+
+.oat-fame-filter {
+	margin-bottom: 16px;
+}
+
+.oat-fame-search {
+	width: 100%;
+	max-width: 320px;
+	padding: 8px 12px;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	font-size: 14px;
+	box-sizing: border-box;
+	transition: border-color 0.2s;
+}
+
+.oat-fame-search:focus {
+	border-color: #2271b1;
+	outline: none;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* ── Table structure (div-based) ─────────────────────────────────────────── */
+
+.oat-fame-table {
+	width: 100%;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.oat-fame-row {
+	display: flex;
+	align-items: stretch;
+}
+
+.oat-fame-cell {
+	flex: 1;
+	padding: 10px 12px;
+	min-width: 0;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+/* Column sizing */
+.oat-fame-header .oat-fame-cell:first-child,
+.oat-fame-tbody .oat-fame-row .oat-fame-cell:first-child {
+	flex: 1.4;
+}
+
+.oat-fame-level {
+	flex: 0 0 70px !important;
+	text-align: center;
+	font-weight: 600;
+}
+
+.oat-fame-notes {
+	flex: 2 !important;
+	font-size: 13px;
+}
+
+/* ── Header row ──────────────────────────────────────────────────────────── */
+
+.oat-fame-header {
+	background: #f6f7f7;
+	border-bottom: 1px solid #ccd0d4;
+}
+
+.oat-fame-header .oat-fame-cell {
+	font-weight: 600;
+	font-size: 14px;
+	color: #1d2327;
+	white-space: nowrap;
+}
+
+/* ── Sortable headers ────────────────────────────────────────────────────── */
+
+.oat-fame-sortable {
+	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.oat-fame-sortable:hover {
+	background: #eaeaea;
+}
+
+.oat-fame-sortable .oat-sort-icon::after {
+	content: ' \2195';
+	font-size: 0.7em;
+	opacity: 0.4;
+	margin-left: 4px;
+}
+
+.oat-fame-sortable.sort-asc .oat-sort-icon::after {
+	content: ' \2191';
+	opacity: 1;
+}
+
+.oat-fame-sortable.sort-desc .oat-sort-icon::after {
+	content: ' \2193';
+	opacity: 1;
+}
+
+/* ── Body rows ───────────────────────────────────────────────────────────── */
+
+.oat-fame-tbody .oat-fame-row {
+	border-bottom: 1px solid #f0f0f1;
+	font-size: 14px;
+	color: #3c434a;
+	transition: background-color 0.15s;
+}
+
+.oat-fame-tbody .oat-fame-row:last-child {
+	border-bottom: none;
+}
+
+.oat-fame-tbody .oat-fame-row:hover {
+	background: #f6f7f7;
+}
+
+.oat-fame-tbody .oat-fame-row:nth-child(even) {
+	background: #fafafa;
+}
+
+.oat-fame-tbody .oat-fame-row:nth-child(even):hover {
+	background: #f0f0f1;
+}
+
+/* Hidden rows (filtered out) */
+.oat-fame-tbody .oat-fame-row.oat-hidden {
+	display: none;
+}
+
+/* ── Notes column ────────────────────────────────────────────────────────── */
+
+.oat-fame-notes em {
+	color: #646970;
+}
+
+/* ── Count ───────────────────────────────────────────────────────────────── */
+
+.oat-fame-count {
+	margin-top: 8px;
+	font-size: 13px;
+	color: #646970;
+	text-align: right;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.oat-fame-empty {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+	font-size: 15px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 768px) {
+	.oat-fame-search {
+		max-width: 100%;
+	}
+
+	/* Card layout on mobile */
+	.oat-fame-header {
+		display: none;
+	}
+
+	.oat-fame-tbody .oat-fame-row {
+		display: block;
+		border: 1px solid #ccd0d4;
+		border-radius: 4px;
+		margin-bottom: 12px;
+		padding: 12px;
+	}
+
+	.oat-fame-tbody .oat-fame-cell {
+		display: flex;
+		justify-content: space-between;
+		padding: 4px 0;
+		border: none;
+	}
+
+	.oat-fame-tbody .oat-fame-cell::before {
+		content: attr(data-label);
+		font-weight: 600;
+		margin-right: 12px;
+		flex-shrink: 0;
+	}
+
+	.oat-fame-level {
+		flex: unset !important;
+		text-align: left;
+	}
+
+	.oat-fame-notes {
+		flex: unset !important;
+		flex-direction: column;
+	}
+
+	.oat-fame-notes::before {
+		margin-bottom: 4px;
+	}
+}
