@@ -42,7 +42,7 @@ function owbn_support_notify_reply( $reply_id, $data ) {
     $agent = $agent_id ? get_userdata( $agent_id ) : null;
     $submitter = owbn_support_get_submitter_info( $ticket );
 
-    $is_agent_reply = user_can( $reply->post_author, "edit_ticket" );
+    $is_agent_reply = $agent_id && (int) $reply->post_author === (int) $agent_id;
 
     if ( $is_agent_reply && $submitter["email"] ) {
         $subject = sprintf( "[OWBN Support #%d] New reply on: %s", $ticket_id, $ticket->post_title );
