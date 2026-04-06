@@ -23,6 +23,12 @@ function owc_oat_page_submit( $embedded = false ) {
         $domain_slug = sanitize_text_field( $_POST['oat_domain'] );
         $form_slug   = ! empty( $_POST['oat_form_slug'] ) ? sanitize_text_field( $_POST['oat_form_slug'] ) : '';
 
+        // Derive form_slug from action_type if not explicitly set.
+        if ( empty( $form_slug ) && ! empty( $_POST['oat_meta_action_type'] ) ) {
+            $action = sanitize_key( $_POST['oat_meta_action_type'] );
+            $form_slug = 'cl_' . $action;
+        }
+
         // Fetch field definitions — prefer form-specific fields, fall back to domain.
         $fields = $form_slug
             ? owc_oat_get_form_fields( $form_slug, 'submit' )

@@ -147,8 +147,15 @@ function owc_oat_query_fame_entries() {
 			$notes .= ( $notes ? '<br>' : '' ) . '<em>Scope: ' . $scope . '</em>';
 		}
 
+		// Resolve character name — may be a UUID from the picker.
+		$char_name = $meta['character_name'] ?? '(unknown)';
+		if ( preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $char_name ) ) {
+			$ch = $wpdb->get_row( $wpdb->prepare( "SELECT character_name FROM {$wpdb->prefix}oat_characters WHERE uuid = %s LIMIT 1", $char_name ) );
+			if ( $ch ) $char_name = $ch->character_name;
+		}
+
 		$rows[] = [
-			'character'      => $meta['character_name'] ?? '(unknown)',
+			'character'      => $char_name,
 			'chronicle'      => $chronicle_label ?: $chronicle_slug,
 			'chronicle_slug' => strtoupper( $chronicle_slug ),
 			'identity'       => $meta['fame_public_id'] ?? '',
