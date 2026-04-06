@@ -143,7 +143,8 @@
 }
 
 /* Hidden rows (filtered out) */
-.oat-fame-tbody .oat-fame-row.oat-hidden {
+.oat-fame-tbody .oat-fame-row.oat-hidden,
+.oat-fame-tbody .oat-fame-entry.oat-hidden {
 	display: none;
 }
 
