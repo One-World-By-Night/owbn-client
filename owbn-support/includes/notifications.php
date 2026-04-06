@@ -156,6 +156,7 @@ function owbn_support_send_email( $to, $subject, $body ) {
         $mail->Body    = $body;
         $mail->CharSet = "UTF-8";
         $mail->send();
+        error_log( "OWBN Support SMTP: Sent to " . $to . " — " . $subject );
         return true;
     } catch ( \Exception $e ) {
         error_log( "OWBN Support SMTP error: " . $mail->ErrorInfo );
