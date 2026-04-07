@@ -1,0 +1,77 @@
+/* OWBN Support — Entity Picker Styles */
+
+.owbn-picker-wrap {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.owbn-picker-search {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.owbn-picker-search:focus {
+    border-color: #0073aa;
+    outline: none;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.owbn-picker-dropdown {
+    display: none;
+    position: absolute;
+    z-index: 10000;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.owbn-picker-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.owbn-picker-item:hover {
+    background: #f0f0f1;
+}
+
+.owbn-picker-loading,
+.owbn-picker-empty {
+    padding: 10px 12px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Dark mode support */
+[data-wp-dark-mode-active] .owbn-picker-search {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+[data-wp-dark-mode-active] .owbn-picker-dropdown {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+[data-wp-dark-mode-active] .owbn-picker-item:hover {
+    background: #3a3a3a;
+}
+
+[data-wp-dark-mode-active] .owbn-picker-loading,
+[data-wp-dark-mode-active] .owbn-picker-empty {
+    color: #999;
+}

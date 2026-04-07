@@ -1,0 +1,1059 @@
+# Copyright (C) 2026 greghacke
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: OWBN Core 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-core\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-02T23:47:53+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: owbn-core\n"
+
+#. Plugin Name of the plugin
+#: owbn-core.php
+#: includes/admin/menu.php:16
+#: includes/admin/menu.php:17
+#: includes/elementor/widgets-loader.php:30
+msgid "OWBN Core"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: owbn-core.php
+msgid "https://github.com/One-World-By-Night/owbn-client"
+msgstr ""
+
+#. Description of the plugin
+#: owbn-core.php
+msgid "Core infrastructure for all OWBN WordPress sites — SSO bridge, accessSchema client, settings, admin bar, player ID, UX feedback."
+msgstr ""
+
+#. Author of the plugin
+#: owbn-core.php
+msgid "greghacke"
+msgstr ""
+
+#. Author URI of the plugin
+#: owbn-core.php
+msgid "https://www.owbn.net"
+msgstr ""
+
+#: includes/accessschema/components.php:557
+msgid "Type to search chronicles & coordinators..."
+msgstr ""
+
+#: includes/accessschema/init.php:46
+msgid "Refresh my Roles"
+msgstr ""
+
+#: includes/activation.php:92
+#: includes/admin/chronicles.php:61
+#: includes/admin/dashboard-widgets.php:103
+#: includes/admin/settings-tabs/tab-general.php:361
+#: includes/admin/settings.php:58
+msgid "Chronicles"
+msgstr ""
+
+#: includes/activation.php:96
+msgid "Chronicle Detail"
+msgstr ""
+
+#: includes/activation.php:100
+#: includes/admin/coordinators.php:61
+#: includes/admin/dashboard-widgets.php:135
+#: includes/admin/settings-tabs/tab-general.php:386
+#: includes/admin/settings.php:65
+msgid "Coordinators"
+msgstr ""
+
+#: includes/activation.php:104
+msgid "Coordinator Detail"
+msgstr ""
+
+#: includes/admin/ajax.php:17
+msgid "Permission denied."
+msgstr ""
+
+#: includes/admin/ajax.php:25
+msgid "Invalid type."
+msgstr ""
+
+#: includes/admin/ajax.php:29
+msgid "URL is required."
+msgstr ""
+
+#: includes/admin/ajax.php:47
+#, php-format
+msgid "Connection failed: %s"
+msgstr ""
+
+#: includes/admin/ajax.php:61
+#, php-format
+msgid "Success! Found %d %s."
+msgstr ""
+
+#: includes/admin/ajax.php:67
+msgid "Invalid API key."
+msgstr ""
+
+#: includes/admin/ajax.php:71
+#, php-format
+msgid "API returned status %d."
+msgstr ""
+
+#: includes/admin/chronicles.php:22
+msgid "Chronicles cache cleared."
+msgstr ""
+
+#: includes/admin/chronicles.php:31
+msgid "Chronicles cache refreshed."
+msgstr ""
+
+#: includes/admin/chronicles.php:52
+#: includes/admin/coordinators.php:52
+msgid "Local (Chronicle Manager active)"
+msgstr ""
+
+#: includes/admin/chronicles.php:54
+#: includes/admin/coordinators.php:54
+#: includes/admin/territory.php:54
+#, php-format
+msgid "Remote: %s"
+msgstr ""
+
+#: includes/admin/chronicles.php:56
+#: includes/admin/coordinators.php:56
+#: includes/admin/settings-tabs/tab-general.php:518
+#: includes/admin/territory.php:56
+msgid "Not configured"
+msgstr ""
+
+#: includes/admin/chronicles.php:68
+#: includes/admin/coordinators.php:68
+#: includes/admin/territory.php:68
+msgid "Data Source"
+msgstr ""
+
+#: includes/admin/chronicles.php:72
+#: includes/admin/coordinators.php:72
+#: includes/admin/territory.php:72
+msgid "Records"
+msgstr ""
+
+#: includes/admin/chronicles.php:75
+msgid "chronicles cached"
+msgstr ""
+
+#: includes/admin/chronicles.php:77
+#: includes/admin/coordinators.php:77
+#: includes/admin/territory.php:83
+msgid "No cached data"
+msgstr ""
+
+#: includes/admin/chronicles.php:82
+#: includes/admin/coordinators.php:82
+#: includes/admin/territory.php:88
+msgid "Cache TTL"
+msgstr ""
+
+#: includes/admin/chronicles.php:83
+#: includes/admin/coordinators.php:83
+#: includes/admin/territory.php:89
+msgid "seconds"
+msgstr ""
+
+#: includes/admin/chronicles.php:86
+#: includes/admin/coordinators.php:86
+#: includes/admin/territory.php:92
+msgid "Gateway"
+msgstr ""
+
+#: includes/admin/chronicles.php:89
+#: includes/admin/coordinators.php:89
+#: includes/admin/territory.php:95
+msgid "Registered"
+msgstr ""
+
+#: includes/admin/chronicles.php:91
+msgid "Enabled — no chronicle source registered"
+msgstr ""
+
+#: includes/admin/chronicles.php:93
+#: includes/admin/coordinators.php:93
+#: includes/admin/territory.php:99
+msgid "Gateway disabled"
+msgstr ""
+
+#: includes/admin/chronicles.php:100
+#: includes/admin/coordinators.php:100
+#: includes/admin/territory.php:106
+msgid "Cache Actions"
+msgstr ""
+
+#: includes/admin/chronicles.php:103
+#: includes/admin/coordinators.php:103
+#: includes/admin/settings-tabs/tab-general.php:584
+#: includes/admin/territory.php:109
+msgid "Clear Cache"
+msgstr ""
+
+#: includes/admin/chronicles.php:107
+#: includes/admin/coordinators.php:107
+#: includes/admin/settings-tabs/tab-general.php:594
+#: includes/admin/territory.php:113
+msgid "Refresh Cache"
+msgstr ""
+
+#: includes/admin/coordinators.php:22
+msgid "Coordinators cache cleared."
+msgstr ""
+
+#: includes/admin/coordinators.php:31
+msgid "Coordinators cache refreshed."
+msgstr ""
+
+#: includes/admin/coordinators.php:75
+msgid "coordinators cached"
+msgstr ""
+
+#: includes/admin/coordinators.php:91
+msgid "Enabled — no coordinator source registered"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:22
+msgid "My Chronicles & Coordinators"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:36
+#: includes/elementor/class-workspace-widget.php:256
+msgid "Please log in."
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:90
+msgid "HST"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:91
+msgid "CM"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:92
+msgid "AST"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:93
+msgid "Staff"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:94
+msgid "Coordinator"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:95
+msgid "Sub-Coordinator"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:117
+#: includes/admin/dashboard-widgets.php:149
+#: includes/admin/dashboard-widgets.php:176
+msgid "View"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:123
+#: includes/admin/dashboard-widgets.php:154
+#: includes/admin/dashboard-widgets.php:181
+msgid "Edit"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:166
+msgid "Executive Team"
+msgstr ""
+
+#: includes/admin/dashboard-widgets.php:191
+msgid "No chronicle or coordinator roles found."
+msgstr ""
+
+#: includes/admin/menu.php:28
+#: includes/admin/menu.php:29
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:19
+#: includes/admin/settings-tabs/tab-general.php:488
+#: includes/admin/settings.php:100
+msgid "accessSchema"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:20
+msgid "Centralized accessSchema client. Provides role-based access control for all OWBN plugins through a single configuration."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:26
+#: includes/admin/settings-tabs/tab-accessschema.php:96
+#: includes/admin/settings-tabs/tab-general.php:228
+#: includes/admin/settings-tabs/tab-player-id.php:23
+#: includes/admin/settings-tabs/tab-player-id.php:66
+msgid "Mode"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:35
+msgid "Local — accessSchema server plugin is installed on this site"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:43
+msgid "Remote — Connect to a remote accessSchema server"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:49
+#: includes/admin/settings-tabs/tab-accessschema.php:105
+msgid "Server URL"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:56
+msgid "Base URL of the site running the accessSchema server plugin."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:60
+#: includes/admin/settings-tabs/tab-general.php:67
+#: includes/admin/settings-tabs/tab-general.php:192
+msgid "API Key"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:65
+#: includes/admin/settings-tabs/tab-general.php:73
+#: includes/admin/settings-tabs/tab-general.php:145
+#: includes/admin/settings-tabs/tab-general.php:197
+msgid "Enter API key"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:69
+msgid "API key for the accessSchema server."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:73
+msgid "Role Cache TTL (seconds)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:80
+msgid "How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:92
+#: includes/admin/settings-tabs/tab-general.php:297
+#: includes/admin/settings-tabs/tab-general.php:355
+#: includes/admin/settings-tabs/tab-player-id.php:62
+msgid "Status"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:110
+msgid "Roles Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:114
+#: includes/admin/settings-tabs/tab-general.php:494
+msgid "roles cached"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:116
+msgid "Empty — will populate on first access"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:123
+msgid "Registered Clients"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:138
+msgid "No plugins have registered with the centralized ASC module yet."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:147
+msgid "Search Data"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-accessschema.php:149
+msgid "Search roles..."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:36
+msgid "General Settings"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:42
+msgid "API Gateway"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:43
+msgid "Expose local data via the unified owbn/v1/ REST namespace. Enable this on sites that serve data to other OWBN sites."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:46
+msgid "Enable Gateway"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:55
+msgid "Enable the API Gateway"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:60
+msgid "Gateway Base URL"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:63
+msgid "Read-only. This is the base URL consumers will use."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:78
+msgid "Generate"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:80
+msgid "One key for all endpoints. Share this with consumer sites."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:84
+msgid "Auth Methods"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:92
+msgid "API Key (x-api-key header)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:99
+msgid "Application Password (Authorization: Basic)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:105
+msgid "Domain Whitelist"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:112
+msgid "One domain per line. Leave empty to allow all origins."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:116
+msgid "Request Logging"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:124
+msgid "Log gateway requests to PHP error log"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:129
+#: includes/admin/settings-tabs/tab-player-id.php:46
+msgid "SSO Server URL"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:136
+msgid "SSO server to verify users for JIT provisioning. Only needed on sites that receive OAT API requests."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:140
+msgid "SSO API Key"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:149
+msgid "API key for the SSO server gateway."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:153
+#: includes/admin/settings-tabs/tab-general.php:209
+msgid "Data Sources"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:168
+msgid "No data source plugins detected. Install Chronicle Manager and/or Territory Manager on this site."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:177
+msgid "Default Remote Gateway"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:178
+msgid "Default remote gateway for data types set to \"Remote\" mode. Individual data types can override this with their own remote URL and key."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:181
+msgid "Remote URL"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:188
+msgid "Base URL of the default producer site. Used for any remote data type that does not specify its own URL."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:201
+msgid "API key for the default remote gateway."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:210
+msgid "Enable or disable data sources. Configure each source on its own tab."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:226
+#: includes/admin/settings-tabs/tab-general.php:354
+msgid "Feature"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:227
+msgid "Enabled"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:262
+msgid "Cache Settings"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:265
+msgid "Cache TTL (seconds)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:272
+msgid "0 = no caching. Default: 3600 (1 hour)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:356
+msgid "Source"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:365
+#: includes/admin/settings-tabs/tab-general.php:390
+#: includes/admin/settings-tabs/tab-general.php:412
+#: includes/admin/settings-tabs/tab-general.php:436
+#: includes/admin/settings-tabs/tab-general.php:451
+#: includes/admin/settings-tabs/tab-general.php:463
+#: includes/admin/settings-tabs/tab-general.php:492
+#: includes/admin/settings-tabs/tab-general.php:530
+msgid "Disabled"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:368
+#: includes/admin/settings-tabs/tab-general.php:370
+#: includes/admin/settings-tabs/tab-general.php:392
+#: includes/admin/settings-tabs/tab-general.php:416
+msgid "records cached"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:372
+#: includes/admin/settings-tabs/tab-general.php:394
+#: includes/admin/settings-tabs/tab-general.php:418
+#: includes/admin/settings-tabs/tab-general.php:496
+msgid "Enabled — no cached data"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:408
+#: includes/admin/settings.php:72
+#: includes/admin/territory.php:61
+msgid "Territories"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:414
+#: includes/admin/territory.php:76
+msgid "published"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:432
+#: includes/admin/settings.php:79
+msgid "Vote History"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:438
+#: includes/admin/settings-tabs/tab-general.php:453
+#: includes/admin/settings-tabs/tab-general.php:465
+msgid "mode"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:447
+#: includes/admin/settings-tabs/tab-player-id.php:17
+#: includes/admin/settings.php:86
+#: includes/player-id/fields.php:25
+#: includes/player-id/fields.php:192
+#: includes/player-id/fields.php:227
+msgid "Player ID"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:459
+#: includes/admin/settings.php:93
+msgid "OAT"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:475
+msgid "OAT Rules Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:479
+#, php-format
+msgid "%d rules cached"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:481
+msgid "Not cached — will fetch on first use"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:512
+msgid "Default Remote"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:524
+msgid "Gateway (this site)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:528
+#: includes/admin/settings-tabs/tab-general.php:538
+#: includes/admin/settings-tabs/tab-general.php:544
+msgid "Active"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:536
+msgid "C&C Manager"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:538
+#: includes/admin/settings-tabs/tab-general.php:544
+msgid "Not installed"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:542
+msgid "Territory Manager"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:549
+msgid "Gateway Sources"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:562
+msgid "Elementor"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:566
+msgid "Active — widgets available"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:568
+msgid "Not active — using shortcodes only"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:579
+msgid "Cache Management"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:580
+msgid "Clear cached data to fetch fresh content from data sources."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:588
+msgid "Clear All Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:590
+msgid "Removes all cached data. Next page load will fetch fresh data."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:598
+msgid "Refresh All Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:600
+msgid "Clears and immediately re-fetches all data from sources."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:604
+msgid "Entity Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:608
+msgid "Refresh Entity Cache"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-general.php:610
+msgid "Rebuilds the slug↔title lookup index for chronicles and coordinators."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:35
+msgid "Admin bar links saved."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:39
+msgid "OWBN Admin Bar Menu"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:40
+msgid "These links appear in the OWBN dropdown on the admin bar (right side, next to \"Howdy\"). Edit existing links, remove with ×, or add new ones."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:47
+msgid "Title"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:48
+msgid "URL"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:49
+msgid "Remove"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:68
+msgid "+ Add Link"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:70
+msgid "Save Links"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:73
+msgid "Preview"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-owbn-menu.php:74
+msgid "The OWBN logo appears on the right side of the admin bar. Hovering shows the dropdown with these links. Save and reload to see changes."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-player-id.php:32
+msgid "Server — This site manages Player IDs (SSO server)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-player-id.php:40
+msgid "Client — Capture Player ID from SSO login"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-player-id.php:53
+msgid "Base URL of the SSO server. Only OAuth responses from this URL will be intercepted."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-player-id.php:75
+msgid "SSO Server"
+msgstr ""
+
+#: includes/admin/settings.php:28
+msgid "The remote URL was rejected because it points to a local or private network address."
+msgstr ""
+
+#: includes/admin/settings.php:44
+msgid "General"
+msgstr ""
+
+#: includes/admin/settings.php:51
+msgid "OWBN Menu"
+msgstr ""
+
+#: includes/admin/settings.php:457
+msgid "Cache cleared successfully."
+msgstr ""
+
+#: includes/admin/settings.php:466
+msgid "Cache refreshed successfully."
+msgstr ""
+
+#: includes/admin/settings.php:474
+msgid "Entity resolution cache refreshed."
+msgstr ""
+
+#: includes/admin/settings.php:476
+msgid "Entity resolution module not loaded."
+msgstr ""
+
+#: includes/admin/settings.php:492
+msgid "OWBN Client Settings"
+msgstr ""
+
+#: includes/admin/settings.php:515
+msgid "Off"
+msgstr ""
+
+#. translators: %s: feature name
+#: includes/admin/settings.php:535
+#, php-format
+msgid "%s is currently disabled. Enable it on the General tab to configure."
+msgstr ""
+
+#: includes/admin/settings.php:539
+msgid "Go to General Settings"
+msgstr ""
+
+#: includes/admin/settings.php:546
+msgid "This tab is provided by a plugin that is not currently active."
+msgstr ""
+
+#: includes/admin/territory.php:22
+msgid "Territories cache cleared."
+msgstr ""
+
+#: includes/admin/territory.php:31
+msgid "Territories cache refreshed."
+msgstr ""
+
+#: includes/admin/territory.php:52
+msgid "Local (Territory Manager active)"
+msgstr ""
+
+#: includes/admin/territory.php:78
+msgid "cached"
+msgstr ""
+
+#: includes/admin/territory.php:81
+msgid "territories cached"
+msgstr ""
+
+#: includes/admin/territory.php:97
+msgid "Enabled — no territory source registered"
+msgstr ""
+
+#: includes/admin/users-table.php:24
+msgid "ASC Roles"
+msgstr ""
+
+#: includes/admin/users-table.php:60
+msgid "Refresh ASC roles from server"
+msgstr ""
+
+#: includes/admin/users-table.php:64
+msgid "None"
+msgstr ""
+
+#: includes/admin/users-table.php:239
+msgid "Filter by ASC role"
+msgstr ""
+
+#: includes/admin/users-table.php:242
+msgid "All ASC Roles"
+msgstr ""
+
+#: includes/admin/users-table.php:244
+msgid "— No ASC Roles —"
+msgstr ""
+
+#: includes/admin/users-table.php:456
+msgid "Refresh ASC Roles"
+msgstr ""
+
+#: includes/admin/users-table.php:499
+#, php-format
+msgid "Refreshed ASC roles for %d user."
+msgid_plural "Refreshed ASC roles for %d users."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/core/client-api.php:148
+msgid "API request failed"
+msgstr ""
+
+#: includes/core/client-api.php:154
+msgid "Invalid JSON response from API"
+msgstr ""
+
+#: includes/core/client-api.php:165
+#: includes/core/client-api.php:274
+msgid "Chronicle post type not available."
+msgstr ""
+
+#: includes/core/client-api.php:202
+#: includes/core/client-api.php:347
+msgid "Coordinator post type not available."
+msgstr ""
+
+#: includes/core/client-api.php:234
+#: includes/core/client-api.php:426
+msgid "Territory post type not available."
+msgstr ""
+
+#: includes/core/client-api.php:290
+msgid "Chronicle not found."
+msgstr ""
+
+#: includes/core/client-api.php:363
+msgid "Coordinator not found."
+msgstr ""
+
+#: includes/core/client-api.php:399
+msgid "Territory not found."
+msgstr ""
+
+#: includes/editor/init.php:25
+msgid "OWBN"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:21
+msgid "Archivist Workspace"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:42
+msgid "Section"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:47
+msgid "Show Section"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:51
+msgid "OWBN Sites (SSO buttons)"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:52
+msgid "My Stuff"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:53
+msgid "My Chronicles"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:54
+msgid "My Coordinator Roles"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:55
+msgid "Executive Roles"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:60
+msgid "Section Title"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:63
+msgid "Auto (based on section)"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:64
+msgid "Leave blank to use the default title for the section."
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:68
+msgid "Show Inbox Count"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:75
+msgid "Council Base URL"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:81
+msgid "Chronicles Base URL"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:87
+msgid "Archivist Base URL"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:93
+msgid "Players Base URL"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:102
+#: includes/elementor/class-workspace-widget.php:146
+msgid "Custom Cards"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:109
+msgid "Card Name"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:112
+msgid "Links with the same card name are grouped together."
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:116
+msgid "Link Label"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:121
+msgid "Link URL"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:128
+msgid "Route through SSO"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:134
+msgid "Show to"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:138
+msgid "Everyone (logged in)"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:139
+msgid "Chronicle staff only"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:140
+msgid "Coordinators only"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:141
+msgid "Exec only"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:156
+msgid "Style"
+msgstr ""
+
+#: includes/elementor/class-workspace-widget.php:161
+msgid "Heading Color"
+msgstr ""
+
+#: includes/gateway/auth.php:58
+msgid "Authentication required."
+msgstr ""
+
+#: includes/gateway/auth.php:88
+msgid "Request origin not permitted."
+msgstr ""
+
+#: includes/player-id/fields.php:22
+msgid "Player Information"
+msgstr ""
+
+#: includes/player-id/fields.php:33
+msgid "Must be unique across all users."
+msgstr ""
+
+#: includes/player-id/fields.php:35
+msgid "Not set"
+msgstr ""
+
+#: includes/player-id/fields.php:37
+msgid "Managed by SSO server."
+msgstr ""
+
+#: includes/player-id/fields.php:39
+msgid "Contact an administrator to change."
+msgstr ""
+
+#: includes/player-id/fields.php:93
+msgid "AccessSchema Roles"
+msgstr ""
+
+#: includes/player-id/fields.php:95
+msgid "Roles refreshed."
+msgstr ""
+
+#: includes/player-id/fields.php:99
+msgid "Current Roles"
+msgstr ""
+
+#: includes/player-id/fields.php:108
+msgid "No roles found."
+msgstr ""
+
+#: includes/player-id/fields.php:117
+msgid "Refresh Roles"
+msgstr ""
+
+#: includes/player-id/fields.php:119
+msgid "Clears cached roles and fetches fresh from the server."
+msgstr ""
+
+#. translators: %s: the duplicate player ID
+#: includes/player-id/fields.php:151
+#: includes/player-id/fields.php:210
+#, php-format
+msgid "Player ID \"%s\" is already in use."
+msgstr ""
+
+#: includes/player-id/fields.php:203
+msgid "Player ID is required."
+msgstr ""
+
+#: includes/player-id/fields.php:259
+msgid "Your Player ID is not set. Contact an administrator or log in via SSO to sync it."
+msgstr ""

@@ -1,0 +1,269 @@
+<?php
+
+/**
+ * OWBN-Client Render Territory Box
+ * Embedded territory list for chronicle/coordinator detail pages.
+ * Client-side pagination and sorting.
+ * 
+ */
+
+defined('ABSPATH') || exit;
+
+/**
+ * Render embedded territory list with client-side pagination.
+ *
+ * @param array  $territories Array of territory data
+ * @param string $context     'chronicle'|'coordinator' for slug linking
+ * @param string $current_slug Current page's slug to exclude from links
+ * @return string HTML
+ */
+function owc_render_territory_box(array $territories, string $context = '', string $current_slug = ''): string
+{
+    if (empty($territories)) {
+        return '';
+    }
+
+    $container_id = 'owc-terr-' . wp_unique_id();
+
+    // Build slug type map for JS
+    $slug_types = owc_get_all_slug_types();
+
+    ob_start();
+?>
+    <div class="owc-territory-box" id="<?php echo esc_attr($container_id); ?>">
+        <div class="owc-terr-controls">
+            <label>
+                <?php esc_html_e('Sort:', 'owbn-entities'); ?>
+                <select class="owc-terr-sort">
+                    <option value="title-asc"><?php esc_html_e('Title (A–Z)', 'owbn-entities'); ?></option>
+                    <option value="title-desc"><?php esc_html_e('Title (Z–A)', 'owbn-entities'); ?></option>
+                    <option value="country-asc"><?php esc_html_e('Country (A–Z)', 'owbn-entities'); ?></option>
+                    <option value="country-desc"><?php esc_html_e('Country (Z–A)', 'owbn-entities'); ?></option>
+                </select>
+            </label>
+        </div>
+
+        <ul class="owc-terr-list"></ul>
+
+        <div class="owc-terr-pagination">
+            <button type="button" class="owc-terr-prev" disabled>&laquo;</button>
+            <span class="owc-terr-page-info"></span>
+            <button type="button" class="owc-terr-next">&raquo;</button>
+        </div>
+
+        <div class="owc-terr-detail-modal" hidden>
+            <div class="owc-terr-detail-content"></div>
+            <button type="button" class="owc-terr-detail-close">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const container = document.getElementById('<?php echo esc_js($container_id); ?>');
+            const data = <?php echo wp_json_encode(owc_prepare_territory_data($territories)); ?>;
+            const slugTypes = <?php echo wp_json_encode($slug_types); ?>;
+            const currentSlug = <?php echo wp_json_encode($current_slug); ?>;
+            const chroniclesDetailUrl = '<?php echo esc_js(get_permalink(get_option(owc_option_name("chronicles_detail_page"), 0)) ?: ""); ?>';
+            const coordinatorsDetailUrl = '<?php echo esc_js(get_permalink(get_option(owc_option_name("coordinators_detail_page"), 0)) ?: ""); ?>';
+            const perPage = 10;
+            let page = 1;
+            let sortKey = 'title';
+            let sortDir = 'asc';
+
+            const list = container.querySelector('.owc-terr-list');
+            const pageInfo = container.querySelector('.owc-terr-page-info');
+            const prevBtn = container.querySelector('.owc-terr-prev');
+            const nextBtn = container.querySelector('.owc-terr-next');
+            const modal = container.querySelector('.owc-terr-detail-modal');
+            const modalContent = container.querySelector('.owc-terr-detail-content');
+            const sortSelect = container.querySelector('.owc-terr-sort');
+
+            function sortData() {
+                return [...data].sort((a, b) => {
+                    let va = sortKey === 'country' ? (a.countries || []).join(', ') : (a[sortKey] || '');
+                    let vb = sortKey === 'country' ? (b.countries || []).join(', ') : (b[sortKey] || '');
+                    let cmp = va.localeCompare(vb, undefined, {
+                        sensitivity: 'base'
+                    });
+                    return sortDir === 'desc' ? -cmp : cmp;
+                });
+            }
+
+            function render() {
+                const sorted = sortData();
+                const total = sorted.length;
+                const pages = Math.ceil(total / perPage);
+                const start = (page - 1) * perPage;
+                const paged = sorted.slice(start, start + perPage);
+
+                list.innerHTML = paged.map(t => {
+                    const display = t.detail ? `${t.title} — ${t.detail}` : t.title;
+                    return `<li data-id="${t.id}">${escHtml(display)}</li>`;
+                }).join('');
+
+                pageInfo.textContent = `${page} / ${pages}`;
+                prevBtn.disabled = page <= 1;
+                nextBtn.disabled = page >= pages;
+
+                container.querySelector('.owc-terr-pagination').hidden = pages <= 1;
+            }
+
+            function escHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str || '';
+                return div.innerHTML;
+            }
+
+            function decodeHtml(str) {
+                if (!str) return '';
+                // First decode any HTML entities
+                const doc = new DOMParser().parseFromString(str, 'text/html');
+                let decoded = doc.body.innerHTML;
+                // If no HTML tags present, convert newlines to <br>
+                if (!/<[a-z][\s\S]*>/i.test(decoded)) {
+                    decoded = decoded.replace(/\n/g, '<br>');
+                }
+                return decoded;
+            }
+
+            function buildSlugLink(slug) {
+                const info = slugTypes[slug] || {};
+                const type = info.type || '';
+                const title = info.title || slug;
+                if (type === 'chronicle' && chroniclesDetailUrl) {
+                    return `<a href="${chroniclesDetailUrl}?slug=${encodeURIComponent(slug)}" target="_blank">${escHtml(title)}</a>`;
+                } else if (type === 'coordinator' && coordinatorsDetailUrl) {
+                    return `<a href="${coordinatorsDetailUrl}?slug=${encodeURIComponent(slug)}" target="_blank">${escHtml(title)}</a>`;
+                }
+                return escHtml(title);
+            }
+
+            function showDetail(id) {
+                const item = data.find(t => t.id == id);
+                if (!item) return;
+
+                let html = `<h3>${escHtml(item.title)}</h3>`;
+
+                if (item.countries && item.countries.length) {
+                    html += `<p><strong><?php esc_html_e('Countries:', 'owbn-entities'); ?></strong> ${escHtml(item.country_names)}</p>`;
+                }
+                if (item.region) {
+                    html += `<p><strong><?php esc_html_e('Region:', 'owbn-entities'); ?></strong> ${escHtml(item.region)}</p>`;
+                }
+                if (item.location) {
+                    html += `<p><strong><?php esc_html_e('Location:', 'owbn-entities'); ?></strong> ${escHtml(item.location)}</p>`;
+                }
+                if (item.detail) {
+                    html += `<p><strong><?php esc_html_e('Detail:', 'owbn-entities'); ?></strong> ${escHtml(item.detail)}</p>`;
+                }
+                if (item.owner) {
+                    html += `<p><strong><?php esc_html_e('Owner:', 'owbn-entities'); ?></strong> ${escHtml(item.owner)}</p>`;
+                }
+
+                // Slugs with links (exclude current)
+                if (item.slugs && item.slugs.length) {
+                    const otherSlugs = item.slugs.filter(s => s !== currentSlug);
+                    if (otherSlugs.length) {
+                        const slugLinks = otherSlugs.map(buildSlugLink).join(', ');
+                        html += `<p><strong><?php esc_html_e('Also claimed by:', 'owbn-entities'); ?></strong> ${slugLinks}</p>`;
+                    }
+                }
+
+                if (item.description) {
+                    html += `<div class="owc-terr-desc"><strong><?php esc_html_e('Description:', 'owbn-entities'); ?></strong><div>${decodeHtml(item.description)}</div></div>`;
+                }
+
+                modalContent.innerHTML = html;
+                modal.hidden = false;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                page--;
+                render();
+            });
+            nextBtn.addEventListener('click', () => {
+                page++;
+                render();
+            });
+
+            sortSelect.addEventListener('change', () => {
+                const [key, dir] = sortSelect.value.split('-');
+                sortKey = key;
+                sortDir = dir;
+                page = 1;
+                render();
+            });
+
+            list.addEventListener('click', (e) => {
+                const li = e.target.closest('li');
+                if (li && li.dataset.id) showDetail(li.dataset.id);
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.classList.contains('owc-terr-detail-close')) {
+                    modal.hidden = true;
+                }
+            });
+
+            render();
+        })();
+    </script>
+<?php
+    return ob_get_clean();
+}
+
+function owc_get_all_slug_types(): array
+{
+    $types = [];
+
+    $chronicles = owc_fetch_list('chronicles');
+    if (!isset($chronicles['error']) && is_array($chronicles)) {
+        foreach ($chronicles as $c) {
+            if (!empty($c['slug'])) {
+                $types[$c['slug']] = [
+                    'type'  => 'chronicle',
+                    'title' => $c['title'] ?? $c['slug'],
+                ];
+            }
+        }
+    }
+
+    $coordinators = owc_fetch_list('coordinators');
+    if (!isset($coordinators['error']) && is_array($coordinators)) {
+        foreach ($coordinators as $c) {
+            if (!empty($c['slug'])) {
+                $types[$c['slug']] = [
+                    'type'  => 'coordinator',
+                    'title' => $c['title'] ?? $c['slug'],
+                ];
+            }
+        }
+    }
+
+    return $types;
+}
+
+/**
+ * Prepare territory data for JSON output.
+ *
+ * @param array $territories
+ * @return array
+ */
+function owc_prepare_territory_data(array $territories): array
+{
+    return array_map(function ($t) {
+        $countries = $t['countries'] ?? [];
+        return [
+            'id'            => $t['id'] ?? 0,
+            'title'         => html_entity_decode($t['title'] ?? ''),
+            'countries'     => $countries,
+            'country_names' => owc_render_territory_countries($countries),
+            'region'        => $t['region'] ?? '',
+            'location'      => $t['location'] ?? '',
+            'detail'        => $t['detail'] ?? '',
+            'description'   => $t['description'] ?? '',
+            'owner'         => $t['owner'] ?? '',
+            'slugs'         => $t['slugs'] ?? [],
+        ];
+    }, array_values($territories));
+}

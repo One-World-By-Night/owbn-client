@@ -1,0 +1,1508 @@
+# Copyright (C) 2026 greghacke
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: OWBN Archivist 1.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-archivist\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-02T23:47:54+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: owbn-archivist\n"
+
+#. Plugin Name of the plugin
+#: owbn-archivist.php
+msgid "OWBN Archivist"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: owbn-archivist.php
+msgid "https://github.com/One-World-By-Night/owbn-archivist"
+msgstr ""
+
+#. Description of the plugin
+#: owbn-archivist.php
+msgid "OAT (OWBN Archivist Toolkit) — workflow engine, character registry, submissions, inbox, reports, custom content hub."
+msgstr ""
+
+#. Author of the plugin
+#: owbn-archivist.php
+msgid "greghacke"
+msgstr ""
+
+#. Author URI of the plugin
+#: owbn-archivist.php
+msgid "https://www.owbn.net"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:18
+msgid "Archivist Toolkit (OAT)"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:19
+msgid "OAT pages: Inbox, Submit, Entry Detail."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:25
+msgid "Data Source"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:34
+msgid "Local — OAT plugin is installed on this site"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:42
+msgid "Remote — Fetch from archivist.owbn.net gateway"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:48
+msgid "Remote URL Override"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:56
+msgid "Only set if OAT data comes from a different gateway than the default remote URL."
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:60
+msgid "API Key Override"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:78
+#: includes/oat/elementor/class-oat-entry-widget.php:1016
+#: includes/oat/elementor/class-oat-inbox-widget.php:320
+#: includes/oat/elementor/class-oat-inbox-widget.php:356
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:288
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:622
+#: includes/oat/elementor/class-oat-registry-widget.php:194
+msgid "Status"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:87
+msgid "Mode"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:96
+msgid "OAT Plugin"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:97
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:289
+msgid "Active"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:97
+msgid "Not installed"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-oat.php:102
+msgid "Remote URL"
+msgstr ""
+
+#: includes/init.php:57
+msgid "OAT: My Characters"
+msgstr ""
+
+#: includes/init.php:63
+msgid "OAT: My Inbox"
+msgstr ""
+
+#: includes/init.php:73
+#: includes/init.php:172
+msgid "OAT not available."
+msgstr ""
+
+#: includes/init.php:101
+msgid "No characters linked to your account."
+msgstr ""
+
+#: includes/init.php:162
+msgid "Full Registry"
+msgstr ""
+
+#: includes/init.php:163
+#: includes/oat/elementor/class-oat-dashboard-widget.php:270
+msgid "New Submission"
+msgstr ""
+
+#: includes/init.php:199
+#: includes/oat/elementor/class-oat-inbox-widget.php:69
+#: includes/oat/elementor/class-oat-inbox-widget.php:231
+msgid "Assigned to Me"
+msgstr ""
+
+#. translators: %d: remaining count
+#: includes/init.php:207
+#: includes/init.php:244
+#, php-format
+msgid "+ %d more..."
+msgstr ""
+
+#: includes/init.php:237
+msgid "My Active Submissions"
+msgstr ""
+
+#: includes/init.php:265
+msgid "No pending items."
+msgstr ""
+
+#: includes/init.php:269
+msgid "View Full Inbox"
+msgstr ""
+
+#: includes/oat/admin.php:244
+msgid "Processing..."
+msgstr ""
+
+#: includes/oat/admin.php:245
+msgid "Submit"
+msgstr ""
+
+#: includes/oat/admin.php:246
+#: includes/oat/elementor/class-oat-entry-widget.php:570
+msgid "Watch"
+msgstr ""
+
+#: includes/oat/admin.php:247
+msgid "Unwatch"
+msgstr ""
+
+#: includes/oat/admin.php:248
+#: includes/oat/elementor/class-oat-dashboard-widget.php:263
+#: includes/oat/elementor/class-oat-entry-widget.php:570
+#: includes/oat/elementor/class-oat-inbox-widget.php:71
+#: includes/oat/elementor/class-oat-inbox-widget.php:233
+msgid "Watching"
+msgstr ""
+
+#: includes/oat/admin.php:249
+msgid "Creating..."
+msgstr ""
+
+#: includes/oat/admin.php:250
+msgid "Character name is required."
+msgstr ""
+
+#: includes/oat/admin.php:251
+msgid "Request failed."
+msgstr ""
+
+#: includes/oat/admin.php:252
+#: includes/oat/elementor/class-oat-entry-widget.php:125
+#: includes/oat/elementor/class-oat-entry-widget.php:1096
+msgid "Show Timeline"
+msgstr ""
+
+#: includes/oat/admin.php:253
+#: includes/oat/elementor/class-oat-entry-widget.php:1096
+msgid "Hide Timeline"
+msgstr ""
+
+#: includes/oat/admin.php:254
+msgid "Error"
+msgstr ""
+
+#: includes/oat/admin.php:255
+msgid "Rule #"
+msgstr ""
+
+#: includes/oat/admin.php:256
+msgid "Search rules or type free text, then press Enter..."
+msgstr ""
+
+#: includes/oat/admin.php:257
+msgid "Add: "
+msgstr ""
+
+#: includes/oat/ajax.php:633
+msgid "You must be logged in to submit."
+msgstr ""
+
+#: includes/oat/ajax.php:640
+msgid "Please select a domain."
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-browse-widget.php:11
+msgid "ccHub Browse"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-browse-widget.php:20
+#: includes/oat/elementor/class-cchub-categories-widget.php:19
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:40
+#: includes/oat/elementor/class-oat-registry-widget.php:40
+msgid "Settings"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-browse-widget.php:24
+msgid "Items per page"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-browse-widget.php:31
+msgid "Back to Categories URL"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-categories-widget.php:11
+msgid "ccHub Categories"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-categories-widget.php:23
+msgid "Browse Page URL"
+msgstr ""
+
+#: includes/oat/elementor/class-cchub-categories-widget.php:28
+msgid "Show Counts"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:27
+msgid "Archivist Activity Feed"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:62
+msgid "Feed Settings"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:67
+msgid "Number of Items"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:75
+msgid "Filter by Domain"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:77
+msgid "Leave blank for all domains"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:82
+msgid "Auto-Refresh Interval (seconds)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:87
+msgid "Set to 0 to disable auto-refresh."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:91
+#: includes/oat/elementor/class-oat-inbox-widget.php:112
+msgid "Entry Detail Page URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:101
+msgid "Feed Items"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:106
+#: includes/oat/elementor/class-oat-entry-widget.php:192
+msgid "Item Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:120
+msgid "Timestamp Typography"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:125
+msgid "Timestamp Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:140
+msgid "Please log in to view activity."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:153
+msgid "OAT Activity Feed — preview not available in editor."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:171
+msgid "No recent activity."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-activity-widget.php:225
+#: includes/oat/elementor/class-oat-entry-widget.php:1112
+#, php-format
+msgid "by %s"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:28
+msgid "Archivist Dashboard"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:63
+msgid "Display"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:68
+msgid "Show Pending Actions Count"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:70
+#: includes/oat/elementor/class-oat-dashboard-widget.php:79
+#: includes/oat/elementor/class-oat-dashboard-widget.php:88
+#: includes/oat/elementor/class-oat-entry-widget.php:100
+#: includes/oat/elementor/class-oat-entry-widget.php:109
+#: includes/oat/elementor/class-oat-entry-widget.php:118
+#: includes/oat/elementor/class-oat-entry-widget.php:127
+#: includes/oat/elementor/class-oat-entry-widget.php:147
+#: includes/oat/elementor/class-oat-inbox-widget.php:87
+#: includes/oat/elementor/class-oat-inbox-widget.php:96
+#: includes/oat/elementor/class-oat-inbox-widget.php:105
+msgid "Show"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:71
+#: includes/oat/elementor/class-oat-dashboard-widget.php:80
+#: includes/oat/elementor/class-oat-dashboard-widget.php:89
+#: includes/oat/elementor/class-oat-entry-widget.php:101
+#: includes/oat/elementor/class-oat-entry-widget.php:110
+#: includes/oat/elementor/class-oat-entry-widget.php:119
+#: includes/oat/elementor/class-oat-entry-widget.php:128
+#: includes/oat/elementor/class-oat-entry-widget.php:148
+#: includes/oat/elementor/class-oat-inbox-widget.php:88
+#: includes/oat/elementor/class-oat-inbox-widget.php:97
+#: includes/oat/elementor/class-oat-inbox-widget.php:106
+msgid "Hide"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:77
+msgid "Show My Submissions Count"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:86
+msgid "Show Watching Count"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:95
+msgid "Submit Page URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:101
+msgid "Inbox Page URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:107
+msgid "Registry Page URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:110
+msgid "Leave blank to link to wp-admin Registry page."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:118
+msgid "Count Cards"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:123
+msgid "Card Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:136
+msgid "Card Padding"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:151
+msgid "Count Typography"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:156
+msgid "Count Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:165
+#: includes/oat/elementor/class-oat-submit-widget.php:116
+msgid "Label Typography"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:170
+msgid "Label Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:180
+#: includes/oat/elementor/class-oat-entry-widget.php:226
+msgid "Action Buttons"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:185
+msgid "Primary Button Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:193
+msgid "Secondary Button Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:208
+msgid "Please log in to view your dashboard."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:249
+msgid "Pending Actions"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:256
+#: includes/oat/elementor/class-oat-inbox-widget.php:70
+#: includes/oat/elementor/class-oat-inbox-widget.php:232
+msgid "My Submissions"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:273
+msgid "View Inbox"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-dashboard-widget.php:276
+#: includes/oat/elementor/class-oat-registry-widget.php:161
+msgid "Registry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:27
+msgid "Archivist Entry Detail"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:62
+#: includes/oat/elementor/class-oat-entry-widget.php:67
+msgid "Entry Source"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:70
+msgid "URL Parameter"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:71
+#: includes/oat/elementor/class-oat-entry-widget.php:84
+msgid "Fixed Entry ID"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:77
+msgid "URL Parameter Name"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:93
+msgid "Sections"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:98
+msgid "Show Details Section"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:107
+msgid "Show Regulation Rules"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:116
+msgid "Show Assignees"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:134
+msgid "Timeline Default State"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:137
+msgid "Expanded"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:138
+msgid "Collapsed"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:145
+msgid "Show Actions Panel"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:158
+msgid "Header"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:168
+msgid "Title Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:178
+msgid "Meta Grid"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:183
+msgid "Grid Gap"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:202
+#: includes/oat/elementor/class-oat-entry-widget.php:1094
+msgid "Timeline"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:208
+msgid "Line Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:216
+msgid "Dot Color (default)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:232
+msgid "Approve Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:240
+msgid "Deny Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:248
+msgid "Request Changes Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:263
+msgid "Please log in to view this entry."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:288
+msgid "No entry specified."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:304
+msgid "Entry not found or access denied."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:562
+msgid "Step:"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:593
+msgid "Originator"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:598
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:259
+#: includes/oat/elementor/class-oat-registry-widget.php:191
+msgid "Chronicle"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:604
+msgid "Coordinator Genre"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:610
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:379
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:444
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:623
+msgid "Created"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:616
+msgid "Updated"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:657
+msgid "Details"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:717
+msgid "Linked Regulation Rules"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:721
+msgid "ID"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:722
+#: includes/oat/fields.php:573
+msgid "Genre"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:723
+msgid "Category"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:724
+msgid "Condition"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:725
+msgid "PC Level"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:726
+msgid "Elevated"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:737
+msgid "Yes"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:737
+msgid "No"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:756
+#, php-format
+msgid "Active Timer: %s"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:759
+#, php-format
+msgid "Expires: %s"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:780
+#: includes/oat/elementor/class-oat-entry-widget.php:846
+msgid "Resubmit"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:781
+msgid "Approve"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:782
+msgid "Deny"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:783
+msgid "Request Changes"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:784
+msgid "Cancel / Withdraw"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:785
+msgid "Bump"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:786
+msgid "Reassign"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:787
+msgid "Delegate"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:788
+msgid "Hold"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:789
+msgid "Resume"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:790
+msgid "Log"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:791
+msgid "Council Override"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:792
+msgid "Extend Timer"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:793
+#: includes/oat/elementor/class-oat-entry-widget.php:858
+msgid "Admin Edit"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:797
+msgid "Actions"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:803
+msgid "Auto-Approve (BBP)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:805
+msgid "This entry is eligible for Bump Bump Pass auto-approval."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:809
+#: includes/oat/elementor/class-oat-entry-widget.php:960
+msgid "Note (optional)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:811
+msgid "Invoke Auto-Approve"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:831
+msgid "Edit & Resubmit"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:834
+msgid "Update the fields below and resubmit your entry."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:842
+msgid "Note about changes (optional)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:861
+msgid "Edit entry fields directly. Changes are logged in the timeline."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:869
+msgid "Reason for edit (required)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:874
+msgid "Save Changes"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:888
+msgid "Vote reference (required)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:894
+msgid "Days:"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:895
+msgid "Hours:"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:904
+#: includes/oat/elementor/class-oat-entry-widget.php:914
+msgid "Search by name, login, or role path"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:941
+#, php-format
+msgid "Signed by %1$s%2$s"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:943
+msgid "on"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:960
+msgid "Note (required)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:982
+msgid "Add Me-Too"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:983
+msgid "Create a linked DA entry for another chronicle executing the same action."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:985
+msgid "Chronicle and details for the me-too entry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:990
+msgid "Add Me-Too Entry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:1010
+msgid "Assignees"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:1014
+msgid "User"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:1015
+#: includes/oat/elementor/class-oat-inbox-widget.php:322
+#: includes/oat/elementor/class-oat-inbox-widget.php:363
+msgid "Step"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:1054
+msgid "Linked Entries"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-entry-widget.php:1058
+msgid "Parent:"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:26
+msgid "Archivist Inbox"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:61
+msgid "Content"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:66
+msgid "Default Tab"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:77
+msgid "Entries Per Page"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:85
+msgid "Show Domain Filter"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:94
+msgid "Show Status Filter"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:103
+#: includes/oat/elementor/class-oat-registry-widget.php:64
+msgid "Show Search"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:115
+#: includes/oat/elementor/class-oat-submit-widget.php:94
+msgid "Entry ID appended as ?oat_entry=ID"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:123
+#: includes/oat/elementor/class-oat-registry-widget.php:84
+msgid "Table"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:128
+msgid "Header Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:136
+msgid "Header Text Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:144
+#: includes/oat/elementor/class-oat-registry-widget.php:97
+msgid "Row Hover Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:159
+msgid "Tabs"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:164
+msgid "Active Tab Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:185
+msgid "Please log in to access your inbox."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:190
+msgid "OAT Inbox — preview not available in editor."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:241
+msgid "All Domains"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:251
+msgid "All Statuses"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:261
+msgid "Search entries…"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:313
+msgid "No entries found."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:318
+#: includes/oat/elementor/class-oat-inbox-widget.php:345
+msgid "Entry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:319
+#: includes/oat/elementor/class-oat-inbox-widget.php:352
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:565
+#: includes/oat/elementor/class-oat-submit-widget.php:217
+msgid "Domain"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:324
+#: includes/oat/elementor/class-oat-inbox-widget.php:368
+msgid "Date"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:325
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:381
+msgid "Action"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:374
+msgid "View"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-inbox-widget.php:381
+msgid "No entries match your filters."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:15
+msgid "Archivist Registry Detail"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:45
+msgid "Back to Registry URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:51
+msgid "Entry Detail Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:61
+msgid "Please log in to view character details."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:67
+msgid "OAT Registry Detail — reads ?character_id= from URL."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:78
+msgid "No character specified."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:211
+msgid "Back to Registry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:254
+#: includes/oat/fields.php:566
+msgid "Character Name"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:285
+#: includes/oat/fields.php:577
+msgid "Creature Type"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:286
+msgid "Sub-Type"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:287
+#: includes/oat/elementor/class-oat-registry-widget.php:193
+msgid "PC/NPC"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:287
+msgid "PC"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:287
+msgid "NPC"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:289
+msgid "Inactive"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:289
+msgid "Dead"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:289
+msgid "Shelved"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:296
+msgid "Player Name"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:297
+msgid "Player Email"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:308
+msgid "Linked Player"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:314
+msgid "Search by name or email..."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:318
+#: includes/oat/fields.php:553
+msgid "clear"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:330
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:355
+msgid "NPC Owner"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:364
+msgid "Update Character"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:371
+#, php-format
+msgid "Active Grants (%d)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:373
+msgid "No active grants."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:377
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:442
+#: includes/oat/elementor/class-oat-registry-widget.php:192
+msgid "Type"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:378
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:443
+msgid "Value"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:380
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:427
+msgid "Expires"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:395
+msgid "Revoke this grant?"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:395
+msgid "Revoke"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:406
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:431
+msgid "Add Grant"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:439
+#, php-format
+msgid "Grant History (%d)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:445
+msgid "Expired"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:476
+#, php-format
+msgid "Custom Content Created (%d)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:509
+#, php-format
+msgid "Registry Entries (%d)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:511
+msgid "No approved entries for this character."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:564
+msgid "Entry ID"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:566
+#: includes/oat/elementor/class-oat-submit-widget.php:102
+#: includes/oat/elementor/class-oat-submit-widget.php:235
+msgid "Form"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:568
+msgid "Approving Authority"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:571
+msgid "Regulation Level"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-detail-widget.php:612
+msgid "Item"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:15
+msgid "Archivist Registry"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:45
+msgid "Character Detail Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:48
+msgid "Leave blank to link to wp-admin character detail."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:52
+msgid "Scope"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:56
+msgid "All (full registry)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:57
+msgid "My Characters only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:58
+msgid "My Chronicles only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:59
+msgid "My Coordinator roles only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:70
+msgid "Show Section Filter"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:76
+msgid "Show Last Activity Column"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:89
+msgid "Section Header Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:109
+msgid "Please log in to view the registry."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:115
+msgid "OAT Registry — preview not available in editor."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:130
+msgid "My Characters"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:131
+msgid "Chronicles"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:132
+msgid "Coordinators"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:133
+msgid "Decommissioned"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:171
+msgid "Search characters..."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:190
+msgid "Character"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:195
+msgid "Entries"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:196
+msgid "Last Activity"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:197
+msgid "Loading..."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:198
+msgid "Searching..."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:199
+msgid "No sections found."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:200
+msgid "No characters."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-registry-widget.php:201
+msgid "No characters found."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:28
+msgid "Archivist Submit Form"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:63
+msgid "Form Settings"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:68
+msgid "Domain Mode"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:71
+msgid "User Selects Domain"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:72
+msgid "Fixed Domain"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:78
+msgid "Fixed Domain Slug"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:85
+msgid "Submit Button Text"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:87
+#: includes/oat/elementor/class-oat-submit-widget.php:185
+msgid "Submit Request"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:91
+msgid "Redirect After Submit"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:107
+msgid "Form Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:122
+msgid "Input Border"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:127
+msgid "Input Focus Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:137
+msgid "Button Background"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:145
+msgid "Button Background (Hover)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:153
+msgid "Error Message Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:169
+msgid "Please log in to submit a request."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:174
+msgid "OAT Submit Form — preview not available in editor."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:221
+msgid "Select a domain…"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:239
+#: includes/oat/elementor/class-oat-submit-widget.php:284
+#: includes/oat/elementor/class-oat-submit-widget.php:296
+#: includes/oat/elementor/class-oat-submit-widget.php:372
+msgid "Select a form…"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:265
+msgid "Loading fields…"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:273
+msgid "Could not load fields for this domain."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:276
+#: includes/oat/elementor/class-oat-submit-widget.php:356
+msgid "Request failed. Please try again."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:328
+msgid "Submitting…"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-submit-widget.php:351
+msgid "Submission failed. Please check the form and try again."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:26
+msgid "Archivist Workspace"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:47
+msgid "Section"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:52
+msgid "Show Section"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:56
+msgid "OWBN Sites (SSO buttons)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:57
+msgid "My Stuff"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:58
+msgid "My Chronicles"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:59
+msgid "My Coordinator Roles"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:60
+msgid "Executive Roles"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:65
+msgid "Section Title"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:68
+msgid "Auto (based on section)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:69
+msgid "Leave blank to use the default title for the section."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:73
+msgid "Show Inbox Count"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:80
+msgid "Council Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:86
+msgid "Chronicles Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:92
+msgid "Archivist Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:98
+msgid "Players Base URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:107
+#: includes/oat/elementor/class-oat-workspace-widget.php:151
+msgid "Custom Cards"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:114
+msgid "Card Name"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:117
+msgid "Links with the same card name are grouped together."
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:121
+msgid "Link Label"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:126
+msgid "Link URL"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:133
+msgid "Route through SSO"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:139
+msgid "Show to"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:143
+msgid "Everyone (logged in)"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:144
+msgid "Chronicle staff only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:145
+msgid "Coordinators only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:146
+msgid "Exec only"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:161
+msgid "Style"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:166
+msgid "Heading Color"
+msgstr ""
+
+#: includes/oat/elementor/class-oat-workspace-widget.php:261
+msgid "Please log in."
+msgstr ""
+
+#: includes/oat/elementor/loader.php:50
+msgid "Archivist Toolkit"
+msgstr ""
+
+#: includes/oat/fields.php:459
+msgid "Search custom content by name..."
+msgstr ""
+
+#: includes/oat/fields.php:547
+msgid "Search characters by name..."
+msgstr ""
+
+#: includes/oat/fields.php:562
+msgid "Create New Character"
+msgstr ""
+
+#: includes/oat/fields.php:568
+msgid "Home Chronicle"
+msgstr ""
+
+#: includes/oat/fields.php:569
+msgid "Search chronicles..."
+msgstr ""
+
+#: includes/oat/fields.php:575
+msgid "Faction"
+msgstr ""
+
+#: includes/oat/fields.php:579
+msgid "Variant"
+msgstr ""
+
+#: includes/oat/fields.php:583
+msgid "PC / NPC"
+msgstr ""
+
+#: includes/oat/fields.php:585
+msgid "-- Select --"
+msgstr ""
+
+#: includes/oat/fields.php:586
+msgid "PC (Player Character)"
+msgstr ""
+
+#: includes/oat/fields.php:587
+msgid "NPC (Non-Player Character)"
+msgstr ""
+
+#: includes/oat/fields.php:595
+msgid "Create Character"
+msgstr ""
+
+#: includes/oat/fields.php:596
+msgid "Cancel"
+msgstr ""
+
+#: includes/oat/fields.php:618
+msgid "Search users by name or email..."
+msgstr ""
+
+#: includes/oat/fields.php:634
+msgid "User not found in system. Enter their email:"
+msgstr ""
+
+#: includes/oat/fields.php:637
+msgid "player@example.com"
+msgstr ""
+
+#: includes/oat/fields.php:658
+msgid "Select regulation rules to see coordinators."
+msgstr ""
+
+#: includes/oat/fields.php:676
+msgid "-- Select Template --"
+msgstr ""
