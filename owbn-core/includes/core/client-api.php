@@ -189,6 +189,8 @@ function owc_get_local_chronicles()
             'chronicle_satellite'    => get_post_meta($id, 'chronicle_satellite', true),
             'chronicle_parent'       => get_post_meta($id, 'chronicle_parent', true),
             'ooc_locations'          => get_post_meta($id, 'ooc_locations', true) ?: [],
+            'timezone'               => get_post_meta($id, 'timezone', true) ?: 'UTC',
+            'session_list'           => get_post_meta($id, 'session_list', true) ?: [],
         ];
     }, $posts);
 }
