@@ -4,9 +4,9 @@ The plugin suite that powers all One World by Night (https://www.owbn.net/) Word
 
 ## Plugins
 
-### owbn-core (v1.1.1)
+### owbn-core (v1.2.0)
 
-Foundation layer installed on every OWBN site. Handles SSO bridge, accessSchema client, admin settings, admin bar, player ID, UX feedback, and shared utilities. All other OWBN plugins depend on this.
+Foundation layer installed on every OWBN site. Handles SSO bridge, accessSchema client, admin settings, admin bar, player ID, UX feedback, shared utilities, and cross-site chronicle/coordinator/territory data fetching via the client API (owc_get_chronicles() and friends, with transparent local/remote mode). All other OWBN plugins depend on this.
 
 Deployed to: all OWBN sites
 
