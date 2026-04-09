@@ -195,4 +195,10 @@ function owbn_gateway_register_routes() {
         'callback'            => 'owbn_gateway_events_rsvp_get',
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
+
+    register_rest_route( $namespace, '/wpvp/votes/cast', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_wpvp_cast_ballot',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
 }

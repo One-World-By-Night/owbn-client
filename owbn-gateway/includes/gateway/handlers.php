@@ -312,6 +312,30 @@ function owbn_gateway_events_rsvp_get( $request ) {
     ) );
 }
 
+function owbn_gateway_wpvp_cast_ballot( $request ) {
+    if ( ! function_exists( 'owc_wpvp_cast_ballot_local' ) || ! owc_wpvp_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $vote_id     = absint( $request->get_param( 'vote_id' ) );
+    $user_id     = absint( $request->get_param( 'user_id' ) );
+    $ballot_data = $request->get_param( 'ballot_data' );
+    $voting_role = sanitize_text_field( (string) $request->get_param( 'voting_role' ) );
+
+    $result = owc_wpvp_cast_ballot_local( $vote_id, $user_id, $ballot_data, $voting_role );
+    // requires_role_selection carries structured data (eligible_roles) that
+    // the default WP_Error → non-200 REST response path drops. Return it as
+    // a 200 with an error sentinel so the caller wrapper can rehydrate it.
+    if ( is_wp_error( $result ) && 'requires_role_selection' === $result->get_error_code() ) {
+        $err_data = $result->get_error_data();
+        return owbn_gateway_respond( array(
+            'error'          => 'requires_role_selection',
+            'message'        => $result->get_error_message(),
+            'eligible_roles' => is_array( $err_data ) && isset( $err_data['eligible_roles'] ) ? $err_data['eligible_roles'] : array(),
+        ) );
+    }
+    return owbn_gateway_respond( $result );
+}
+
 function owbn_gateway_bylaws_recent( $request ) {
     if ( ! function_exists( 'owc_bylaws_get_local_recent' ) || ! owc_bylaws_is_local() ) {
         return owbn_gateway_respond( new WP_Error( 'bylaws_unavailable', 'bylaw-clause-manager not installed on this site.', array( 'status' => 404 ) ) );

@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+= 1.7.0 =
+* Added owc_wpvp_cast_ballot + owc_wpvp_cast_ballot_local write wrappers for cross-site ballot casting. Local path calls WPVP_Database::cast_ballot after re-running WPVP_Permissions::can_cast_vote and get_eligible_voting_roles; remote path POSTs to the new /wpvp/votes/cast gateway endpoint (owbn-gateway 1.6.0). Returns WP_Error('requires_role_selection', ..., ['eligible_roles' => [...]]) when the user has multiple eligible voting roles and no voting_role was supplied. Used by owbn-board's ballot Submit All so players can vote from any OWBN site without being bounced to council.
 
 = 1.6.0 =
 * Added owc_events_rsvp_* write/read wrappers: owc_events_rsvp_set, owc_events_rsvp_get, owc_events_rsvp_set_local, owc_events_rsvp_remove_local, owc_events_rsvp_get_local, owc_events_rsvp_counts_local. Local-or-remote dispatch: on chronicles.owbn.net they delegate to owbn-board's events module; elsewhere they POST to the new /events/rsvp/set and /events/rsvp/get gateway endpoints (owbn-gateway 1.5.0). Used by owbn-board's events tile so players can RSVP cross-site from players.owbn.net / council / any OWBN host instead of being bounced through SSO to chronicles.

@@ -4,7 +4,7 @@ Tags: owbn, gateway, rest-api
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPL-2.0-or-later
 
 REST API producer endpoints for sites hosting owbn-chronicle-plugin or owbn-coordinator data.
@@ -15,6 +15,9 @@ OWBN Gateway exposes REST API endpoints under the owbn/v1/ namespace that allow
 other OWBN sites to consume chronicle, coordinator, territory, and vote data.
 
 == Changelog ==
+
+= 1.6.0 =
+* Added /wpvp/votes/cast endpoint for cross-site ballot casting. Accepts vote_id, user_id, ballot_data (JSON), and optional voting_role. Delegates to owc_wpvp_cast_ballot_local (owbn-core 1.7.0) which re-runs WPVP_Permissions::can_cast_vote + get_eligible_voting_roles before calling WPVP_Database::cast_ballot. Used by owbn-board's ballot Submit All so players can vote from any OWBN site without being bounced through SSO to council.
 
 = 1.5.0 =
 * Added /events/rsvp/set and /events/rsvp/get endpoints for cross-site RSVP writes. set accepts event_id, user_id, and status (interested/going/clear); get returns the user's current status and aggregate counts. Both delegate to owc_events_rsvp_*_local which in turn call owbn-board's events rsvp table on chronicles.owbn.net. Used by owbn-board's events tile so players on any OWBN site can RSVP without being SSO-bounced to chronicles.
