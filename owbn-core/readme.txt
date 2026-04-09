@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+= 1.6.0 =
+* Added owc_events_rsvp_* write/read wrappers: owc_events_rsvp_set, owc_events_rsvp_get, owc_events_rsvp_set_local, owc_events_rsvp_remove_local, owc_events_rsvp_get_local, owc_events_rsvp_counts_local. Local-or-remote dispatch: on chronicles.owbn.net they delegate to owbn-board's events module; elsewhere they POST to the new /events/rsvp/set and /events/rsvp/get gateway endpoints (owbn-gateway 1.5.0). Used by owbn-board's events tile so players can RSVP cross-site from players.owbn.net / council / any OWBN host instead of being bounced through SSO to chronicles.
 
 = 1.5.0 =
 * Added owc_events_* client wrappers (owc_events_is_local, owc_events_get_upcoming, owc_events_get_upcoming_for_host, owc_events_get_in_window, owc_events_get_event, owc_events_normalize_event). Local-or-remote pattern matching owc_wpvp_* / owc_bylaws_*. Returns normalized arrays with pre-resolved banner URLs and permalinks so consumers don't need local attachment or post access. Used by owbn-board's events tile, calendar contributor, and [owbn_events] shortcode to fetch centralized event data from chronicles.owbn.net.

@@ -183,4 +183,16 @@ function owbn_gateway_register_routes() {
             ),
         ),
     ) );
+
+    register_rest_route( $namespace, '/events/rsvp/set', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_rsvp_set',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/events/rsvp/get', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_rsvp_get',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
 }
