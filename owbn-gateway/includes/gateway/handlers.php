@@ -204,3 +204,55 @@ function owbn_gateway_territories_by_slug( $request ) {
 
     return owbn_gateway_respond( $data );
 }
+
+function owbn_gateway_wpvp_open_votes( $request ) {
+    if ( ! function_exists( 'owc_wpvp_get_local_open_votes' ) || ! owc_wpvp_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $limit = (int) $request->get_param( 'limit' );
+    return owbn_gateway_respond( owc_wpvp_get_local_open_votes( $limit ) );
+}
+
+function owbn_gateway_wpvp_vote_detail( $request ) {
+    if ( ! function_exists( 'owc_wpvp_get_local_vote' ) || ! owc_wpvp_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $id = absint( $request->get_param( 'id' ) );
+    $data = owc_wpvp_get_local_vote( $id );
+    if ( ! $data ) {
+        return owbn_gateway_respond( new WP_Error( 'not_found', 'Vote not found.', array( 'status' => 404 ) ) );
+    }
+    return owbn_gateway_respond( $data );
+}
+
+function owbn_gateway_wpvp_vote_counts( $request ) {
+    if ( ! function_exists( 'owc_wpvp_get_local_vote_counts' ) || ! owc_wpvp_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    return owbn_gateway_respond( owc_wpvp_get_local_vote_counts() );
+}
+
+function owbn_gateway_wpvp_has_voted( $request ) {
+    if ( ! owc_wpvp_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $vote_id = absint( $request->get_param( 'vote_id' ) );
+    $user_id = absint( $request->get_param( 'user_id' ) );
+    if ( ! $vote_id || ! $user_id ) {
+        return owbn_gateway_respond( new WP_Error( 'bad_request', 'vote_id and user_id required.', array( 'status' => 400 ) ) );
+    }
+    global $wpdb;
+    $table  = $wpdb->prefix . 'wpvp_ballots';
+    $exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
+    if ( ! $exists ) {
+        return owbn_gateway_respond( array( 'has_voted' => false ) );
+    }
+    $count = (int) $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table} WHERE vote_id = %d AND user_id = %d",
+            $vote_id,
+            $user_id
+        )
+    );
+    return owbn_gateway_respond( array( 'has_voted' => $count > 0 ) );
+}

@@ -114,4 +114,35 @@ function owbn_gateway_register_routes() {
             ),
         ),
     ) );
+
+    // wp-voting-plugin endpoints
+    register_rest_route( $namespace, '/wpvp/votes/open', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_wpvp_open_votes',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/wpvp/votes/counts', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_wpvp_vote_counts',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/wpvp/votes/has-voted', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_wpvp_has_voted',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/wpvp/votes/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_wpvp_vote_detail',
+        'permission_callback' => 'owbn_gateway_authenticate',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
 }

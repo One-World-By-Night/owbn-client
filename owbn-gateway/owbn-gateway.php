@@ -2,7 +2,7 @@
 /**
  * Plugin Name: OWBN Gateway
  * Description: REST API producer endpoints for cross-site OWBN data (chronicles, coordinators, territories, votes)
- * Version:     1.1.0
+ * Version:     1.2.0
  * Author:      One World by Night
  * License:     GPL-2.0-or-later
  * Text Domain: owbn-gateway
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_GATEWAY_VERSION', '1.1.0' );
+define( 'OWC_GATEWAY_VERSION', '1.2.0' );
 define( 'OWC_GATEWAY_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_GATEWAY_URL', plugin_dir_url( __FILE__ ) );
 
