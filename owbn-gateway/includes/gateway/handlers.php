@@ -232,6 +232,50 @@ function owbn_gateway_wpvp_vote_counts( $request ) {
     return owbn_gateway_respond( owc_wpvp_get_local_vote_counts() );
 }
 
+function owbn_gateway_events_upcoming( $request ) {
+    if ( ! function_exists( 'owc_events_get_local_upcoming' ) || ! owc_events_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'events_unavailable', 'Events CPT not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $limit = (int) $request->get_param( 'limit' );
+    if ( $limit <= 0 ) {
+        $limit = 10;
+    }
+    return owbn_gateway_respond( owc_events_get_local_upcoming( $limit ) );
+}
+
+function owbn_gateway_events_upcoming_for_host( $request ) {
+    if ( ! function_exists( 'owc_events_get_local_upcoming_for_host' ) || ! owc_events_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'events_unavailable', 'Events CPT not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $host  = sanitize_text_field( (string) $request->get_param( 'host_scope' ) );
+    $limit = (int) $request->get_param( 'limit' );
+    if ( $limit <= 0 ) {
+        $limit = 10;
+    }
+    return owbn_gateway_respond( owc_events_get_local_upcoming_for_host( $host, $limit ) );
+}
+
+function owbn_gateway_events_in_window( $request ) {
+    if ( ! function_exists( 'owc_events_get_local_in_window' ) || ! owc_events_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'events_unavailable', 'Events CPT not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $from = (int) $request->get_param( 'from' );
+    $to   = (int) $request->get_param( 'to' );
+    return owbn_gateway_respond( owc_events_get_local_in_window( $from, $to ) );
+}
+
+function owbn_gateway_events_detail( $request ) {
+    if ( ! function_exists( 'owc_events_get_local_event' ) || ! owc_events_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'events_unavailable', 'Events CPT not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $id   = absint( $request->get_param( 'id' ) );
+    $data = owc_events_get_local_event( $id );
+    if ( ! $data ) {
+        return owbn_gateway_respond( new WP_Error( 'not_found', 'Event not found.', array( 'status' => 404 ) ) );
+    }
+    return owbn_gateway_respond( $data );
+}
+
 function owbn_gateway_bylaws_recent( $request ) {
     if ( ! function_exists( 'owc_bylaws_get_local_recent' ) || ! owc_bylaws_is_local() ) {
         return owbn_gateway_respond( new WP_Error( 'bylaws_unavailable', 'bylaw-clause-manager not installed on this site.', array( 'status' => 404 ) ) );

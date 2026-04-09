@@ -152,4 +152,35 @@ function owbn_gateway_register_routes() {
         'callback'            => 'owbn_gateway_bylaws_recent',
         'permission_callback' => 'owbn_gateway_authenticate',
     ) );
+
+    // events endpoints (chronicles-hosted)
+    register_rest_route( $namespace, '/events/upcoming', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_upcoming',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/events/upcoming-for-host', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_upcoming_for_host',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/events/in-window', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_in_window',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
+
+    register_rest_route( $namespace, '/events/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_events_detail',
+        'permission_callback' => 'owbn_gateway_authenticate',
+        'args'                => array(
+            'id' => array(
+                'required'          => true,
+                'sanitize_callback' => 'absint',
+            ),
+        ),
+    ) );
 }

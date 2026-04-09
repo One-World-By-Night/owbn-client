@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+= 1.5.0 =
+* Added owc_events_* client wrappers (owc_events_is_local, owc_events_get_upcoming, owc_events_get_upcoming_for_host, owc_events_get_in_window, owc_events_get_event, owc_events_normalize_event). Local-or-remote pattern matching owc_wpvp_* / owc_bylaws_*. Returns normalized arrays with pre-resolved banner URLs and permalinks so consumers don't need local attachment or post access. Used by owbn-board's events tile, calendar contributor, and [owbn_events] shortcode to fetch centralized event data from chronicles.owbn.net.
 
 = 1.4.0 =
 * Added owc_bylaws_* client wrappers (owc_bylaws_is_local, owc_bylaws_get_recent, owc_bylaws_get_local_recent, owc_bylaws_normalize_clause). Same local-or-remote pattern as owc_wpvp_*. Returns normalized arrays so consumers don't depend on bylaw_clause CPT post meta key names. Used by owbn-board's errata tile to fetch recent bylaw changes from council.owbn.net cross-site.
