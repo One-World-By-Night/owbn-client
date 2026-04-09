@@ -232,6 +232,15 @@ function owbn_gateway_wpvp_vote_counts( $request ) {
     return owbn_gateway_respond( owc_wpvp_get_local_vote_counts() );
 }
 
+function owbn_gateway_bylaws_recent( $request ) {
+    if ( ! function_exists( 'owc_bylaws_get_local_recent' ) || ! owc_bylaws_is_local() ) {
+        return owbn_gateway_respond( new WP_Error( 'bylaws_unavailable', 'bylaw-clause-manager not installed on this site.', array( 'status' => 404 ) ) );
+    }
+    $days  = (int) $request->get_param( 'days' );
+    $limit = (int) $request->get_param( 'limit' );
+    return owbn_gateway_respond( owc_bylaws_get_local_recent( $days, $limit ) );
+}
+
 function owbn_gateway_wpvp_has_voted( $request ) {
     if ( ! owc_wpvp_is_local() ) {
         return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );

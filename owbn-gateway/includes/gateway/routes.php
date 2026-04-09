@@ -145,4 +145,11 @@ function owbn_gateway_register_routes() {
             ),
         ),
     ) );
+
+    // bylaw-clause-manager endpoints
+    register_rest_route( $namespace, '/bylaws/clauses/recent', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_bylaws_recent',
+        'permission_callback' => 'owbn_gateway_authenticate',
+    ) );
 }
