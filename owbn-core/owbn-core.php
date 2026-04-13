@@ -4,7 +4,7 @@
  * Plugin Name: OWBN Core
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Core infrastructure for all OWBN WordPress sites — SSO bridge, accessSchema client, settings, admin bar, player ID, UX feedback.
- * Version: 1.9.1
+ * Version: 1.9.2
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-core
