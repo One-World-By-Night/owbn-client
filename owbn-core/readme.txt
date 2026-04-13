@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+= 1.8.0 =
+* Added owc_board_* client wrappers (owc_board_is_local, owc_board_remote_request, owc_board_messages_list/post/delete, owc_board_notebook_get/save, owc_board_handoff_get/recent_entries, owc_board_sessions_list, owc_board_visitors_list/by_player, owc_board_state_get/set, owc_board_prefs_get/set, owc_board_audit_log). Local-or-remote pattern matching owc_wpvp_* / owc_bylaws_* / owc_events_*. Host site detected via owbn_board_messages table presence. Used by owbn-board tiles to read and write shared board data cross-site with chronicles.owbn.net as canonical host.
 
 = 1.7.0 =
 * Added owc_wpvp_cast_ballot + owc_wpvp_cast_ballot_local write wrappers for cross-site ballot casting. Local path calls WPVP_Database::cast_ballot after re-running WPVP_Permissions::can_cast_vote and get_eligible_voting_roles; remote path POSTs to the new /wpvp/votes/cast gateway endpoint (owbn-gateway 1.6.0). Returns WP_Error('requires_role_selection', ..., ['eligible_roles' => [...]]) when the user has multiple eligible voting roles and no voting_role was supplied. Used by owbn-board's ballot Submit All so players can vote from any OWBN site without being bounced to council.
