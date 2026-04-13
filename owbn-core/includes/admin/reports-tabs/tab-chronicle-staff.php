@@ -129,7 +129,12 @@ $match_holder = function ( $cm_name, $cm_email, array $holders ) use ( $norm_nam
 };
 
 $color_bg = array(
-    'green'  => '#d4edda',
+    'green'  => '',         // no tint — white is fine for matched rows
+    'yellow' => '#fff3cd',
+    'red'    => '#f8d7da',
+);
+$color_pill = array(
+    'green'  => '#e6f4ea',
     'yellow' => '#fff3cd',
     'red'    => '#f8d7da',
 );
@@ -248,15 +253,31 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
             <td>
                 <?php if ( empty( $holders ) ) : ?>
                     —
-                <?php else : ?>
-                    <?php foreach ( $holders as $h ) :
+                <?php else :
+                    $can_confirm = ( 'green' !== $color ) && ( $cm_slug === $slug );
+                    foreach ( $holders as $h ) :
                         $hid   = (int) ( $h['user_id'] ?? 0 );
                         $hname = $h['display_name'] ?? ( $h['user_login'] ?? '#' . $hid );
-                        echo $user_link( $hid, $hname, true );
-                        echo '<br><small>' . esc_html( $h['email'] ?? '' ) . '</small><br>';
-                    endforeach; ?>
-                <?php endif; ?>
-                <span class="owc-badge" style="background:<?php echo esc_attr( $color_bg[ $color ] ); ?>;">
+                        ?>
+                        <div style="margin-bottom:4px;">
+                            <?php echo $user_link( $hid, $hname, true ); ?>
+                            <br><small><?php echo esc_html( $h['email'] ?? '' ); ?></small>
+                            <?php if ( $can_confirm && $hid ) : ?>
+                                <br>
+                                <button type="button"
+                                    class="button button-small owc-confirm-cm"
+                                    data-slug="<?php echo esc_attr( $slug ); ?>"
+                                    data-user="<?php echo esc_attr( $hid ); ?>"
+                                    data-nonce="<?php echo esc_attr( wp_create_nonce( 'owc_confirm_cm_' . $slug ) ); ?>"
+                                    style="margin-top:2px;">
+                                    <?php esc_html_e( 'Confirm as CM', 'owbn-core' ); ?>
+                                </button>
+                                <span class="owc-confirm-result" style="font-size:11px; margin-left:4px;"></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach;
+                endif; ?>
+                <span class="owc-badge" style="background:<?php echo esc_attr( $color_pill[ $color ] ); ?>;">
                     <?php echo esc_html( $note ); ?>
                 </span>
             </td>
@@ -267,8 +288,36 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
 </table>
 
 <?php if ( $is_admin ) : ?>
+<script type="text/javascript">
+jQuery(function($){
+    $('.owc-confirm-cm').on('click', function(){
+        var $btn = $(this);
+        var $result = $btn.siblings('.owc-confirm-result');
+        $btn.prop('disabled', true);
+        $result.text('');
+        $.post(ajaxurl, {
+            action: 'owc_confirm_cm_match',
+            slug:   $btn.data('slug'),
+            user:   $btn.data('user'),
+            nonce:  $btn.data('nonce')
+        }, function(response){
+            if (response.success) {
+                $result.css('color','#2e7d32').text('✓ ' + (response.data.message || 'saved'));
+                // Flip row to white.
+                $btn.closest('tr').css('background','');
+            } else {
+                $result.css('color','#d63638').text(response.data || 'Failed');
+                $btn.prop('disabled', false);
+            }
+        }).fail(function(){
+            $result.css('color','#d63638').text('Request failed');
+            $btn.prop('disabled', false);
+        });
+    });
+});
+</script>
 <div class="owc-staff-summary">
-    <span class="pill" style="background:<?php echo esc_attr( $color_bg['green'] ); ?>;"><?php echo esc_html( sprintf( __( 'Matched: %d', 'owbn-core' ), $tally['green'] ) ); ?></span>
+    <span class="pill" style="background:<?php echo esc_attr( $color_pill['green'] ); ?>;"><?php echo esc_html( sprintf( __( 'Matched: %d', 'owbn-core' ), $tally['green'] ) ); ?></span>
     <span class="pill" style="background:<?php echo esc_attr( $color_bg['yellow'] ); ?>;"><?php echo esc_html( sprintf( __( 'Fuzzy: %d', 'owbn-core' ), $tally['yellow'] ) ); ?></span>
     <span class="pill" style="background:<?php echo esc_attr( $color_bg['red'] ); ?>;"><?php echo esc_html( sprintf( __( 'Problems: %d', 'owbn-core' ), $tally['red'] ) ); ?></span>
 </div>
