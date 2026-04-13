@@ -675,3 +675,124 @@ function owbn_gateway_oat_creature_taxonomy( $request ) {
     }
     return owbn_gateway_respond( OAT_Creature_Taxonomy::get_picker_data() );
 }
+
+/**
+ * Handle POST /owbn/v1/oat/dashboard-counts
+ *
+ * Returns counts of items assigned to / submitted by / watched by the current user.
+ * Mirrors the local-mode logic in owc_oat_get_dashboard_counts() so cross-site
+ * callers get the same shape.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function owbn_gateway_oat_dashboard_counts( $request ) {
+    $user_id = (int) $request->get_param( '_oat_user_id' );
+
+    global $wpdb;
+    $prefix = $wpdb->prefix;
+
+    $assigned = (int) $wpdb->get_var( $wpdb->prepare(
+        "SELECT COUNT(DISTINCT entry_id) FROM {$prefix}oat_assignees
+         WHERE user_id = %d AND status = 'active'",
+        $user_id
+    ) );
+
+    $submissions = (int) $wpdb->get_var( $wpdb->prepare(
+        "SELECT COUNT(*) FROM {$prefix}oat_entries
+         WHERE originator_id = %d AND status NOT IN ('approved','denied','cancelled')",
+        $user_id
+    ) );
+
+    $watching = (int) $wpdb->get_var( $wpdb->prepare(
+        "SELECT COUNT(*) FROM {$prefix}oat_watchers WHERE user_id = %d",
+        $user_id
+    ) );
+
+    return owbn_gateway_respond( array(
+        'counts' => array(
+            'assigned'    => $assigned,
+            'submissions' => $submissions,
+            'watching'    => $watching,
+        ),
+    ) );
+}
+
+/**
+ * Handle POST /owbn/v1/oat/recent-activity
+ *
+ * Returns recent timeline events visible to the current user. Mirrors the
+ * local-mode logic in owc_oat_get_recent_activity().
+ *
+ * Request body (optional):
+ *   { "limit": 10, "domain": "character_lifecycle" }
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function owbn_gateway_oat_recent_activity( $request ) {
+    $user_id = (int) $request->get_param( '_oat_user_id' );
+    $body    = $request->get_json_params();
+    $limit   = isset( $body['limit'] ) ? max( 1, (int) $body['limit'] ) : 10;
+    $domain  = isset( $body['domain'] ) ? sanitize_key( $body['domain'] ) : '';
+
+    global $wpdb;
+    $prefix = $wpdb->prefix;
+
+    $entry_ids_sql =
+        "SELECT DISTINCT e.id FROM {$prefix}oat_entries e
+         WHERE e.originator_id = {$user_id}
+         UNION
+         SELECT DISTINCT a.entry_id FROM {$prefix}oat_assignees a WHERE a.user_id = {$user_id}
+         UNION
+         SELECT DISTINCT w.entry_id FROM {$prefix}oat_watchers w WHERE w.user_id = {$user_id}";
+
+    $domain_clause = $domain ? $wpdb->prepare( "AND e.domain = %s", $domain ) : '';
+
+    $rows = $wpdb->get_results( $wpdb->prepare(
+        "SELECT t.entry_id, e.domain, t.action_type, t.actor_id, t.note, t.created_at
+         FROM {$prefix}oat_timeline t
+         INNER JOIN {$prefix}oat_entries e ON e.id = t.entry_id
+         WHERE t.entry_id IN ({$entry_ids_sql})
+           AND t.visibility_tier IN ('public','player')
+           {$domain_clause}
+         ORDER BY t.created_at DESC
+         LIMIT %d",
+        $limit
+    ), ARRAY_A );
+
+    if ( ! $rows ) {
+        return owbn_gateway_respond( array( 'events' => array() ) );
+    }
+
+    // Resolve actor names.
+    $actor_ids = array_unique( array_column( $rows, 'actor_id' ) );
+    $actor_map = array();
+    foreach ( $actor_ids as $aid ) {
+        $u = get_user_by( 'id', $aid );
+        $actor_map[ $aid ] = $u ? $u->display_name : '#' . $aid;
+    }
+
+    // Domain labels.
+    $domain_labels = array();
+    if ( function_exists( 'owc_oat_get_domains' ) ) {
+        foreach ( owc_oat_get_domains() as $d ) {
+            $domain_labels[ $d['slug'] ] = $d['label'];
+        }
+    }
+
+    $events = array();
+    foreach ( $rows as $row ) {
+        $events[] = array(
+            'entry_id'     => (int) $row['entry_id'],
+            'domain'       => $row['domain'],
+            'domain_label' => isset( $domain_labels[ $row['domain'] ] ) ? $domain_labels[ $row['domain'] ] : ucfirst( str_replace( '_', ' ', $row['domain'] ) ),
+            'action_type'  => $row['action_type'],
+            'actor_name'   => isset( $actor_map[ $row['actor_id'] ] ) ? $actor_map[ $row['actor_id'] ] : '',
+            'note'         => $row['note'],
+            'created_at'   => function_exists( 'owc_oat_format_date' ) ? owc_oat_format_date( $row['created_at'] ) : $row['created_at'],
+        );
+    }
+
+    return owbn_gateway_respond( array( 'events' => $events ) );
+}

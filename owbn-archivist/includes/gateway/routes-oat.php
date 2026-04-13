@@ -72,6 +72,20 @@ function owbn_gateway_register_oat_routes() {
         'permission_callback' => 'owbn_gateway_oat_authenticate_user',
     ) );
 
+    // Dashboard counts: assignments / submissions / watching for current user
+    register_rest_route( $namespace, '/oat/dashboard-counts', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_dashboard_counts',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Recent activity: timeline events visible to current user
+    register_rest_route( $namespace, '/oat/recent-activity', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_recent_activity',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
     // ── Server-scoped routes (API key only) ────────────────────────────────
 
     // Domains: list of registered domains

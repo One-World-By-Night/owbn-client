@@ -1636,7 +1636,7 @@ function owc_oat_get_dashboard_counts( $user_id ) {
     }
 
     // Remote mode.
-    $response = owc_oat_request( 'POST', '/oat/dashboard-counts', array( 'user_id' => $user_id ) );
+    $response = owc_oat_request( 'dashboard-counts', array( 'user_id' => $user_id ) );
     if ( is_wp_error( $response ) ) {
         return $response;
     }
@@ -1731,7 +1731,7 @@ function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
     }
 
     // Remote mode.
-    $response = owc_oat_request( 'POST', '/oat/recent-activity', array(
+    $response = owc_oat_request( 'recent-activity', array(
         'user_id' => $user_id,
         'limit'   => $limit,
         'domain'  => $domain,
