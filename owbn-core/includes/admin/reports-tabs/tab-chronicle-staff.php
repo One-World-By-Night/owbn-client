@@ -4,95 +4,128 @@
  *
  * Columns: chronicle | slug | HST | HST email | CM | CM email | CM role (ASC)
  *
- * Match logic (per-row status color):
- *   green  = exactly 1 user holds chronicle/{slug}/cm AND that user matches cm_info
- *   yellow = cm_info can't be confirmed (user=__new__, match by email only), or
- *            exactly 1 holder but no cm_info link
- *   red    = 0 holders, 2+ holders, or explicit mismatch with cm_info
- *
- * Satellite chronicles show the parent's CM + parent's CM role with a
- * "(from parent: <slug>)" annotation.
+ * Single bulk ASC fetch for all chronicle/%/cm holders, cached 15 min.
+ * Satellite chronicles inherit CM from parent (parent stored as post ID).
+ * Fuzzy name match: exact → first-word+last-word → last-word+first-prefix.
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$is_admin     = current_user_can( 'manage_options' );
-$client_id    = owc_get_client_id();
-$chronicles   = function_exists( 'owc_get_local_chronicles' ) ? owc_get_local_chronicles() : array();
-$all_by_slug  = array();
+$is_admin = current_user_can( 'manage_options' );
 
-if ( is_wp_error( $chronicles ) ) {
-    echo '<p>' . esc_html( $chronicles->get_error_message() ) . '</p>';
+if ( ! post_type_exists( 'owbn_chronicle' ) ) {
+    echo '<p>' . esc_html__( 'Chronicle post type not available on this site.', 'owbn-core' ) . '</p>';
     return;
 }
-if ( empty( $chronicles ) ) {
+
+$posts = get_posts( array(
+    'post_type'      => 'owbn_chronicle',
+    'post_status'    => 'publish',
+    'posts_per_page' => -1,
+    'orderby'        => 'title',
+    'order'          => 'ASC',
+) );
+
+if ( empty( $posts ) ) {
     echo '<p>' . esc_html__( 'No chronicles found.', 'owbn-core' ) . '</p>';
     return;
 }
 
-// Index by slug for satellite parent lookups.
-foreach ( $chronicles as $c ) {
-    $all_by_slug[ $c['slug'] ] = $c;
+update_postmeta_cache( wp_list_pluck( $posts, 'ID' ) );
+
+$rows       = array();
+$id_to_slug = array();
+foreach ( $posts as $p ) {
+    $slug = get_post_meta( $p->ID, 'chronicle_slug', true ) ?: $p->post_name;
+    $rows[ $slug ] = array(
+        'id'        => $p->ID,
+        'title'     => $p->post_title,
+        'slug'      => $slug,
+        'satellite' => ! empty( get_post_meta( $p->ID, 'chronicle_satellite', true ) ),
+        'parent_id' => (int) get_post_meta( $p->ID, 'chronicle_parent', true ),
+        'hst_info'  => get_post_meta( $p->ID, 'hst_info', true ) ?: array(),
+        'cm_info'   => get_post_meta( $p->ID, 'cm_info', true ) ?: array(),
+    );
+    $id_to_slug[ $p->ID ] = $slug;
 }
 
-// Filter to published only.
-$rows = array_filter( $chronicles, function ( $c ) {
-    return ( $c['status'] ?? '' ) === 'publish';
-} );
-
-usort( $rows, function ( $a, $b ) {
-    return strcmp( $a['title'] ?? '', $b['title'] ?? '' );
-} );
+// Admin-only: bulk-fetch all chronicle/*/cm holders in one call. Cached.
+$holders_map = array();
+$fetch_error = '';
+$handle_refresh = $is_admin && isset( $_GET['refresh'] ) && $_GET['refresh'] === '1';
+if ( $is_admin ) {
+    $cache_key = 'owc_cm_holders_map_v1';
+    if ( $handle_refresh ) {
+        delete_transient( $cache_key );
+    }
+    $cached = get_transient( $cache_key );
+    if ( is_array( $cached ) ) {
+        $holders_map = $cached;
+    } elseif ( function_exists( 'owc_asc_get_holders_by_pattern' ) ) {
+        $result = owc_asc_get_holders_by_pattern( 'ccs', 'chronicle/%/cm' );
+        if ( is_wp_error( $result ) ) {
+            $fetch_error = $result->get_error_message();
+        } elseif ( is_array( $result ) ) {
+            $holders_map = $result;
+            set_transient( $cache_key, $holders_map, 4 * HOUR_IN_SECONDS );
+        }
+    }
+}
 
 // -- helpers --
-
-$resolve_staff = function ( array $info ) {
-    // Returns [ 'user_id' => int|null, 'name' => string, 'email' => string ].
-    $uid = 0;
-    if ( isset( $info['user'] ) && is_numeric( $info['user'] ) ) {
-        $uid = (int) $info['user'];
-    }
-    return array(
-        'user_id' => $uid > 0 ? $uid : null,
-        'name'    => $info['display_name'] ?? '',
-        'email'   => $info['actual_email'] ?? ( $info['display_email'] ?? '' ),
-    );
+$norm_name = function ( $s ) {
+    $s = strtolower( (string) $s );
+    $s = preg_replace( '/["\'"()\[\]]/', '', $s );
+    $s = preg_replace( '/\s+/', ' ', $s );
+    return trim( $s );
 };
 
-$user_link = function ( $user_id, $label, $allow_edit_link ) {
-    if ( ! $user_id ) {
-        return esc_html( $label );
-    }
-    if ( $allow_edit_link ) {
-        $url = admin_url( 'user-edit.php?user_id=' . (int) $user_id );
-        return '<a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
-    }
-    return esc_html( $label );
-};
+$match_holder = function ( $cm_name, $cm_email, array $holders ) use ( $norm_name ) {
+    // Returns [ 'color', 'note', 'matched_user_id' ]
+    $n_count = count( $holders );
+    if ( 0 === $n_count ) return array( 'red', __( 'no holder', 'owbn-core' ), 0 );
+    if ( $n_count > 1 )  return array( 'red', sprintf( __( '%d holders!', 'owbn-core' ), $n_count ), 0 );
 
-$match_cm = function ( $cm_info_resolved, array $asc_holders ) {
-    // Returns [ 'color' => 'green'|'yellow'|'red', 'note' => string ].
-    $count = count( $asc_holders );
-    if ( 0 === $count ) {
-        return array( 'color' => 'red', 'note' => __( 'no holder', 'owbn-core' ) );
-    }
-    if ( $count > 1 ) {
-        return array( 'color' => 'red', 'note' => sprintf( __( '%d holders!', 'owbn-core' ), $count ) );
-    }
-    // Exactly one holder.
-    $holder = $asc_holders[0];
-    $holder_id    = isset( $holder['user_id'] ) ? (int) $holder['user_id'] : 0;
-    $holder_email = strtolower( $holder['email'] ?? '' );
+    $h     = $holders[0];
+    $h_uid = (int) ( $h['user_id'] ?? 0 );
 
-    if ( $cm_info_resolved['user_id'] && $holder_id && $holder_id === $cm_info_resolved['user_id'] ) {
-        return array( 'color' => 'green', 'note' => __( 'matched', 'owbn-core' ) );
+    // Email match is strongest (and actual_email from meta is sometimes real).
+    $cm_email_n = strtolower( trim( (string) $cm_email ) );
+    $h_email_n  = strtolower( trim( (string) ( $h['email'] ?? '' ) ) );
+    if ( $cm_email_n && $h_email_n && $cm_email_n === $h_email_n ) {
+        return array( 'green', __( 'email match', 'owbn-core' ), $h_uid );
     }
-    // Fall back to email match (handles user=__new__ cases).
-    $cm_email = strtolower( $cm_info_resolved['email'] ?? '' );
-    if ( $cm_email && $holder_email && $cm_email === $holder_email ) {
-        return array( 'color' => 'yellow', 'note' => __( 'email match', 'owbn-core' ) );
+
+    // Name fuzzy match.
+    $a = $norm_name( $cm_name );
+    $b = $norm_name( $h['display_name'] ?? '' );
+    if ( '' === $a || '' === $b ) return array( 'red', __( 'mismatch', 'owbn-core' ), 0 );
+
+    if ( $a === $b ) return array( 'green', __( 'matched', 'owbn-core' ), $h_uid );
+
+    // Tokenise and compare.
+    $ta = preg_split( '/\s+/', $a );
+    $tb = preg_split( '/\s+/', $b );
+    $last_a = end( $ta );
+    $last_b = end( $tb );
+    $first_a = $ta[0];
+    $first_b = $tb[0];
+
+    // Shared surname.
+    if ( $last_a === $last_b && strlen( $last_a ) >= 3 ) {
+        // First-name prefix match (handles Gabe/Gabriel, Rosa/Rosicler, Jeff/Jeffrey).
+        $min = min( strlen( $first_a ), strlen( $first_b ) );
+        if ( $min >= 3 && substr( $first_a, 0, 3 ) === substr( $first_b, 0, 3 ) ) {
+            return array( 'yellow', __( 'fuzzy match', 'owbn-core' ), $h_uid );
+        }
     }
-    return array( 'color' => 'red', 'note' => __( 'mismatch', 'owbn-core' ) );
+
+    // Last name is first_a (single-word meta name) matching anywhere in holder.
+    if ( count( $ta ) === 1 && in_array( $first_a, $tb, true ) ) {
+        return array( 'yellow', __( 'fuzzy match', 'owbn-core' ), $h_uid );
+    }
+
+    return array( 'red', __( 'mismatch', 'owbn-core' ), 0 );
 };
 
 $color_bg = array(
@@ -101,18 +134,58 @@ $color_bg = array(
     'red'    => '#f8d7da',
 );
 
+$user_link = function ( $user_id, $label, $allow ) {
+    if ( ! $user_id || ! $allow ) return esc_html( $label );
+    $url = admin_url( 'user-edit.php?user_id=' . (int) $user_id );
+    return '<a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+};
+
+// Tallies
+$tally = array( 'green' => 0, 'yellow' => 0, 'red' => 0 );
+
+// Sort rows by title
+uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); } );
+
 ?>
 <style>
-.owc-staff-report { border-collapse: collapse; width: 100%; margin-top: 16px; }
-.owc-staff-report th, .owc-staff-report td { padding: 8px 10px; border: 1px solid #c3c4c7; font-size: 13px; vertical-align: top; }
+.owc-staff-report { border-collapse: collapse; width: 100%; margin-top: 16px; table-layout: fixed; }
+.owc-staff-report th, .owc-staff-report td { padding: 8px 10px; border: 1px solid #c3c4c7; font-size: 13px; vertical-align: top; word-wrap: break-word; }
 .owc-staff-report th { background: #f6f7f7; text-align: left; font-weight: 600; }
-.owc-staff-report td.owc-cm-cell { min-width: 180px; }
+.owc-staff-report col.owc-col-chron { width: 22%; }
+.owc-staff-report col.owc-col-slug  { width: 6%; }
+.owc-staff-report col.owc-col-name  { width: 12%; }
+.owc-staff-report col.owc-col-email { width: 16%; }
+.owc-staff-report col.owc-col-cmrole { width: 16%; }
 .owc-staff-report .owc-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 600; margin-left: 4px; }
+.owc-staff-summary { display: flex; gap: 12px; margin: 12px 0; }
+.owc-staff-summary .pill { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
 </style>
+
 <p><?php esc_html_e( 'Each row shows a chronicle and its HST/CM staff. The CM role cell reflects who currently holds chronicle/{slug}/cm in AccessSchema.', 'owbn-core' ); ?></p>
-<p><em><?php esc_html_e( 'Green: matched. Yellow: email-only match or satellite inherited. Red: no holder, multiple holders, or mismatch.', 'owbn-core' ); ?></em></p>
+
+<?php if ( $is_admin && $fetch_error ) : ?>
+    <div class="notice notice-error inline"><p><?php echo esc_html( $fetch_error ); ?></p></div>
+<?php endif; ?>
+
+<?php if ( $is_admin ) :
+    $refresh_url = add_query_arg( array( 'page' => owc_get_client_id() . '-owc-reports', 'tab' => 'chronicle-staff', 'refresh' => '1' ), admin_url( 'admin.php' ) );
+?>
+<p>
+    <a href="<?php echo esc_url( $refresh_url ); ?>" class="button"><?php esc_html_e( 'Refresh ASC Data', 'owbn-core' ); ?></a>
+    <span style="margin-left:8px; color:#50575e;"><em><?php esc_html_e( 'Cached 4 hours. Green: matched. Yellow: fuzzy match. Red: missing / multiple / mismatch.', 'owbn-core' ); ?></em></span>
+</p>
+<?php endif; ?>
 
 <table class="owc-staff-report">
+    <colgroup>
+        <col class="owc-col-chron">
+        <col class="owc-col-slug">
+        <col class="owc-col-name">
+        <col class="owc-col-email">
+        <col class="owc-col-name">
+        <col class="owc-col-email">
+        <?php if ( $is_admin ) : ?><col class="owc-col-cmrole"><?php endif; ?>
+    </colgroup>
     <thead>
     <tr>
         <th><?php esc_html_e( 'Chronicle', 'owbn-core' ); ?></th>
@@ -127,61 +200,64 @@ $color_bg = array(
     </tr>
     </thead>
     <tbody>
-    <?php foreach ( $rows as $c ) :
-        $slug       = $c['slug'] ?? '';
-        $title      = $c['title'] ?? '';
-        $is_sat     = ! empty( $c['chronicle_satellite'] );
-        $parent     = $c['chronicle_parent'] ?? '';
+    <?php foreach ( $rows as $slug => $r ) :
+        $title    = $r['title'];
+        $hst_info = $r['hst_info'];
+        $cm_info  = $r['cm_info'];
+        $cm_slug  = $slug;
+        $cm_note  = '';
 
-        // HST always from this chronicle.
-        $hst = $resolve_staff( $c['hst_info'] ?? array() );
-
-        // CM: for satellites, pull from parent.
-        $cm_source = $c;
-        $cm_note   = '';
-        if ( $is_sat && $parent && isset( $all_by_slug[ $parent ] ) ) {
-            $cm_source = $all_by_slug[ $parent ];
-            $cm_note   = sprintf( __( '(from parent: %s)', 'owbn-core' ), $parent );
-        }
-        $cm      = $resolve_staff( $cm_source['cm_info'] ?? array() );
-        $cm_slug = $cm_source['slug'] ?? $slug;
-
-        // Query ASC for cm role holders (admin only — this is the slow part).
-        $holders = array();
-        if ( $is_admin && function_exists( 'owc_asc_get_users_by_role' ) ) {
-            $h = owc_asc_get_users_by_role( $client_id, 'chronicle/' . $cm_slug . '/cm' );
-            if ( is_array( $h ) ) {
-                $holders = $h;
+        // Satellite: resolve to parent chronicle's cm_info + slug.
+        if ( $r['satellite'] && $r['parent_id'] && isset( $id_to_slug[ $r['parent_id'] ] ) ) {
+            $parent_slug = $id_to_slug[ $r['parent_id'] ];
+            if ( isset( $rows[ $parent_slug ] ) ) {
+                $cm_info = $rows[ $parent_slug ]['cm_info'];
+                $cm_slug = $parent_slug;
+                $cm_note = sprintf( __( '(from parent: %s)', 'owbn-core' ), $parent_slug );
             }
         }
 
-        $match = $match_cm( $cm, $holders );
-        $row_bg = $is_admin ? ( $color_bg[ $match['color'] ] ?? '' ) : '';
+        $hst_uid  = isset( $hst_info['user'] ) && is_numeric( $hst_info['user'] ) ? (int) $hst_info['user'] : 0;
+        $hst_name = $hst_info['display_name'] ?? '';
+        $hst_mail = $hst_info['actual_email'] ?? '';
+
+        $cm_uid  = isset( $cm_info['user'] ) && is_numeric( $cm_info['user'] ) ? (int) $cm_info['user'] : 0;
+        $cm_name = $cm_info['display_name'] ?? '';
+        $cm_mail = $cm_info['actual_email'] ?? '';
+
+        $holders = $holders_map[ 'chronicle/' . $cm_slug . '/cm' ] ?? array();
+
+        $color = 'red'; $note = '—'; $matched_uid = 0;
+        if ( $is_admin ) {
+            list( $color, $note, $matched_uid ) = $match_holder( $cm_name, $cm_mail, $holders );
+            $tally[ $color ]++;
+        }
+        $row_bg = $is_admin ? ( $color_bg[ $color ] ?? '' ) : '';
         ?>
         <tr<?php echo $row_bg ? ' style="background:' . esc_attr( $row_bg ) . ';"' : ''; ?>>
             <td><?php echo esc_html( $title ); ?></td>
             <td><code><?php echo esc_html( $slug ); ?></code></td>
-            <td><?php echo $user_link( $hst['user_id'], $hst['name'], $is_admin ); ?></td>
-            <td><?php echo esc_html( $hst['email'] ); ?></td>
+            <td><?php echo $user_link( $hst_uid, $hst_name, $is_admin ); ?></td>
+            <td><?php echo esc_html( $hst_mail ); ?></td>
             <td>
-                <?php echo $user_link( $cm['user_id'], $cm['name'], $is_admin ); ?>
+                <?php echo $user_link( $cm_uid, $cm_name, $is_admin ); ?>
                 <?php if ( $cm_note ) : ?><br><small><?php echo esc_html( $cm_note ); ?></small><?php endif; ?>
             </td>
-            <td><?php echo esc_html( $cm['email'] ); ?></td>
+            <td><?php echo esc_html( $cm_mail ); ?></td>
             <?php if ( $is_admin ) : ?>
-            <td class="owc-cm-cell">
+            <td>
                 <?php if ( empty( $holders ) ) : ?>
                     —
                 <?php else : ?>
                     <?php foreach ( $holders as $h ) :
-                        $hid    = (int) ( $h['user_id'] ?? 0 );
-                        $hname  = $h['display_name'] ?? ( $h['user_login'] ?? '#' . $hid );
+                        $hid   = (int) ( $h['user_id'] ?? 0 );
+                        $hname = $h['display_name'] ?? ( $h['user_login'] ?? '#' . $hid );
                         echo $user_link( $hid, $hname, true );
                         echo '<br><small>' . esc_html( $h['email'] ?? '' ) . '</small><br>';
                     endforeach; ?>
                 <?php endif; ?>
-                <span class="owc-badge" style="background:<?php echo esc_attr( $color_bg[ $match['color'] ] ); ?>;">
-                    <?php echo esc_html( $match['note'] ); ?>
+                <span class="owc-badge" style="background:<?php echo esc_attr( $color_bg[ $color ] ); ?>;">
+                    <?php echo esc_html( $note ); ?>
                 </span>
             </td>
             <?php endif; ?>
@@ -189,3 +265,11 @@ $color_bg = array(
     <?php endforeach; ?>
     </tbody>
 </table>
+
+<?php if ( $is_admin ) : ?>
+<div class="owc-staff-summary">
+    <span class="pill" style="background:<?php echo esc_attr( $color_bg['green'] ); ?>;"><?php echo esc_html( sprintf( __( 'Matched: %d', 'owbn-core' ), $tally['green'] ) ); ?></span>
+    <span class="pill" style="background:<?php echo esc_attr( $color_bg['yellow'] ); ?>;"><?php echo esc_html( sprintf( __( 'Fuzzy: %d', 'owbn-core' ), $tally['yellow'] ) ); ?></span>
+    <span class="pill" style="background:<?php echo esc_attr( $color_bg['red'] ); ?>;"><?php echo esc_html( sprintf( __( 'Problems: %d', 'owbn-core' ), $tally['red'] ) ); ?></span>
+</div>
+<?php endif; ?>

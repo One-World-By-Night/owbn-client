@@ -341,6 +341,28 @@ function owc_asc_get_users_by_role( $client_id, $role_path ) {
  * @param string $role_path Role path to search.
  * @return array Array of user data arrays.
  */
+/**
+ * Bulk lookup: all holders of roles matching a SQL LIKE pattern.
+ *
+ * @param string $client_id Client identifier (currently unused; kept for signature consistency).
+ * @param string $pattern   SQL LIKE pattern, e.g., "chronicle/%/cm".
+ * @return array|WP_Error   Map of role_path => user arrays, or error.
+ */
+function owc_asc_get_holders_by_pattern( $client_id, $pattern ) {
+	$pattern = sanitize_text_field( $pattern );
+	if ( '' === $pattern ) {
+		return new WP_Error( 'missing_pattern', 'pattern is required.' );
+	}
+	$response = owc_asc_remote_post( 'roles-by-pattern', array( 'pattern' => $pattern ) );
+	if ( is_wp_error( $response ) ) {
+		return $response;
+	}
+	if ( is_array( $response ) && isset( $response['roles'] ) && is_array( $response['roles'] ) ) {
+		return $response['roles'];
+	}
+	return array();
+}
+
 function owc_asc_local_users_by_role( $role_path ) {
 	global $wpdb;
 
