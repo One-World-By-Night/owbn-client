@@ -31,6 +31,9 @@ $cache_ttl = get_option( owc_option_name( 'cache_ttl' ), 3600 );
 
 // Change notification email.
 $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
+
+// Anonymize post author on new inserts.
+$anonymize_author = (bool) get_option( owc_option_name( 'anonymize_author' ), false );
 ?>
 
 <h2><?php esc_html_e( 'General Settings', 'owbn-core' ); ?></h2>
@@ -270,6 +273,29 @@ $notify_email = get_option( owc_option_name( 'change_notify_email' ), '' );
                     class="small-text"
                     min="0" />
                 <p class="description"><?php esc_html_e( '0 = no caching. Default: 3600 (1 hour)', 'owbn-core' ); ?></p>
+            </td>
+        </tr>
+    </table>
+
+    <hr />
+
+    <!-- ── Anonymize Post Author ─────────────────────────────────────── -->
+    <h3><?php esc_html_e( 'Content Authorship', 'owbn-core' ); ?></h3>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row"><?php esc_html_e( 'Anonymize Post Author', 'owbn-core' ); ?></th>
+            <td>
+                <label>
+                    <input type="hidden" name="<?php echo esc_attr( owc_option_name( 'anonymize_author' ) ); ?>" value="0" />
+                    <input type="checkbox"
+                        name="<?php echo esc_attr( owc_option_name( 'anonymize_author' ) ); ?>"
+                        value="1"
+                        <?php checked( $anonymize_author ); ?> />
+                    <?php esc_html_e( 'Force post_author = 0 on new posts', 'owbn-core' ); ?>
+                </label>
+                <p class="description">
+                    <?php esc_html_e( 'New posts across most post types will be created with no author. Staff can still set an author via the metabox after save — updates are not touched. Excludes: attachments, OAuth clients, bp_character, support tickets, chronicle/territory CPTs.', 'owbn-core' ); ?>
+                </p>
             </td>
         </tr>
     </table>

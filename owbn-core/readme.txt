@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+= 1.9.0 =
+* Added Anonymize Post Author setting (General tab, default off). When enabled, new posts of non-excluded types insert with post_author=0; updates are untouched so admins can claim authorship via the metabox afterward. Revisions preserve edit history. Excluded types: attachment, revision, wo_client, bp_character, ticket, ticket_reply, ticket_history, owbn_chronicle, owbn_territory. Plugins can skip anonymization per-insert via the owc_anonymize_author_skip filter.
 
 = 1.8.0 =
 * Added owc_board_* client wrappers (owc_board_is_local, owc_board_remote_request, owc_board_messages_list/post/delete, owc_board_notebook_get/save, owc_board_handoff_get/recent_entries, owc_board_sessions_list, owc_board_visitors_list/by_player, owc_board_state_get/set, owc_board_prefs_get/set, owc_board_audit_log). Local-or-remote pattern matching owc_wpvp_* / owc_bylaws_* / owc_events_*. Host site detected via owbn_board_messages table presence. Used by owbn-board tiles to read and write shared board data cross-site with chronicles.owbn.net as canonical host.
