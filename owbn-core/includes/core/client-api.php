@@ -191,6 +191,7 @@ function owc_get_local_chronicles()
             'ooc_locations'          => get_post_meta($id, 'ooc_locations', true) ?: [],
             'timezone'               => get_post_meta($id, 'timezone', true) ?: 'UTC',
             'session_list'           => get_post_meta($id, 'session_list', true) ?: [],
+            'session_one_offs'       => get_post_meta($id, 'session_one_offs', true) ?: [],
         ];
     }, $posts);
 }
@@ -331,6 +332,8 @@ function owc_get_local_chronicle_detail(string $slug)
         'ast_list'               => get_post_meta($id, 'ast_list', true) ?: [],
         'admin_contact'          => get_post_meta($id, 'admin_contact', true) ?: [],
         'session_list'           => get_post_meta($id, 'session_list', true) ?: [],
+        'session_one_offs'       => get_post_meta($id, 'session_one_offs', true) ?: [],
+        'timezone'               => get_post_meta($id, 'timezone', true) ?: 'UTC',
         'player_lists'           => get_post_meta($id, 'player_lists', true) ?: [],
         'social_urls'            => get_post_meta($id, 'social_urls', true) ?: [],
         'email_lists'            => get_post_meta($id, 'email_lists', true) ?: [],

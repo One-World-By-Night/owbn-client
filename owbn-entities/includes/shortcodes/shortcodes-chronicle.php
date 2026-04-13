@@ -117,6 +117,8 @@ function owc_render_chronicle_field(array $chronicle, string $field, bool $show_
 
         // Sessions
         'session_list'           => 'owc_chron_field_session_list',
+        'session_one_offs'       => 'owc_chron_field_session_one_offs',
+        'timezone'               => 'owc_chron_field_simple',
 
         // Links & Lists
         'document_links'         => 'owc_chron_field_documents',
@@ -184,6 +186,8 @@ function owc_chron_field_wrapper(string $field, string $content, bool $show_labe
 
         // Sessions
         'session_list'           => __('Game Sessions', 'owbn-entities'),
+        'session_one_offs'       => __('Upcoming Events', 'owbn-entities'),
+        'timezone'               => __('Chronicle Timezone', 'owbn-entities'),
 
         // Links & Lists
         'document_links'         => __('Documents', 'owbn-entities'),
@@ -333,17 +337,47 @@ function owc_chron_field_session_list(array $c, string $f): string
     $list = array_filter($c['session_list'] ?? [], fn($s) => !empty($s['session_type']));
     if (empty($list)) return '';
 
+    $tz = $c['timezone'] ?? '';
     $items = [];
     foreach ($list as $s) {
+        $time = $s['start_time'] ?? '';
         $parts = array_filter([
             $s['session_type'] ?? '',
             $s['frequency'] ?? '',
             $s['day'] ?? '',
-            $s['start_time'] ?? '',
         ]);
         $line = esc_html(implode(' - ', $parts));
+        if ($time) {
+            $line .= ' <span class="owc-session-time" data-chrono-tz="' . esc_attr($tz) . '" data-chrono-time="' . esc_attr($time) . '" data-chrono-day="' . esc_attr($s['day'] ?? '') . '">' . esc_html($time) . ($tz ? ' (' . esc_html($tz) . ')' : '') . '</span>';
+        }
         if (!empty($s['genres']) && is_array($s['genres'])) {
             $line .= ' <span class="owc-session-genres">(' . esc_html(implode(', ', $s['genres'])) . ')</span>';
+        }
+        $items[] = $line;
+    }
+    return implode('<br>', $items);
+}
+
+function owc_chron_field_session_one_offs(array $c, string $f): string
+{
+    $list = $c['session_one_offs'] ?? [];
+    if (!is_array($list) || empty($list)) return '';
+
+    $today = current_time('Y-m-d');
+    $tz = $c['timezone'] ?? '';
+    $items = [];
+    foreach ($list as $e) {
+        $date = $e['event_date'] ?? '';
+        if (!$date || $date < $today) continue;
+        $time = $e['start_time'] ?? '';
+        $title = $e['event_title'] ?? '';
+        $line = '<strong>' . esc_html($date) . '</strong>';
+        if ($time) {
+            $line .= ' <span class="owc-session-time" data-chrono-tz="' . esc_attr($tz) . '" data-chrono-time="' . esc_attr($time) . '" data-chrono-date="' . esc_attr($date) . '">' . esc_html($time) . ($tz ? ' (' . esc_html($tz) . ')' : '') . '</span>';
+        }
+        if ($title) $line .= ' – ' . esc_html($title);
+        if (!empty($e['genres']) && is_array($e['genres'])) {
+            $line .= ' <span class="owc-session-genres">(' . esc_html(implode(', ', $e['genres'])) . ')</span>';
         }
         $items[] = $line;
     }

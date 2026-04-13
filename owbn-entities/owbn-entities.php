@@ -4,7 +4,7 @@
  * Plugin Name: OWBN Entities
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Chronicles, coordinators, territories, and vote history for OWBN WordPress sites.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-entities
