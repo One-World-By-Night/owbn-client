@@ -427,10 +427,12 @@ function owc_oat_ajax_search_users() {
 
     foreach ( $users as $user ) {
         $results[] = array(
-            'id'    => $user->ID,
-            'label' => $user->display_name . ' (' . $user->user_login . ')',
-            'value' => $user->display_name,
-            'type'  => 'user',
+            'id'           => $user->ID,
+            'label'        => $user->display_name . ' (' . $user->user_login . ')',
+            'value'        => $user->display_name,
+            'type'         => 'user',
+            'display_name' => $user->display_name,
+            'email'        => $user->user_email,
         );
     }
 
@@ -458,11 +460,15 @@ function owc_oat_ajax_search_users() {
                 }
                 $name = isset( $ru['display_name'] ) ? $ru['display_name'] : '';
                 $path = isset( $ru['role_path'] ) ? $ru['role_path'] : $term;
+                $user_obj = get_userdata( $uid );
+                $email    = $user_obj ? $user_obj->user_email : '';
                 $results[] = array(
-                    'id'    => $uid,
-                    'label' => $name . ' (via ' . $path . ')',
-                    'value' => $name,
-                    'type'  => 'role',
+                    'id'           => $uid,
+                    'label'        => $name . ' (via ' . $path . ')',
+                    'value'        => $name,
+                    'type'         => 'role',
+                    'display_name' => $name,
+                    'email'        => $email,
                 );
                 $seen_ids[ $uid ] = true;
             }

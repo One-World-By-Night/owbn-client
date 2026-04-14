@@ -34,6 +34,15 @@ if ( $wp_user_id ) {
     $linked_user = get_userdata( $wp_user_id );
     $wp_user_display = $linked_user ? $linked_user->display_name . ' (' . $linked_user->user_email . ')' : "User #{$wp_user_id} (not found)";
 }
+
+// Build the entity-picker value for chronicle_slug_typed. NPCs tied to a coordinator
+// use the "coordinator/<slug>" form; everything else uses "chronicle/<slug>".
+$chronicle_picker_value = '';
+if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
+    $chronicle_picker_value = 'coordinator/' . $npc_coordinator;
+} elseif ( $chronicle !== '' ) {
+    $chronicle_picker_value = 'chronicle/' . $chronicle;
+}
 ?>
 <div class="wrap">
     <h1><?php echo esc_html( $char_name ); ?> — Registry</h1>
@@ -65,17 +74,40 @@ if ( $wp_user_id ) {
                     <th><?php esc_html_e( 'Linked WP User', 'owbn-archivist' ); ?></th>
                     <td>
                         <input type="hidden" name="wp_user_id" id="wp_user_id" value="<?php echo esc_attr( $wp_user_id ); ?>">
-                        <span id="wp_user_display"><?php echo $wp_user_id ? esc_html( $wp_user_display ) : '<em>' . esc_html__( 'Not linked', 'owbn-archivist' ) . '</em>'; ?></span>
-                        <button type="button" class="button button-small" id="owc-lookup-wp-user" style="margin-left:8px;"><?php esc_html_e( 'Lookup by Email', 'owbn-archivist' ); ?></button>
-                        <?php if ( $wp_user_id ) : ?>
-                            <button type="button" class="button button-small" id="owc-unlink-wp-user" style="margin-left:4px;"><?php esc_html_e( 'Unlink', 'owbn-archivist' ); ?></button>
-                        <?php endif; ?>
-                        <p class="description"><?php esc_html_e( 'Links this character to a WordPress user account for "My Characters" in the registry.', 'owbn-archivist' ); ?></p>
+                        <div>
+                            <input type="text" id="owc-wp-user-search" class="regular-text" autocomplete="off"
+                                placeholder="<?php esc_attr_e( 'Search by name, login, email, or role path (type 2+ chars)…', 'owbn-archivist' ); ?>">
+                        </div>
+                        <div style="margin-top:6px;">
+                            <strong><?php esc_html_e( 'Currently linked:', 'owbn-archivist' ); ?></strong>
+                            <span id="wp_user_display"><?php echo $wp_user_id ? esc_html( $wp_user_display ) : '<em>' . esc_html__( 'Not linked', 'owbn-archivist' ) . '</em>'; ?></span>
+                            <button type="button" class="button button-small" id="owc-unlink-wp-user" style="margin-left:4px;<?php echo $wp_user_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Unlink', 'owbn-archivist' ); ?></button>
+                        </div>
+                        <div style="margin-top:6px;">
+                            <button type="button" class="button button-small" id="owc-lookup-wp-user"><?php esc_html_e( 'Fallback: Lookup by exact Player Email', 'owbn-archivist' ); ?></button>
+                        </div>
+                        <p class="description"><?php esc_html_e( 'Links this character to a WordPress user account for "My Characters" in the registry. The search picker auto-fills Player Name and Email if they are empty.', 'owbn-archivist' ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="chronicle_slug">Chronicle</label></th>
-                    <td><input type="text" name="chronicle_slug" id="chronicle_slug" value="<?php echo esc_attr( $chronicle ); ?>" class="regular-text"></td>
+                    <th><label for="chronicle_slug_typed">Chronicle</label></th>
+                    <td>
+                        <?php if ( function_exists( 'owc_asc_render_entity_picker' ) ) : ?>
+                            <?php
+                            owc_asc_render_entity_picker( array(
+                                'name'              => 'chronicle_slug_typed',
+                                'id'                => 'chronicle_slug_typed',
+                                'value'             => $chronicle_picker_value,
+                                'chronicle_roles'   => array( '*' ),
+                                'coordinator_roles' => array( '*' ),
+                            ) );
+                            ?>
+                            <p class="description">Search for a chronicle or coordinator. NPC Coordinator / NPC Type fields below will be set automatically when you save.</p>
+                        <?php else : ?>
+                            <input type="text" name="chronicle_slug" id="chronicle_slug" value="<?php echo esc_attr( $chronicle ); ?>" class="regular-text">
+                            <p class="description">Entity picker unavailable (owbn-core missing). Fallback: type the chronicle slug directly.</p>
+                        <?php endif; ?>
+                    </td>
                 </tr>
                 <tr>
                     <th>Creature</th>
@@ -417,23 +449,55 @@ if ( $wp_user_id ) {
 <?php if ( ! empty( $can_edit ) ) : ?>
 <script>
 jQuery(function($) {
+    function applyLink(u) {
+        $('#wp_user_id').val(u.id);
+        $('#wp_user_display').text(u.display_name + ' (' + u.email + ')');
+        $('#owc-unlink-wp-user').show();
+        if (!$('#player_name').val()) { $('#player_name').val(u.display_name); }
+        if (!$('#player_email').val()) { $('#player_email').val(u.email); }
+    }
+
+    // Live-search autocomplete picker (primary path).
+    if (typeof owc_oat_ajax !== 'undefined' && $.ui && $.ui.autocomplete) {
+        $('#owc-wp-user-search').autocomplete({
+            source: function(request, response) {
+                $.getJSON(owc_oat_ajax.url, {
+                    action: 'owc_oat_search_users',
+                    nonce:  owc_oat_ajax.nonce,
+                    term:   request.term
+                }, function(data) { response(data || []); });
+            },
+            minLength: 2,
+            select: function(event, ui) {
+                event.preventDefault();
+                applyLink({ id: ui.item.id, display_name: ui.item.display_name || ui.item.value, email: ui.item.email || '' });
+                $(this).val('');
+                return false;
+            },
+            focus: function(event, ui) { event.preventDefault(); }
+        });
+    }
+
+    // Fallback: exact-email lookup (legacy button).
     $('#owc-lookup-wp-user').on('click', function() {
         var email = $('#player_email').val();
         if (!email) { alert('Enter a player email first.'); return; }
 
-        $(this).prop('disabled', true).text('Looking up...');
+        var $btn = $(this);
+        var origLabel = $btn.text();
+        $btn.prop('disabled', true).text('Looking up...');
         $.post(ajaxurl, {
             action: 'owc_oat_lookup_wp_user',
             nonce: typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '',
             email: email
         }, function(resp) {
-            $('#owc-lookup-wp-user').prop('disabled', false).text('Lookup by Email');
+            $btn.prop('disabled', false).text(origLabel);
             if (resp.success && resp.data.user_id) {
-                $('#wp_user_id').val(resp.data.user_id);
-                $('#wp_user_display').text(resp.data.display_name + ' (' + resp.data.email + ')');
+                applyLink({ id: resp.data.user_id, display_name: resp.data.display_name, email: resp.data.email });
             } else {
                 $('#wp_user_display').html('<em>No WP user found for that email</em>');
                 $('#wp_user_id').val('0');
+                $('#owc-unlink-wp-user').hide();
             }
         });
     });
@@ -441,7 +505,7 @@ jQuery(function($) {
     $('#owc-unlink-wp-user').on('click', function() {
         $('#wp_user_id').val('0');
         $('#wp_user_display').html('<em>Not linked</em>');
-        $(this).remove();
+        $(this).hide();
     });
 });
 </script>
