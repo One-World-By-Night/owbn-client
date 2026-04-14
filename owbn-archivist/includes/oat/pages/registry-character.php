@@ -68,8 +68,9 @@ function owc_oat_page_registry_character() {
     // Check if current user can manage grants on this character.
     $can_manage = owc_oat_can_manage_grants();
 
-    // Check if current user can edit this character (staff on chronicle, coord with grant, or archivist).
-    $can_edit = owc_oat_can_edit_character( $character, $active_grants );
+    // Resolve edit mode (full / status / none) via the ownership-wide model.
+    $edit_mode = owc_oat_get_character_edit_mode( $character );
+    $can_edit  = ( 'full' === $edit_mode );
 
     // Build NPC role suggestions for the edit form.
     $npc_role_options = $can_edit ? owc_oat_get_npc_role_options() : array();
@@ -128,26 +129,45 @@ function owc_oat_handle_grant_actions( $character_id ) {
     if ( ! empty( $_POST['owc_oat_update_character'] ) ) {
         check_admin_referer( 'owc_oat_update_character' );
 
-        $fields = array(
-            'character_name', 'player_email', 'player_name',
-            'chronicle_slug', 'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
-            'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
-        );
+        // Server re-computes the edit mode on every POST — never trust the client.
+        // Fetch the current character so the permission check sees real data.
+        $fetched = owc_oat_get_character_registry( $character_id );
+        $current_char = ( ! is_wp_error( $fetched ) && isset( $fetched['character'] ) )
+            ? (array) $fetched['character']
+            : array();
+        $edit_mode = owc_oat_get_character_edit_mode( $current_char );
 
-        // Handle entity picker for chronicle_slug (typed slug → plain slug + npc_type).
-        if ( isset( $_POST['chronicle_slug_typed'] ) && $_POST['chronicle_slug_typed'] !== '' ) {
-            $typed = sanitize_text_field( $_POST['chronicle_slug_typed'] );
-            if ( strpos( $typed, '/' ) !== false ) {
-                $parts = explode( '/', $typed, 2 );
-                $_POST['chronicle_slug'] = $parts[1];
-                if ( $parts[0] === 'coordinator' ) {
-                    $_POST['npc_coordinator'] = $parts[1];
-                    $_POST['npc_type'] = 'coordinator';
+        if ( 'none' === $edit_mode ) {
+            add_settings_error( 'owc_oat_registry', 'forbidden', 'You do not have permission to edit this character.', 'error' );
+            return 'error';
+        }
+
+        // Field whitelist switches on mode: status-only mode drops everything but `status`.
+        if ( 'status' === $edit_mode ) {
+            $fields = array( 'status' );
+        } else {
+            $fields = array(
+                'character_name', 'player_email', 'player_name',
+                'chronicle_slug', 'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
+                'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
+            );
+
+            // Handle entity picker for chronicle_slug (typed slug → plain slug + npc_type).
+            // Only meaningful for full edit mode.
+            if ( isset( $_POST['chronicle_slug_typed'] ) && $_POST['chronicle_slug_typed'] !== '' ) {
+                $typed = sanitize_text_field( $_POST['chronicle_slug_typed'] );
+                if ( strpos( $typed, '/' ) !== false ) {
+                    $parts = explode( '/', $typed, 2 );
+                    $_POST['chronicle_slug'] = $parts[1];
+                    if ( $parts[0] === 'coordinator' ) {
+                        $_POST['npc_coordinator'] = $parts[1];
+                        $_POST['npc_type'] = 'coordinator';
+                    } else {
+                        $_POST['npc_type'] = 'chronicle';
+                    }
                 } else {
-                    $_POST['npc_type'] = 'chronicle';
+                    $_POST['chronicle_slug'] = $typed;
                 }
-            } else {
-                $_POST['chronicle_slug'] = $typed;
             }
         }
 
@@ -155,6 +175,16 @@ function owc_oat_handle_grant_actions( $character_id ) {
         foreach ( $fields as $f ) {
             if ( isset( $_POST[ $f ] ) ) {
                 $update[ $f ] = sanitize_text_field( $_POST[ $f ] );
+            }
+        }
+
+        // Status-only mode: players may only self-mark inactive/dead/shelved.
+        // `active` requires an HST (full mode). Silently drop other values.
+        if ( 'status' === $edit_mode && isset( $update['status'] ) ) {
+            $allowed_self_statuses = array( 'inactive', 'dead', 'shelved' );
+            if ( ! in_array( $update['status'], $allowed_self_statuses, true ) ) {
+                add_settings_error( 'owc_oat_registry', 'invalid_self_status', 'Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate.', 'error' );
+                return 'error';
             }
         }
 
@@ -250,54 +280,91 @@ function owc_oat_can_manage_grants() {
  * @return bool
  */
 function owc_oat_can_edit_character( $character, $active_grants = array() ) {
-    if ( current_user_can( 'manage_options' ) ) {
-        return true;
-    }
+    return 'none' !== owc_oat_get_character_edit_mode( $character );
+}
 
-    if ( ! function_exists( 'owc_asc_get_user_roles' ) ) {
-        return false;
+/**
+ * Resolve the current user's edit mode for a character. Ownership-wide model:
+ *
+ *   full   — can edit every field on the character
+ *   status — can only change the `status` field; everything else is read-only
+ *   none   — read-only view
+ *
+ * Resolution order (first match wins):
+ *
+ *   1. Site admin (`manage_options`) → full
+ *   2. Exec role in {archivist, ahc1, ahc2, web} → full
+ *   3. PC or chronicle NPC in chronicle X + user holds chronicle/X/(hst|staff|cm) → full
+ *   4. Coord NPC (npc_type=coordinator) + user holds coordinator/{npc_coordinator}/(coordinator|sub-coordinator) → full
+ *   5. PC + wp_user_id === current user → status (player self-retire)
+ *   6. Otherwise → none
+ *
+ * Coordinator grants no longer confer edit access to chronicle-owned characters;
+ * coord-level NPCs are owned inherently by the matching coordinator.
+ *
+ * @param array $character Character row as associative array.
+ * @return string 'full' | 'status' | 'none'
+ */
+function owc_oat_get_character_edit_mode( $character ) {
+    if ( current_user_can( 'manage_options' ) ) {
+        return 'full';
     }
 
     $current_user = wp_get_current_user();
     if ( ! $current_user || ! $current_user->ID ) {
-        return false;
+        return 'none';
+    }
+
+    if ( ! function_exists( 'owc_asc_get_user_roles' ) ) {
+        return 'none';
     }
 
     $asc_response = owc_asc_get_user_roles( 'oat', $current_user->user_email );
     $roles = ( ! is_wp_error( $asc_response ) && isset( $asc_response['roles'] ) ) ? $asc_response['roles'] : array();
     if ( ! is_array( $roles ) ) {
-        return false;
+        $roles = array();
     }
 
-    $chronicle_slug = isset( $character['chronicle_slug'] ) ? $character['chronicle_slug'] : '';
+    $chronicle_slug  = isset( $character['chronicle_slug'] ) ? (string) $character['chronicle_slug'] : '';
+    $pc_npc          = isset( $character['pc_npc'] ) ? strtolower( (string) $character['pc_npc'] ) : '';
+    $npc_type        = isset( $character['npc_type'] ) ? strtolower( (string) $character['npc_type'] ) : '';
+    $npc_coordinator = isset( $character['npc_coordinator'] ) ? strtolower( (string) $character['npc_coordinator'] ) : '';
+    $linked_user_id  = isset( $character['wp_user_id'] ) ? (int) $character['wp_user_id'] : 0;
+
+    $is_pc             = ( 'pc' === $pc_npc );
+    $is_chronicle_char = $is_pc || ( 'chronicle' === $npc_type );
+    $is_coord_npc      = ( 'coordinator' === $npc_type && '' !== $npc_coordinator );
 
     foreach ( $roles as $role ) {
-        // Archivist can edit any character.
+        // 2. Archivist / AHCs / Web can edit any character.
         if ( preg_match( '#^exec/(archivist|ahc1|ahc2|web)/coordinator$#i', $role ) ) {
-            return true;
+            return 'full';
         }
 
-        // Staff can edit characters in their chronicle.
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm)#i', $role, $m ) ) {
-            if ( $chronicle_slug && $m[1] === $chronicle_slug ) {
-                return true;
-            }
+        // 3. Chronicle staff can edit PCs and chronicle-level NPCs in their chronicle.
+        //    `st` accepted as an alias for `staff` in the role path.
+        if ( $is_chronicle_char && '' !== $chronicle_slug
+            && preg_match( '#^chronicle/([^/]+)/(hst|staff|st|cm)$#i', $role, $m )
+            && strcasecmp( $m[1], $chronicle_slug ) === 0
+        ) {
+            return 'full';
         }
 
-        // Coordinator can edit characters with an active coordinator grant for their genre.
-        if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m ) ) {
-            $genre = $m[1];
-            foreach ( $active_grants as $g ) {
-                $g_type  = isset( $g['grant_type'] ) ? $g['grant_type'] : '';
-                $g_value = isset( $g['grant_value'] ) ? $g['grant_value'] : '';
-                if ( $g_type === 'coordinator' && strcasecmp( $g_value, $genre ) === 0 ) {
-                    return true;
-                }
-            }
+        // 4. Coordinator of genre X inherently owns coord NPCs where npc_coordinator=X.
+        if ( $is_coord_npc
+            && preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#i', $role, $m )
+            && strcasecmp( $m[1], $npc_coordinator ) === 0
+        ) {
+            return 'full';
         }
     }
 
-    return false;
+    // 5. Status-only: player owns a PC via wp_user_id link.
+    if ( $is_pc && $linked_user_id && (int) $current_user->ID === $linked_user_id ) {
+        return 'status';
+    }
+
+    return 'none';
 }
 
 /**

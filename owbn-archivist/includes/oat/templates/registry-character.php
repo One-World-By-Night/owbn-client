@@ -8,7 +8,8 @@
  *   $active_grants   array  Currently active grants.
  *   $expired_grants  array  Expired/future grants.
  *   $can_manage      bool   Whether current user can add/revoke grants.
- *   $can_edit          bool   Whether current user can edit this character.
+ *   $can_edit          bool   Shorthand for ( $edit_mode === 'full' ). Kept for back-compat.
+ *   $edit_mode         string 'full' | 'status' | 'none' — ownership-wide permission mode.
  *   $npc_role_options  array  NPC role options derived from current user's ASC roles.
  *   $character_id      int    Character ID.
  *   $notice            string Notice type from POST action.
@@ -53,8 +54,10 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
 
     <?php settings_errors( 'owc_oat_registry' ); ?>
 
-    <?php if ( ! empty( $can_edit ) ) : ?>
-        <!-- ── Editable Character Info ───────────────────────────────── -->
+    <?php $mode = isset( $edit_mode ) ? $edit_mode : ( ! empty( $can_edit ) ? 'full' : 'none' ); ?>
+
+    <?php if ( 'full' === $mode ) : ?>
+        <!-- ── Editable Character Info (full) ────────────────────────── -->
         <form method="post">
             <?php wp_nonce_field( 'owc_oat_update_character' ); ?>
             <table class="form-table">
@@ -179,6 +182,50 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
                 </tr>
             </table>
             <?php submit_button( 'Update Character', 'primary', 'owc_oat_update_character' ); ?>
+        </form>
+    <?php elseif ( 'status' === $mode ) : ?>
+        <!-- ── Status-Only Edit (PC self-retire) ─────────────────────── -->
+        <p class="description">
+            <?php esc_html_e( 'You are linked to this character as its player. You can update its status (retire, mark dead, etc.) but cannot change other fields. To reactivate or edit anything else, contact an HST.', 'owbn-archivist' ); ?>
+        </p>
+        <table class="form-table">
+            <tr><th>Character Name</th><td><?php echo esc_html( $char_name ); ?></td></tr>
+            <tr><th>Chronicle</th><td><?php echo esc_html( $chronicle ); ?></td></tr>
+            <tr><th>Creature</th><td><?php echo esc_html( implode( ' / ', array_filter( array( $creature_genre, $creature_sub, $creature, $creature_variant ) ) ) ); ?></td></tr>
+            <tr><th>PC/NPC</th><td><?php echo esc_html( strtoupper( $pc_npc ) ); ?></td></tr>
+            <?php if ( $player_name ) : ?>
+                <tr><th>Player</th><td><?php echo esc_html( $player_name ); ?></td></tr>
+            <?php endif; ?>
+        </table>
+
+        <form method="post">
+            <?php wp_nonce_field( 'owc_oat_update_character' ); ?>
+            <table class="form-table">
+                <tr>
+                    <th><label for="status"><?php esc_html_e( 'Status', 'owbn-archivist' ); ?></label></th>
+                    <td>
+                        <select name="status" id="status">
+                            <?php
+                            // Players may only self-mark inactive / dead / shelved.
+                            // Reactivation to 'active' requires an HST (full mode).
+                            $self_statuses = array(
+                                'inactive' => __( 'Inactive', 'owbn-archivist' ),
+                                'dead'     => __( 'Dead', 'owbn-archivist' ),
+                                'shelved'  => __( 'Shelved', 'owbn-archivist' ),
+                            );
+                            // If the current stored status is 'active', show it as a disabled hint.
+                            if ( 'active' === $char_status ) {
+                                echo '<option value="" selected disabled>' . esc_html__( 'Active — change requires HST', 'owbn-archivist' ) . '</option>';
+                            }
+                            foreach ( $self_statuses as $val => $label ) {
+                                echo '<option value="' . esc_attr( $val ) . '"' . selected( $char_status, $val, false ) . '>' . esc_html( $label ) . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Update Status', 'primary', 'owc_oat_update_character' ); ?>
         </form>
     <?php else : ?>
         <!-- ── Read-Only Character Info ──────────────────────────────── -->
