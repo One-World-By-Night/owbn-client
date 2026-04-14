@@ -192,6 +192,8 @@ function owc_get_local_chronicles()
             'timezone'               => get_post_meta($id, 'timezone', true) ?: 'UTC',
             'session_list'           => get_post_meta($id, 'session_list', true) ?: [],
             'session_one_offs'       => get_post_meta($id, 'session_one_offs', true) ?: [],
+            'hst_info'               => get_post_meta($id, 'hst_info', true) ?: [],
+            'cm_info'                => get_post_meta($id, 'cm_info', true) ?: [],
         ];
     }, $posts);
 }
@@ -480,7 +482,9 @@ function owc_get_chronicles(bool $force_refresh = false)
         return [];
     }
 
-    $cache_key = 'owc_chronicles_cache';
+    // Cache key bumped to v2 when hst_info/cm_info were added to the payload so
+    // pre-upgrade cached responses (missing those fields) are ignored cleanly.
+    $cache_key = 'owc_chronicles_cache_v2';
 
     if (!$force_refresh) {
         $cached = get_transient($cache_key);

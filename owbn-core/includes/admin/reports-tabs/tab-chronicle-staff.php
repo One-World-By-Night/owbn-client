@@ -13,11 +13,6 @@ defined( 'ABSPATH' ) || exit;
 
 $is_admin = current_user_can( 'manage_options' );
 
-if ( ! post_type_exists( 'owbn_chronicle' ) ) {
-    echo '<p>' . esc_html__( 'Chronicle post type not available on this site.', 'owbn-core' ) . '</p>';
-    return;
-}
-
 // ── Filter & sort params (GET) ────────────────────────────────────────
 $allowed_active  = array( 'active', 'inactive', 'all' );
 $allowed_status  = array( 'all', 'full', 'probationary', 'satellite' );
@@ -29,45 +24,61 @@ $f_status  = isset( $_GET['status'] )  && in_array( $_GET['status'],  $allowed_s
 $f_orderby = isset( $_GET['orderby'] ) && in_array( $_GET['orderby'], $allowed_orderby, true ) ? $_GET['orderby'] : 'title';
 $f_order   = isset( $_GET['order'] )   && in_array( strtolower( $_GET['order'] ), $allowed_order, true ) ? strtolower( $_GET['order'] ) : 'asc';
 
-// Always pull both publish + decommissioned so parent lookups survive any filter
-// combination. Filtering to the user's Active/Inactive choice happens below.
-$posts = get_posts( array(
-    'post_type'      => 'owbn_chronicle',
-    'post_status'    => array( 'publish', 'decommissioned' ),
-    'posts_per_page' => -1,
-    'orderby'        => 'title',
-    'order'          => 'ASC',
-) );
+$handle_refresh = $is_admin && isset( $_GET['refresh'] ) && $_GET['refresh'] === '1';
 
-if ( empty( $posts ) ) {
+// Fetch chronicles via the remote-aware client API so this report works on any
+// site (local on chronicles/council, gateway-fetched on remote sites). The Refresh
+// button forces a fresh pull of both chronicles + the ASC holders map.
+if ( ! function_exists( 'owc_get_chronicles' ) ) {
+    echo '<p>' . esc_html__( 'owbn-core client API not available on this site.', 'owbn-core' ) . '</p>';
+    return;
+}
+
+$chronicles = owc_get_chronicles( $handle_refresh );
+
+if ( is_wp_error( $chronicles ) ) {
+    echo '<div class="notice notice-error inline"><p>' . esc_html( sprintf(
+        __( 'Unable to fetch chronicles: %s', 'owbn-core' ),
+        $chronicles->get_error_message()
+    ) ) . '</p></div>';
+    return;
+}
+
+if ( empty( $chronicles ) ) {
     echo '<p>' . esc_html__( 'No chronicles found.', 'owbn-core' ) . '</p>';
     return;
 }
 
-update_postmeta_cache( wp_list_pluck( $posts, 'ID' ) );
-
+// Build the master row map from the client API payload.
 $all_rows   = array();
 $id_to_slug = array();
-foreach ( $posts as $p ) {
-    $slug         = get_post_meta( $p->ID, 'chronicle_slug', true ) ?: $p->post_name;
-    $hst_info     = get_post_meta( $p->ID, 'hst_info', true ) ?: array();
-    $cm_info      = get_post_meta( $p->ID, 'cm_info', true ) ?: array();
-    $probationary = ! empty( get_post_meta( $p->ID, 'chronicle_probationary', true ) );
-    $satellite    = ! empty( get_post_meta( $p->ID, 'chronicle_satellite', true ) );
+foreach ( $chronicles as $c ) {
+    $c            = is_object( $c ) ? (array) $c : $c;
+    $id           = isset( $c['id'] ) ? (int) $c['id'] : 0;
+    $slug         = isset( $c['slug'] ) ? (string) $c['slug'] : '';
+    if ( '' === $slug ) {
+        continue;
+    }
+    $hst_info     = is_array( $c['hst_info'] ?? null ) ? $c['hst_info'] : array();
+    $cm_info      = is_array( $c['cm_info'] ?? null ) ? $c['cm_info'] : array();
+    $probationary = ! empty( $c['chronicle_probationary'] );
+    $satellite    = ! empty( $c['chronicle_satellite'] );
     $all_rows[ $slug ] = array(
-        'id'           => $p->ID,
-        'post_status'  => $p->post_status,
-        'title'        => $p->post_title,
+        'id'           => $id,
+        'post_status'  => isset( $c['status'] ) ? (string) $c['status'] : 'publish',
+        'title'        => isset( $c['title'] ) ? (string) $c['title'] : $slug,
         'slug'         => $slug,
         'probationary' => $probationary,
         'satellite'    => $satellite,
-        'parent_id'    => (int) get_post_meta( $p->ID, 'chronicle_parent', true ),
+        'parent_id'    => (int) ( $c['chronicle_parent'] ?? 0 ),
         'hst_info'     => $hst_info,
         'cm_info'      => $cm_info,
-        'hst_name'     => strtolower( $hst_info['display_name'] ?? '' ),
-        'cm_name'      => strtolower( $cm_info['display_name'] ?? '' ),
+        'hst_name'     => strtolower( (string) ( $hst_info['display_name'] ?? '' ) ),
+        'cm_name'      => strtolower( (string) ( $cm_info['display_name'] ?? '' ) ),
     );
-    $id_to_slug[ $p->ID ] = $slug;
+    if ( $id ) {
+        $id_to_slug[ $id ] = $slug;
+    }
 }
 
 // Apply user filters to derive the visible row set. $all_rows is preserved
@@ -91,7 +102,6 @@ if ( 'full' === $f_status ) {
 // Admin-only: bulk-fetch all chronicle/*/cm holders in one call. Cached.
 $holders_map = array();
 $fetch_error = '';
-$handle_refresh = $is_admin && isset( $_GET['refresh'] ) && $_GET['refresh'] === '1';
 if ( $is_admin ) {
     $cache_key = 'owc_cm_holders_map_v1';
     if ( $handle_refresh ) {
@@ -177,6 +187,12 @@ $color_pill = array(
     'yellow' => '#fff3cd',
     'red'    => '#f8d7da',
 );
+
+// Only link to wp-admin user edits when we're on the local host (chronicles/council)
+// — the user IDs in hst_info/cm_info come from the chronicles site's user table, so
+// links only resolve correctly there. On remote sites show plain text.
+$is_local_host    = post_type_exists( 'owbn_chronicle' );
+$allow_user_links = $is_admin && $is_local_host;
 
 $user_link = function ( $user_id, $label, $allow ) {
     if ( ! $user_id || ! $allow ) return esc_html( $label );
@@ -376,10 +392,10 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
                 <a href="<?php echo esc_url( $detail_url ); ?>"><?php echo esc_html( $title ); ?></a>
                 <span style="color:#50575e;">(<code><?php echo esc_html( $slug ); ?></code>)</span>
             </td>
-            <td><?php echo $user_link( $hst_uid, $hst_name, $is_admin ); ?></td>
+            <td><?php echo $user_link( $hst_uid, $hst_name, $allow_user_links ); ?></td>
             <td><?php echo esc_html( $hst_mail ); ?></td>
             <td>
-                <?php echo $user_link( $cm_uid, $cm_name, $is_admin ); ?>
+                <?php echo $user_link( $cm_uid, $cm_name, $allow_user_links ); ?>
                 <?php if ( $cm_note ) : ?><br><small><?php echo esc_html( $cm_note ); ?></small><?php endif; ?>
             </td>
             <td><?php echo esc_html( $cm_mail ); ?></td>
@@ -390,13 +406,16 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
                 <?php if ( empty( $holders ) ) : ?>
                     —
                 <?php else :
-                    $can_confirm = ( 'green' !== $color ) && ( $cm_slug === $slug );
+                    // "Confirm as CM" writes to local yni_posts via the owc_confirm_cm_match
+                    // AJAX handler, which only works on the chronicles host. Hide the button
+                    // on remote sites — admins can still see the mismatch report.
+                    $can_confirm = $is_local_host && ( 'green' !== $color ) && ( $cm_slug === $slug );
                     foreach ( $holders as $h ) :
                         $hid   = (int) ( $h['user_id'] ?? 0 );
                         $hname = $h['display_name'] ?? ( $h['user_login'] ?? '#' . $hid );
                         ?>
                         <div style="margin-bottom:4px;">
-                            <?php echo $user_link( $hid, $hname, true ); ?>
+                            <?php echo $user_link( $hid, $hname, $allow_user_links ); ?>
                             <br><small><?php echo esc_html( $h['email'] ?? '' ); ?></small>
                             <?php if ( $can_confirm && $hid ) : ?>
                                 <br>
