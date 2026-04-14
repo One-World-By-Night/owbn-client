@@ -18,9 +18,22 @@ if ( ! post_type_exists( 'owbn_chronicle' ) ) {
     return;
 }
 
+// ── Filter & sort params (GET) ────────────────────────────────────────
+$allowed_active  = array( 'active', 'inactive', 'all' );
+$allowed_status  = array( 'all', 'full', 'probationary', 'satellite' );
+$allowed_orderby = array( 'title', 'hst_name', 'cm_name', 'probationary', 'satellite' );
+$allowed_order   = array( 'asc', 'desc' );
+
+$f_active  = isset( $_GET['active'] )  && in_array( $_GET['active'],  $allowed_active, true )  ? $_GET['active']  : 'active';
+$f_status  = isset( $_GET['status'] )  && in_array( $_GET['status'],  $allowed_status, true )  ? $_GET['status']  : 'all';
+$f_orderby = isset( $_GET['orderby'] ) && in_array( $_GET['orderby'], $allowed_orderby, true ) ? $_GET['orderby'] : 'title';
+$f_order   = isset( $_GET['order'] )   && in_array( strtolower( $_GET['order'] ), $allowed_order, true ) ? strtolower( $_GET['order'] ) : 'asc';
+
+// Always pull both publish + decommissioned so parent lookups survive any filter
+// combination. Filtering to the user's Active/Inactive choice happens below.
 $posts = get_posts( array(
     'post_type'      => 'owbn_chronicle',
-    'post_status'    => 'publish',
+    'post_status'    => array( 'publish', 'decommissioned' ),
     'posts_per_page' => -1,
     'orderby'        => 'title',
     'order'          => 'ASC',
@@ -33,20 +46,46 @@ if ( empty( $posts ) ) {
 
 update_postmeta_cache( wp_list_pluck( $posts, 'ID' ) );
 
-$rows       = array();
+$all_rows   = array();
 $id_to_slug = array();
 foreach ( $posts as $p ) {
-    $slug = get_post_meta( $p->ID, 'chronicle_slug', true ) ?: $p->post_name;
-    $rows[ $slug ] = array(
-        'id'        => $p->ID,
-        'title'     => $p->post_title,
-        'slug'      => $slug,
-        'satellite' => ! empty( get_post_meta( $p->ID, 'chronicle_satellite', true ) ),
-        'parent_id' => (int) get_post_meta( $p->ID, 'chronicle_parent', true ),
-        'hst_info'  => get_post_meta( $p->ID, 'hst_info', true ) ?: array(),
-        'cm_info'   => get_post_meta( $p->ID, 'cm_info', true ) ?: array(),
+    $slug         = get_post_meta( $p->ID, 'chronicle_slug', true ) ?: $p->post_name;
+    $hst_info     = get_post_meta( $p->ID, 'hst_info', true ) ?: array();
+    $cm_info      = get_post_meta( $p->ID, 'cm_info', true ) ?: array();
+    $probationary = ! empty( get_post_meta( $p->ID, 'chronicle_probationary', true ) );
+    $satellite    = ! empty( get_post_meta( $p->ID, 'chronicle_satellite', true ) );
+    $all_rows[ $slug ] = array(
+        'id'           => $p->ID,
+        'post_status'  => $p->post_status,
+        'title'        => $p->post_title,
+        'slug'         => $slug,
+        'probationary' => $probationary,
+        'satellite'    => $satellite,
+        'parent_id'    => (int) get_post_meta( $p->ID, 'chronicle_parent', true ),
+        'hst_info'     => $hst_info,
+        'cm_info'      => $cm_info,
+        'hst_name'     => strtolower( $hst_info['display_name'] ?? '' ),
+        'cm_name'      => strtolower( $cm_info['display_name'] ?? '' ),
     );
     $id_to_slug[ $p->ID ] = $slug;
+}
+
+// Apply user filters to derive the visible row set. $all_rows is preserved
+// for satellite → parent CM inheritance lookups below.
+$rows = $all_rows;
+
+if ( 'active' === $f_active ) {
+    $rows = array_filter( $rows, function ( $r ) { return $r['post_status'] === 'publish'; } );
+} elseif ( 'inactive' === $f_active ) {
+    $rows = array_filter( $rows, function ( $r ) { return $r['post_status'] === 'decommissioned'; } );
+}
+
+if ( 'full' === $f_status ) {
+    $rows = array_filter( $rows, function ( $r ) { return ! $r['probationary'] && ! $r['satellite']; } );
+} elseif ( 'probationary' === $f_status ) {
+    $rows = array_filter( $rows, function ( $r ) { return $r['probationary']; } );
+} elseif ( 'satellite' === $f_status ) {
+    $rows = array_filter( $rows, function ( $r ) { return $r['satellite']; } );
 }
 
 // Admin-only: bulk-fetch all chronicle/*/cm holders in one call. Cached.
@@ -148,22 +187,76 @@ $user_link = function ( $user_id, $label, $allow ) {
 // Tallies
 $tally = array( 'green' => 0, 'yellow' => 0, 'red' => 0 );
 
-// Sort rows by title
-uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); } );
+// Sort rows. Boolean columns (probationary/satellite) tiebreak by title asc so
+// rows within each group stay alphabetical.
+$sort_dir = ( 'desc' === $f_order ) ? -1 : 1;
+uasort( $rows, function ( $a, $b ) use ( $f_orderby, $sort_dir ) {
+    switch ( $f_orderby ) {
+        case 'hst_name':
+            $cmp = strcmp( $a['hst_name'], $b['hst_name'] );
+            break;
+        case 'cm_name':
+            $cmp = strcmp( $a['cm_name'], $b['cm_name'] );
+            break;
+        case 'probationary':
+            $cmp = ( (int) $a['probationary'] ) - ( (int) $b['probationary'] );
+            if ( 0 === $cmp ) {
+                return strcmp( $a['title'], $b['title'] );
+            }
+            break;
+        case 'satellite':
+            $cmp = ( (int) $a['satellite'] ) - ( (int) $b['satellite'] );
+            if ( 0 === $cmp ) {
+                return strcmp( $a['title'], $b['title'] );
+            }
+            break;
+        case 'title':
+        default:
+            $cmp = strcmp( $a['title'], $b['title'] );
+            break;
+    }
+    return $cmp * $sort_dir;
+} );
+
+$client_id = owc_get_client_id();
+$page_slug = $client_id . '-owc-reports';
+$base_args = array( 'page' => $page_slug, 'tab' => 'chronicle-staff' );
+
+// Helper: build a sortable header link that toggles order when the active column is re-clicked.
+$sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active, $f_status, $base_args ) {
+    $is_active = ( $f_orderby === $column );
+    $next_order = ( $is_active && $f_order === 'asc' ) ? 'desc' : 'asc';
+    $url = add_query_arg( array_merge( $base_args, array(
+        'active'  => $f_active,
+        'status'  => $f_status,
+        'orderby' => $column,
+        'order'   => $next_order,
+    ) ), admin_url( 'admin.php' ) );
+    $arrow = '';
+    if ( $is_active ) {
+        $arrow = ( $f_order === 'asc' ) ? ' ↑' : ' ↓';
+    }
+    return '<a href="' . esc_url( $url ) . '">' . esc_html( $label ) . esc_html( $arrow ) . '</a>';
+};
 
 ?>
 <style>
 .owc-staff-report { border-collapse: collapse; width: 100%; margin-top: 16px; table-layout: fixed; }
 .owc-staff-report th, .owc-staff-report td { padding: 8px 10px; border: 1px solid #c3c4c7; font-size: 13px; vertical-align: top; word-wrap: break-word; }
 .owc-staff-report th { background: #f6f7f7; text-align: left; font-weight: 600; }
-.owc-staff-report col.owc-col-chron { width: 22%; }
-.owc-staff-report col.owc-col-slug  { width: 6%; }
-.owc-staff-report col.owc-col-name  { width: 12%; }
-.owc-staff-report col.owc-col-email { width: 16%; }
-.owc-staff-report col.owc-col-cmrole { width: 16%; }
+.owc-staff-report th a { text-decoration: none; color: inherit; }
+.owc-staff-report col.owc-col-chron  { width: 26%; }
+.owc-staff-report col.owc-col-name   { width: 12%; }
+.owc-staff-report col.owc-col-email  { width: 16%; }
+.owc-staff-report col.owc-col-flag   { width: 5%; }
+.owc-staff-report col.owc-col-cmrole { width: 14%; }
+.owc-staff-report td.owc-flag-cell   { text-align: center; font-weight: 600; }
 .owc-staff-report .owc-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 600; margin-left: 4px; }
 .owc-staff-summary { display: flex; gap: 12px; margin: 12px 0; }
 .owc-staff-summary .pill { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.owc-staff-filters { display: flex; gap: 12px; align-items: flex-end; margin: 12px 0; padding: 10px; background: #f6f7f7; border: 1px solid #dcdcde; }
+.owc-staff-filters label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; color: #50575e; }
+.owc-staff-filters select { min-width: 140px; }
 </style>
 
 <p><?php esc_html_e( 'Each row shows a chronicle and its HST/CM staff. The CM role cell reflects who currently holds chronicle/{slug}/cm in AccessSchema.', 'owbn-core' ); ?></p>
@@ -172,33 +265,68 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
     <div class="notice notice-error inline"><p><?php echo esc_html( $fetch_error ); ?></p></div>
 <?php endif; ?>
 
-<?php if ( $is_admin ) :
-    $refresh_url = add_query_arg( array( 'page' => owc_get_client_id() . '-owc-reports', 'tab' => 'chronicle-staff', 'refresh' => '1' ), admin_url( 'admin.php' ) );
-?>
-<p>
-    <a href="<?php echo esc_url( $refresh_url ); ?>" class="button"><?php esc_html_e( 'Refresh ASC Data', 'owbn-core' ); ?></a>
-    <span style="margin-left:8px; color:#50575e;"><em><?php esc_html_e( 'Cached 4 hours. Green: matched. Yellow: fuzzy match. Red: missing / multiple / mismatch.', 'owbn-core' ); ?></em></span>
-</p>
+<form method="get" class="owc-staff-filters">
+    <input type="hidden" name="page" value="<?php echo esc_attr( $page_slug ); ?>">
+    <input type="hidden" name="tab" value="chronicle-staff">
+    <input type="hidden" name="orderby" value="<?php echo esc_attr( $f_orderby ); ?>">
+    <input type="hidden" name="order" value="<?php echo esc_attr( $f_order ); ?>">
+    <label>
+        <?php esc_html_e( 'Active', 'owbn-core' ); ?>
+        <select name="active">
+            <option value="active"   <?php selected( $f_active, 'active' ); ?>><?php esc_html_e( 'Active (Published)', 'owbn-core' ); ?></option>
+            <option value="inactive" <?php selected( $f_active, 'inactive' ); ?>><?php esc_html_e( 'Inactive (Decommissioned)', 'owbn-core' ); ?></option>
+            <option value="all"      <?php selected( $f_active, 'all' ); ?>><?php esc_html_e( 'All', 'owbn-core' ); ?></option>
+        </select>
+    </label>
+    <label>
+        <?php esc_html_e( 'Game Status', 'owbn-core' ); ?>
+        <select name="status">
+            <option value="all"          <?php selected( $f_status, 'all' ); ?>><?php esc_html_e( 'All', 'owbn-core' ); ?></option>
+            <option value="full"         <?php selected( $f_status, 'full' ); ?>><?php esc_html_e( 'Full', 'owbn-core' ); ?></option>
+            <option value="probationary" <?php selected( $f_status, 'probationary' ); ?>><?php esc_html_e( 'Probationary', 'owbn-core' ); ?></option>
+            <option value="satellite"    <?php selected( $f_status, 'satellite' ); ?>><?php esc_html_e( 'Satellite', 'owbn-core' ); ?></option>
+        </select>
+    </label>
+    <button type="submit" class="button button-primary"><?php esc_html_e( 'Filter', 'owbn-core' ); ?></button>
+    <?php if ( $is_admin ) :
+        $refresh_url = add_query_arg( array_merge( $base_args, array(
+            'active'  => $f_active,
+            'status'  => $f_status,
+            'orderby' => $f_orderby,
+            'order'   => $f_order,
+            'refresh' => '1',
+        ) ), admin_url( 'admin.php' ) );
+    ?>
+        <a href="<?php echo esc_url( $refresh_url ); ?>" class="button"><?php esc_html_e( 'Refresh ASC Data', 'owbn-core' ); ?></a>
+        <span style="margin-left:8px; color:#50575e;"><em><?php esc_html_e( 'Cached 4 hours. Green: matched. Yellow: fuzzy. Red: missing / multiple / mismatch.', 'owbn-core' ); ?></em></span>
+    <?php endif; ?>
+</form>
+
+<?php if ( empty( $rows ) ) : ?>
+    <p><em><?php esc_html_e( 'No chronicles match the current filters.', 'owbn-core' ); ?></em></p>
+    <?php return; ?>
 <?php endif; ?>
 
 <table class="owc-staff-report">
     <colgroup>
         <col class="owc-col-chron">
-        <col class="owc-col-slug">
         <col class="owc-col-name">
         <col class="owc-col-email">
         <col class="owc-col-name">
         <col class="owc-col-email">
+        <col class="owc-col-flag">
+        <col class="owc-col-flag">
         <?php if ( $is_admin ) : ?><col class="owc-col-cmrole"><?php endif; ?>
     </colgroup>
     <thead>
     <tr>
-        <th><?php esc_html_e( 'Chronicle', 'owbn-core' ); ?></th>
-        <th><?php esc_html_e( 'Slug', 'owbn-core' ); ?></th>
-        <th><?php esc_html_e( 'HST', 'owbn-core' ); ?></th>
+        <th><?php echo $sort_link( 'title', __( 'Chronicle', 'owbn-core' ) ); ?></th>
+        <th><?php echo $sort_link( 'hst_name', __( 'HST', 'owbn-core' ) ); ?></th>
         <th><?php esc_html_e( 'HST Email', 'owbn-core' ); ?></th>
-        <th><?php esc_html_e( 'CM', 'owbn-core' ); ?></th>
+        <th><?php echo $sort_link( 'cm_name', __( 'CM', 'owbn-core' ) ); ?></th>
         <th><?php esc_html_e( 'CM Email', 'owbn-core' ); ?></th>
+        <th title="<?php esc_attr_e( 'Probationary', 'owbn-core' ); ?>"><?php echo $sort_link( 'probationary', __( 'Prob', 'owbn-core' ) ); ?></th>
+        <th title="<?php esc_attr_e( 'Satellite', 'owbn-core' ); ?>"><?php echo $sort_link( 'satellite', __( 'Sat', 'owbn-core' ) ); ?></th>
         <?php if ( $is_admin ) : ?>
         <th><?php esc_html_e( 'CM Role (ASC)', 'owbn-core' ); ?></th>
         <?php endif; ?>
@@ -212,11 +340,13 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
         $cm_slug  = $slug;
         $cm_note  = '';
 
-        // Satellite: resolve to parent chronicle's cm_info + slug.
+        // Satellite: resolve to parent chronicle's cm_info + slug. Parent lookup
+        // reads from $all_rows so inheritance works even when the parent has been
+        // filtered out of the visible $rows set.
         if ( $r['satellite'] && $r['parent_id'] && isset( $id_to_slug[ $r['parent_id'] ] ) ) {
             $parent_slug = $id_to_slug[ $r['parent_id'] ];
-            if ( isset( $rows[ $parent_slug ] ) ) {
-                $cm_info = $rows[ $parent_slug ]['cm_info'];
+            if ( isset( $all_rows[ $parent_slug ] ) ) {
+                $cm_info = $all_rows[ $parent_slug ]['cm_info'];
                 $cm_slug = $parent_slug;
                 $cm_note = sprintf( __( '(from parent: %s)', 'owbn-core' ), $parent_slug );
             }
@@ -238,10 +368,14 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
             $tally[ $color ]++;
         }
         $row_bg = $is_admin ? ( $color_bg[ $color ] ?? '' ) : '';
+
+        $detail_url = home_url( '/chronicle-detail/?slug=' . rawurlencode( $slug ) );
         ?>
         <tr<?php echo $row_bg ? ' style="background:' . esc_attr( $row_bg ) . ';"' : ''; ?>>
-            <td><?php echo esc_html( $title ); ?></td>
-            <td><code><?php echo esc_html( $slug ); ?></code></td>
+            <td>
+                <a href="<?php echo esc_url( $detail_url ); ?>"><?php echo esc_html( $title ); ?></a>
+                <span style="color:#50575e;">(<code><?php echo esc_html( $slug ); ?></code>)</span>
+            </td>
             <td><?php echo $user_link( $hst_uid, $hst_name, $is_admin ); ?></td>
             <td><?php echo esc_html( $hst_mail ); ?></td>
             <td>
@@ -249,6 +383,8 @@ uasort( $rows, function ( $a, $b ) { return strcmp( $a['title'], $b['title'] ); 
                 <?php if ( $cm_note ) : ?><br><small><?php echo esc_html( $cm_note ); ?></small><?php endif; ?>
             </td>
             <td><?php echo esc_html( $cm_mail ); ?></td>
+            <td class="owc-flag-cell"><?php echo $r['probationary'] ? '✓' : '—'; ?></td>
+            <td class="owc-flag-cell"><?php echo $r['satellite'] ? '✓' : '—'; ?></td>
             <?php if ( $is_admin ) : ?>
             <td>
                 <?php if ( empty( $holders ) ) : ?>
