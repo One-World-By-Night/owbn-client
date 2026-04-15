@@ -17,7 +17,7 @@
  *   title, chronicle_slug, slug, genres, game_type, active_player_count, web_url
  * 
  * Content/WYSIWYG:
- *   content, description, premise, game_theme, game_mood, traveler_info
+ *   content, description, premise, traveler_info
  * 
  * Staff:
  *   hst_info, cm_info, ast_list
@@ -102,8 +102,6 @@ function owc_render_chronicle_field(array $chronicle, string $field, bool $show_
         'content'                => 'owc_chron_field_content',
         'description'            => 'owc_chron_field_content',
         'premise'                => 'owc_chron_field_wysiwyg',
-        'game_theme'             => 'owc_chron_field_wysiwyg',
-        'game_mood'              => 'owc_chron_field_wysiwyg',
         'traveler_info'          => 'owc_chron_field_wysiwyg',
 
         // Staff
@@ -171,8 +169,6 @@ function owc_chron_field_wrapper(string $field, string $content, bool $show_labe
         'content'                => __('About', 'owbn-entities'),
         'description'            => __('About', 'owbn-entities'),
         'premise'                => __('Premise', 'owbn-entities'),
-        'game_theme'             => __('Theme', 'owbn-entities'),
-        'game_mood'              => __('Mood', 'owbn-entities'),
         'traveler_info'          => __('Traveler Information', 'owbn-entities'),
 
         // Staff

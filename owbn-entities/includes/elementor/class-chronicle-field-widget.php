@@ -237,8 +237,6 @@ class OWC_Chronicle_Field_Widget extends Widget_Base
 			// Content/WYSIWYG
 			'content'                => __('About/Content', 'owbn-entities'),
 			'premise'                => __('Premise', 'owbn-entities'),
-			'game_theme'             => __('Theme', 'owbn-entities'),
-			'game_mood'              => __('Mood', 'owbn-entities'),
 			'traveler_info'          => __('Traveler Information', 'owbn-entities'),
 
 			// Staff

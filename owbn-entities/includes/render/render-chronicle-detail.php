@@ -143,11 +143,9 @@ function owc_render_chronicle_about(array $chronicle): string
 function owc_render_chronicle_narrative(array $chronicle): string
 {
     $premise = $chronicle['premise'] ?? '';
-    $theme = $chronicle['game_theme'] ?? '';
-    $mood = $chronicle['game_mood'] ?? '';
     $traveler = $chronicle['traveler_info'] ?? '';
 
-    if (empty(trim($premise)) && empty(trim($theme)) && empty(trim($mood)) && empty(trim($traveler))) {
+    if (empty(trim($premise)) && empty(trim($traveler))) {
         return '';
     }
 
@@ -155,8 +153,6 @@ function owc_render_chronicle_narrative(array $chronicle): string
 ?>
     <div id="owc-chronicle-narrative" class="owc-chronicle-narrative">
         <?php echo owc_render_narrative_section(__('Premise', 'owbn-entities'), $premise); ?>
-        <?php echo owc_render_narrative_section(__('Theme', 'owbn-entities'), $theme); ?>
-        <?php echo owc_render_narrative_section(__('Mood', 'owbn-entities'), $mood); ?>
         <?php echo owc_render_narrative_section(__('Information for Travelers', 'owbn-entities'), $traveler); ?>
     </div>
 <?php
@@ -190,10 +186,9 @@ function owc_render_chronicle_staff(array $chronicle): string
     $hst = $chronicle['hst_info'] ?? [];
     $cm = $chronicle['cm_info'] ?? [];
     $ast_list = $chronicle['ast_list'] ?? [];
-    $admin = $chronicle['admin_contact'] ?? [];
 
     $has_staff = !empty($hst['display_name']) || !empty($cm['display_name']) ||
-        !empty($admin['display_name']) || !empty(array_filter($ast_list, fn($a) => !empty($a['display_name'])));
+        !empty(array_filter($ast_list, fn($a) => !empty($a['display_name'])));
 
     if (!$has_staff) {
         return '';
@@ -206,7 +201,6 @@ function owc_render_chronicle_staff(array $chronicle): string
         <div class="owc-staff-list">
             <?php echo owc_render_staff_line(__('Head Storyteller', 'owbn-entities'), $hst); ?>
             <?php echo owc_render_staff_line(__('Council Member', 'owbn-entities'), $cm); ?>
-            <?php echo owc_render_staff_line(__('Admin Contact', 'owbn-entities'), $admin); ?>
             <?php foreach ($ast_list as $ast) : ?>
                 <?php echo owc_render_staff_line($ast['role'] ?? __('AST', 'owbn-entities'), $ast); ?>
             <?php endforeach; ?>

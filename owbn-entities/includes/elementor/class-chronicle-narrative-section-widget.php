@@ -28,16 +28,6 @@ class OWC_Chronicle_Narrative_Section_Widget extends Widget_Base {
             'type'    => Controls_Manager::SWITCHER,
             'default' => 'yes',
         ) );
-        $this->add_control( 'show_theme', array(
-            'label'   => __( 'Show Theme', 'owbn-entities' ),
-            'type'    => Controls_Manager::SWITCHER,
-            'default' => 'yes',
-        ) );
-        $this->add_control( 'show_mood', array(
-            'label'   => __( 'Show Mood', 'owbn-entities' ),
-            'type'    => Controls_Manager::SWITCHER,
-            'default' => 'yes',
-        ) );
         $this->add_control( 'show_traveler_info', array(
             'label'   => __( 'Show Traveler Info', 'owbn-entities' ),
             'type'    => Controls_Manager::SWITCHER,
@@ -64,12 +54,6 @@ class OWC_Chronicle_Narrative_Section_Widget extends Widget_Base {
             $html = '<div id="owc-chronicle-narrative" class="owc-chronicle-narrative">';
             if ( ( $settings['show_premise'] ?? 'yes' ) === 'yes' ) {
                 $html .= owc_render_narrative_section( __( 'Premise', 'owbn-entities' ), $data['premise'] ?? '' );
-            }
-            if ( ( $settings['show_theme'] ?? 'yes' ) === 'yes' ) {
-                $html .= owc_render_narrative_section( __( 'Theme', 'owbn-entities' ), $data['game_theme'] ?? '' );
-            }
-            if ( ( $settings['show_mood'] ?? 'yes' ) === 'yes' ) {
-                $html .= owc_render_narrative_section( __( 'Mood', 'owbn-entities' ), $data['game_mood'] ?? '' );
             }
             if ( ( $settings['show_traveler_info'] ?? 'yes' ) === 'yes' ) {
                 $html .= owc_render_narrative_section( __( 'Information for Travelers', 'owbn-entities' ), $data['traveler_info'] ?? '' );
