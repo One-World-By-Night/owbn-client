@@ -179,6 +179,13 @@ function owc_asc_check_access( $client_id, $email, $role_path, $include_children
 		'role_path'        => sanitize_text_field( $role_path ),
 		'include_children' => (bool) $include_children,
 	);
+	$user = get_user_by( 'email', $email );
+	if ( $user && defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
+		$pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+		if ( ! empty( $pid ) ) {
+			$payload['player_id'] = (string) $pid;
+		}
+	}
 
 	if ( owc_asc_is_remote_mode() ) {
 		$data = owc_asc_remote_post( 'check', $payload );
@@ -221,6 +228,12 @@ function owc_asc_get_user_roles( $client_id, $email ) {
 	}
 
 	$payload = array( 'email' => $email );
+	if ( $user && defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
+		$pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+		if ( ! empty( $pid ) ) {
+			$payload['player_id'] = (string) $pid;
+		}
+	}
 
 	if ( owc_asc_is_remote_mode() ) {
 		$response = owc_asc_remote_post( 'roles', $payload );
@@ -424,6 +437,12 @@ function owc_asc_grant_role( $client_id, $email, $role_path ) {
 		'email'     => sanitize_email( $email ),
 		'role_path' => sanitize_text_field( $role_path ),
 	);
+	if ( $user && defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
+		$pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+		if ( ! empty( $pid ) ) {
+			$payload['player_id'] = (string) $pid;
+		}
+	}
 
 	if ( owc_asc_is_remote_mode() ) {
 		$result = owc_asc_remote_post( 'grant', $payload );
@@ -457,6 +476,12 @@ function owc_asc_revoke_role( $client_id, $email, $role_path ) {
 		'email'     => sanitize_email( $email ),
 		'role_path' => sanitize_text_field( $role_path ),
 	);
+	if ( $user && defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
+		$pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+		if ( ! empty( $pid ) ) {
+			$payload['player_id'] = (string) $pid;
+		}
+	}
 
 	if ( owc_asc_is_remote_mode() ) {
 		$result = owc_asc_remote_post( 'revoke', $payload );
@@ -492,6 +517,12 @@ function owc_asc_refresh_user_roles( $user_id ) {
 	owc_asc_cache_delete( $user->ID );
 
 	$payload = array( 'email' => $user->user_email );
+	if ( defined( 'OWC_PLAYER_ID_META_KEY' ) ) {
+		$pid = get_user_meta( $user->ID, OWC_PLAYER_ID_META_KEY, true );
+		if ( ! empty( $pid ) ) {
+			$payload['player_id'] = (string) $pid;
+		}
+	}
 
 	if ( owc_asc_is_remote_mode() ) {
 		$response = owc_asc_remote_post( 'roles', $payload );

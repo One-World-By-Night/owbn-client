@@ -109,28 +109,26 @@ function owc_pid_cli_backfill($args, $assoc_args) {
 WP_CLI::add_command('owbn backfill-player-ids', 'owc_pid_cli_backfill');
 
 /**
- * wp owbn refresh-asc-roles [--slug=<slug>] [--sleep=<seconds>] [--limit=<n>]
+ * wp owbn refresh-asc-roles [--sleep=<seconds>] [--limit=<n>]
  *
  * Clear and refresh cached accessSchema roles for every user. Throttled.
- * If --slug is omitted, picks the first registered ASC slug on this site.
+ * Prefers the centralized owc_asc_refresh_user_roles (no slug needed).
+ * Falls back to per-slug accessSchema_refresh_roles_for_user if centralized
+ * is unavailable and --slug is given.
  */
 function owc_pid_cli_refresh_roles($args, $assoc_args) {
     $sleep = isset($assoc_args['sleep']) ? max(0, (float) $assoc_args['sleep']) : 0.5;
     $limit = isset($assoc_args['limit']) ? absint($assoc_args['limit']) : 0;
 
-    if (!function_exists('accessSchema_refresh_roles_for_user')) {
-        WP_CLI::error('accessSchema client is not available.');
+    $use_centralized = function_exists('owc_asc_refresh_user_roles');
+    $slug            = isset($assoc_args['slug']) ? sanitize_key($assoc_args['slug']) : null;
+
+    if (!$use_centralized && !function_exists('accessSchema_refresh_roles_for_user')) {
+        WP_CLI::error('No accessSchema refresh function available on this site.');
     }
 
-    if (isset($assoc_args['slug'])) {
-        $slug = sanitize_key($assoc_args['slug']);
-    } else {
-        $registered = apply_filters('accessschema_registered_slugs', array());
-        if (empty($registered) || !is_array($registered)) {
-            WP_CLI::error('No ASC slugs registered on this site. Nothing to refresh.');
-        }
-        $slug = (string) array_key_first($registered);
-        WP_CLI::log(sprintf('No --slug given; using "%s" (first registered).', $slug));
+    if (!$use_centralized && !$slug) {
+        WP_CLI::error('Centralized ASC not available and no --slug provided. Cannot refresh.');
     }
 
     $users = get_users(array(
@@ -139,22 +137,23 @@ function owc_pid_cli_refresh_roles($args, $assoc_args) {
     ));
     $total = count($users);
 
-    WP_CLI::log(sprintf('Refreshing roles for %d users, slug="%s", sleep %.2fs.', $total, $slug, $sleep));
+    $mode_desc = $use_centralized ? 'centralized' : ('slug=' . $slug);
+    WP_CLI::log(sprintf('Refreshing roles for %d users (%s), sleep %.2fs.', $total, $mode_desc, $sleep));
 
     $ok  = 0;
     $err = 0;
 
     foreach ($users as $u) {
-        $wp_user = get_user_by('id', $u->ID);
-        if (!$wp_user) {
-            $err++;
-            continue;
+        if ($use_centralized) {
+            $res = owc_asc_refresh_user_roles((int) $u->ID);
+        } else {
+            $wp_user = get_user_by('id', $u->ID);
+            if (!$wp_user) { $err++; continue; }
+            delete_user_meta($u->ID, 'accessschema_cached_roles');
+            delete_user_meta($u->ID, 'accessschema_cached_roles_timestamp');
+            $res = accessSchema_refresh_roles_for_user($wp_user, $slug);
         }
 
-        delete_user_meta($u->ID, 'accessschema_cached_roles');
-        delete_user_meta($u->ID, 'accessschema_cached_roles_timestamp');
-
-        $res = accessSchema_refresh_roles_for_user($wp_user, $slug);
         if (is_wp_error($res)) {
             $err++;
             WP_CLI::log(sprintf('  [err] #%d %s: %s', $u->ID, $u->user_email, $res->get_error_message()));
