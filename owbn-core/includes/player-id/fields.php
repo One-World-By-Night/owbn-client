@@ -17,7 +17,10 @@ add_action('edit_user_profile', 'owc_pid_show_field');
 function owc_pid_show_field($user) {
     $player_id = get_user_meta($user->ID, OWC_PLAYER_ID_META_KEY, true);
     $mode      = get_option(owc_option_name('player_id_mode'), 'client');
-    $can_edit  = ($mode === 'server') && current_user_can('manage_options');
+    $is_set    = !empty($player_id);
+    // Editable only in server mode, by manage_options, AND only when not already set.
+    // Once assigned, player_id is immutable via UI to preserve cross-site access linkage.
+    $can_edit  = ($mode === 'server') && current_user_can('manage_options') && !$is_set;
     ?>
     <h3><?php esc_html_e('Player Information', 'owbn-core'); ?></h3>
     <table class="form-table">
@@ -30,11 +33,13 @@ function owc_pid_show_field($user) {
                            id="owc_player_id"
                            value="<?php echo esc_attr($player_id); ?>"
                            class="regular-text" />
-                    <p class="description"><?php esc_html_e('Must be unique across all users.', 'owbn-core'); ?></p>
+                    <p class="description"><?php esc_html_e('Must be unique across all users. Cannot be changed once set.', 'owbn-core'); ?></p>
                 <?php else : ?>
                     <strong><?php echo esc_html($player_id ?: __('Not set', 'owbn-core')); ?></strong>
                     <?php if ($mode === 'client') : ?>
                         <p class="description"><?php esc_html_e('Managed by SSO server.', 'owbn-core'); ?></p>
+                    <?php elseif ($is_set) : ?>
+                        <p class="description"><?php esc_html_e('Locked. Player ID is immutable once assigned to preserve cross-site access linkage.', 'owbn-core'); ?></p>
                     <?php else : ?>
                         <p class="description"><?php esc_html_e('Contact an administrator to change.', 'owbn-core'); ?></p>
                     <?php endif; ?>
@@ -140,9 +145,19 @@ function owc_pid_save_field($user_id) {
         return;
     }
 
+    // Immutable once set — refuse profile-form writes if meta is already populated.
+    $existing = get_user_meta($user_id, OWC_PLAYER_ID_META_KEY, true);
+    if (!empty($existing)) {
+        return;
+    }
+
     $new_id = sanitize_text_field(wp_unslash($_POST['owc_player_id']));
 
-    if ($new_id !== '' && !owc_pid_is_unique($new_id, $user_id)) {
+    if ($new_id === '') {
+        return;
+    }
+
+    if (!owc_pid_is_unique($new_id, $user_id)) {
         add_action('user_profile_update_errors', function ($errors) use ($new_id) {
             $errors->add(
                 'owc_player_id_duplicate',
