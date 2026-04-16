@@ -22,13 +22,23 @@ if (!defined('WP_CLI') || !WP_CLI) {
  * captures it into local meta automatically.
  */
 function owc_pid_cli_backfill($args, $assoc_args) {
-    $slug    = isset($assoc_args['slug']) ? sanitize_key($assoc_args['slug']) : 'oat';
     $sleep   = isset($assoc_args['sleep']) ? max(0, (float) $assoc_args['sleep']) : 0.5;
     $dry_run = !empty($assoc_args['dry-run']);
     $limit   = isset($assoc_args['limit']) ? absint($assoc_args['limit']) : 0;
 
     if (!function_exists('accessSchema_client_remote_get_roles_by_email')) {
         WP_CLI::error('accessSchema client is not available. Ensure accessSchema-client is loaded.');
+    }
+
+    if (isset($assoc_args['slug'])) {
+        $slug = sanitize_key($assoc_args['slug']);
+    } else {
+        $registered = apply_filters('accessschema_registered_slugs', array());
+        if (empty($registered) || !is_array($registered)) {
+            WP_CLI::error('No ASC slugs registered on this site. Cannot backfill.');
+        }
+        $slug = (string) array_key_first($registered);
+        WP_CLI::log(sprintf('No --slug given; using "%s" (first registered).', $slug));
     }
 
     $query_args = array(
@@ -102,15 +112,25 @@ WP_CLI::add_command('owbn backfill-player-ids', 'owc_pid_cli_backfill');
  * wp owbn refresh-asc-roles [--slug=<slug>] [--sleep=<seconds>] [--limit=<n>]
  *
  * Clear and refresh cached accessSchema roles for every user. Throttled.
- * Use after a deploy that changes how lookups are keyed (email → player_id).
+ * If --slug is omitted, picks the first registered ASC slug on this site.
  */
 function owc_pid_cli_refresh_roles($args, $assoc_args) {
-    $slug  = isset($assoc_args['slug']) ? sanitize_key($assoc_args['slug']) : 'oat';
     $sleep = isset($assoc_args['sleep']) ? max(0, (float) $assoc_args['sleep']) : 0.5;
     $limit = isset($assoc_args['limit']) ? absint($assoc_args['limit']) : 0;
 
     if (!function_exists('accessSchema_refresh_roles_for_user')) {
         WP_CLI::error('accessSchema client is not available.');
+    }
+
+    if (isset($assoc_args['slug'])) {
+        $slug = sanitize_key($assoc_args['slug']);
+    } else {
+        $registered = apply_filters('accessschema_registered_slugs', array());
+        if (empty($registered) || !is_array($registered)) {
+            WP_CLI::error('No ASC slugs registered on this site. Nothing to refresh.');
+        }
+        $slug = (string) array_key_first($registered);
+        WP_CLI::log(sprintf('No --slug given; using "%s" (first registered).', $slug));
     }
 
     $users = get_users(array(
