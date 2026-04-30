@@ -1,8 +1,7 @@
 <?php
 /**
  * Workspace renderer — single source of truth for the role-organized link
- * panels shown on /my-board/ Links and C&C tabs and on the legacy
- * site-listing/ page.
+ * panels shown on /my-board/ Links and C&C tabs.
  *
  * Public API:
  *   owc_render_workspace_sections($user_id, array $sections): string

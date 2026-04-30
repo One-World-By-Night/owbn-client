@@ -1,8 +1,7 @@
 <?php
 /**
  * Workspace Links admin page — Web Coord / Admin Coord curate the link
- * cards that appear on /my-board/ Links tab and on the legacy site-listing/
- * page.
+ * cards that appear on /my-board/ Links tab.
  *
  * Permission gate: owc_workspace_user_can_edit() (admin-bypass + ASC roles).
  */
@@ -60,7 +59,7 @@ function owc_workspace_links_render_page() {
 	?>
 	<div class="wrap owc-workspace-links">
 		<h1><?php esc_html_e( 'Workspace Links', 'owbn-core' ); ?></h1>
-		<p class="description"><?php esc_html_e( 'These cards appear on the Links tab of /my-board/ and on the legacy site-listing/ page. Section A is shown to all logged-in users; Section B is the per-user "My Stuff" panel. URLs should use SSO redirect form (https://host/?auth=sso&redirect_uri=/path/).', 'owbn-core' ); ?></p>
+		<p class="description"><?php esc_html_e( 'These cards appear on the Links tab of /my-board/. Section A is shown to all logged-in users; Section B is the per-user "My Stuff" panel. URLs should use SSO redirect form (https://host/?auth=sso&redirect_uri=/path/).', 'owbn-core' ); ?></p>
 
 		<?php if ( $updated ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Workspace links saved.', 'owbn-core' ); ?></p></div>

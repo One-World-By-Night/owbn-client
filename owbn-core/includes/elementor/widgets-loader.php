@@ -34,8 +34,9 @@ class OWC_Core_Elementor_Loader {
     }
 
     public static function register_widgets( $widgets_manager ): void {
-        require_once __DIR__ . '/class-workspace-widget.php';
-        $widgets_manager->register( new OWC_OAT_Workspace_Widget() );
+        // No core widgets currently registered. Workspace widget retired in
+        // owbn-core 1.10.x; its functionality lives in the [owbn_board]
+        // shortcode on /my-board/. Future core-wide widgets register here.
     }
 }
 
