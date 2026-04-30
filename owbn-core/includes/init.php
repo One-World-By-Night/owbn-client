@@ -45,6 +45,13 @@ require_once __DIR__ . '/gateway/init.php';
 if ( file_exists( __DIR__ . '/elementor/widgets-loader.php' ) ) {
     require_once __DIR__ . '/elementor/widgets-loader.php';
 }
+// ── Workspace links (option storage + render helper) ──────────────────────
+require_once __DIR__ . '/workspace/options.php';
+require_once __DIR__ . '/workspace/render.php';
+if ( is_admin() ) {
+    require_once __DIR__ . '/workspace/admin-page.php';
+}
+
 // ── Admin bar menu ──────────────────────────────────────────────────────────
 require_once __DIR__ . '/admin-bar/init.php';
 
