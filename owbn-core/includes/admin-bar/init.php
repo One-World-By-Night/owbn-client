@@ -83,6 +83,21 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
             'meta'   => array( 'target' => '_blank' ),
         ) );
     }
+
+    // "My Board" entry under the standard WP user-info dropdown (top-right).
+    // Lives at council.owbn.net/my-board/; cross-site visits route via SSO.
+    $my_board_url = 'https://council.owbn.net/my-board/';
+    $mb_host      = wp_parse_url( $my_board_url, PHP_URL_HOST );
+    if ( $mb_host && $mb_host !== $current_host ) {
+        $my_board_url = 'https://' . $mb_host . '/?auth=sso&redirect_uri=' . rawurlencode( '/my-board/' );
+    }
+
+    $wp_admin_bar->add_node( array(
+        'id'     => 'owbn-my-board',
+        'parent' => 'user-actions',
+        'title'  => esc_html__( 'My Board', 'owbn-core' ),
+        'href'   => $my_board_url,
+    ) );
 }
 
 /**
