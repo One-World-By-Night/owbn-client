@@ -42,11 +42,19 @@ function owc_board_messages_list( $scope, $limit = 20 ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_messages_list' ) ) {
 		return owbn_board_local_messages_list( $scope, $limit );
 	}
+	$cache_key = 'owc_board_messages_' . md5( (string) $scope . '|' . (int) $limit );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) ? $cached : array();
+	}
 	$resp = owc_board_remote_request( 'messages/list', [ 'scope' => $scope, 'limit' => (int) $limit ] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, array(), 60 );
 		return [];
 	}
-	return isset( $resp['messages'] ) ? (array) $resp['messages'] : [];
+	$out = isset( $resp['messages'] ) ? (array) $resp['messages'] : [];
+	set_transient( $cache_key, $out, 60 );
+	return $out;
 }
 endif;
 
@@ -63,6 +71,7 @@ function owc_board_messages_post( $scope, $email, $content ) {
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
 		return $resp instanceof WP_Error ? $resp : new WP_Error( 'board_remote_failed', 'Could not post message' );
 	}
+	owc_board_invalidate_messages_cache( $scope );
 	return isset( $resp['message'] ) ? $resp['message'] : $resp;
 }
 endif;
@@ -76,7 +85,45 @@ function owc_board_messages_delete( $message_id, $email ) {
 		'message_id' => (int) $message_id,
 		'email'      => $email,
 	] );
+	if ( ! is_wp_error( $resp ) ) {
+		// We don't know the scope here; clear the most-likely cache key prefix
+		// via wpdb. Falls back to a no-op if option-cache only.
+		owc_board_invalidate_messages_cache_all();
+	}
 	return ! is_wp_error( $resp );
+}
+endif;
+
+/** Cache-clear helpers — called after writes to keep dashboards in sync. */
+if ( ! function_exists( 'owc_board_invalidate_messages_cache' ) ) :
+function owc_board_invalidate_messages_cache( $scope ) {
+	// Clear common limit values used by tiles.
+	foreach ( [ 5, 10, 20, 50 ] as $limit ) {
+		delete_transient( 'owc_board_messages_' . md5( (string) $scope . '|' . (int) $limit ) );
+	}
+}
+endif;
+if ( ! function_exists( 'owc_board_invalidate_messages_cache_all' ) ) :
+function owc_board_invalidate_messages_cache_all() {
+	global $wpdb;
+	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_owc_board_messages_%' OR option_name LIKE '_transient_timeout_owc_board_messages_%'" );
+}
+endif;
+if ( ! function_exists( 'owc_board_invalidate_notebook_cache' ) ) :
+function owc_board_invalidate_notebook_cache( $scope, $email ) {
+	delete_transient( 'owc_board_notebook_' . md5( (string) $scope . '|' . (string) $email ) );
+}
+endif;
+if ( ! function_exists( 'owc_board_invalidate_handoff_cache' ) ) :
+function owc_board_invalidate_handoff_cache( $scope = '', $handoff_id = 0 ) {
+	if ( $scope ) {
+		delete_transient( 'owc_board_handoff_get_' . md5( (string) $scope ) );
+	}
+	if ( $handoff_id ) {
+		foreach ( [ 5, 10, 20, 50 ] as $limit ) {
+			delete_transient( 'owc_board_handoff_recent_' . (int) $handoff_id . '_' . (int) $limit );
+		}
+	}
 }
 endif;
 
@@ -87,15 +134,27 @@ function owc_board_notebook_get( $scope, $email = '', $create = false ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_notebook_get' ) ) {
 		return owbn_board_local_notebook_get( $scope, $email, $create );
 	}
+	// Don't cache create=true — that's a write-style call that may mutate state.
+	$can_cache = ! $create;
+	$cache_key = 'owc_board_notebook_' . md5( (string) $scope . '|' . (string) $email );
+	if ( $can_cache ) {
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return is_array( $cached ) || is_null( $cached ) ? $cached : null;
+		}
+	}
 	$resp = owc_board_remote_request( 'notebook/get', [
 		'scope'  => $scope,
 		'email'  => $email,
 		'create' => $create ? 1 : 0,
 	] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		if ( $can_cache ) set_transient( $cache_key, null, 60 );
 		return null;
 	}
-	return isset( $resp['notebook'] ) ? $resp['notebook'] : null;
+	$out = isset( $resp['notebook'] ) ? $resp['notebook'] : null;
+	if ( $can_cache ) set_transient( $cache_key, $out, 60 );
+	return $out;
 }
 endif;
 
@@ -109,6 +168,9 @@ function owc_board_notebook_save( $scope, $email, $content ) {
 		'email'   => $email,
 		'content' => $content,
 	] );
+	if ( ! is_wp_error( $resp ) ) {
+		owc_board_invalidate_notebook_cache( $scope, $email );
+	}
 	return ! is_wp_error( $resp );
 }
 endif;
@@ -120,11 +182,21 @@ function owc_board_handoff_get( $scope ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_handoff_get' ) ) {
 		return owbn_board_local_handoff_get( $scope );
 	}
+	// Short transient cache to absorb the per-scope cross-site round-trip cost
+	// (~280ms each) when a tile lazy-loads multiple scopes in quick succession.
+	$cache_key = 'owc_board_handoff_get_' . md5( (string) $scope );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) || is_null( $cached ) ? $cached : null;
+	}
 	$resp = owc_board_remote_request( 'handoff/get', [ 'scope' => $scope ] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, null, 60 );
 		return null;
 	}
-	return isset( $resp['handoff'] ) ? $resp['handoff'] : null;
+	$out = isset( $resp['handoff'] ) ? $resp['handoff'] : null;
+	set_transient( $cache_key, $out, 60 );
+	return $out;
 }
 endif;
 
@@ -133,14 +205,22 @@ function owc_board_handoff_recent_entries( $handoff_id, $limit = 5 ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_handoff_recent_entries' ) ) {
 		return owbn_board_local_handoff_recent_entries( $handoff_id, $limit );
 	}
+	$cache_key = 'owc_board_handoff_recent_' . (int) $handoff_id . '_' . (int) $limit;
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) ? $cached : array();
+	}
 	$resp = owc_board_remote_request( 'handoff/entries', [
 		'handoff_id' => (int) $handoff_id,
 		'limit'      => (int) $limit,
 	] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, array(), 60 );
 		return [];
 	}
-	return isset( $resp['entries'] ) ? (array) $resp['entries'] : [];
+	$out = isset( $resp['entries'] ) ? (array) $resp['entries'] : [];
+	set_transient( $cache_key, $out, 60 );
+	return $out;
 }
 endif;
 
@@ -151,14 +231,23 @@ function owc_board_sessions_list( $chronicle_slug, $limit = 5 ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_sessions_list' ) ) {
 		return owbn_board_local_sessions_list( $chronicle_slug, $limit );
 	}
+	$cache_key = 'owc_board_sessions_' . md5( (string) $chronicle_slug . '|' . (int) $limit );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) ? $cached : array();
+	}
 	$resp = owc_board_remote_request( 'sessions/list', [
 		'chronicle_slug' => $chronicle_slug,
 		'limit'          => (int) $limit,
 	] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, array(), 300 );
 		return [];
 	}
-	return isset( $resp['sessions'] ) ? (array) $resp['sessions'] : [];
+	$out = isset( $resp['sessions'] ) ? (array) $resp['sessions'] : [];
+	// Sessions are append-only history; 5 min staleness fine.
+	set_transient( $cache_key, $out, 300 );
+	return $out;
 }
 endif;
 
@@ -169,14 +258,23 @@ function owc_board_visitors_list( $host_slug, $limit = 10 ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_visitors_list' ) ) {
 		return owbn_board_local_visitors_list( $host_slug, $limit );
 	}
+	$cache_key = 'owc_board_visitors_host_' . md5( (string) $host_slug . '|' . (int) $limit );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) ? $cached : array();
+	}
 	$resp = owc_board_remote_request( 'visitors/list', [
 		'host_slug' => $host_slug,
 		'limit'     => (int) $limit,
 	] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, array(), 300 );
 		return [];
 	}
-	return isset( $resp['visitors'] ) ? (array) $resp['visitors'] : [];
+	$out = isset( $resp['visitors'] ) ? (array) $resp['visitors'] : [];
+	// Visitor logs are append-only; 5 min staleness fine.
+	set_transient( $cache_key, $out, 300 );
+	return $out;
 }
 endif;
 
@@ -185,14 +283,23 @@ function owc_board_visitors_by_player( $email, $limit = 10 ) {
 	if ( owc_board_is_local() && function_exists( 'owbn_board_local_visitors_by_player' ) ) {
 		return owbn_board_local_visitors_by_player( $email, $limit );
 	}
+	$cache_key = 'owc_board_visitors_player_' . md5( (string) $email . '|' . (int) $limit );
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return is_array( $cached ) ? $cached : array();
+	}
 	$resp = owc_board_remote_request( 'visitors/by-player', [
 		'email' => $email,
 		'limit' => (int) $limit,
 	] );
 	if ( is_wp_error( $resp ) || ! is_array( $resp ) ) {
+		set_transient( $cache_key, array(), 300 );
 		return [];
 	}
-	return isset( $resp['visitors'] ) ? (array) $resp['visitors'] : [];
+	$out = isset( $resp['visitors'] ) ? (array) $resp['visitors'] : [];
+	// Visitor logs are append-only; 5 min staleness fine.
+	set_transient( $cache_key, $out, 300 );
+	return $out;
 }
 endif;
 
