@@ -149,7 +149,6 @@ function owc_core_activate()
 
     if ( $needs_reset ) {
         $default_links = array(
-            array( 'title' => 'My Account',  'url' => 'https://sso.owbn.net/site-listing/' ),
             array( 'title' => 'Chronicles',   'url' => 'https://chronicles.owbn.net/' ),
             array( 'title' => 'Council',      'url' => 'https://council.owbn.net/' ),
             array( 'title' => 'Archivist',    'url' => 'https://archivist.owbn.net/' ),

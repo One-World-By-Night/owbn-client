@@ -47,7 +47,6 @@ function owc_admin_bar_owbn_menu( $wp_admin_bar ) {
 
     // Default links.
     $default_links = array(
-        array( 'id' => 'owbn-sites',       'title' => 'My Sites',    'url' => 'https://sso.owbn.net/site-listing/' ),
         array( 'id' => 'owbn-chronicles',   'title' => 'Chronicles',  'url' => 'https://chronicles.owbn.net/' ),
         array( 'id' => 'owbn-council',      'title' => 'Council',     'url' => 'https://council.owbn.net/' ),
         array( 'id' => 'owbn-archivist',    'title' => 'Archivist',   'url' => 'https://archivist.owbn.net/' ),
