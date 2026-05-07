@@ -1,35 +1,21 @@
 <?php
 /**
- * Workspace renderer — single source of truth for the role-organized link
- * panels shown on /my-board/ Links and C&C tabs.
+ * Workspace renderer — single source of truth for the dashboard top header
+ * and per-entity tiles shown on /my-board/.
  *
  * Public API:
- *   owc_render_workspace_sections($user_id, array $sections): string
- *
- * Section keys:
- *   admin       Org Resources   (admin-curated cards from wp_option)
- *   my_stuff    My Stuff        (admin-curated cards from wp_option)
- *   chronicles  My Chronicles   (cards per chronicle/{slug}/{hst|cm|staff})
- *   coord       My Coord Roles  (cards per coordinator/{slug}/{coordinator|sub-coordinator})
- *   exec        Executive Roles (cards per exec/{slug}/{coordinator|staff})
- *
- * Returns rendered HTML; empty string if all requested sections are empty
- * for this user.
+ *   owc_render_workspace_top_header(): string         Persistent 3-card header.
+ *   owc_workspace_render_chronicle_tile($slug, $user_id): string
+ *   owc_workspace_render_coordinator_tile($slug, $user_id): string  // also handles exec
+ *   owc_workspace_get_role_data($user_id): array
+ *   owc_workspace_user_has_chronicle_role($user_id): bool
+ *   owc_workspace_user_has_coord_role($user_id): bool       (incl. exec)
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Resolve the user's role data, bucketed by family. Cached per-request per-user.
- *
- * @return array{
- *   chronicle_roles: array<string,string[]>,
- *   coord_roles: array<string,string>,
- *   exec_roles: array<string,string>,
- *   chron_titles: array<string,string>, chron_ids: array<string,int>,
- *   coord_titles: array<string,string>, coord_ids: array<string,int>,
- *   exec_titles:  array<string,string>, exec_ids:  array<string,int>,
- * }
  */
 function owc_workspace_get_role_data( $user_id ) {
 	static $cache = array();
@@ -111,13 +97,41 @@ function owc_workspace_get_role_data( $user_id ) {
 	return $cache[ $user_id ];
 }
 
+function owc_workspace_user_has_chronicle_role( $user_id ) {
+	$d = owc_workspace_get_role_data( $user_id );
+	return ! empty( $d['chronicle_roles'] );
+}
+
+function owc_workspace_user_has_coord_role( $user_id ) {
+	$d = owc_workspace_get_role_data( $user_id );
+	return ! empty( $d['coord_roles'] ) || ! empty( $d['exec_roles'] );
+}
+
 /**
- * Whether the user has at least one role matching any of the nine
- * concrete C&C tab patterns. Used to gate the C&C tab nav.
+ * Back-compat shim — deprecated. Use the new helpers above.
  */
 function owc_workspace_user_is_cc_eligible( $user_id ) {
-	$d = owc_workspace_get_role_data( $user_id );
-	return ! empty( $d['chronicle_roles'] ) || ! empty( $d['coord_roles'] ) || ! empty( $d['exec_roles'] );
+	return owc_workspace_user_has_chronicle_role( $user_id ) || owc_workspace_user_has_coord_role( $user_id );
+}
+
+/**
+ * SSO redirect URL builder.
+ */
+function owc_workspace_sso_link( $base, $path ) {
+	return $base . '/?auth=sso&redirect_uri=' . rawurlencode( '/' . ltrim( $path, '/' ) );
+}
+
+/**
+ * Build the Archivist Details URL for a list of role strings.
+ * Each role becomes one scope_roles[] entry on the destination page.
+ */
+function owc_workspace_archivist_details_url( array $role_paths ) {
+	$base = 'https://archivist.owbn.net';
+	$query = 'page=oat-reports';
+	foreach ( $role_paths as $role ) {
+		$query .= '&scope_roles%5B%5D=' . rawurlencode( $role );
+	}
+	return owc_workspace_sso_link( $base, 'wp-admin/admin.php?' . $query );
 }
 
 /**
@@ -128,8 +142,6 @@ function owc_workspace_enqueue_inline_styles() {
 	if ( $emitted ) return '';
 	$emitted = true;
 	return '<style id="owc-ws-styles">'
-		. '.owc-ws-section { margin-bottom: 24px; }'
-		. '.owc-ws-section h3 { font-size: 1.2em; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid rgba(128,128,128,0.3); }'
 		. '.owc-ws-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }'
 		. '.owc-ws-card { border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; padding: 16px; background: rgba(128,128,128,0.08); transition: box-shadow 0.15s; }'
 		. '.owc-ws-card:hover { box-shadow: 0 2px 8px rgba(128,128,128,0.2); }'
@@ -139,164 +151,189 @@ function owc_workspace_enqueue_inline_styles() {
 		. '.owc-ws-card .owc-ws-links a { text-decoration: none; color: var(--e-global-color-accent, #EA5B3A); }'
 		. '.owc-ws-card .owc-ws-links a:hover { text-decoration: underline; }'
 		. '.owc-ws-role-tag { display: inline-block; background: rgba(128,128,128,0.2); border-radius: 3px; padding: 1px 6px; font-size: 0.8em; opacity: 0.7; margin-left: 4px; }'
+		. '.owc-ws-top-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 16px; }'
+		. '@media (max-width: 720px) { .owc-ws-top-header { grid-template-columns: 1fr; } }'
 		. '</style>';
 }
 
 /**
- * Public API: render any combination of workspace sections for a user.
- *
- * @param int      $user_id
- * @param string[] $sections  Subset of: admin, my_stuff, chronicles, coord, exec.
- * @return string             Rendered HTML; empty if nothing to show.
+ * Persistent 3-card top header rendered above the tab nav.
+ * Shows Resources, Bylaws, Voting cards from owc_get_workspace_links().
  */
-function owc_render_workspace_sections( $user_id, array $sections ) {
-	$user_id = (int) $user_id;
-	if ( ! $user_id ) return '';
+function owc_render_workspace_top_header() {
+	$links  = owc_get_workspace_links();
+	$labels = array(
+		'resources' => __( 'Resources', 'owbn-core' ),
+		'bylaws'    => __( 'Bylaws', 'owbn-core' ),
+		'voting'    => __( 'Voting', 'owbn-core' ),
+	);
 
-	$out = owc_workspace_enqueue_inline_styles();
-
-	foreach ( $sections as $section ) {
-		switch ( $section ) {
-			case 'admin':
-			case 'my_stuff':
-				$out .= owc_workspace_render_admin_section( $section );
-				break;
-			case 'chronicles':
-				$out .= owc_workspace_render_chronicles_section( $user_id );
-				break;
-			case 'coord':
-				$out .= owc_workspace_render_coord_section( $user_id );
-				break;
-			case 'exec':
-				$out .= owc_workspace_render_exec_section( $user_id );
-				break;
-		}
-	}
-	return $out;
-}
-
-function owc_workspace_render_admin_section( $section_key ) {
-	$links = owc_get_workspace_links();
-	$cards = $links[ $section_key ] ?? array();
-	if ( empty( $cards ) ) return '';
-
-	$heading = ( 'admin' === $section_key ) ? __( 'Org Resources', 'owbn-core' ) : __( 'My Stuff', 'owbn-core' );
-
-	$out  = '<div class="owc-ws-section owc-ws-section--' . esc_attr( $section_key ) . '">';
-	$out .= '<h3>' . esc_html( $heading ) . '</h3>';
-	$out .= '<div class="owc-ws-grid">';
-	foreach ( $cards as $card ) {
-		$out .= '<div class="owc-ws-card"><h4>' . esc_html( $card['card_title'] ) . '</h4><ul class="owc-ws-links">';
-		foreach ( $card['links'] as $link ) {
+	$out  = owc_workspace_enqueue_inline_styles();
+	$out .= '<div class="owc-ws-top-header">';
+	foreach ( OWC_WORKSPACE_LINK_CATEGORIES as $cat ) {
+		$out .= '<div class="owc-ws-card"><h4>' . esc_html( $labels[ $cat ] ) . '</h4><ul class="owc-ws-links">';
+		foreach ( $links[ $cat ] as $link ) {
 			$out .= '<li><a href="' . esc_url( $link['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $link['label'] ) . '</a></li>';
 		}
 		$out .= '</ul></div>';
 	}
-	$out .= '</div></div>';
+	$out .= '</div>';
 	return $out;
 }
 
-function owc_workspace_render_chronicles_section( $user_id ) {
+/**
+ * Render one chronicle tile (used by the Chronicles tab tile grid).
+ */
+function owc_workspace_render_chronicle_tile( $slug, $user_id ) {
 	$d = owc_workspace_get_role_data( $user_id );
-	if ( empty( $d['chronicle_roles'] ) ) return '';
+	if ( empty( $d['chronicle_roles'][ $slug ] ) ) return '';
+
+	$types         = $d['chronicle_roles'][ $slug ];
+	$title         = $d['chron_titles'][ $slug ] ?? strtoupper( $slug );
+	$is_cm         = in_array( 'cm', $types, true );
+	$is_hst        = in_array( 'hst', $types, true );
+	$is_staff      = in_array( 'staff', $types, true );
+	$can_edit      = $is_hst || $is_cm || $is_staff;
+	$chron_post_id = $d['chron_ids'][ $slug ] ?? 0;
+
+	$role_paths = array_map(
+		function ( $t ) use ( $slug ) { return 'chronicle/' . $slug . '/' . $t; },
+		$types
+	);
 
 	$chronicles_url = 'https://chronicles.owbn.net';
 	$archivist_url  = 'https://archivist.owbn.net';
-	$council_url    = 'https://council.owbn.net';
-	$sso_link = function( $base, $path ) {
-		return $base . '/?auth=sso&redirect_uri=' . rawurlencode( '/' . ltrim( $path, '/' ) );
-	};
 
-	$out  = '<div class="owc-ws-section owc-ws-section--chronicles">';
-	$out .= '<h3>' . esc_html__( 'My Chronicles', 'owbn-core' ) . '</h3>';
-	$out .= '<div class="owc-ws-grid">';
-	foreach ( $d['chronicle_roles'] as $slug => $types ) {
-		$title         = $d['chron_titles'][ $slug ] ?? strtoupper( $slug );
-		$is_cm         = in_array( 'cm', $types, true );
-		$is_hst        = in_array( 'hst', $types, true );
-		$is_staff      = in_array( 'staff', $types, true );
-		$can_edit      = $is_hst || $is_cm || $is_staff;
-		$chron_post_id = $d['chron_ids'][ $slug ] ?? 0;
-
-		$out .= '<div class="owc-ws-card"><h4>' . esc_html( $title );
-		foreach ( array_map( 'strtoupper', $types ) as $rl ) {
-			$out .= '<span class="owc-ws-role-tag">' . esc_html( $rl ) . '</span>';
-		}
-		$out .= '</h4><ul class="owc-ws-links">';
-		$out .= '<li><a href="' . esc_url( $sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ) . '" target="_blank">' . esc_html__( 'View Chronicle', 'owbn-core' ) . '</a></li>';
-		if ( $can_edit && $chron_post_id ) {
-			$out .= '<li><a href="' . esc_url( $sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Chronicle', 'owbn-core' ) . '</a></li>';
-		}
-		if ( $can_edit ) {
-			$out .= '<li><a href="' . esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
-			$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Council Votes', 'owbn-core' ) . '</a></li>';
-		}
-		$out .= '</ul></div>';
+	$out  = '<div class="owc-ws-card"><h4>' . esc_html( $title );
+	foreach ( array_map( 'strtoupper', $types ) as $rl ) {
+		$out .= '<span class="owc-ws-role-tag">' . esc_html( $rl ) . '</span>';
 	}
-	$out .= '</div></div>';
+	$out .= '</h4><ul class="owc-ws-links">';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'chronicle-detail/?slug=' . $slug ) ) . '" target="_blank">' . esc_html__( 'View Chronicle', 'owbn-core' ) . '</a></li>';
+	if ( $can_edit && $chron_post_id ) {
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Chronicle', 'owbn-core' ) . '</a></li>';
+	}
+	$out .= '<li><a href="' . esc_url( owc_workspace_archivist_details_url( $role_paths ) ) . '" target="_blank">' . esc_html__( 'Archivist Details', 'owbn-core' ) . '</a></li>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
+	$out .= '</ul></div>';
 	return $out;
 }
 
-function owc_workspace_render_coord_section( $user_id ) {
+/**
+ * Render one coordinator/genre tile.
+ */
+function owc_workspace_render_coordinator_tile( $slug, $user_id ) {
 	$d = owc_workspace_get_role_data( $user_id );
-	if ( empty( $d['coord_roles'] ) ) return '';
+	if ( empty( $d['coord_roles'][ $slug ] ) ) return '';
+
+	$level         = $d['coord_roles'][ $slug ];
+	$title         = $d['coord_titles'][ $slug ] ?? ucfirst( $slug );
+	$level_label   = ( 'coordinator' === $level ) ? __( 'Coordinator', 'owbn-core' ) : __( 'Sub-Coordinator', 'owbn-core' );
+	$coord_post_id = $d['coord_ids'][ $slug ] ?? 0;
+	$role_paths    = array( 'coordinator/' . $slug . '/' . $level );
 
 	$archivist_url = 'https://archivist.owbn.net';
 	$council_url   = 'https://council.owbn.net';
-	$sso_link = function( $base, $path ) {
-		return $base . '/?auth=sso&redirect_uri=' . rawurlencode( '/' . ltrim( $path, '/' ) );
-	};
 
-	$out  = '<div class="owc-ws-section owc-ws-section--coord">';
-	$out .= '<h3>' . esc_html__( 'My Coord Roles', 'owbn-core' ) . '</h3>';
-	$out .= '<div class="owc-ws-grid">';
-	foreach ( $d['coord_roles'] as $genre => $level ) {
-		$title         = $d['coord_titles'][ $genre ] ?? ucfirst( $genre );
-		$level_label   = ( 'coordinator' === $level ) ? __( 'Coordinator', 'owbn-core' ) : __( 'Sub-Coordinator', 'owbn-core' );
-		$coord_post_id = $d['coord_ids'][ $genre ] ?? 0;
-
-		$out .= '<div class="owc-ws-card"><h4>' . esc_html( $title ) . '<span class="owc-ws-role-tag">' . esc_html( $level_label ) . '</span></h4><ul class="owc-ws-links">';
-		$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $genre ) ) . '" target="_blank">' . esc_html__( 'View Coordinator Page', 'owbn-core' ) . '</a></li>';
-		if ( $coord_post_id ) {
-			$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'wp-admin/post.php?post=' . $coord_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Coordinator Page', 'owbn-core' ) . '</a></li>';
-		}
-		$out .= '<li><a href="' . esc_url( $sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
-		if ( 'coordinator' === $level ) {
-			$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Council Votes', 'owbn-core' ) . '</a></li>';
-		}
-		$out .= '</ul></div>';
+	$out  = '<div class="owc-ws-card"><h4>' . esc_html( $title ) . '<span class="owc-ws-role-tag">' . esc_html( $level_label ) . '</span></h4><ul class="owc-ws-links">';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $council_url, 'coordinator-detail/?slug=' . $slug ) ) . '" target="_blank">' . esc_html__( 'View Coordinator Page', 'owbn-core' ) . '</a></li>';
+	if ( $coord_post_id ) {
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $council_url, 'wp-admin/post.php?post=' . $coord_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Coordinator Page', 'owbn-core' ) . '</a></li>';
 	}
-	$out .= '</div></div>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_archivist_details_url( $role_paths ) ) . '" target="_blank">' . esc_html__( 'Archivist Details', 'owbn-core' ) . '</a></li>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
+	$out .= '</ul></div>';
 	return $out;
 }
 
-function owc_workspace_render_exec_section( $user_id ) {
+/**
+ * Render one exec tile (HC, AHC, Membership Coord, etc.). Same shape as the
+ * coordinator tile so they can sit alongside each other in the Coordinators
+ * tab grid.
+ */
+function owc_workspace_render_exec_tile( $office, $user_id ) {
 	$d = owc_workspace_get_role_data( $user_id );
-	if ( empty( $d['exec_roles'] ) ) return '';
+	if ( empty( $d['exec_roles'][ $office ] ) ) return '';
+
+	$level        = $d['exec_roles'][ $office ];
+	$title        = $d['exec_titles'][ $office ] ?? ucfirst( str_replace( '-', ' ', $office ) );
+	$exec_post_id = $d['exec_ids'][ $office ] ?? 0;
+	$level_label  = ( 'coordinator' === $level ) ? __( 'Coordinator', 'owbn-core' ) : __( 'Staff', 'owbn-core' );
+	$role_paths   = array( 'exec/' . $office . '/' . $level );
 
 	$archivist_url = 'https://archivist.owbn.net';
 	$council_url   = 'https://council.owbn.net';
-	$sso_link = function( $base, $path ) {
-		return $base . '/?auth=sso&redirect_uri=' . rawurlencode( '/' . ltrim( $path, '/' ) );
-	};
 
-	$out  = '<div class="owc-ws-section owc-ws-section--exec">';
-	$out .= '<h3>' . esc_html__( 'Executive Roles', 'owbn-core' ) . '</h3>';
-	$out .= '<div class="owc-ws-grid">';
-	foreach ( $d['exec_roles'] as $office => $level ) {
-		$exec_title   = $d['exec_titles'][ $office ] ?? ucfirst( str_replace( '-', ' ', $office ) );
-		$exec_post_id = $d['exec_ids'][ $office ] ?? 0;
-		$level_label  = ( 'coordinator' === $level ) ? __( 'Coordinator', 'owbn-core' ) : __( 'Staff', 'owbn-core' );
-
-		$out .= '<div class="owc-ws-card"><h4>' . esc_html( $exec_title ) . '<span class="owc-ws-role-tag">' . esc_html( $level_label ) . '</span></h4><ul class="owc-ws-links">';
-		$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'coordinator-detail/?slug=' . $office ) ) . '" target="_blank">' . esc_html__( 'View Page', 'owbn-core' ) . '</a></li>';
-		if ( $exec_post_id ) {
-			$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'wp-admin/post.php?post=' . $exec_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Page', 'owbn-core' ) . '</a></li>';
-		}
-		$out .= '<li><a href="' . esc_url( $sso_link( $archivist_url, 'wp-admin/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Admin', 'owbn-core' ) . '</a></li>';
-		$out .= '<li><a href="' . esc_url( $sso_link( $council_url, 'voting-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Council Votes', 'owbn-core' ) . '</a></li>';
-		$out .= '</ul></div>';
+	$out  = '<div class="owc-ws-card"><h4>' . esc_html( $title ) . '<span class="owc-ws-role-tag">' . esc_html( $level_label ) . '</span></h4><ul class="owc-ws-links">';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $council_url, 'coordinator-detail/?slug=' . $office ) ) . '" target="_blank">' . esc_html__( 'View Page', 'owbn-core' ) . '</a></li>';
+	if ( $exec_post_id ) {
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $council_url, 'wp-admin/post.php?post=' . $exec_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Page', 'owbn-core' ) . '</a></li>';
 	}
-	$out .= '</div></div>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_archivist_details_url( $role_paths ) ) . '" target="_blank">' . esc_html__( 'Archivist Details', 'owbn-core' ) . '</a></li>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
+	$out .= '</ul></div>';
+	return $out;
+}
+
+/**
+ * Render the full Chronicles tab grid for a user.
+ */
+function owc_workspace_render_chronicles_grid( $user_id ) {
+	$d = owc_workspace_get_role_data( $user_id );
+	if ( empty( $d['chronicle_roles'] ) ) return '';
+
+	$out  = owc_workspace_enqueue_inline_styles();
+	$out .= '<div class="owc-ws-grid">';
+	foreach ( array_keys( $d['chronicle_roles'] ) as $slug ) {
+		$out .= owc_workspace_render_chronicle_tile( $slug, $user_id );
+	}
+	$out .= '</div>';
+	return $out;
+}
+
+/**
+ * Render the Coordinators tab grid (genre coords + exec offices in one grid).
+ */
+function owc_workspace_render_coordinators_grid( $user_id ) {
+	$d = owc_workspace_get_role_data( $user_id );
+	if ( empty( $d['coord_roles'] ) && empty( $d['exec_roles'] ) ) return '';
+
+	$out  = owc_workspace_enqueue_inline_styles();
+	$out .= '<div class="owc-ws-grid">';
+	foreach ( array_keys( $d['coord_roles'] ) as $slug ) {
+		$out .= owc_workspace_render_coordinator_tile( $slug, $user_id );
+	}
+	foreach ( array_keys( $d['exec_roles'] ) as $office ) {
+		$out .= owc_workspace_render_exec_tile( $office, $user_id );
+	}
+	$out .= '</div>';
+	return $out;
+}
+
+/**
+ * Back-compat shim for any caller still referencing the old API. Returns ''
+ * for the dropped 'admin' / 'my_stuff' sections; routes the rest to the new
+ * grid renderers. Safe to remove after one release.
+ */
+function owc_render_workspace_sections( $user_id, array $sections ) {
+	$user_id = (int) $user_id;
+	if ( ! $user_id ) return '';
+	$out = '';
+	foreach ( $sections as $section ) {
+		switch ( $section ) {
+			case 'chronicles':
+				$out .= owc_workspace_render_chronicles_grid( $user_id );
+				break;
+			case 'coord':
+			case 'exec':
+				// Old code split these; new code merges them into one grid.
+				static $coords_emitted = false;
+				if ( ! $coords_emitted ) {
+					$out .= owc_workspace_render_coordinators_grid( $user_id );
+					$coords_emitted = true;
+				}
+				break;
+		}
+	}
 	return $out;
 }

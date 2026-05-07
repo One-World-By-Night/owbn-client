@@ -1,7 +1,8 @@
 <?php
 /**
  * Workspace Links admin page — Web Coord / Admin Coord curate the link
- * cards that appear on /my-board/ Links tab.
+ * lists shown in the persistent top header (Resources / Bylaws / Voting)
+ * on /my-board/.
  *
  * Permission gate: owc_workspace_user_can_edit() (admin-bypass + ASC roles).
  */
@@ -19,7 +20,7 @@ add_action( 'admin_menu', function () {
 		$parent,
 		__( 'Workspace Links', 'owbn-core' ),
 		__( 'Workspace Links', 'owbn-core' ),
-		'read', // we permission-check manually with ASC inside the page
+		'read',
 		OWC_WORKSPACE_LINKS_MENU_SLUG,
 		'owc_workspace_links_render_page'
 	);
@@ -33,10 +34,12 @@ function owc_workspace_links_handle_save() {
 	}
 	check_admin_referer( OWC_WORKSPACE_LINKS_NONCE );
 
-	$posted = array(
-		'admin'    => isset( $_POST['admin'] )    && is_array( $_POST['admin'] )    ? wp_unslash( $_POST['admin'] )    : array(),
-		'my_stuff' => isset( $_POST['my_stuff'] ) && is_array( $_POST['my_stuff'] ) ? wp_unslash( $_POST['my_stuff'] ) : array(),
-	);
+	$posted = array();
+	foreach ( OWC_WORKSPACE_LINK_CATEGORIES as $cat ) {
+		$posted[ $cat ] = ( isset( $_POST[ $cat ] ) && is_array( $_POST[ $cat ] ) )
+			? wp_unslash( $_POST[ $cat ] )
+			: array();
+	}
 	owc_save_workspace_links( $posted );
 
 	$redirect = add_query_arg(
@@ -54,12 +57,17 @@ function owc_workspace_links_render_page() {
 		return;
 	}
 
-	$links = owc_get_workspace_links();
+	$links   = owc_get_workspace_links();
 	$updated = ! empty( $_GET['updated'] );
+	$labels  = array(
+		'resources' => __( 'Resources', 'owbn-core' ),
+		'bylaws'    => __( 'Bylaws', 'owbn-core' ),
+		'voting'    => __( 'Voting', 'owbn-core' ),
+	);
 	?>
 	<div class="wrap owc-workspace-links">
 		<h1><?php esc_html_e( 'Workspace Links', 'owbn-core' ); ?></h1>
-		<p class="description"><?php esc_html_e( 'These cards appear on the Links tab of /my-board/. Section A is shown to all logged-in users; Section B is the per-user "My Stuff" panel. URLs should use SSO redirect form (https://host/?auth=sso&redirect_uri=/path/).', 'owbn-core' ); ?></p>
+		<p class="description"><?php esc_html_e( 'These three cards appear in the persistent top header of /my-board/. URLs should use SSO redirect form (https://host/?auth=sso&redirect_uri=/path/).', 'owbn-core' ); ?></p>
 
 		<?php if ( $updated ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Workspace links saved.', 'owbn-core' ); ?></p></div>
@@ -69,11 +77,10 @@ function owc_workspace_links_render_page() {
 			<input type="hidden" name="action" value="owc_workspace_links_save" />
 			<?php wp_nonce_field( OWC_WORKSPACE_LINKS_NONCE ); ?>
 
-			<h2><?php esc_html_e( 'Section A — Org Resources (everyone)', 'owbn-core' ); ?></h2>
-			<?php owc_workspace_links_render_section_editor( 'admin', $links['admin'] ); ?>
-
-			<h2 style="margin-top:32px;"><?php esc_html_e( 'Section B — My Stuff (everyone, per-user contexts)', 'owbn-core' ); ?></h2>
-			<?php owc_workspace_links_render_section_editor( 'my_stuff', $links['my_stuff'] ); ?>
+			<?php foreach ( OWC_WORKSPACE_LINK_CATEGORIES as $cat ) : ?>
+				<h2 style="margin-top:24px;"><?php echo esc_html( $labels[ $cat ] ); ?></h2>
+				<?php owc_workspace_links_render_card_editor( $cat, $links[ $cat ] ); ?>
+			<?php endforeach; ?>
 
 			<p style="margin-top:24px;">
 				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save Workspace Links', 'owbn-core' ); ?></button>
@@ -84,39 +91,20 @@ function owc_workspace_links_render_page() {
 	<style>
 		.owc-ws-card-editor { border: 1px solid #c3c4c7; padding: 12px; margin-bottom: 12px; background: #fff; }
 		.owc-ws-card-editor input[type=text], .owc-ws-card-editor input[type=url] { width: 100%; }
-		.owc-ws-card-editor h3 { margin-top: 0; font-size: 1em; }
 		.owc-ws-link-row { display: grid; grid-template-columns: 1fr 2fr 80px; gap: 8px; margin-bottom: 6px; align-items: center; }
 		.owc-ws-link-row input { padding: 4px 8px; }
 		.owc-ws-card-actions { margin-top: 8px; }
-		.owc-ws-card-actions button, .owc-ws-section-actions button { margin-right: 6px; }
-		.owc-ws-section-actions { margin: 8px 0 16px; }
 	</style>
 
 	<script>
 	(function(){
-		function buildLinkRow(section, cardIdx, linkIdx, label, url) {
+		function buildLinkRow(category, linkIdx) {
 			var div = document.createElement('div');
 			div.className = 'owc-ws-link-row';
 			div.innerHTML =
-				'<input type="text" name="' + section + '[' + cardIdx + '][links][' + linkIdx + '][label]" value="' + (label||'') + '" placeholder="<?php echo esc_js( __( 'Link label', 'owbn-core' ) ); ?>" />' +
-				'<input type="url"  name="' + section + '[' + cardIdx + '][links][' + linkIdx + '][url]"   value="' + (url||'')   + '" placeholder="https://..." />' +
+				'<input type="text" name="' + category + '[' + linkIdx + '][label]" value="" placeholder="<?php echo esc_js( __( 'Link label', 'owbn-core' ) ); ?>" />' +
+				'<input type="url"  name="' + category + '[' + linkIdx + '][url]"   value="" placeholder="https://..." />' +
 				'<button type="button" class="button owc-ws-remove-link"><?php echo esc_js( __( 'Remove', 'owbn-core' ) ); ?></button>';
-			return div;
-		}
-
-		function buildCard(section, cardIdx) {
-			var div = document.createElement('div');
-			div.className = 'owc-ws-card-editor';
-			div.dataset.section = section;
-			div.dataset.cardIdx = cardIdx;
-			div.innerHTML =
-				'<h3><label><?php echo esc_js( __( 'Card title:', 'owbn-core' ) ); ?> ' +
-				'<input type="text" name="' + section + '[' + cardIdx + '][card_title]" value="" /></label></h3>' +
-				'<div class="owc-ws-links-list"></div>' +
-				'<div class="owc-ws-card-actions">' +
-					'<button type="button" class="button owc-ws-add-link"><?php echo esc_js( __( '+ Add link', 'owbn-core' ) ); ?></button>' +
-					'<button type="button" class="button owc-ws-remove-card"><?php echo esc_js( __( 'Remove card', 'owbn-core' ) ); ?></button>' +
-				'</div>';
 			return div;
 		}
 
@@ -125,27 +113,13 @@ function owc_workspace_links_render_page() {
 				e.preventDefault();
 				var card = e.target.closest('.owc-ws-card-editor');
 				var list = card.querySelector('.owc-ws-links-list');
-				var section = card.dataset.section;
-				var cardIdx = card.dataset.cardIdx;
+				var category = card.dataset.category;
 				var linkIdx = list.querySelectorAll('.owc-ws-link-row').length;
-				list.appendChild(buildLinkRow(section, cardIdx, linkIdx, '', ''));
+				list.appendChild(buildLinkRow(category, linkIdx));
 			}
 			if (e.target.classList.contains('owc-ws-remove-link')) {
 				e.preventDefault();
 				e.target.closest('.owc-ws-link-row').remove();
-			}
-			if (e.target.classList.contains('owc-ws-remove-card')) {
-				e.preventDefault();
-				if (confirm('<?php echo esc_js( __( 'Remove this card and all its links?', 'owbn-core' ) ); ?>')) {
-					e.target.closest('.owc-ws-card-editor').remove();
-				}
-			}
-			if (e.target.classList.contains('owc-ws-add-card')) {
-				e.preventDefault();
-				var section = e.target.dataset.section;
-				var container = document.querySelector('.owc-ws-section-cards[data-section="' + section + '"]');
-				var cardIdx = container.querySelectorAll('.owc-ws-card-editor').length;
-				container.appendChild(buildCard(section, cardIdx));
 			}
 		});
 	})();
@@ -153,42 +127,27 @@ function owc_workspace_links_render_page() {
 	<?php
 }
 
-function owc_workspace_links_render_section_editor( $section_key, array $cards ) {
+function owc_workspace_links_render_card_editor( $category, array $links ) {
 	?>
-	<div class="owc-ws-section-cards" data-section="<?php echo esc_attr( $section_key ); ?>">
-		<?php foreach ( $cards as $i => $card ) : ?>
-			<div class="owc-ws-card-editor" data-section="<?php echo esc_attr( $section_key ); ?>" data-card-idx="<?php echo (int) $i; ?>">
-				<h3>
-					<label><?php esc_html_e( 'Card title:', 'owbn-core' ); ?>
-						<input type="text"
-							name="<?php echo esc_attr( $section_key ); ?>[<?php echo (int) $i; ?>][card_title]"
-							value="<?php echo esc_attr( $card['card_title'] ?? '' ); ?>" />
-					</label>
-				</h3>
-				<div class="owc-ws-links-list">
-					<?php foreach ( ( $card['links'] ?? array() ) as $j => $link ) : ?>
-						<div class="owc-ws-link-row">
-							<input type="text"
-								name="<?php echo esc_attr( $section_key ); ?>[<?php echo (int) $i; ?>][links][<?php echo (int) $j; ?>][label]"
-								value="<?php echo esc_attr( $link['label'] ?? '' ); ?>"
-								placeholder="<?php esc_attr_e( 'Link label', 'owbn-core' ); ?>" />
-							<input type="url"
-								name="<?php echo esc_attr( $section_key ); ?>[<?php echo (int) $i; ?>][links][<?php echo (int) $j; ?>][url]"
-								value="<?php echo esc_attr( $link['url'] ?? '' ); ?>"
-								placeholder="https://..." />
-							<button type="button" class="button owc-ws-remove-link"><?php esc_html_e( 'Remove', 'owbn-core' ); ?></button>
-						</div>
-					<?php endforeach; ?>
+	<div class="owc-ws-card-editor" data-category="<?php echo esc_attr( $category ); ?>">
+		<div class="owc-ws-links-list">
+			<?php foreach ( $links as $j => $link ) : ?>
+				<div class="owc-ws-link-row">
+					<input type="text"
+						name="<?php echo esc_attr( $category ); ?>[<?php echo (int) $j; ?>][label]"
+						value="<?php echo esc_attr( $link['label'] ?? '' ); ?>"
+						placeholder="<?php esc_attr_e( 'Link label', 'owbn-core' ); ?>" />
+					<input type="url"
+						name="<?php echo esc_attr( $category ); ?>[<?php echo (int) $j; ?>][url]"
+						value="<?php echo esc_attr( $link['url'] ?? '' ); ?>"
+						placeholder="https://..." />
+					<button type="button" class="button owc-ws-remove-link"><?php esc_html_e( 'Remove', 'owbn-core' ); ?></button>
 				</div>
-				<div class="owc-ws-card-actions">
-					<button type="button" class="button owc-ws-add-link"><?php esc_html_e( '+ Add link', 'owbn-core' ); ?></button>
-					<button type="button" class="button owc-ws-remove-card"><?php esc_html_e( 'Remove card', 'owbn-core' ); ?></button>
-				</div>
-			</div>
-		<?php endforeach; ?>
-	</div>
-	<div class="owc-ws-section-actions">
-		<button type="button" class="button owc-ws-add-card" data-section="<?php echo esc_attr( $section_key ); ?>"><?php esc_html_e( '+ Add card', 'owbn-core' ); ?></button>
+			<?php endforeach; ?>
+		</div>
+		<div class="owc-ws-card-actions">
+			<button type="button" class="button owc-ws-add-link"><?php esc_html_e( '+ Add link', 'owbn-core' ); ?></button>
+		</div>
 	</div>
 	<?php
 }
