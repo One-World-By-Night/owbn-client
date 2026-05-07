@@ -261,8 +261,9 @@ function owc_workspace_render_exec_tile( $office, $user_id ) {
 	$level_label  = ( 'coordinator' === $level ) ? __( 'Coordinator', 'owbn-core' ) : __( 'Staff', 'owbn-core' );
 	$role_paths   = array( 'exec/' . $office . '/' . $level );
 
-	$archivist_url = 'https://archivist.owbn.net';
-	$council_url   = 'https://council.owbn.net';
+	$archivist_url  = 'https://archivist.owbn.net';
+	$council_url    = 'https://council.owbn.net';
+	$chronicles_url = 'https://chronicles.owbn.net';
 
 	$out  = '<div class="owc-ws-card"><h4>' . esc_html( $title ) . '<span class="owc-ws-role-tag">' . esc_html( $level_label ) . '</span></h4><ul class="owc-ws-links">';
 	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $council_url, 'coordinator-detail/?slug=' . $office ) ) . '" target="_blank">' . esc_html__( 'View Page', 'owbn-core' ) . '</a></li>';
@@ -271,6 +272,21 @@ function owc_workspace_render_exec_tile( $office, $user_id ) {
 	}
 	$out .= '<li><a href="' . esc_url( owc_workspace_archivist_details_url( $role_paths ) ) . '" target="_blank">' . esc_html__( 'Archivist Details', 'owbn-core' ) . '</a></li>';
 	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
+
+	// Membership coord owns the Territory Manager — surface those admin pages.
+	if ( 'membership' === $office ) {
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/edit.php?post_type=owbn_territory' ) ) . '" target="_blank">' . esc_html__( 'Territories (list / edit)', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/admin.php?page=owbn-territory-settings' ) ) . '" target="_blank">' . esc_html__( 'Territory Settings', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/admin.php?page=owbn-territory-import' ) ) . '" target="_blank">' . esc_html__( 'Territory Import / Export', 'owbn-core' ) . '</a></li>';
+	}
+
+	// Archivist coord owns the OAT Workspace — surface its three tabs.
+	if ( 'archivist' === $office ) {
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ) . '" target="_blank">' . esc_html__( 'OAT Inbox', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ) ) . '" target="_blank">' . esc_html__( 'OAT New Submission', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ) . '" target="_blank">' . esc_html__( 'OAT Registry', 'owbn-core' ) . '</a></li>';
+	}
+
 	$out .= '</ul></div>';
 	return $out;
 }
