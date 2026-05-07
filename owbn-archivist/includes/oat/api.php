@@ -1281,6 +1281,7 @@ function owc_oat_resolve_step_role( $entry, $step_config ) {
 function owc_oat_is_archivist_oversight( $user_roles ) {
     $oversight_paths = apply_filters( 'oat_archivist_oversight_paths', array(
         'exec/archivist/coordinator',
+        'exec/archivist/staff',
     ) );
     foreach ( $oversight_paths as $path ) {
         if ( in_array( strtolower( $path ), $user_roles, true ) ) {
@@ -1306,6 +1307,7 @@ function owc_oat_is_super_user( $user_id ) {
     $roles = owc_oat_get_user_asc_roles( $user_id );
     $super_roles = array(
         'exec/archivist/coordinator',
+        'exec/archivist/staff',
         'exec/web/coordinator',
         'exec/admin/coordinator',
     );
@@ -1320,7 +1322,7 @@ function owc_oat_is_super_user( $user_id ) {
 /**
  * Check if a user can self-approve their own fast-tracked entries.
  *
- * Only WP Admin and exec/archivist/coordinator can self-approve.
+ * Only WP Admin, exec/archivist/coordinator, and exec/archivist/staff can self-approve.
  * exec/web and exec/admin can fast-track but NOT self-approve.
  *
  * @param int $user_id WordPress user ID.
@@ -1332,7 +1334,8 @@ function owc_oat_can_self_approve( $user_id ) {
         return true;
     }
     $roles = owc_oat_get_user_asc_roles( $user_id );
-    return in_array( 'exec/archivist/coordinator', $roles, true );
+    return in_array( 'exec/archivist/coordinator', $roles, true )
+        || in_array( 'exec/archivist/staff', $roles, true );
 }
 
 /**

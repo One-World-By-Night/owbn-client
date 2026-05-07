@@ -56,7 +56,7 @@ function owc_oat_reports_user_scope() {
     $is_global  = false;
 
     foreach ( $roles as $role ) {
-        if ( preg_match( '#^exec/archivist/coordinator$#', $role ) ) {
+        if ( preg_match( '#^exec/archivist/(coordinator|staff)$#', $role ) ) {
             $is_global = true;
             break;
         }
