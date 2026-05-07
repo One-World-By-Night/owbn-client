@@ -23,6 +23,9 @@ require_once __DIR__ . '/accessschema/init.php';
 // ── Player ID ───────────────────────────────────────────────────────────────
 require_once __DIR__ . '/player-id/init.php';
 
+// ── Email lock (satellite sites) ────────────────────────────────────────────
+require_once __DIR__ . '/email-lock/email-lock.php';
+
 // ── User shortcodes ─────────────────────────────────────────────────────────
 require_once __DIR__ . '/shortcodes.php';
 
