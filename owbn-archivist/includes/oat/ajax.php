@@ -802,6 +802,22 @@ function owc_cchub_ajax_get_entry() {
         wp_send_json_error( $data->get_error_message() );
     }
 
+    // Build modal HTML server-side and translate it via TP for the requested
+    // language. The frontend reads `data.html` directly so the modal mirrors
+    // whatever language the page is currently showing. Falls back to the raw
+    // data fields for any caller that hasn't been updated yet.
+    $lang_slug   = isset( $_REQUEST['lang'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['lang'] ) ) : '';
+    $lang_prefix = $lang_slug ? '/' . $lang_slug : '';
+
+    if ( function_exists( 'owc_cchub_render_entry_html' ) ) {
+        $html = owc_cchub_render_entry_html( $data, $lang_prefix );
+        if ( function_exists( 'owc_cchub_translate_html' ) && function_exists( 'owc_oat_resolve_trp_language' ) ) {
+            $target_locale = owc_oat_resolve_trp_language( $lang_slug );
+            $html = owc_cchub_translate_html( $html, $target_locale );
+        }
+        $data['html'] = $html;
+    }
+
     wp_send_json_success( $data );
 }
 

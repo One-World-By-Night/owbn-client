@@ -2206,3 +2206,139 @@ function owc_oat_get_cchub_entry( $entry_id ) {
 
     return owc_oat_request( 'cchub/entry/' . (int) $entry_id );
 }
+
+/**
+ * Resolve a URL language slug (e.g. 'pt') to a TranslatePress locale (e.g. 'pt_BR').
+ * Returns the default locale if the slug is empty or doesn't match.
+ *
+ * @param string $slug URL slug like 'en' or 'pt'.
+ * @return string Locale like 'en_US' or 'pt_BR'.
+ */
+function owc_oat_resolve_trp_language( $slug ) {
+    if ( ! class_exists( 'TRP_Translate_Press' ) ) {
+        return '';
+    }
+    $trp      = TRP_Translate_Press::get_trp_instance();
+    $settings = $trp->get_component( 'settings' )->get_settings();
+    $default  = $settings['default-language'] ?? 'en_US';
+    if ( empty( $slug ) ) {
+        return $default;
+    }
+    $url_slugs = $settings['url-slugs'] ?? array();
+    foreach ( $url_slugs as $locale => $s ) {
+        if ( strtolower( $s ) === strtolower( $slug ) ) {
+            return $locale;
+        }
+    }
+    return $default;
+}
+
+/**
+ * Build the cchub modal entry HTML server-side. Replaces the JS-side
+ * string concat so we can run the result through TranslatePress.
+ *
+ * @param array  $d           Entry data from owc_oat_get_cchub_entry().
+ * @param string $lang_prefix URL prefix like '/pt' or '' for default language.
+ * @return string HTML.
+ */
+function owc_cchub_render_entry_html( $d, $lang_prefix = '' ) {
+    if ( ! is_array( $d ) ) return '';
+
+    $h  = '<h2>' . esc_html( $d['content_name'] ?? '' ) . '</h2>';
+    $h .= '<table style="width:100%;border-collapse:collapse;margin:12px 0;">';
+    if ( ! empty( $d['content_type'] ) ) {
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;width:150px;">' . esc_html__( 'Category', 'owbn-archivist' ) . '</td><td>' . esc_html( $d['content_type'] ) . '</td></tr>';
+    }
+    if ( ! empty( $d['blood_magic_category'] ) ) {
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'Tradition', 'owbn-archivist' ) . '</td><td>' . esc_html( $d['blood_magic_category'] ) . '</td></tr>';
+    }
+    if ( ! empty( $d['xp_cost'] ) ) {
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'XP Cost', 'owbn-archivist' ) . '</td><td>' . esc_html( $d['xp_cost'] ) . '</td></tr>';
+    }
+    if ( ! empty( $d['coordinator_genre'] ) ) {
+        $coord_url = $lang_prefix . '/coordinator-detail/?slug=' . rawurlencode( $d['coordinator_genre'] );
+        $coord_lbl = $d['coordinator_title'] ?: $d['coordinator_genre'];
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'Coordinator', 'owbn-archivist' ) . '</td><td><a href="' . esc_url( $coord_url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $coord_lbl ) . ' &#x29C9;</a></td></tr>';
+    }
+    if ( ! empty( $d['chronicle_slug'] ) ) {
+        $chron_url = $lang_prefix . '/chronicle-detail/?slug=' . rawurlencode( $d['chronicle_slug'] );
+        $chron_lbl = $d['chronicle_title'] ?: $d['chronicle_slug'];
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'Source Chronicle', 'owbn-archivist' ) . '</td><td><a href="' . esc_url( $chron_url ) . '" target="_blank" style="text-decoration:underline;">' . esc_html( $chron_lbl ) . ' &#x29C9;</a></td></tr>';
+    }
+    if ( ! empty( $d['source_hst'] ) ) {
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'Source HST', 'owbn-archivist' ) . '</td><td>' . esc_html( $d['source_hst'] ) . '</td></tr>';
+    }
+    if ( ! empty( $d['archival_date'] ) ) {
+        $h .= '<tr><td style="padding:3px 8px;font-weight:bold;">' . esc_html__( 'Archival Date', 'owbn-archivist' ) . '</td><td>' . esc_html( $d['archival_date'] ) . '</td></tr>';
+    }
+    $h .= '</table>';
+
+    if ( ! empty( $d['discipline_requirements'] ) ) {
+        $reqs = json_decode( $d['discipline_requirements'], true );
+        if ( is_array( $reqs ) && ! empty( $reqs ) ) {
+            $h .= '<h4>' . esc_html__( 'Discipline Requirements', 'owbn-archivist' ) . '</h4>';
+            $h .= '<table style="width:100%;border-collapse:collapse;">';
+            $h .= '<tr><th style="text-align:left;padding:3px 8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Discipline', 'owbn-archivist' ) . '</th><th style="text-align:center;padding:3px 8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Level', 'owbn-archivist' ) . '</th></tr>';
+            foreach ( $reqs as $r ) {
+                $h .= '<tr><td style="padding:3px 8px;">' . esc_html( $r['name'] ?? '' ) . '</td><td style="text-align:center;padding:3px 8px;">' . esc_html( $r['level'] ?? '' ) . '</td></tr>';
+            }
+            $h .= '</table>';
+        }
+    }
+
+    if ( ! empty( $d['teachable_abilities'] ) ) {
+        $ta = json_decode( $d['teachable_abilities'], true );
+        if ( is_array( $ta ) && ! empty( $ta ) ) {
+            $h .= '<p><strong>' . esc_html__( 'Teachable Abilities:', 'owbn-archivist' ) . '</strong> ' . esc_html( implode( ', ', $ta ) ) . '</p>';
+        }
+    }
+
+    $nl2br_block = function ( $str ) {
+        if ( $str === '' ) return '';
+        if ( preg_match( '/<(p|div|br|ul|ol|h[1-6])\b/i', $str ) ) return $str;
+        return nl2br( $str );
+    };
+
+    if ( ! empty( $d['met_rules'] ) ) {
+        $h .= '<h4>' . esc_html__( 'MET Mechanics', 'owbn-archivist' ) . '</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' . wp_kses_post( $nl2br_block( $d['met_rules'] ) ) . '</div>';
+    }
+    if ( ! empty( $d['summary'] ) ) {
+        $h .= '<h4>' . esc_html__( 'Summary', 'owbn-archivist' ) . '</h4><div style="padding:8px;background:#f9f9f9;border:1px solid #eee;border-radius:4px;">' . wp_kses_post( $nl2br_block( $d['summary'] ) ) . '</div>';
+    }
+
+    return $h;
+}
+
+/**
+ * Run a snippet of HTML through TranslatePress for the given target locale.
+ * No-op if TP is unavailable or target locale equals the default.
+ *
+ * @param string $html
+ * @param string $target_locale e.g. 'pt_BR'.
+ * @return string Possibly translated HTML.
+ */
+function owc_cchub_translate_html( $html, $target_locale ) {
+    if ( ! class_exists( 'TRP_Translate_Press' ) || empty( $target_locale ) ) {
+        return $html;
+    }
+    $trp      = TRP_Translate_Press::get_trp_instance();
+    $settings = $trp->get_component( 'settings' )->get_settings();
+    $default  = $settings['default-language'] ?? 'en_US';
+    if ( $target_locale === $default ) {
+        return $html;
+    }
+    $renderer = $trp->get_component( 'translation_render' );
+    if ( ! is_object( $renderer ) || ! method_exists( $renderer, 'translate_page' ) ) {
+        return $html;
+    }
+    global $TRP_LANGUAGE;
+    $prev = $TRP_LANGUAGE;
+    $TRP_LANGUAGE = $target_locale;
+    try {
+        $out = $renderer->translate_page( $html );
+    } catch ( \Throwable $e ) {
+        $out = $html;
+    }
+    $TRP_LANGUAGE = $prev;
+    return $out;
+}

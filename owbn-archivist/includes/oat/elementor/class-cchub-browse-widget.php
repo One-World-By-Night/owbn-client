@@ -179,6 +179,13 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 					return str.replace(/\n/g, '<br>');
 				}
 
+				// Detect current language slug from URL path (e.g. '/pt/...' → 'pt').
+				// Empty for the default language.
+				function currentLangSlug() {
+					var m = window.location.pathname.match(/^\/([a-z]{2}(?:-[a-z]{2})?)\//i);
+					return m ? m[1] : '';
+				}
+
 				function openModal(entryId) {
 					modalContent.innerHTML = '<p style="text-align:center;">Loading...</p>';
 					overlay.style.display = '';
@@ -196,6 +203,16 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 						var resp = JSON.parse(xhr.responseText);
 						if (!resp.success) { modalContent.innerHTML = '<p>Entry not found.</p>'; return; }
 						var d = resp.data;
+
+						// Server now returns pre-translated HTML in d.html. Use it directly
+						// so the modal matches the page's current language.
+						if (d && typeof d.html === 'string' && d.html.length) {
+							modalContent.innerHTML = d.html;
+							return;
+						}
+
+						// Legacy fallback: build HTML client-side from raw fields. Only fires
+						// against an older server that hasn't been updated yet.
 						var html = '<h2>' + (d.content_name||'') + '</h2>';
 						html += '<table style="width:100%;border-collapse:collapse;margin:12px 0;">';
 						if (d.content_type) html += '<tr><td style="padding:3px 8px;font-weight:bold;width:150px;">Category</td><td>' + d.content_type + '</td></tr>';
@@ -236,7 +253,7 @@ class OWC_CCHub_Browse_Widget extends Widget_Base {
 
 						modalContent.innerHTML = html;
 					};
-					xhr.send('action=owc_cchub_get_entry&nonce=' + nonce + '&entry_id=' + entryId);
+					xhr.send('action=owc_cchub_get_entry&nonce=' + nonce + '&entry_id=' + entryId + '&lang=' + encodeURIComponent(currentLangSlug()));
 				}
 
 				overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.style.display = 'none'; });
