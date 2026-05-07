@@ -178,14 +178,16 @@ $match_holder = function ( $cm_name, $cm_email, array $holders ) use ( $norm_nam
 };
 
 $color_bg = array(
-    'green'  => '',         // no tint — white is fine for matched rows
-    'yellow' => '#fff3cd',
-    'red'    => '#f8d7da',
+    'green'   => '',         // no tint — white is fine for matched rows
+    'yellow'  => '#fff3cd',
+    'red'     => '#f8d7da',
+    'ignored' => '#eef0f2',  // grey for dismissed
 );
 $color_pill = array(
-    'green'  => '#e6f4ea',
-    'yellow' => '#fff3cd',
-    'red'    => '#f8d7da',
+    'green'   => '#e6f4ea',
+    'yellow'  => '#fff3cd',
+    'red'     => '#f8d7da',
+    'ignored' => '#dcdfe2',
 );
 
 // Only link to wp-admin user edits when we're on the local host (chronicles/council)
@@ -201,7 +203,7 @@ $user_link = function ( $user_id, $label, $allow ) {
 };
 
 // Tallies
-$tally = array( 'green' => 0, 'yellow' => 0, 'red' => 0 );
+$tally = array( 'green' => 0, 'yellow' => 0, 'red' => 0, 'ignored' => 0 );
 
 // Sort rows. Boolean columns (probationary/satellite) tiebreak by title asc so
 // rows within each group stay alphabetical.
@@ -238,6 +240,13 @@ $client_id = owc_get_client_id();
 $page_slug = $client_id . '-owc-reports';
 $base_args = array( 'page' => $page_slug, 'tab' => 'chronicle-staff' );
 
+// Sub-tab: chronicle (default) | user
+$subtab = ( isset( $_GET['subtab'] ) && $_GET['subtab'] === 'user' ) ? 'user' : 'chronicle';
+
+// Dismissed (slug:user_id) pairs — admin can dismiss known-OK CM mismatches.
+$ignored_pairs = get_option( 'owc_cm_match_ignored', array() );
+if ( ! is_array( $ignored_pairs ) ) $ignored_pairs = array();
+
 // Helper: build a sortable header link that toggles order when the active column is re-clicked.
 $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active, $f_status, $base_args ) {
     $is_active = ( $f_orderby === $column );
@@ -273,7 +282,39 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
 .owc-staff-filters { display: flex; gap: 12px; align-items: flex-end; margin: 12px 0; padding: 10px; background: #f6f7f7; border: 1px solid #dcdcde; }
 .owc-staff-filters label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; color: #50575e; }
 .owc-staff-filters select { min-width: 140px; }
+.owc-substab-nav { display: flex; gap: 4px; border-bottom: 1px solid #c3c4c7; margin: 12px 0 0; }
+.owc-substab-nav a { padding: 8px 14px; border: 1px solid #c3c4c7; border-bottom: none; background: #f6f7f7; text-decoration: none; color: #1d2327; font-weight: 600; border-radius: 4px 4px 0 0; position: relative; top: 1px; }
+.owc-substab-nav a.active { background: #fff; border-bottom: 1px solid #fff; }
+.owc-bulk-toolbar { display: flex; gap: 8px; align-items: center; margin: 12px 0; padding: 8px 10px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 3px; }
+.owc-bulk-toolbar .owc-bulk-count { color: #50575e; font-size: 12px; }
+.owc-bulk-toolbar button[disabled] { opacity: 0.5; cursor: not-allowed; }
+.owc-staff-report .owc-cb-cell { width: 28px; text-align: center; }
 </style>
+
+<?php
+// Sub-tab nav
+$subtab_chron_url = add_query_arg( array_merge( $base_args, array(
+    'active'  => $f_active,
+    'status'  => $f_status,
+    'orderby' => $f_orderby,
+    'order'   => $f_order,
+    'subtab'  => 'chronicle',
+) ), admin_url( 'admin.php' ) );
+$subtab_user_url = add_query_arg( array_merge( $base_args, array(
+    'subtab'  => 'user',
+) ), admin_url( 'admin.php' ) );
+?>
+<nav class="owc-substab-nav">
+    <a href="<?php echo esc_url( $subtab_chron_url ); ?>" class="<?php echo $subtab === 'chronicle' ? 'active' : ''; ?>"><?php esc_html_e( 'By Chronicle', 'owbn-core' ); ?></a>
+    <a href="<?php echo esc_url( $subtab_user_url ); ?>" class="<?php echo $subtab === 'user' ? 'active' : ''; ?>"><?php esc_html_e( 'By User', 'owbn-core' ); ?></a>
+</nav>
+
+<?php
+if ( $subtab === 'user' ) {
+    include __DIR__ . '/tab-chronicle-staff-by-user.php';
+    return;
+}
+?>
 
 <p><?php esc_html_e( 'Each row shows a chronicle and its HST/CM staff. The CM role cell reflects who currently holds chronicle/{slug}/cm in AccessSchema.', 'owbn-core' ); ?></p>
 
@@ -323,8 +364,22 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
     <?php return; ?>
 <?php endif; ?>
 
+<?php
+$can_bulk = $is_admin && $is_local_host;
+if ( $can_bulk ) :
+?>
+<div class="owc-bulk-toolbar" id="owc-chron-bulk-toolbar">
+    <strong><?php esc_html_e( 'Bulk:', 'owbn-core' ); ?></strong>
+    <button type="button" class="button" id="owc-bulk-confirm-chron" disabled><?php esc_html_e( 'Confirm match', 'owbn-core' ); ?></button>
+    <button type="button" class="button" id="owc-bulk-ignore-chron" disabled><?php esc_html_e( 'Ignore (dismiss)', 'owbn-core' ); ?></button>
+    <span class="owc-bulk-count">0 <?php esc_html_e( 'selected', 'owbn-core' ); ?></span>
+    <span class="owc-bulk-result" style="margin-left:auto;"></span>
+</div>
+<?php endif; ?>
+
 <table class="owc-staff-report">
     <colgroup>
+        <?php if ( $can_bulk ) : ?><col style="width:28px;"><?php endif; ?>
         <col class="owc-col-chron">
         <col class="owc-col-name">
         <col class="owc-col-email">
@@ -336,6 +391,9 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
     </colgroup>
     <thead>
     <tr>
+        <?php if ( $can_bulk ) : ?>
+        <th class="owc-cb-cell"><input type="checkbox" id="owc-cb-all-chron" title="<?php esc_attr_e( 'Select all', 'owbn-core' ); ?>"></th>
+        <?php endif; ?>
         <th><?php echo $sort_link( 'title', __( 'Chronicle', 'owbn-core' ) ); ?></th>
         <th><?php echo $sort_link( 'hst_name', __( 'HST', 'owbn-core' ) ); ?></th>
         <th><?php esc_html_e( 'HST Email', 'owbn-core' ); ?></th>
@@ -374,20 +432,53 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
 
         $cm_uid  = isset( $cm_info['user'] ) && is_numeric( $cm_info['user'] ) ? (int) $cm_info['user'] : 0;
         $cm_name = $cm_info['display_name'] ?? '';
-        $cm_mail = $cm_info['actual_email'] ?? '';
+        // Locked {slug}-cm@owbn.net for display; resolved real email for matching.
+        $cm_mail_display = $cm_info['actual_email'] ?? '';
+        $cm_user = $cm_uid ? get_userdata( $cm_uid ) : null;
+        $cm_mail = ( $cm_user && ! empty( $cm_user->user_email ) )
+            ? $cm_user->user_email
+            : $cm_mail_display;
 
         $holders = $holders_map[ 'chronicle/' . $cm_slug . '/cm' ] ?? array();
 
         $color = 'red'; $note = '—'; $matched_uid = 0;
         if ( $is_admin ) {
             list( $color, $note, $matched_uid ) = $match_holder( $cm_name, $cm_mail, $holders );
+
+            // Apply dismissals: a (slug, holder_uid) pair flagged as ignored is
+            // visually suppressed (treated as ignored, not counted as red).
+            if ( $color !== 'green' && count( $holders ) === 1 ) {
+                $h0 = (int) ( $holders[0]['user_id'] ?? 0 );
+                if ( $h0 && isset( $ignored_pairs[ $cm_slug . ':' . $h0 ] ) ) {
+                    $color = 'ignored';
+                    $note  = __( 'ignored', 'owbn-core' );
+                    $matched_uid = $h0;
+                }
+            }
+            if ( ! isset( $tally[ $color ] ) ) $tally[ $color ] = 0;
             $tally[ $color ]++;
         }
         $row_bg = $is_admin ? ( $color_bg[ $color ] ?? '' ) : '';
 
+        // Bulk-eligible rows: exactly one holder, status not green/ignored, on local host.
+        $bulk_eligible = $can_bulk
+            && ( 'green' !== $color ) && ( 'ignored' !== $color )
+            && ( count( $holders ) === 1 )
+            && ( $cm_slug === $slug );
+        $bulk_uid = $bulk_eligible ? (int) ( $holders[0]['user_id'] ?? 0 ) : 0;
+
         $detail_url = home_url( '/chronicle-detail/?slug=' . rawurlencode( $slug ) );
         ?>
         <tr<?php echo $row_bg ? ' style="background:' . esc_attr( $row_bg ) . ';"' : ''; ?>>
+            <?php if ( $can_bulk ) : ?>
+            <td class="owc-cb-cell">
+                <?php if ( $bulk_eligible && $bulk_uid ) : ?>
+                <input type="checkbox" class="owc-cb-chron"
+                    data-slug="<?php echo esc_attr( $slug ); ?>"
+                    data-user="<?php echo esc_attr( $bulk_uid ); ?>">
+                <?php endif; ?>
+            </td>
+            <?php endif; ?>
             <td>
                 <a href="<?php echo esc_url( $detail_url ); ?>"><?php echo esc_html( $title ); ?></a>
                 <span style="color:#50575e;">(<code><?php echo esc_html( $slug ); ?></code>)</span>
@@ -398,7 +489,7 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
                 <?php echo $user_link( $cm_uid, $cm_name, $allow_user_links ); ?>
                 <?php if ( $cm_note ) : ?><br><small><?php echo esc_html( $cm_note ); ?></small><?php endif; ?>
             </td>
-            <td><?php echo esc_html( $cm_mail ); ?></td>
+            <td><?php echo esc_html( $cm_mail_display ); ?></td>
             <td class="owc-flag-cell"><?php echo $r['probationary'] ? '✓' : '—'; ?></td>
             <td class="owc-flag-cell"><?php echo $r['satellite'] ? '✓' : '—'; ?></td>
             <?php if ( $is_admin ) : ?>
@@ -445,6 +536,8 @@ $sort_link = function ( $column, $label ) use ( $f_orderby, $f_order, $f_active,
 <?php if ( $is_admin ) : ?>
 <script type="text/javascript">
 jQuery(function($){
+    var bulkNonce = '<?php echo esc_js( wp_create_nonce( 'owc_cm_bulk' ) ); ?>';
+
     $('.owc-confirm-cm').on('click', function(){
         var $btn = $(this);
         var $result = $btn.siblings('.owc-confirm-result');
@@ -458,7 +551,6 @@ jQuery(function($){
         }, function(response){
             if (response.success) {
                 $result.css('color','#2e7d32').text('✓ ' + (response.data.message || 'saved'));
-                // Flip row to white.
                 $btn.closest('tr').css('background','');
             } else {
                 $result.css('color','#d63638').text(response.data || 'Failed');
@@ -469,11 +561,61 @@ jQuery(function($){
             $btn.prop('disabled', false);
         });
     });
+
+    // Bulk selection — By Chronicle
+    function refreshBulkChron(){
+        var n = $('.owc-cb-chron:checked').length;
+        $('#owc-chron-bulk-toolbar .owc-bulk-count').text(n + ' <?php echo esc_js( __( 'selected', 'owbn-core' ) ); ?>');
+        $('#owc-bulk-confirm-chron, #owc-bulk-ignore-chron').prop('disabled', n === 0);
+    }
+    $('#owc-cb-all-chron').on('change', function(){
+        $('.owc-cb-chron').prop('checked', $(this).is(':checked'));
+        refreshBulkChron();
+    });
+    $(document).on('change', '.owc-cb-chron', refreshBulkChron);
+
+    function collectChronPairs(){
+        return $('.owc-cb-chron:checked').map(function(){
+            return { slug: $(this).data('slug'), user: $(this).data('user') };
+        }).get();
+    }
+
+    function bulkPost(action, pairs, $msg){
+        $msg.css('color','#50575e').text('<?php echo esc_js( __( 'Working...', 'owbn-core' ) ); ?>');
+        $.post(ajaxurl, {
+            action: action,
+            pairs: JSON.stringify(pairs),
+            nonce: bulkNonce
+        }, function(response){
+            if (response.success) {
+                $msg.css('color','#2e7d32').text('✓ ' + (response.data.message || 'done'));
+                setTimeout(function(){ window.location.reload(); }, 800);
+            } else {
+                $msg.css('color','#d63638').text(response.data || 'Failed');
+            }
+        }).fail(function(){
+            $msg.css('color','#d63638').text('Request failed');
+        });
+    }
+
+    $('#owc-bulk-confirm-chron').on('click', function(){
+        var pairs = collectChronPairs();
+        if (!pairs.length) return;
+        bulkPost('owc_bulk_confirm_cm_match', pairs, $('#owc-chron-bulk-toolbar .owc-bulk-result'));
+    });
+    $('#owc-bulk-ignore-chron').on('click', function(){
+        var pairs = collectChronPairs();
+        if (!pairs.length) return;
+        bulkPost('owc_bulk_ignore_cm_match', pairs, $('#owc-chron-bulk-toolbar .owc-bulk-result'));
+    });
 });
 </script>
 <div class="owc-staff-summary">
     <span class="pill" style="background:<?php echo esc_attr( $color_pill['green'] ); ?>;"><?php echo esc_html( sprintf( __( 'Matched: %d', 'owbn-core' ), $tally['green'] ) ); ?></span>
     <span class="pill" style="background:<?php echo esc_attr( $color_bg['yellow'] ); ?>;"><?php echo esc_html( sprintf( __( 'Fuzzy: %d', 'owbn-core' ), $tally['yellow'] ) ); ?></span>
     <span class="pill" style="background:<?php echo esc_attr( $color_bg['red'] ); ?>;"><?php echo esc_html( sprintf( __( 'Problems: %d', 'owbn-core' ), $tally['red'] ) ); ?></span>
+    <?php if ( $tally['ignored'] > 0 ) : ?>
+    <span class="pill" style="background:<?php echo esc_attr( $color_bg['ignored'] ); ?>;"><?php echo esc_html( sprintf( __( 'Ignored: %d', 'owbn-core' ), $tally['ignored'] ) ); ?></span>
+    <?php endif; ?>
 </div>
 <?php endif; ?>
