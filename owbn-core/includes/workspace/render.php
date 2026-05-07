@@ -280,11 +280,17 @@ function owc_workspace_render_exec_tile( $office, $user_id ) {
 		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/admin.php?page=owbn-territory-import' ) ) . '" target="_blank">' . esc_html__( 'Territory Import / Export', 'owbn-core' ) . '</a></li>';
 	}
 
-	// Archivist coord owns the OAT Workspace — surface its three tabs.
+	// Archivist coord — surface the full Archivist admin menu.
 	if ( 'archivist' === $office ) {
-		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ) . '" target="_blank">' . esc_html__( 'OAT Inbox', 'owbn-core' ) . '</a></li>';
-		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ) ) . '" target="_blank">' . esc_html__( 'OAT New Submission', 'owbn-core' ) . '</a></li>';
-		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ) . '" target="_blank">' . esc_html__( 'OAT Registry', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=inbox' ) ) . '" target="_blank">' . esc_html__( 'Inbox', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=submit' ) ) . '" target="_blank">' . esc_html__( 'New Submission', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-workspace&tab=registry' ) ) . '" target="_blank">' . esc_html__( 'Registry', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=oat-entries' ) ) . '" target="_blank">' . esc_html__( 'All Entries', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-reports' ) ) . '" target="_blank">' . esc_html__( 'Reports', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=oat-reports' ) ) . '" target="_blank">' . esc_html__( 'Details', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=oat-settings' ) ) . '" target="_blank">' . esc_html__( 'Settings', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=oat-toolbox' ) ) . '" target="_blank">' . esc_html__( 'Toolbox', 'owbn-core' ) . '</a></li>';
+		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=oat-submission-rules' ) ) . '" target="_blank">' . esc_html__( 'Rules', 'owbn-core' ) . '</a></li>';
 	}
 
 	$out .= '</ul></div>';
