@@ -63,6 +63,8 @@ function owc_asc_cache_get( $user_id ) {
  * @param array $roles   Roles array to cache.
  */
 function owc_asc_cache_set( $user_id, array $roles ) {
+	// Let clients augment cached roles (e.g. role aliasing) before storage.
+	$roles = array_values( (array) apply_filters( 'owc_asc_cache_roles', $roles, $user_id ) );
 	update_user_meta( $user_id, OWC_ASC_CACHE_KEY, $roles );
 	update_user_meta( $user_id, OWC_ASC_CACHE_TS_KEY, time() );
 }
