@@ -1928,7 +1928,7 @@ function owc_oat_registry_search( $q ) {
  * @param int $character_id
  * @return array|WP_Error
  */
-function owc_oat_get_character_registry( $character_id ) {
+function owc_oat_get_character_registry( $character_id, $show_all = false ) {
     if ( owc_oat_is_local() ) {
         $character = OAT_Character::find( $character_id );
         if ( ! $character ) {
@@ -1938,14 +1938,37 @@ function owc_oat_get_character_registry( $character_id ) {
         $entries = OAT_Registry::get_registry_entries( $character_id );
         $grants  = OAT_Registry_Access::find_by_character( $character_id );
 
+        // Apply the same coordinator ownership filter the REST endpoint uses.
+        $ctx = class_exists( 'OAT_REST_Registry' )
+            ? OAT_REST_Registry::owned_filter_context( $character, $show_all )
+            : array( 'apply' => false, 'genres' => array(), 'can_show_all' => false );
+
+        $out = array();
+        foreach ( $entries as $entry ) {
+            $coordinators = class_exists( 'OAT_Entry_Coordinator' )
+                ? OAT_Entry_Coordinator::slugs_for_entry( (int) $entry->id )
+                : array();
+            if ( empty( $coordinators ) && ! empty( $entry->coordinator_genre ) ) {
+                $coordinators = array( strtolower( $entry->coordinator_genre ) );
+            }
+            if ( $ctx['apply'] && ! array_intersect( $coordinators, $ctx['genres'] ) ) {
+                continue;
+            }
+            $entry->coordinators = $coordinators;
+            $out[] = $entry;
+        }
+
         return array(
-            'character' => $character,
-            'grants'    => $grants,
-            'entries'   => $entries,
+            'character'    => $character,
+            'grants'       => $grants,
+            'entries'      => $out,
+            'can_show_all' => $ctx['can_show_all'],
+            'show_all'     => (bool) $show_all,
         );
     }
 
-    return owc_oat_request( 'registry/character/' . (int) $character_id );
+    $body = $show_all ? array( 'show_all' => 1 ) : array();
+    return owc_oat_request( 'registry/character/' . (int) $character_id, $body );
 }
 
 /**

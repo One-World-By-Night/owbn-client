@@ -67,9 +67,26 @@ function owbn_gateway_oat_registry_character( $request ) {
     $entries = OAT_Registry::get_registry_entries( $character_id );
     $grants  = OAT_Registry_Access::find_by_character( $character_id );
 
+    // Coordinator ownership filter — auth-oat.php calls wp_set_current_user(),
+    // so owned_filter_context() resolves the gateway user's roles correctly.
+    $show_all = (bool) $request->get_param( 'show_all' );
+    $ctx = class_exists( 'OAT_REST_Registry' )
+        ? OAT_REST_Registry::owned_filter_context( $character, $show_all )
+        : array( 'apply' => false, 'genres' => array(), 'can_show_all' => false );
+
     // Serialize entries with meta.
     $entries_data = array();
     foreach ( $entries as $entry ) {
+        $coordinators = class_exists( 'OAT_Entry_Coordinator' )
+            ? OAT_Entry_Coordinator::slugs_for_entry( (int) $entry->id )
+            : array();
+        if ( empty( $coordinators ) && ! empty( $entry->coordinator_genre ) ) {
+            $coordinators = array( strtolower( $entry->coordinator_genre ) );
+        }
+        if ( $ctx['apply'] && ! array_intersect( $coordinators, $ctx['genres'] ) ) {
+            continue; // Not owned by this coordinator's office.
+        }
+
         $meta_raw = OAT_Entry_Meta::get_all( (int) $entry->id );
         $meta = array();
         foreach ( $meta_raw as $m ) {
@@ -81,6 +98,7 @@ function owbn_gateway_oat_registry_character( $request ) {
             'form_slug'         => isset( $entry->form_slug ) ? $entry->form_slug : '',
             'status'            => $entry->status,
             'coordinator_genre' => isset( $entry->coordinator_genre ) ? $entry->coordinator_genre : '',
+            'coordinators'      => $coordinators,
             'created_at'        => $entry->created_at,
             'meta'              => $meta,
         );
@@ -100,9 +118,11 @@ function owbn_gateway_oat_registry_character( $request ) {
     }
 
     return owbn_gateway_respond( array(
-        'character' => (array) $character,
-        'grants'    => $grants_data,
-        'entries'   => $entries_data,
+        'character'    => (array) $character,
+        'grants'       => $grants_data,
+        'entries'      => $entries_data,
+        'can_show_all' => $ctx['can_show_all'],
+        'show_all'     => $show_all,
     ) );
 }
 

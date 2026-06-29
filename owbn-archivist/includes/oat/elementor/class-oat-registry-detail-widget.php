@@ -91,11 +91,14 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 		// Handle POST actions.
 		$notice = owc_oat_handle_grant_actions( $character_id );
 
-		$result = owc_oat_get_character_registry( $character_id );
+		$show_all = ! empty( $_GET['show_all'] );
+		$result   = owc_oat_get_character_registry( $character_id, $show_all );
 		if ( is_wp_error( $result ) ) {
 			echo '<div class="oat-error">' . esc_html( $result->get_error_message() ) . '</div>';
 			return;
 		}
+
+		$can_show_all = ! empty( $result['can_show_all'] );
 
 		$character = isset( $result['character'] ) ? $result['character'] : array();
 		if ( is_object( $character ) ) {
@@ -519,6 +522,18 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 
 			<!-- Registry Entries -->
 			<h3><?php printf( esc_html__( 'Registry Entries (%d)', 'owbn-archivist' ), count( $entries ) ); ?></h3>
+			<?php if ( $can_show_all ) :
+				$_sa_base   = remove_query_arg( 'show_all' );
+				$_sa_toggle = $show_all ? $_sa_base : add_query_arg( 'show_all', '1', $_sa_base );
+			?>
+				<div style="background:#fcf9e8;border:1px solid #dba617;border-radius:4px;padding:8px 14px;margin:10px 0;">
+					<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin:0;">
+						<input type="checkbox" <?php echo $show_all ? 'checked' : ''; ?> onclick="window.location.href='<?php echo esc_url( $_sa_toggle ); ?>';return false;">
+						<strong><?php esc_html_e( 'Show All', 'owbn-archivist' ); ?></strong>
+						<span style="color:#646970;"><?php esc_html_e( '— include R&U items owned by other coordinators', 'owbn-archivist' ); ?></span>
+					</label>
+				</div>
+			<?php endif; ?>
 			<?php if ( empty( $entries ) ) : ?>
 				<p><?php esc_html_e( 'No approved entries for this character.', 'owbn-archivist' ); ?></p>
 			<?php else : ?>

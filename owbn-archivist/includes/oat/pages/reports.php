@@ -124,6 +124,27 @@ function owc_oat_page_reports() {
             <?php endforeach; ?>
         </nav>
 
+        <?php
+        $show_all     = ! empty( $_GET['show_all'] );
+        $can_show_all = ! $scope['is_global'] && ! empty( $scope['genres'] );
+        if ( $can_show_all ) :
+            $base = admin_url( 'admin.php?page=owc-oat-reports&report=' . urlencode( $report ) );
+            foreach ( $filters as $fk => $fv ) {
+                if ( '' !== $fv ) {
+                    $base .= '&' . $fk . '=' . urlencode( $fv );
+                }
+            }
+            $toggle_url = $base . ( $show_all ? '' : '&show_all=1' );
+        ?>
+            <div style="background:#fcf9e8;border:1px solid #dba617;border-radius:4px;padding:8px 14px;margin:12px 0;">
+                <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin:0;">
+                    <input type="checkbox" <?php echo $show_all ? 'checked' : ''; ?> onclick="window.location.href='<?php echo esc_js( $toggle_url ); ?>';return false;">
+                    <strong>Show All</strong>
+                    <span style="color:#646970;">— include R&U items owned by other coordinators on characters you can see</span>
+                </label>
+            </div>
+        <?php endif; ?>
+
         <div style="margin-top:15px;">
             <?php owc_oat_render_report( $report, $filters, $scope ); ?>
         </div>
@@ -162,8 +183,18 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             $conditions[] = "e.chronicle_slug IN ('{$slugs}')";
         }
         if ( ! empty( $scope['genres'] ) ) {
-            $slugs = implode( "','", array_map( 'esc_sql', $scope['genres'] ) );
-            $conditions[] = "e.coordinator_genre IN ('{$slugs}')";
+            $slugs    = implode( "','", array_map( 'esc_sql', array_map( 'strtolower', $scope['genres'] ) ) );
+            $ec       = $prefix . 'oat_entry_coordinators';
+            $ra       = $prefix . 'oat_registry_access';
+            $now      = time();
+            $show_all = ! empty( $_GET['show_all'] );
+            if ( $show_all ) {
+                // Show All: any entry on a character this coordinator office can see (via grants).
+                $conditions[] = "e.character_id IN (SELECT character_id FROM {$ra} WHERE grant_type='coordinator' AND LOWER(grant_value) IN ('{$slugs}') AND (starts_at IS NULL OR starts_at <= {$now}) AND (expires_at IS NULL OR expires_at >= {$now}))";
+            } else {
+                // Owned only: the entry's controlling-authority set includes this office.
+                $conditions[] = "EXISTS (SELECT 1 FROM {$ec} ec WHERE ec.entry_id = e.id AND ec.coordinator_slug IN ('{$slugs}'))";
+            }
         }
         $entry_scope = ! empty( $conditions ) ? ' AND (' . implode( ' OR ', $conditions ) . ')' : ' AND 1=0';
     }
