@@ -1935,6 +1935,17 @@ function owc_oat_get_character_registry( $character_id, $show_all = false ) {
             return new WP_Error( 'not_found', 'Character not found.' );
         }
 
+        // Authorization: local mode must enforce the SAME per-character view gate
+        // the REST endpoint applies (archivist / owner / staff-grant / coordinator-grant).
+        // Without this, any logged-in user could read any character by ID (IDOR/PII leak).
+        // Fail closed if the authorization class is unavailable.
+        if ( ! class_exists( 'OAT_REST_Registry' )
+            || ! method_exists( 'OAT_REST_Registry', 'can_view_character' )
+            || ! OAT_REST_Registry::can_view_character( $character )
+        ) {
+            return new WP_Error( 'forbidden', 'You do not have permission to view this character.' );
+        }
+
         $entries = OAT_Registry::get_registry_entries( $character_id );
         $grants  = OAT_Registry_Access::find_by_character( $character_id );
 
@@ -2005,6 +2016,21 @@ function owc_oat_get_public_registry( $character_id ) {
  */
 function owc_oat_grant_access( $character_id, $grant_type, $grant_value, $expires_at = null ) {
     if ( owc_oat_is_local() ) {
+        // Authorization: only someone who manages this character's grants
+        // (archivist, or staff of the character's own chronicle) may create one.
+        // Mirrors the REST create_grant gate. The form handler's nonce alone is
+        // not character-scoped, so enforce here at the choke point. Fail closed.
+        $character = OAT_Character::find( $character_id );
+        if ( ! $character ) {
+            return new WP_Error( 'not_found', 'Character not found.' );
+        }
+        if ( ! class_exists( 'OAT_REST_Registry' )
+            || ! method_exists( 'OAT_REST_Registry', 'can_manage_grants' )
+            || ! OAT_REST_Registry::can_manage_grants( $character )
+        ) {
+            return new WP_Error( 'forbidden', 'You do not have permission to manage grants for this character.' );
+        }
+
         $grant_id = OAT_Registry_Access::ensure_grant(
             $character_id,
             $grant_type,
@@ -2067,6 +2093,21 @@ function owc_oat_update_character( $character_id, $data ) {
  */
 function owc_oat_revoke_access( $grant_id ) {
     if ( owc_oat_is_local() ) {
+        // Authorization: resolve the grant → its character, and require manage
+        // rights on that character. Mirrors the REST revoke gate. The form nonce
+        // is not grant-scoped, so enforce here at the choke point. Fail closed.
+        $grant = OAT_Registry_Access::find( $grant_id );
+        if ( ! $grant ) {
+            return new WP_Error( 'not_found', 'Grant not found.' );
+        }
+        $character = OAT_Character::find( (int) $grant->character_id );
+        if ( ! class_exists( 'OAT_REST_Registry' )
+            || ! method_exists( 'OAT_REST_Registry', 'can_manage_grants' )
+            || ! OAT_REST_Registry::can_manage_grants( $character )
+        ) {
+            return new WP_Error( 'forbidden', 'You do not have permission to revoke this grant.' );
+        }
+
         OAT_Registry_Access::expire( $grant_id );
         return array( 'success' => true );
     }
@@ -2257,6 +2298,59 @@ function owc_oat_resolve_trp_language( $slug ) {
 }
 
 /**
+ * Normalize a discipline_requirements meta value into a list of
+ * { name, level } rows. Handles BOTH storage formats found in the data:
+ *   - JSON array of objects: [{"name":"Fortitude","level":"2"}, ...]  (~1100 entries)
+ *   - Plain text, one requirement per line:                            (~30 entries)
+ *       "Fortitude 2\nPotence 2\nProtean 4"
+ *     A trailing integer is treated as the level; freeform lines
+ *     (e.g. "Must follow Path of Diamonds") render as name-only.
+ *
+ * Previously the preview modal only json_decode()'d the value, so text-format
+ * entries silently showed no prerequisites even though the full page did.
+ *
+ * @param string $raw Stored meta value.
+ * @return array List of [ 'name' => string, 'level' => string ].
+ */
+function owc_cchub_normalize_discipline_requirements( $raw ) {
+    if ( ! is_string( $raw ) || $raw === '' ) {
+        return array();
+    }
+    $rows = array();
+
+    $decoded = json_decode( $raw, true );
+    if ( is_array( $decoded ) && ! empty( $decoded ) ) {
+        foreach ( $decoded as $r ) {
+            if ( is_array( $r ) ) {
+                $name  = trim( (string) ( $r['name'] ?? '' ) );
+                $level = trim( (string) ( $r['level'] ?? '' ) );
+            } else {
+                $name  = trim( (string) $r );
+                $level = '';
+            }
+            if ( $name !== '' || $level !== '' ) {
+                $rows[] = array( 'name' => $name, 'level' => $level );
+            }
+        }
+        return $rows;
+    }
+
+    // Plain-text fallback: one requirement per line.
+    foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+        $line = trim( $line );
+        if ( $line === '' ) {
+            continue;
+        }
+        if ( preg_match( '/^(.*\S)\s+(\d+)$/', $line, $m ) ) {
+            $rows[] = array( 'name' => $m[1], 'level' => $m[2] );
+        } else {
+            $rows[] = array( 'name' => $line, 'level' => '' );
+        }
+    }
+    return $rows;
+}
+
+/**
  * Build the cchub modal entry HTML server-side. Replaces the JS-side
  * string concat so we can run the result through TranslatePress.
  *
@@ -2297,8 +2391,8 @@ function owc_cchub_render_entry_html( $d, $lang_prefix = '' ) {
     $h .= '</table>';
 
     if ( ! empty( $d['discipline_requirements'] ) ) {
-        $reqs = json_decode( $d['discipline_requirements'], true );
-        if ( is_array( $reqs ) && ! empty( $reqs ) ) {
+        $reqs = owc_cchub_normalize_discipline_requirements( $d['discipline_requirements'] );
+        if ( ! empty( $reqs ) ) {
             $h .= '<h4>' . esc_html__( 'Discipline Requirements', 'owbn-archivist' ) . '</h4>';
             $h .= '<table style="width:100%;border-collapse:collapse;">';
             $h .= '<tr><th style="text-align:left;padding:3px 8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Discipline', 'owbn-archivist' ) . '</th><th style="text-align:center;padding:3px 8px;border-bottom:1px solid #ddd;">' . esc_html__( 'Level', 'owbn-archivist' ) . '</th></tr>';
