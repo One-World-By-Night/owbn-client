@@ -160,6 +160,10 @@ function owc_oat_render_report( $report, $filters, $scope ) {
     global $wpdb;
     $prefix = $wpdb->prefix;
 
+    // Free-text search term — applied server-side (before pagination) so it
+    // matches across ALL rows/pages, not just the currently visible page.
+    $q = isset( $_GET['q'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['q'] ) ) ) : '';
+
     // Build scope WHERE clause for characters.
     $char_scope = '';
     if ( ! $scope['is_global'] ) {
@@ -234,31 +238,38 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             }
             $cr_filter = $filters['chronicle'] ? $wpdb->prepare( ' AND e.chronicle_slug = %s', $filters['chronicle'] ) : '';
 
+            // Server-side search across ALL rows (chronicle, submitter, game dates).
+            $cr_search = '';
+            if ( $q !== '' ) {
+                $like = '%' . $wpdb->esc_like( $q ) . '%';
+                $cr_search = $wpdb->prepare( " AND ( e.chronicle_slug LIKE %s OR m_sub.meta_value LIKE %s OR m_dates.meta_value LIKE %s )", $like, $like, $like );
+            }
+            $cr_joins = "LEFT JOIN {$prefix}oat_entry_meta m_sub   ON e.id = m_sub.entry_id   AND m_sub.meta_key = 'submitter_name'
+                         LEFT JOIN {$prefix}oat_entry_meta m_dates ON e.id = m_dates.entry_id AND m_dates.meta_key = 'game_dates'
+                         LEFT JOIN {$prefix}oat_entry_meta m_att   ON e.id = m_att.entry_id   AND m_att.meta_key = 'approx_attendance'";
+            $cr_where = "e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter} {$cr_search}";
+
             $page   = isset( $_GET['rpg'] ) ? max( 0, (int) $_GET['rpg'] ) : 0;
             $per    = 50;
             $offset = $page * $per;
 
             $total_rows = (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$prefix}oat_entries e
-                 WHERE e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter}"
+                "SELECT COUNT(DISTINCT e.id) FROM {$prefix}oat_entries e {$cr_joins} WHERE {$cr_where}"
             );
             $rows = $wpdb->get_results(
                 "SELECT e.id, e.chronicle_slug, e.status, e.created_at,
                         m_sub.meta_value   AS submitter_name,
                         m_dates.meta_value AS game_dates,
                         m_att.meta_value   AS approx_attendance
-                 FROM {$prefix}oat_entries e
-                 LEFT JOIN {$prefix}oat_entry_meta m_sub   ON e.id = m_sub.entry_id   AND m_sub.meta_key = 'submitter_name'
-                 LEFT JOIN {$prefix}oat_entry_meta m_dates ON e.id = m_dates.entry_id AND m_dates.meta_key = 'game_dates'
-                 LEFT JOIN {$prefix}oat_entry_meta m_att   ON e.id = m_att.entry_id   AND m_att.meta_key = 'approx_attendance'
-                 WHERE e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter}
+                 FROM {$prefix}oat_entries e {$cr_joins}
+                 WHERE {$cr_where}
                  ORDER BY e.created_at DESC
                  LIMIT {$per} OFFSET {$offset}"
             );
+            echo owc_oat_report_search_form( 'chronicle_reports', $filters, $q, 'oat-rpt-cr' );
             if ( empty( $rows ) ) {
-                echo '<p>No chronicle reports found for your chronicle(s).</p>';
+                echo '<p>' . esc_html( $q !== '' ? 'No chronicle reports match your search.' : 'No chronicle reports found for your chronicle(s).' ) . '</p>';
             } else {
-                echo '<input type="text" class="oat-rpt-search" data-table="oat-rpt-cr" placeholder="Filter rows..." style="margin-bottom:8px;width:250px;padding:4px 8px;">';
                 echo '<table id="oat-rpt-cr" class="widefat striped oat-rpt-table"><thead><tr>';
                 echo '<th data-col="0" style="cursor:pointer;">Chronicle <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
                 echo '<th data-col="1" style="cursor:pointer;">Submitted By <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
@@ -292,6 +303,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 if ( $filters['chronicle'] ) {
                     $base .= '&chronicle=' . urlencode( $filters['chronicle'] );
                 }
+                if ( $q !== '' ) { $base .= '&q=' . urlencode( $q ); }
                 owc_oat_render_pagination( $total_rows, $per, $page, $base );
             }
             break;
@@ -308,13 +320,14 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             if ( $filters['genre'] ) {
                 $f_genre = $wpdb->prepare( ' AND e.coordinator_genre = %s', $filters['genre'] );
             }
+            $ru_search = $q !== '' ? $wpdb->prepare( " AND m.meta_value LIKE %s", '%' . $wpdb->esc_like( $q ) . '%' ) : '';
             $total_rows = (int) $wpdb->get_var(
                 "SELECT COUNT(*) FROM (
                     SELECT m.meta_value, c.pc_npc
                     FROM {$prefix}oat_entries e
                     JOIN {$prefix}oat_entry_meta m ON e.id = m.entry_id AND m.meta_key = 'item_description' AND m.meta_value != ''
                     LEFT JOIN {$prefix}oat_characters c ON e.character_id = c.id
-                    WHERE e.domain = 'character_lifecycle' AND e.status = 'approved' {$entry_scope} {$f_genre}
+                    WHERE e.domain = 'character_lifecycle' AND e.status = 'approved' {$entry_scope} {$f_genre} {$ru_search}
                     GROUP BY m.meta_value, IFNULL(c.pc_npc, 'pc')
                 ) sub"
             );
@@ -323,15 +336,15 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                  FROM {$prefix}oat_entries e
                  JOIN {$prefix}oat_entry_meta m ON e.id = m.entry_id AND m.meta_key = 'item_description' AND m.meta_value != ''
                  LEFT JOIN {$prefix}oat_characters c ON e.character_id = c.id
-                 WHERE e.domain = 'character_lifecycle' AND e.status = 'approved' {$entry_scope} {$f_genre}
+                 WHERE e.domain = 'character_lifecycle' AND e.status = 'approved' {$entry_scope} {$f_genre} {$ru_search}
                  GROUP BY m.meta_value, IFNULL(c.pc_npc, 'pc')
                  ORDER BY m.meta_value ASC, pc_npc ASC
                  LIMIT {$per} OFFSET {$offset}"
             );
+            echo owc_oat_report_search_form( 'ru_active', $filters, $q, 'oat-rpt-ru' );
             if ( empty( $rows ) ) {
-                echo '<p>No R&U data found.</p>';
+                echo '<p>' . esc_html( $q !== '' ? 'No R&U classifications match your search.' : 'No R&U data found.' ) . '</p>';
             } else {
-                echo '<input type="text" class="oat-rpt-search" data-table="oat-rpt-ru" placeholder="Filter rows..." style="margin-bottom:8px;width:250px;padding:4px 8px;">';
                 echo '<table id="oat-rpt-ru" class="widefat striped oat-rpt-table"><thead><tr>';
                 echo '<th data-col="0" style="cursor:pointer;">R&U Classification <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
                 echo '<th data-col="1" style="text-align:right;cursor:pointer;">Total <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
@@ -349,6 +362,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 if ( $filters['genre'] ) {
                     $base .= '&genre=' . urlencode( $filters['genre'] );
                 }
+                if ( $q !== '' ) { $base .= '&q=' . urlencode( $q ); }
                 owc_oat_render_pagination( $total_rows, $per, $page, $base );
             }
             break;
@@ -540,11 +554,19 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             if ( $filters['status'] ) {
                 $f_status = $wpdb->prepare( " AND m_status.meta_value = %s", $filters['status'] );
             }
+            // Server-side search across ALL rows (recipient, chronicle, details).
+            $da_search = '';
+            if ( $q !== '' ) {
+                $like = '%' . $wpdb->esc_like( $q ) . '%';
+                $da_search = $wpdb->prepare( " AND ( m_name.meta_value LIKE %s OR e.chronicle_slug LIKE %s OR m_details.meta_value LIKE %s )", $like, $like, $like );
+            }
             $total_rows = (int) $wpdb->get_var(
-                "SELECT COUNT(*)
+                "SELECT COUNT(DISTINCT e.id)
                  FROM {$prefix}oat_entries e
-                 LEFT JOIN {$prefix}oat_entry_meta m_status ON e.id = m_status.entry_id AND m_status.meta_key = 'da_status'
-                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status}"
+                 LEFT JOIN {$prefix}oat_entry_meta m_status  ON e.id = m_status.entry_id  AND m_status.meta_key = 'da_status'
+                 LEFT JOIN {$prefix}oat_entry_meta m_name    ON e.id = m_name.entry_id    AND m_name.meta_key = 'player_name'
+                 LEFT JOIN {$prefix}oat_entry_meta m_details ON e.id = m_details.entry_id AND m_details.meta_key = 'da_details'
+                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status} {$da_search}"
             );
             $rows = $wpdb->get_results(
                 "SELECT e.id, e.chronicle_slug, e.created_at,
@@ -561,7 +583,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                  LEFT JOIN {$prefix}oat_entry_meta m_date ON e.id = m_date.entry_id AND m_date.meta_key = 'da_date'
                  LEFT JOIN {$prefix}oat_entry_meta m_type ON e.id = m_type.entry_id AND m_type.meta_key = 'da_type'
                  LEFT JOIN {$prefix}oat_entry_meta m_status ON e.id = m_status.entry_id AND m_status.meta_key = 'da_status'
-                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status}
+                 WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status} {$da_search}
                  ORDER BY m_name.meta_value ASC, m_date.meta_value DESC
                  LIMIT {$per} OFFSET {$offset}"
             );
@@ -576,10 +598,10 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 'owbn_temporary_ban' => 'OWBN Temporary Ban', 'owbn_indefinite_ban' => 'OWBN Indefinite Ban',
                 'owbn_permanent_ban' => 'OWBN Permanent Ban', 'other' => 'Other',
             );
+            echo owc_oat_report_search_form( 'disciplinary_actions', $filters, $q, 'oat-rpt-da' );
             if ( empty( $rows ) ) {
-                echo '<p>No disciplinary action records found.</p>';
+                echo '<p>' . esc_html( $q !== '' ? 'No disciplinary actions match your search.' : 'No disciplinary action records found.' ) . '</p>';
             } else {
-                echo '<input type="text" class="oat-rpt-search" data-table="oat-rpt-da" placeholder="Filter rows..." style="margin-bottom:8px;width:250px;padding:4px 8px;">';
                 echo '<table id="oat-rpt-da" class="widefat striped oat-rpt-table"><thead><tr>';
                 echo '<th data-col="0" style="cursor:pointer;">Recipient <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
                 echo '<th data-col="1" style="cursor:pointer;">Chronicle <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
@@ -609,6 +631,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                 if ( $filters['status'] ) {
                     $base .= '&status=' . urlencode( $filters['status'] );
                 }
+                if ( $q !== '' ) { $base .= '&q=' . urlencode( $q ); }
                 owc_oat_render_pagination( $total_rows, $per, $page, $base );
             }
             break;
@@ -722,6 +745,34 @@ function owc_oat_report_table( $headers, $rows, $row_fn ) {
         echo '</tr>';
     }
     echo '</tbody></table>';
+}
+
+/**
+ * Render the report search box as a GET form. Submitting (Enter or the button)
+ * reloads the report with ?q=… so search runs SERVER-SIDE across all rows, not
+ * just the visible page. Preserves report + active filters. The client-side
+ * live filter (class oat-rpt-search) still refines the visible page as you type.
+ */
+function owc_oat_report_search_form( $report, $filters, $q, $table_id ) {
+    $out  = '<form method="get" style="display:inline-block;margin:0 0 8px;">';
+    $out .= '<input type="hidden" name="page" value="owc-oat-reports">';
+    $out .= '<input type="hidden" name="report" value="' . esc_attr( $report ) . '">';
+    foreach ( array( 'chronicle', 'genre', 'status' ) as $fk ) {
+        if ( ! empty( $filters[ $fk ] ) ) {
+            $out .= '<input type="hidden" name="' . esc_attr( $fk ) . '" value="' . esc_attr( $filters[ $fk ] ) . '">';
+        }
+    }
+    $out .= '<input type="search" name="q" class="oat-rpt-search" data-table="' . esc_attr( $table_id ) . '" value="' . esc_attr( $q ) . '" placeholder="Search all pages — press Enter" style="width:280px;padding:4px 8px;">';
+    $out .= ' <button type="submit" class="button button-small">Search</button>';
+    if ( $q !== '' ) {
+        $clear = 'admin.php?page=owc-oat-reports&report=' . rawurlencode( $report );
+        foreach ( array( 'chronicle', 'genre', 'status' ) as $fk ) {
+            if ( ! empty( $filters[ $fk ] ) ) { $clear .= '&' . $fk . '=' . rawurlencode( $filters[ $fk ] ); }
+        }
+        $out .= ' <a href="' . esc_url( admin_url( $clear ) ) . '">clear search</a>';
+    }
+    $out .= '</form>';
+    return $out;
 }
 
 /**
