@@ -15,6 +15,11 @@ function owc_get_reports_tabs() {
             'icon'    => 'dashicons-groups',
             'partial' => __DIR__ . '/reports-tabs/tab-chronicle-staff.php',
         ),
+        'conflicts' => array(
+            'label'   => __( 'Conflicts', 'owbn-core' ),
+            'icon'    => 'dashicons-warning',
+            'partial' => __DIR__ . '/reports-tabs/tab-conflicts.php',
+        ),
     );
     return apply_filters( 'owc_reports_tabs', $tabs );
 }
