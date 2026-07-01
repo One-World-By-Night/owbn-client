@@ -100,6 +100,7 @@ function owc_oat_page_reports() {
     );
 
     $reports = array(
+        'chronicle_reports'       => 'Chronicle Reports',
         'entries_by_domain'       => 'Entries by Domain',
         'entries_by_status'       => 'Entries by Status',
         'entries_by_coordinator'  => 'Entries by Coordinator',
@@ -215,6 +216,85 @@ function owc_oat_render_report( $report, $filters, $scope ) {
     echo '<div style="padding:0;">';
 
     switch ( $report ) {
+
+        case 'chronicle_reports':
+            echo '<h2>Chronicle Reports</h2>';
+            echo '<p style="color:#666;font-size:13px;">Monthly Chronicle Reports, most recent first — scoped to your chronicle(s). Click a row to open the full report.</p>';
+
+            // Chronicle-scoped access: global roles (admin / exec-archivist) see all;
+            // chronicle HST/CM/staff see ONLY their chronicle(s); anyone else sees nothing.
+            $cr_scope = '';
+            if ( ! $scope['is_global'] ) {
+                if ( ! empty( $scope['chronicles'] ) ) {
+                    $slugs    = implode( "','", array_map( 'esc_sql', $scope['chronicles'] ) );
+                    $cr_scope = " AND e.chronicle_slug IN ('{$slugs}')";
+                } else {
+                    $cr_scope = ' AND 1=0';
+                }
+            }
+            $cr_filter = $filters['chronicle'] ? $wpdb->prepare( ' AND e.chronicle_slug = %s', $filters['chronicle'] ) : '';
+
+            $page   = isset( $_GET['rpg'] ) ? max( 0, (int) $_GET['rpg'] ) : 0;
+            $per    = 50;
+            $offset = $page * $per;
+
+            $total_rows = (int) $wpdb->get_var(
+                "SELECT COUNT(*) FROM {$prefix}oat_entries e
+                 WHERE e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter}"
+            );
+            $rows = $wpdb->get_results(
+                "SELECT e.id, e.chronicle_slug, e.status, e.created_at,
+                        m_sub.meta_value   AS submitter_name,
+                        m_dates.meta_value AS game_dates,
+                        m_att.meta_value   AS approx_attendance
+                 FROM {$prefix}oat_entries e
+                 LEFT JOIN {$prefix}oat_entry_meta m_sub   ON e.id = m_sub.entry_id   AND m_sub.meta_key = 'submitter_name'
+                 LEFT JOIN {$prefix}oat_entry_meta m_dates ON e.id = m_dates.entry_id AND m_dates.meta_key = 'game_dates'
+                 LEFT JOIN {$prefix}oat_entry_meta m_att   ON e.id = m_att.entry_id   AND m_att.meta_key = 'approx_attendance'
+                 WHERE e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter}
+                 ORDER BY e.created_at DESC
+                 LIMIT {$per} OFFSET {$offset}"
+            );
+            if ( empty( $rows ) ) {
+                echo '<p>No chronicle reports found for your chronicle(s).</p>';
+            } else {
+                echo '<input type="text" class="oat-rpt-search" data-table="oat-rpt-cr" placeholder="Filter rows..." style="margin-bottom:8px;width:250px;padding:4px 8px;">';
+                echo '<table id="oat-rpt-cr" class="widefat striped oat-rpt-table"><thead><tr>';
+                echo '<th data-col="0" style="cursor:pointer;">Chronicle <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '<th data-col="1" style="cursor:pointer;">Submitted By <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '<th data-col="2" style="cursor:pointer;">Games Played <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '<th data-col="3" style="text-align:right;cursor:pointer;">Avg Att <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '<th data-col="4" style="cursor:pointer;">Status <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '<th data-col="5" style="cursor:pointer;">Submitted <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
+                echo '</tr></thead><tbody>';
+                foreach ( $rows as $r ) {
+                    $chron_title = $r->chronicle_slug
+                        ? ( function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $r->chronicle_slug ) : $r->chronicle_slug )
+                        : '';
+                    $dates = trim( preg_replace( '/(\\\\n|\R)+/', ', ', (string) $r->game_dates ), ', ' );
+                    if ( strlen( $dates ) > 60 ) { $dates = substr( $dates, 0, 57 ) . '…'; }
+                    $status_color = $r->status === 'approved' ? '#00a32a' : ( $r->status === 'denied' ? '#d63638' : '#666' );
+                    $submitted    = $r->created_at
+                        ? ( function_exists( 'owc_oat_format_date' ) ? owc_oat_format_date( $r->created_at ) : gmdate( 'Y-m-d', (int) $r->created_at ) )
+                        : '—';
+                    $detail_url   = admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . (int) $r->id );
+                    echo '<tr>';
+                    echo '<td><a href="' . esc_url( $detail_url ) . '">' . esc_html( $chron_title ?: $r->chronicle_slug ?: '—' ) . '</a></td>';
+                    echo '<td>' . esc_html( $r->submitter_name ?: '—' ) . '</td>';
+                    echo '<td>' . esc_html( $dates ?: '—' ) . '</td>';
+                    echo '<td style="text-align:right;">' . esc_html( ( $r->approx_attendance !== null && $r->approx_attendance !== '' ) ? $r->approx_attendance : '—' ) . '</td>';
+                    echo '<td><span style="color:' . $status_color . ';font-weight:600;">' . esc_html( ucfirst( $r->status ?: 'unknown' ) ) . '</span></td>';
+                    echo '<td data-sort="' . (int) $r->created_at . '">' . esc_html( $submitted ) . '</td>';
+                    echo '</tr>';
+                }
+                echo '</tbody></table>';
+                $base = admin_url( 'admin.php?page=owc-oat-reports&report=chronicle_reports' );
+                if ( $filters['chronicle'] ) {
+                    $base .= '&chronicle=' . urlencode( $filters['chronicle'] );
+                }
+                owc_oat_render_pagination( $total_rows, $per, $page, $base );
+            }
+            break;
 
         case 'ru_active':
             echo '<h2>R&U Active</h2>';
@@ -711,11 +791,12 @@ function owc_oat_reports_inline_js() {
                 var asc = this.getAttribute('data-sort-dir') !== 'asc';
                 this.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
                 rows.sort(function(a, b) {
-                    var va = (a.children[col] || {}).textContent || '';
-                    var vb = (b.children[col] || {}).textContent || '';
-                    var na = parseFloat(va.replace(/,/g, '')), nb = parseFloat(vb.replace(/,/g, ''));
+                    var ca = a.children[col], cb = b.children[col];
+                    var va = (ca && ca.getAttribute('data-sort') !== null) ? ca.getAttribute('data-sort') : ((ca || {}).textContent || '');
+                    var vb = (cb && cb.getAttribute('data-sort') !== null) ? cb.getAttribute('data-sort') : ((cb || {}).textContent || '');
+                    var na = parseFloat(String(va).replace(/,/g, '')), nb = parseFloat(String(vb).replace(/,/g, ''));
                     if (!isNaN(na) && !isNaN(nb)) return asc ? na - nb : nb - na;
-                    return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
                 });
                 rows.forEach(function(r) { tbody.appendChild(r); });
             });
