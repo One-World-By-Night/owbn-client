@@ -188,9 +188,26 @@ jQuery(function($) {
         $('#oat_coordinator_override').val('');
     });
 
-    // If domain is pre-selected on page load, check for forms
+    // If domain is pre-selected on page load, check for forms.
     var preselected = $('#oat_domain').val();
-    if (preselected) {
+    var preselectedForm = <?php echo wp_json_encode( isset( $selected_form ) ? $selected_form : '' ); ?>;
+    if (preselected && preselectedForm) {
+        // Deep-linked straight to a specific form (e.g. Create Chronicle Report):
+        // populate + select the form picker, then load that form's fields directly.
+        var url = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.url : ajaxurl;
+        var nonce = typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '';
+        $.post(url, { action: 'owc_oat_get_domain_forms', nonce: nonce, domain_slug: preselected }, function(response) {
+            var forms = (response.success && response.data) ? response.data : [];
+            var $sel = $('#oat_form_slug');
+            $sel.html('<option value="">Select a form...</option>');
+            $.each(forms, function(i, f) { $sel.append('<option value="' + f.slug + '">' + f.label + '</option>'); });
+            $sel.val(preselectedForm);
+            if (forms.length > 1) { $('#oat-form-picker-row').show(); }
+            loadFields({ form_slug: preselectedForm, domain: preselected });
+        }).fail(function() {
+            loadFields({ form_slug: preselectedForm, domain: preselected });
+        });
+    } else if (preselected) {
         checkFormsAndLoad(preselected);
     }
 });

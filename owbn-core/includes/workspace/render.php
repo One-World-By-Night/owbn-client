@@ -213,6 +213,10 @@ function owc_workspace_render_chronicle_tile( $slug, $user_id ) {
 	if ( $can_edit && $chron_post_id ) {
 		$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $chronicles_url, 'wp-admin/post.php?post=' . $chron_post_id . '&action=edit' ) ) . '" target="_blank">' . esc_html__( 'Edit Chronicle', 'owbn-core' ) . '</a></li>';
 	}
+	// Chronicle report links (HST/CM/staff): Create jumps straight to the report
+	// form; View lists this chronicle's submitted reports.
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-submit&domain=chronicle_actions&form=ca_reporting' ) ) . '" target="_blank">' . esc_html__( 'Create Chronicle Report', 'owbn-core' ) . '</a></li>';
+	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'wp-admin/admin.php?page=owc-oat-reports&report=chronicle_reports&chronicle=' . rawurlencode( $slug ) ) ) . '" target="_blank">' . esc_html__( 'View Chronicle Reports', 'owbn-core' ) . '</a></li>';
 	$out .= '<li><a href="' . esc_url( owc_workspace_archivist_details_url( $role_paths ) ) . '" target="_blank">' . esc_html__( 'Archivist Details', 'owbn-core' ) . '</a></li>';
 	$out .= '<li><a href="' . esc_url( owc_workspace_sso_link( $archivist_url, 'oat-dashboard/' ) ) . '" target="_blank">' . esc_html__( 'Archivist Dashboard', 'owbn-core' ) . '</a></li>';
 	$out .= '</ul></div>';

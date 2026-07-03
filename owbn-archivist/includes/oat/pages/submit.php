@@ -168,9 +168,25 @@ function owc_oat_page_submit( $embedded = false ) {
         $selected_domain = sanitize_text_field( $_GET['domain'] );
     }
 
-    // If a domain is selected, get its form fields (skip if multi-form — JS handles it).
+    // Selected form: POST > GET. A deep link like ...&domain=chronicle_actions&form=ca_reporting
+    // jumps straight to that form (e.g. "Create Chronicle Report") instead of the picker.
+    $selected_form = '';
+    if ( ! empty( $_POST['oat_form_slug'] ) ) {
+        $selected_form = sanitize_text_field( $_POST['oat_form_slug'] );
+    } elseif ( ! empty( $_GET['form'] ) ) {
+        $selected_form = sanitize_text_field( $_GET['form'] );
+    }
+
+    // Fields to render on first paint:
+    //   - explicit form      -> that form's fields (skips the multi-form picker)
+    //   - single-form domain  -> its only form's fields
     $domain_fields = array();
-    if ( $selected_domain ) {
+    if ( $selected_form ) {
+        $fields = owc_oat_get_form_fields( $selected_form, 'submit' );
+        if ( ! is_wp_error( $fields ) ) {
+            $domain_fields = $fields;
+        }
+    } elseif ( $selected_domain ) {
         $domain_forms = class_exists( 'OAT_Domain_Registry' ) ? OAT_Domain_Registry::get_forms( $selected_domain ) : array();
         if ( count( $domain_forms ) <= 1 ) {
             $fields = owc_oat_get_form_fields( $selected_domain, 'submit' );
