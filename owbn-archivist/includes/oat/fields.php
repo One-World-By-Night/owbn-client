@@ -11,6 +11,33 @@ defined( 'ABSPATH' ) || exit;
 
 
 /**
+ * The Coordinator offices the current user actually holds, as slug => label.
+ * Lets a coordinator register an NPC owned by their office (no chronicle). The
+ * slug is stored in oat_characters.npc_coordinator and matched by the registry's
+ * coordinator scoping, so a viewer only ever sees office NPCs for their own office.
+ *
+ * @return array<string,string> slug => display label
+ */
+function owc_oat_current_user_coordinator_offices() {
+	if ( ! is_user_logged_in() || ! function_exists( 'owc_oat_get_user_asc_roles' ) ) {
+		return array();
+	}
+	$offices = array();
+	foreach ( (array) owc_oat_get_user_asc_roles( get_current_user_id() ) as $role ) {
+		if ( preg_match( '#^coordinator/([^/]+)/#i', (string) $role, $m ) ) {
+			$slug             = strtolower( $m[1] );
+			$offices[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) ) . ' Coordinator';
+		} elseif ( preg_match( '#^exec/([^/]+)/#i', (string) $role, $m ) ) {
+			$slug             = strtolower( $m[1] );
+			$offices[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) ) . ' (Admin Coord)';
+		}
+	}
+	ksort( $offices );
+	return $offices;
+}
+
+
+/**
  * Render all fields for a form.
  *
  * @param array $fields Array of field definition arrays.
@@ -566,8 +593,22 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<p><label>' . esc_html__( 'Character Name', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
 			echo '<input type="text" class="oat-cc-name regular-text" /></label></p>';
 			echo '<p><label>' . esc_html__( 'Home Chronicle', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
-			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-archivist' ) . '" autocomplete="off" /></label></p>';
+			echo '<input type="text" class="oat-cc-chronicle regular-text" placeholder="' . esc_attr__( 'Search chronicles...', 'owbn-archivist' ) . '" autocomplete="off" /></label>';
+			echo '<span class="description">' . esc_html__( 'Required for a chronicle character. Leave blank and choose a Coordinator office below to register an office NPC.', 'owbn-archivist' ) . '</span></p>';
 			echo '<input type="hidden" class="oat-cc-chronicle-slug" />';
+			// Coordinator office owner (office NPCs). Only shown to users who actually
+			// hold a coordinator office; picking one registers an NPC owned by that office.
+			$cc_offices = function_exists( 'owc_oat_current_user_coordinator_offices' ) ? owc_oat_current_user_coordinator_offices() : array();
+			if ( ! empty( $cc_offices ) ) {
+				echo '<p><label>' . esc_html__( 'Coordinator Office (owns this NPC)', 'owbn-archivist' ) . '<br>';
+				echo '<select class="oat-cc-npc-coordinator" style="width:100%;">';
+				echo '<option value="">' . esc_html__( '— none (chronicle character) —', 'owbn-archivist' ) . '</option>';
+				foreach ( $cc_offices as $cc_slug => $cc_olabel ) {
+					echo '<option value="' . esc_attr( $cc_slug ) . '">' . esc_html( $cc_olabel ) . '</option>';
+				}
+				echo '</select></label>';
+				echo '<span class="description">' . esc_html__( 'Registers an NPC owned by your Coordinator office — no chronicle needed.', 'owbn-archivist' ) . '</span></p>';
+			}
 			// Creature picker — 4-level cascading selects (Genre > Faction > Type > Variant).
 			echo '<div class="oat-cc-creature-picker" data-creature-picker>';
 			echo '<p><label>' . esc_html__( 'Genre', 'owbn-archivist' ) . ' <span class="required">*</span><br>';

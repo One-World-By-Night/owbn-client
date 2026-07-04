@@ -293,12 +293,22 @@ function owc_oat_ajax_create_character() {
         wp_send_json_error( 'OAT_Character model not available.' );
     }
 
-    $char_name      = isset( $_POST['character_name'] ) ? sanitize_text_field( $_POST['character_name'] ) : '';
-    $chronicle_slug = isset( $_POST['chronicle_slug'] ) ? sanitize_text_field( $_POST['chronicle_slug'] ) : '';
-    $pc_npc         = isset( $_POST['pc_npc'] ) ? sanitize_text_field( $_POST['pc_npc'] ) : 'pc';
+    $char_name       = isset( $_POST['character_name'] ) ? sanitize_text_field( $_POST['character_name'] ) : '';
+    $chronicle_slug  = isset( $_POST['chronicle_slug'] ) ? sanitize_text_field( $_POST['chronicle_slug'] ) : '';
+    $pc_npc          = isset( $_POST['pc_npc'] ) ? sanitize_text_field( $_POST['pc_npc'] ) : 'pc';
+    $npc_coordinator = isset( $_POST['npc_coordinator'] ) ? strtolower( sanitize_text_field( $_POST['npc_coordinator'] ) ) : '';
 
     if ( empty( $char_name ) ) {
         wp_send_json_error( 'Character name is required.' );
+    }
+
+    // Office NPC: a coordinator may create an NPC owned by their office (no chronicle
+    // required). Verify the current user actually holds that office before accepting.
+    if ( '' !== $npc_coordinator ) {
+        $offices = function_exists( 'owc_oat_current_user_coordinator_offices' ) ? owc_oat_current_user_coordinator_offices() : array();
+        if ( ! isset( $offices[ $npc_coordinator ] ) ) {
+            wp_send_json_error( 'You are not authorized to create NPCs for that Coordinator office.' );
+        }
     }
 
     $user = wp_get_current_user();
@@ -320,6 +330,10 @@ function owc_oat_ajax_create_character() {
     );
     if ( in_array( $pc_npc, array( 'pc', 'npc' ), true ) ) {
         $create_data['pc_npc'] = $pc_npc;
+    }
+    if ( '' !== $npc_coordinator ) {
+        $create_data['npc_coordinator'] = $npc_coordinator;
+        $create_data['pc_npc']          = 'npc'; // office-owned characters are NPCs
     }
     if ( $creature_genre ) {
         $create_data['creature_genre'] = $creature_genre;

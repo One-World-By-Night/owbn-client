@@ -633,9 +633,11 @@
                 var name       = $wrap.find('.oat-cc-name').val();
                 var chronSlug  = $ccChronSlug.val();
                 var pcNpc      = $ccPcNpc.val();
+                var npcCoord   = $wrap.find('.oat-cc-npc-coordinator').val() || '';
 
                 if (!name) { alert(owc_oat_ajax.i18n.charRequired); return; }
                 if (!pcNpc) { alert('PC/NPC designation is required.'); return; }
+                if (!chronSlug && !npcCoord) { alert('Choose a Home Chronicle, or select a Coordinator Office for an office NPC.'); return; }
 
                 $btn.prop('disabled', true).text(owc_oat_ajax.i18n.creating);
 
@@ -644,6 +646,7 @@
                     nonce: owc_oat_ajax.nonce,
                     character_name: name,
                     chronicle_slug: chronSlug || '',
+                    npc_coordinator: npcCoord,
                     pc_npc: pcNpc,
                     creature_genre: $ccGenre.val() || '',
                     creature_type: $ccCreatureType.val() || '',
