@@ -4,7 +4,7 @@
  * Plugin Name: OWBN Archivist
  * Plugin URI: https://github.com/One-World-By-Night/owbn-archivist
  * Description: OAT (OWBN Archivist Toolkit) — workflow engine, character registry, submissions, inbox, reports, custom content hub.
- * Version: 1.3.11
+ * Version: 1.3.12
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-archivist

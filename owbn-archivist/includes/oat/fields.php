@@ -332,6 +332,50 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '</fieldset></div></div>';
 			return;
 
+		case 'coordinator_checkboxes':
+			// Multi-select of coordinators; options sourced live from owc_get_coordinators().
+			$selected = is_array( $value ) ? $value : ( is_string( $value ) ? json_decode( $value, true ) : array() );
+			if ( ! is_array( $selected ) ) {
+				$selected = array();
+			}
+			$coord_opts = array();
+			if ( function_exists( 'owc_get_coordinators' ) ) {
+				$coords = owc_get_coordinators();
+				if ( ! is_wp_error( $coords ) && is_array( $coords ) ) {
+					foreach ( $coords as $c ) {
+						$c  = is_object( $c ) ? (array) $c : $c;
+						$cs = isset( $c['slug'] ) ? (string) $c['slug'] : '';
+						if ( '' === $cs ) {
+							continue;
+						}
+						$coord_opts[ $cs ] = isset( $c['title'] ) && $c['title'] ? (string) $c['title'] : ( isset( $c['coordinator_title'] ) ? (string) $c['coordinator_title'] : $cs );
+					}
+					asort( $coord_opts );
+				}
+			}
+			echo '<div class="oat-field"' . $cond_attrs . '>';
+			echo '<div class="oat-field-label">' . esc_html( $label ) . $req_star . '</div>';
+			echo '<div class="oat-field-content">';
+			if ( empty( $coord_opts ) ) {
+				echo '<em>' . esc_html__( 'Coordinator list is unavailable right now.', 'owbn-archivist' ) . '</em>';
+			} else {
+				echo '<fieldset style="max-height:220px;overflow:auto;border:1px solid #ccd0d4;padding:8px;border-radius:4px;">';
+				foreach ( $coord_opts as $opt_val => $opt_label ) {
+					printf(
+						'<label style="display:block;padding:2px 0;"><input type="checkbox" name="%s[]" value="%s"%s /> %s</label>',
+						$name, esc_attr( $opt_val ),
+						in_array( (string) $opt_val, $selected, true ) ? ' checked="checked"' : '',
+						esc_html( $opt_label )
+					);
+				}
+				echo '</fieldset>';
+			}
+			if ( $help_text ) {
+				echo '<p class="description">' . esc_html( $help_text ) . '</p>';
+			}
+			echo '</div></div>';
+			return;
+
 		case 'chronicle_picker':
 			$filter_by_chron   = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
 			$role_scopes_chron = isset( $attrs['role_scopes'] ) ? $attrs['role_scopes'] : array();
@@ -901,6 +945,30 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 				$labels[] = isset( $options[ $v ] ) ? $options[ $v ] : $v;
 			}
 			echo esc_html( implode( ', ', $labels ) );
+			break;
+
+		case 'coordinator_checkboxes':
+			$selected = is_array( $value ) ? $value : ( is_string( $value ) ? json_decode( $value, true ) : array() );
+			if ( ! is_array( $selected ) ) {
+				$selected = array();
+			}
+			$map = array();
+			if ( function_exists( 'owc_get_coordinators' ) ) {
+				$coords = owc_get_coordinators();
+				if ( ! is_wp_error( $coords ) && is_array( $coords ) ) {
+					foreach ( $coords as $c ) {
+						$c = is_object( $c ) ? (array) $c : $c;
+						if ( ! empty( $c['slug'] ) ) {
+							$map[ (string) $c['slug'] ] = isset( $c['title'] ) && $c['title'] ? (string) $c['title'] : (string) $c['slug'];
+						}
+					}
+				}
+			}
+			$names = array();
+			foreach ( $selected as $v ) {
+				$names[] = isset( $map[ $v ] ) ? $map[ $v ] : $v;
+			}
+			echo esc_html( implode( ', ', $names ) );
 			break;
 
 		case 'chronicle_picker':
