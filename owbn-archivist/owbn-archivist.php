@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_ARCHIVIST_VERSION', '1.3.11' );
+define( 'OWC_ARCHIVIST_VERSION', '1.3.12' );
 define( 'OWC_ARCHIVIST_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_ARCHIVIST_URL', plugin_dir_url( __FILE__ ) );
 
