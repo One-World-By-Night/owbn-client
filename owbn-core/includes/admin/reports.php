@@ -304,3 +304,95 @@ add_action( 'wp_ajax_owc_bulk_ignore_cm_match', function () {
         'message' => sprintf( __( '%d dismissed', 'owbn-core' ), $ok ),
     ) );
 } );
+
+/**
+ * Decode the `keys` POST param (JSON array) for conflict-report dismissals.
+ *
+ * A conflict "key" is the person key the conflicts tab builds:
+ *   "u:<id>" | "e:<email>" | "n:<name>". These are only ever used as array
+ * keys for display suppression — never in a query or as executable output —
+ * but we still validate the shape and drop anything that doesn't match.
+ */
+function owc_conflict_decode_keys() {
+    if ( empty( $_POST['keys'] ) ) {
+        return array();
+    }
+    $arr = json_decode( wp_unslash( $_POST['keys'] ), true );
+    if ( ! is_array( $arr ) ) {
+        return array();
+    }
+    $out = array();
+    foreach ( $arr as $k ) {
+        $k = sanitize_text_field( (string) $k );
+        if ( preg_match( '/^(u:\d+|e:.+|n:.+)$/', $k ) ) {
+            $out[] = $k;
+        }
+    }
+    return array_values( array_unique( $out ) );
+}
+
+/**
+ * AJAX: acknowledge (dismiss) selected staffing conflicts so they drop out of
+ * the active list. DISPLAY-ONLY — writes the per-site option `owc_conflict_ack`
+ * (key => timestamp); no ASC roles or chronicle meta are touched. Reversible
+ * via owc_bulk_unack_conflict.
+ */
+add_action( 'wp_ajax_owc_bulk_ack_conflict', function () {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized.' );
+    }
+    check_ajax_referer( 'owc_conflict_bulk', 'nonce' );
+
+    $keys = owc_conflict_decode_keys();
+    if ( empty( $keys ) ) {
+        wp_send_json_error( 'No conflicts selected.' );
+    }
+
+    $ack = get_option( 'owc_conflict_ack', array() );
+    if ( ! is_array( $ack ) ) {
+        $ack = array();
+    }
+    $now = time();
+    $n   = 0;
+    foreach ( $keys as $k ) {
+        $ack[ $k ] = $now;
+        $n++;
+    }
+    update_option( 'owc_conflict_ack', $ack, false );
+
+    wp_send_json_success( array(
+        'message' => sprintf( __( '%d acknowledged', 'owbn-core' ), $n ),
+    ) );
+} );
+
+/**
+ * AJAX: restore (un-acknowledge) selected conflicts back into the active list.
+ */
+add_action( 'wp_ajax_owc_bulk_unack_conflict', function () {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized.' );
+    }
+    check_ajax_referer( 'owc_conflict_bulk', 'nonce' );
+
+    $keys = owc_conflict_decode_keys();
+    if ( empty( $keys ) ) {
+        wp_send_json_error( 'No conflicts selected.' );
+    }
+
+    $ack = get_option( 'owc_conflict_ack', array() );
+    if ( ! is_array( $ack ) ) {
+        $ack = array();
+    }
+    $n = 0;
+    foreach ( $keys as $k ) {
+        if ( isset( $ack[ $k ] ) ) {
+            unset( $ack[ $k ] );
+            $n++;
+        }
+    }
+    update_option( 'owc_conflict_ack', $ack, false );
+
+    wp_send_json_success( array(
+        'message' => sprintf( __( '%d restored', 'owbn-core' ), $n ),
+    ) );
+} );

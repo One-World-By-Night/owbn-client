@@ -122,6 +122,60 @@ $user_link = function ( $uid, $label ) use ( $allow_user_links ) {
     return '<a href="' . esc_url( admin_url( 'user-edit.php?user_id=' . (int) $uid ) ) . '">' . esc_html( $label ?: '#' . $uid ) . '</a>';
 };
 
+// Each position links to that chronicle's detail page so an admin can go act on
+// the staffing. Only on the local host (where /chronicle-detail/ resolves and
+// the slugs are real); plain pill on remote report views.
+$pos_span = function ( $pos ) use ( $is_local ) {
+    $cls   = 'owc-conf-pos ' . strtolower( $pos['role'] );
+    $label = $pos['role'] . ' · ' . $pos['slug'];
+    if ( $is_local ) {
+        $url = home_url( '/chronicle-detail/?slug=' . rawurlencode( $pos['slug'] ) );
+        return '<a class="' . esc_attr( $cls ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+    }
+    return '<span class="' . esc_attr( $cls ) . '">' . esc_html( $label ) . '</span>';
+};
+
+// Acknowledged (dismissed) conflicts — admins can flag a known-OK overlap so it
+// drops out of the active list. Display-only + reversible; keyed by person key.
+$ack_map = get_option( 'owc_conflict_ack', array() );
+if ( ! is_array( $ack_map ) ) {
+    $ack_map = array();
+}
+$active_conflicts = array();
+$ack_conflicts    = array();
+foreach ( $conflicts as $ckey => $cp ) {
+    if ( isset( $ack_map[ $ckey ] ) ) {
+        $ack_conflicts[ $ckey ] = $cp;
+    } else {
+        $active_conflicts[ $ckey ] = $cp;
+    }
+}
+
+// Shared row renderer for both the active and acknowledged tables. $cb_class is
+// the checkbox class ('' = no checkbox column, e.g. for non-admins).
+$render_conflict_row = function ( $key, $p, $cb_class ) use ( $user_link, $pos_span, $is_admin ) {
+    $row_bg = ( $p['multi_hst'] || $p['same_chron_hst_cm'] ) ? '#fdeaea' : '';
+    ob_start();
+    ?>
+    <tr<?php echo $row_bg ? ' style="background:' . esc_attr( $row_bg ) . ';"' : ''; ?>>
+        <?php if ( $is_admin && $cb_class ) : ?>
+        <td class="owc-conf-cb"><input type="checkbox" class="<?php echo esc_attr( $cb_class ); ?>" data-key="<?php echo esc_attr( $key ); ?>"></td>
+        <?php endif; ?>
+        <td><?php echo $user_link( $p['uid'], $p['name'] ); ?></td>
+        <td><?php echo esc_html( $p['email'] ?: '—' ); ?></td>
+        <td style="text-align:center;font-weight:600;"><?php echo (int) count( $p['positions'] ); ?></td>
+        <td>
+            <?php if ( $p['multi_hst'] ) : ?><span class="owc-conf-flag crit"><?php esc_html_e( 'Multiple HST', 'owbn-core' ); ?></span><?php endif; ?>
+            <?php if ( $p['same_chron_hst_cm'] ) : ?><span class="owc-conf-flag crit"><?php esc_html_e( 'HST+CM same chronicle', 'owbn-core' ); ?></span><?php endif; ?>
+            <?php if ( $p['no_email'] ) : ?><span class="owc-conf-flag warn"><?php esc_html_e( 'No/placeholder email', 'owbn-core' ); ?></span><?php endif; ?>
+            <?php if ( ! $p['multi_hst'] && ! $p['same_chron_hst_cm'] && ! $p['no_email'] ) : ?><span class="owc-conf-flag warn"><?php esc_html_e( 'Overlap', 'owbn-core' ); ?></span><?php endif; ?>
+        </td>
+        <td><?php foreach ( $p['positions'] as $pos ) { echo $pos_span( $pos ); } ?></td>
+    </tr>
+    <?php
+    return ob_get_clean();
+};
+
 $client_id = function_exists( 'owc_get_client_id' ) ? owc_get_client_id() : 'owc';
 $page_slug = $client_id . '-owc-reports';
 ?>
@@ -136,6 +190,16 @@ $page_slug = $client_id . '-owc-reports';
 .owc-conf-flag.crit { background: #f8d7da; color: #842029; }
 .owc-conf-flag.warn { background: #fff3cd; color: #664d03; }
 .owc-conf-summary { margin: 12px 0; color: #50575e; }
+a.owc-conf-pos { text-decoration: none; color: #1d2327; }
+a.owc-conf-pos:hover { text-decoration: underline; }
+.owc-conf-report td.owc-conf-cb, .owc-conf-report th.owc-conf-cb { width: 28px; text-align: center; }
+.owc-conf-bulk { display: flex; gap: 8px; align-items: center; margin: 12px 0; padding: 8px 10px; background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 3px; }
+.owc-conf-bulk .owc-conf-bulk-count { color: #50575e; font-size: 12px; }
+.owc-conf-bulk button[disabled] { opacity: 0.5; cursor: not-allowed; }
+.owc-conf-bulk .owc-conf-bulk-result { margin-left: auto; font-size: 12px; }
+.owc-conf-ack { margin-top: 24px; }
+.owc-conf-ack summary { cursor: pointer; font-weight: 600; color: #50575e; }
+.owc-conf-ack .owc-conf-report tbody tr { opacity: 0.7; }
 </style>
 
 <p><?php esc_html_e( 'Accounts holding more than one chronicle staff position across active chronicles. Most severe first: HST of multiple chronicles, then HST+CM of the same chronicle.', 'owbn-core' ); ?></p>
@@ -151,11 +215,32 @@ $page_slug = $client_id . '-owc-reports';
     <?php return; ?>
 <?php endif; ?>
 
-<p class="owc-conf-summary"><strong><?php echo esc_html( sprintf( __( '%d account(s) hold multiple staff positions.', 'owbn-core' ), count( $conflicts ) ) ); ?></strong></p>
+<?php
+$active_count = count( $active_conflicts );
+$ack_count    = count( $ack_conflicts );
+?>
 
+<p class="owc-conf-summary">
+    <strong><?php echo esc_html( sprintf( _n( '%d account holds multiple staff positions.', '%d accounts hold multiple staff positions.', $active_count, 'owbn-core' ), $active_count ) ); ?></strong>
+    <?php if ( $ack_count ) : ?>
+        <span> — <?php echo esc_html( sprintf( _n( '%d acknowledged (hidden below).', '%d acknowledged (hidden below).', $ack_count, 'owbn-core' ), $ack_count ) ); ?></span>
+    <?php endif; ?>
+</p>
+
+<?php if ( $is_admin && $active_count ) : ?>
+<div class="owc-conf-bulk" id="owc-conf-bulk">
+    <strong><?php esc_html_e( 'Bulk:', 'owbn-core' ); ?></strong>
+    <button type="button" class="button" id="owc-conf-ack-btn" disabled><?php esc_html_e( 'Acknowledge (dismiss)', 'owbn-core' ); ?></button>
+    <span class="owc-conf-bulk-count">0 <?php esc_html_e( 'selected', 'owbn-core' ); ?></span>
+    <span class="owc-conf-bulk-result"></span>
+</div>
+<?php endif; ?>
+
+<?php if ( $active_count ) : ?>
 <table class="owc-conf-report">
     <thead>
     <tr>
+        <?php if ( $is_admin ) : ?><th class="owc-conf-cb"><input type="checkbox" id="owc-conf-all-active" title="<?php esc_attr_e( 'Select all', 'owbn-core' ); ?>"></th><?php endif; ?>
         <th style="width:22%;"><?php esc_html_e( 'Account', 'owbn-core' ); ?></th>
         <th style="width:20%;"><?php esc_html_e( 'Email', 'owbn-core' ); ?></th>
         <th style="width:6%;text-align:center;"><?php esc_html_e( '#', 'owbn-core' ); ?></th>
@@ -164,27 +249,86 @@ $page_slug = $client_id . '-owc-reports';
     </tr>
     </thead>
     <tbody>
-    <?php foreach ( $conflicts as $p ) :
-        $row_bg = ( $p['multi_hst'] || $p['same_chron_hst_cm'] ) ? '#fdeaea' : '';
-        ?>
-        <tr<?php echo $row_bg ? ' style="background:' . esc_attr( $row_bg ) . ';"' : ''; ?>>
-            <td><?php echo $user_link( $p['uid'], $p['name'] ); ?></td>
-            <td><?php echo esc_html( $p['email'] ?: '—' ); ?></td>
-            <td style="text-align:center;font-weight:600;"><?php echo (int) count( $p['positions'] ); ?></td>
-            <td>
-                <?php if ( $p['multi_hst'] ) : ?><span class="owc-conf-flag crit"><?php esc_html_e( 'Multiple HST', 'owbn-core' ); ?></span><?php endif; ?>
-                <?php if ( $p['same_chron_hst_cm'] ) : ?><span class="owc-conf-flag crit"><?php esc_html_e( 'HST+CM same chronicle', 'owbn-core' ); ?></span><?php endif; ?>
-                <?php if ( $p['no_email'] ) : ?><span class="owc-conf-flag warn"><?php esc_html_e( 'No/placeholder email', 'owbn-core' ); ?></span><?php endif; ?>
-                <?php if ( ! $p['multi_hst'] && ! $p['same_chron_hst_cm'] && ! $p['no_email'] ) : ?><span class="owc-conf-flag warn"><?php esc_html_e( 'Overlap', 'owbn-core' ); ?></span><?php endif; ?>
-            </td>
-            <td>
-                <?php foreach ( $p['positions'] as $pos ) :
-                    $cls = 'owc-conf-pos ' . strtolower( $pos['role'] );
-                    ?>
-                    <span class="<?php echo esc_attr( $cls ); ?>"><?php echo esc_html( $pos['role'] . ' · ' . $pos['slug'] ); ?></span>
-                <?php endforeach; ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
+    <?php foreach ( $active_conflicts as $ckey => $p ) {
+        echo $render_conflict_row( $ckey, $p, 'owc-conf-cb-active' );
+    } ?>
     </tbody>
 </table>
+<?php elseif ( $ack_count ) : ?>
+    <p><em><?php esc_html_e( 'All flagged overlaps have been acknowledged.', 'owbn-core' ); ?></em></p>
+<?php endif; ?>
+
+<?php if ( $is_admin && $ack_count ) : ?>
+<details class="owc-conf-ack"<?php echo $active_count ? '' : ' open'; ?>>
+    <summary><?php echo esc_html( sprintf( __( 'Acknowledged (%d)', 'owbn-core' ), $ack_count ) ); ?></summary>
+    <div class="owc-conf-bulk" id="owc-conf-bulk-restore">
+        <strong><?php esc_html_e( 'Bulk:', 'owbn-core' ); ?></strong>
+        <button type="button" class="button" id="owc-conf-unack-btn" disabled><?php esc_html_e( 'Restore to active', 'owbn-core' ); ?></button>
+        <span class="owc-conf-bulk-count">0 <?php esc_html_e( 'selected', 'owbn-core' ); ?></span>
+        <span class="owc-conf-bulk-result"></span>
+    </div>
+    <table class="owc-conf-report">
+        <thead>
+        <tr>
+            <th class="owc-conf-cb"><input type="checkbox" id="owc-conf-all-ack" title="<?php esc_attr_e( 'Select all', 'owbn-core' ); ?>"></th>
+            <th style="width:22%;"><?php esc_html_e( 'Account', 'owbn-core' ); ?></th>
+            <th style="width:20%;"><?php esc_html_e( 'Email', 'owbn-core' ); ?></th>
+            <th style="width:6%;text-align:center;"><?php esc_html_e( '#', 'owbn-core' ); ?></th>
+            <th style="width:22%;"><?php esc_html_e( 'Issues', 'owbn-core' ); ?></th>
+            <th><?php esc_html_e( 'Positions', 'owbn-core' ); ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ( $ack_conflicts as $ckey => $p ) {
+            echo $render_conflict_row( $ckey, $p, 'owc-conf-cb-ack' );
+        } ?>
+        </tbody>
+    </table>
+</details>
+<?php endif; ?>
+
+<?php if ( $is_admin ) : ?>
+<script type="text/javascript">
+jQuery(function($){
+    var confNonce = '<?php echo esc_js( wp_create_nonce( 'owc_conflict_bulk' ) ); ?>';
+
+    function wire( allSel, cbSel, btnSel, toolbarSel ){
+        function refresh(){
+            var n = $(cbSel + ':checked').length;
+            $(toolbarSel + ' .owc-conf-bulk-count').text(n + ' <?php echo esc_js( __( 'selected', 'owbn-core' ) ); ?>');
+            $(btnSel).prop('disabled', n === 0);
+        }
+        $(document).on('change', allSel, function(){
+            $(cbSel).prop('checked', $(this).is(':checked'));
+            refresh();
+        });
+        $(document).on('change', cbSel, refresh);
+    }
+    wire('#owc-conf-all-active', '.owc-conf-cb-active', '#owc-conf-ack-btn', '#owc-conf-bulk');
+    wire('#owc-conf-all-ack', '.owc-conf-cb-ack', '#owc-conf-unack-btn', '#owc-conf-bulk-restore');
+
+    function collect(cbSel){
+        return $(cbSel + ':checked').map(function(){ return $(this).data('key'); }).get();
+    }
+    function bulkPost(action, keys, $msg){
+        if (!keys.length) return;
+        $msg.css('color','#50575e').text('<?php echo esc_js( __( 'Working...', 'owbn-core' ) ); ?>');
+        $.post(ajaxurl, { action: action, keys: JSON.stringify(keys), nonce: confNonce }, function(r){
+            if (r.success) {
+                $msg.css('color','#2e7d32').text('✓ ' + (r.data.message || 'done'));
+                setTimeout(function(){ window.location.reload(); }, 700);
+            } else {
+                $msg.css('color','#d63638').text((r.data && r.data.message) ? r.data.message : (r.data || 'Failed'));
+            }
+        }).fail(function(){ $msg.css('color','#d63638').text('Request failed'); });
+    }
+
+    $('#owc-conf-ack-btn').on('click', function(){
+        bulkPost('owc_bulk_ack_conflict', collect('.owc-conf-cb-active'), $('#owc-conf-bulk .owc-conf-bulk-result'));
+    });
+    $('#owc-conf-unack-btn').on('click', function(){
+        bulkPost('owc_bulk_unack_conflict', collect('.owc-conf-cb-ack'), $('#owc-conf-bulk-restore .owc-conf-bulk-result'));
+    });
+});
+</script>
+<?php endif; ?>
