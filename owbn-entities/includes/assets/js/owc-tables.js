@@ -4,7 +4,32 @@
     document.addEventListener('DOMContentLoaded', function() {
         initSortableTables();
         initFilters();
+        applyUrlFilters();
     });
+
+    // Pre-fill + apply filters from URL query params so other pages can deep-link
+    // into a pre-filtered list, e.g. /find-a-game/?genre=Camarilla. Param names
+    // map to the filter inputs by id; 'genre' is an alias for 'genres'.
+    function applyUrlFilters() {
+        if (!window.location.search) return;
+        var params;
+        try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
+        var map = {
+            genre:  'owc-filter-genres',
+            genres: 'owc-filter-genres',
+            region: 'owc-filter-region',
+            state:  'owc-filter-state',
+            type:   'owc-filter-type'
+        };
+        var applied = false;
+        Object.keys(map).forEach(function(key) {
+            var val = params.get(key);
+            if (val === null || val === '') return;
+            var input = document.getElementById(map[key]);
+            if (input) { input.value = val; applied = true; }
+        });
+        if (applied) applyFilters();
+    }
 
     function initSortableTables() {
         // Only enable sorting for chronicles list, not coordinators

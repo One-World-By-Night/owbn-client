@@ -51,7 +51,11 @@ add_action( 'wp_enqueue_scripts', function () {
     }
     if ( $js ) {
         wp_register_script( 'owc-tables', $js . 'owc-tables.js', array( 'jquery' ), $ver, true );
-        wp_register_script( 'owc-client', $js . 'owc-client.js', array( 'jquery' ), $ver, true );
+        // owc-client depends on owc-tables (filter/sort behavior). Registering it
+        // here first (jQuery-only) previously shadowed the later shortcode-side
+        // registration that adds the owc-tables dep, so owc-tables.js was never
+        // loaded and filters/sorting were dead. Declare the dep at registration.
+        wp_register_script( 'owc-client', $js . 'owc-client.js', array( 'jquery', 'owc-tables' ), $ver, true );
         wp_register_script( 'owc-coord-detail', $js . 'owc-coord-detail.js', array( 'jquery' ), $ver, true );
         wp_register_script( 'owc-territory', $js . 'owc-territory.js', array( 'jquery' ), $ver, true );
     }
