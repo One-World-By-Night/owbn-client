@@ -25,6 +25,9 @@ require_once __DIR__ . '/cache.php';
 // Centralized owc_asc_* wrapper API.
 require_once __DIR__ . '/api.php';
 
+// Role-cache reconciliation cron + change-feed (self-healing, rate-safe).
+require_once __DIR__ . '/reconcile.php';
+
 // Reusable UI components (chronicle/coordinator pickers).
 require_once __DIR__ . '/components.php';
 

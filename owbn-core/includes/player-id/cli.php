@@ -117,7 +117,8 @@ WP_CLI::add_command('owbn backfill-player-ids', 'owc_pid_cli_backfill');
  * is unavailable and --slug is given.
  */
 function owc_pid_cli_refresh_roles($args, $assoc_args) {
-    $sleep = isset($assoc_args['sleep']) ? max(0, (float) $assoc_args['sleep']) : 0.5;
+    // Default ~54 req/min — under the host's 60/min-per-IP rate cap (see reconcile.php).
+    $sleep = isset($assoc_args['sleep']) ? max(0, (float) $assoc_args['sleep']) : 1.1;
     $limit = isset($assoc_args['limit']) ? absint($assoc_args['limit']) : 0;
 
     $use_centralized = function_exists('owc_asc_refresh_user_roles');
@@ -143,15 +144,28 @@ function owc_pid_cli_refresh_roles($args, $assoc_args) {
     $ok  = 0;
     $err = 0;
 
-    foreach ($users as $u) {
+    $refresh = function ($uid, $u_email) use ($use_centralized, $slug) {
+        // Prefer the SAFE refresh (fetch-then-set) so a failure/429 never leaves
+        // a user with empty roles. Fall back to the older helpers if unavailable.
+        if (function_exists('owc_asc_refresh_user_roles_safe')) {
+            return owc_asc_refresh_user_roles_safe((int) $uid);
+        }
         if ($use_centralized) {
-            $res = owc_asc_refresh_user_roles((int) $u->ID);
-        } else {
-            $wp_user = get_user_by('id', $u->ID);
-            if (!$wp_user) { $err++; continue; }
-            delete_user_meta($u->ID, 'accessschema_cached_roles');
-            delete_user_meta($u->ID, 'accessschema_cached_roles_timestamp');
-            $res = accessSchema_refresh_roles_for_user($wp_user, $slug);
+            return owc_asc_refresh_user_roles((int) $uid);
+        }
+        $wp_user = get_user_by('id', $uid);
+        if (!$wp_user) { return new WP_Error('invalid_user', 'no user'); }
+        return accessSchema_refresh_roles_for_user($wp_user, $slug);
+    };
+
+    foreach ($users as $u) {
+        $res = $refresh($u->ID, $u->user_email);
+
+        // On a 429, wait out the 60s window and retry once, rather than churning.
+        if (is_wp_error($res) && 'asc_rate_limited' === $res->get_error_code()) {
+            WP_CLI::log(sprintf('  [429] rate limited at #%d — waiting 65s then retrying.', $u->ID));
+            sleep(65);
+            $res = $refresh($u->ID, $u->user_email);
         }
 
         if (is_wp_error($res)) {
