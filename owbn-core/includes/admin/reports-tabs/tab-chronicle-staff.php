@@ -475,7 +475,9 @@ if ( $can_bulk ) :
                 <?php if ( $bulk_eligible && $bulk_uid ) : ?>
                 <input type="checkbox" class="owc-cb-chron"
                     data-slug="<?php echo esc_attr( $slug ); ?>"
-                    data-user="<?php echo esc_attr( $bulk_uid ); ?>">
+                    data-user="<?php echo esc_attr( $bulk_uid ); ?>"
+                    data-email="<?php echo esc_attr( $holders[0]['email'] ?? '' ); ?>"
+                    data-name="<?php echo esc_attr( $holders[0]['display_name'] ?? ( $holders[0]['user_login'] ?? '' ) ); ?>">
                 <?php endif; ?>
             </td>
             <?php endif; ?>
@@ -514,6 +516,8 @@ if ( $can_bulk ) :
                                     class="button button-small owc-confirm-cm"
                                     data-slug="<?php echo esc_attr( $slug ); ?>"
                                     data-user="<?php echo esc_attr( $hid ); ?>"
+                                    data-email="<?php echo esc_attr( $h['email'] ?? '' ); ?>"
+                                    data-name="<?php echo esc_attr( $hname ); ?>"
                                     data-nonce="<?php echo esc_attr( wp_create_nonce( 'owc_confirm_cm_' . $slug ) ); ?>"
                                     style="margin-top:2px;">
                                     <?php esc_html_e( 'Confirm as CM', 'owbn-core' ); ?>
@@ -547,6 +551,8 @@ jQuery(function($){
             action: 'owc_confirm_cm_match',
             slug:   $btn.data('slug'),
             user:   $btn.data('user'),
+            email:  $btn.data('email'),
+            name:   $btn.data('name'),
             nonce:  $btn.data('nonce')
         }, function(response){
             if (response.success) {
@@ -576,7 +582,7 @@ jQuery(function($){
 
     function collectChronPairs(){
         return $('.owc-cb-chron:checked').map(function(){
-            return { slug: $(this).data('slug'), user: $(this).data('user') };
+            return { slug: $(this).data('slug'), user: $(this).data('user'), email: $(this).data('email'), name: $(this).data('name') };
         }).get();
     }
 

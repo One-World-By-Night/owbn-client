@@ -75,19 +75,62 @@ function owc_render_reports_page() {
 }
 
 /**
+ * Write a chronicle's cm_info from an AccessSchema holder identified BY EMAIL.
+ *
+ * The report rows come from AccessSchema, whose `user_id` is the *SSO* user id,
+ * NOT a local WP id. Storing that number as cm_info['user'] and then rendering
+ * get_userdata() of it stamps whoever happens to hold that id locally — a wrong
+ * person (the Aug-2026 "wrong CM" incident). So we resolve the holder by EMAIL,
+ * store the LOCAL user id (or 0 when the CM has no local account), and take the
+ * name/email from that resolution — never from a bare numeric id.
+ *
+ * @return array|WP_Error updated cm_info on success.
+ */
+function owc_cm_apply_cm_by_email( $post_id, $slug, $email, $fallback_name = '' ) {
+    $email = sanitize_email( $email );
+    if ( '' === $email ) {
+        return new WP_Error( 'no_email', 'A CM email is required.' );
+    }
+    $wpu = get_user_by( 'email', $email ); // LOCAL user resolved by email (never an SSO id)
+
+    $cm_info = get_post_meta( $post_id, 'cm_info', true );
+    if ( ! is_array( $cm_info ) ) $cm_info = array();
+
+    $cm_info['user']         = $wpu ? (int) $wpu->ID : 0; // local WP id or 0 — never a raw SSO id
+    $cm_info['display_name'] = $wpu ? $wpu->display_name : ( '' !== $fallback_name ? $fallback_name : $email );
+    $cm_info['actual_email'] = $email; // personal/external contact
+
+    // display_email is locked to {slug}-cm@owbn.net (parent slug for satellites).
+    $locked_email = function_exists( 'owbn_chronicle_cm_email' )
+        ? owbn_chronicle_cm_email( $post_id )
+        : '';
+    if ( '' === $locked_email ) {
+        $locked_email = $slug . '-cm@owbn.net';
+    }
+    $cm_info['display_email'] = $locked_email;
+
+    update_post_meta( $post_id, 'cm_info', $cm_info );
+    return $cm_info;
+}
+
+/**
  * AJAX: confirm a fuzzy CM match and write it back into the chronicle's
  * cm_info post meta. Also grants the ASC role so the two stay in sync.
+ *
+ * Resolves the CM BY EMAIL (the report row carries it). The legacy `user`
+ * param — an SSO id — is intentionally ignored for storage.
  */
 add_action( 'wp_ajax_owc_confirm_cm_match', function () {
     if ( ! current_user_can( 'manage_options' ) ) {
         wp_send_json_error( 'Unauthorized.' );
     }
-    $slug    = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
-    $user_id = isset( $_POST['user'] ) ? (int) $_POST['user'] : 0;
+    $slug  = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
+    $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    $name  = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
     check_ajax_referer( 'owc_confirm_cm_' . $slug, 'nonce' );
 
-    if ( '' === $slug || ! $user_id ) {
-        wp_send_json_error( 'Missing parameters.' );
+    if ( '' === $slug || '' === $email ) {
+        wp_send_json_error( 'Missing parameters (slug and email required).' );
     }
 
     $posts = get_posts( array(
@@ -102,39 +145,21 @@ add_action( 'wp_ajax_owc_confirm_cm_match', function () {
     }
     $post_id = $posts[0]->ID;
 
-    $user = get_userdata( $user_id );
-    if ( ! $user ) {
-        wp_send_json_error( 'User not found.' );
+    $cm_info = owc_cm_apply_cm_by_email( $post_id, $slug, $email, $name );
+    if ( is_wp_error( $cm_info ) ) {
+        wp_send_json_error( $cm_info->get_error_message() );
     }
-
-    $cm_info = get_post_meta( $post_id, 'cm_info', true );
-    if ( ! is_array( $cm_info ) ) $cm_info = array();
-
-    $cm_info['user']         = (int) $user_id;
-    $cm_info['display_name'] = $user->display_name;
-    $cm_info['actual_email'] = $user->user_email; // personal/external contact
-
-    // display_email is locked to {slug}-cm@owbn.net (parent slug for satellites).
-    $locked_email = function_exists( 'owbn_chronicle_cm_email' )
-        ? owbn_chronicle_cm_email( $post_id )
-        : '';
-    if ( '' === $locked_email ) {
-        $locked_email = $slug . '-cm@owbn.net';
-    }
-    $cm_info['display_email'] = $locked_email;
-
-    update_post_meta( $post_id, 'cm_info', $cm_info );
 
     // Bust the report cache so a refresh shows the updated state.
     delete_transient( 'owc_cm_holders_map_v1' );
 
     // Grant the ASC role directly so ASC matches meta immediately.
     if ( function_exists( 'owc_asc_grant_role' ) ) {
-        owc_asc_grant_role( 'ccs', $user->user_email, 'chronicle/' . $slug . '/cm' );
+        owc_asc_grant_role( 'ccs', $email, 'chronicle/' . $slug . '/cm' );
     }
 
     wp_send_json_success( array(
-        'message' => sprintf( 'Confirmed: %s', $user->display_name ),
+        'message' => sprintf( 'Confirmed: %s', $cm_info['display_name'] ),
     ) );
 } );
 
@@ -159,6 +184,7 @@ function owc_cm_decode_bulk_pairs() {
             'slug'  => $slug,
             'user'  => $uid,
             'email' => isset( $row['email'] ) ? sanitize_email( $row['email'] ) : '',
+            'name'  => isset( $row['name'] ) ? sanitize_text_field( $row['name'] ) : '',
             'role'  => isset( $row['role'] ) ? sanitize_text_field( $row['role'] ) : ( 'chronicle/' . $slug . '/cm' ),
         );
     }
@@ -188,25 +214,13 @@ add_action( 'wp_ajax_owc_bulk_confirm_cm_match', function () {
         if ( empty( $posts ) ) { $fail++; $errors[] = $p['slug'] . ': not found'; continue; }
         $post_id = $posts[0]->ID;
 
-        $user = get_userdata( $p['user'] );
-        if ( ! $user ) { $fail++; $errors[] = $p['slug'] . ': user missing'; continue; }
-
-        $cm_info = get_post_meta( $post_id, 'cm_info', true );
-        if ( ! is_array( $cm_info ) ) $cm_info = array();
-        $cm_info['user']         = (int) $p['user'];
-        $cm_info['display_name'] = $user->display_name;
-        $cm_info['actual_email'] = $user->user_email; // personal/external contact
-
-        $locked_email = function_exists( 'owbn_chronicle_cm_email' )
-            ? owbn_chronicle_cm_email( $post_id )
-            : '';
-        if ( '' === $locked_email ) $locked_email = $p['slug'] . '-cm@owbn.net';
-        $cm_info['display_email'] = $locked_email;
-
-        update_post_meta( $post_id, 'cm_info', $cm_info );
+        // Resolve BY EMAIL — never treat the row's numeric id (an SSO id) as a WP id.
+        if ( empty( $p['email'] ) ) { $fail++; $errors[] = $p['slug'] . ': no email'; continue; }
+        $cm_info = owc_cm_apply_cm_by_email( $post_id, $p['slug'], $p['email'], $p['name'] ?? '' );
+        if ( is_wp_error( $cm_info ) ) { $fail++; $errors[] = $p['slug'] . ': ' . $cm_info->get_error_message(); continue; }
 
         if ( function_exists( 'owc_asc_grant_role' ) ) {
-            owc_asc_grant_role( 'ccs', $user->user_email, 'chronicle/' . $p['slug'] . '/cm' );
+            owc_asc_grant_role( 'ccs', $p['email'], 'chronicle/' . $p['slug'] . '/cm' );
         }
         $ok++;
     }
@@ -238,12 +252,12 @@ add_action( 'wp_ajax_owc_bulk_revoke_cm_role', function () {
 
     $ok = 0; $fail = 0; $errors = array();
     foreach ( $pairs as $p ) {
-        // Resolve user email — prefer WP user lookup so revoke uses the real address.
-        $user  = get_userdata( $p['user'] );
-        $email = $user ? $user->user_email : $p['email'];
+        // Use the row's email directly — the numeric id is an SSO id, so resolving
+        // it as a local WP user would target the wrong person's address.
+        $email = ! empty( $p['email'] ) ? sanitize_email( $p['email'] ) : '';
         if ( empty( $email ) ) { $fail++; $errors[] = $p['slug'] . ': no email'; continue; }
 
-        // Refuse if local cm_info still names this user.
+        // Refuse if local cm_info still names this holder (compare BY EMAIL, not id).
         $posts = get_posts( array(
             'post_type'      => 'owbn_chronicle',
             'meta_key'       => 'chronicle_slug',
@@ -253,7 +267,7 @@ add_action( 'wp_ajax_owc_bulk_revoke_cm_role', function () {
         ) );
         if ( ! empty( $posts ) ) {
             $local = get_post_meta( $posts[0]->ID, 'cm_info', true );
-            if ( is_array( $local ) && (int) ( $local['user'] ?? 0 ) === (int) $p['user'] ) {
+            if ( is_array( $local ) && strtolower( $local['actual_email'] ?? '' ) === strtolower( $email ) ) {
                 $fail++; $errors[] = $p['slug'] . ': local CM still names this user';
                 continue;
             }
