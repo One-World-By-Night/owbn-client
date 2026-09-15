@@ -7,3 +7,4 @@ require_once __DIR__ . '/bylaws-api.php';
 require_once __DIR__ . '/events-api.php';
 require_once __DIR__ . '/board-api.php';
 require_once __DIR__ . '/entity-resolution.php';
+require_once __DIR__ . '/cron-throttle.php';
