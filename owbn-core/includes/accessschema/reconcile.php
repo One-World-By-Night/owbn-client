@@ -135,9 +135,16 @@ if ( ! function_exists( 'owc_asc_reconcile_run' ) ) {
 		}
 
 		// (b) Oldest caches — rolling refresh so everything cycles through.
+		// Only touches entries actually past the TTL. Without this cutoff, a
+		// site with fewer cached users than the batch size (e.g. 26 users,
+		// batch 20) re-refreshes nearly its whole population every 3-minute
+		// tick instead of respecting the 15-minute TTL — a 3-5x overcall
+		// multiplier on sso.owbn.net that showed up as ~80% of its daily
+		// request volume (Sept 2026 CPU audit).
 		$remaining = $batch - $done;
 		if ( $remaining > 0 ) {
 			global $wpdb;
+			$ttl = (int) get_option( owc_option_name( 'asc_cache_ttl' ), OWC_ASC_CACHE_TTL );
 			$ids = $wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT m.user_id
@@ -145,10 +152,12 @@ if ( ! function_exists( 'owc_asc_reconcile_run' ) ) {
 					   LEFT JOIN {$wpdb->usermeta} t
 					          ON t.user_id = m.user_id AND t.meta_key = %s
 					  WHERE m.meta_key = %s
+					    AND COALESCE( t.meta_value + 0, 0 ) < %d
 					  ORDER BY COALESCE( t.meta_value + 0, 0 ) ASC
 					  LIMIT %d",
 					'accessschema_cached_roles_timestamp',
 					'accessschema_cached_roles',
+					time() - $ttl,
 					$remaining
 				)
 			);
