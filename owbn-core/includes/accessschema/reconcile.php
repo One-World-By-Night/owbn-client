@@ -84,11 +84,19 @@ if ( ! function_exists( 'owc_asc_refresh_user_roles_safe' ) ) {
 // otherwise reconcile its own caches against itself, spending its own budget).
 if ( owc_asc_is_remote_mode() && ! function_exists( 'accessSchema_add_role' ) ) {
 
+	// 15 minutes (not 3) — matches the TTL and the Action Scheduler throttle
+	// (see cron-throttle.php). At 3 minutes this tick was the fastest-firing
+	// cron on the site, forcing a full WordPress bootstrap ~480 times/day
+	// regardless of how little work the staleness filter found to do. Batch
+	// size below is widened proportionally (5x) so total refresh throughput
+	// — and therefore sso.owbn.net's call volume — is unchanged; only the
+	// number of separate bootstraps drops (Sept 2026 CPU audit: council was
+	// still bottlenecked on this after the AS throttle alone).
 	add_filter( 'cron_schedules', function ( $schedules ) {
-		if ( ! isset( $schedules['owc_asc_3min'] ) ) {
-			$schedules['owc_asc_3min'] = array(
-				'interval' => 180,
-				'display'  => __( 'Every 3 minutes (ASC role reconcile)', 'owbn-core' ),
+		if ( ! isset( $schedules['owc_asc_15min'] ) ) {
+			$schedules['owc_asc_15min'] = array(
+				'interval' => 900,
+				'display'  => __( 'Every 15 minutes (ASC role reconcile)', 'owbn-core' ),
 			);
 		}
 		return $schedules;
@@ -96,9 +104,17 @@ if ( owc_asc_is_remote_mode() && ! function_exists( 'accessSchema_add_role' ) ) 
 
 	add_action( 'init', function () {
 		if ( ! wp_next_scheduled( 'owc_asc_reconcile_tick' ) ) {
-			wp_schedule_event( time() + 120, 'owc_asc_3min', 'owc_asc_reconcile_tick' );
+			wp_schedule_event( time() + 120, 'owc_asc_15min', 'owc_asc_reconcile_tick' );
+			return;
 		}
-	} );
+		// Sites already running the old 3-minute schedule need a one-time
+		// reschedule — WP-Cron only reads a recurring event's interval when
+		// the event is (re)created, not on every firing.
+		$event = wp_get_scheduled_event( 'owc_asc_reconcile_tick' );
+		if ( $event && 'owc_asc_15min' !== $event->schedule ) {
+			wp_unschedule_event( $event->timestamp, 'owc_asc_reconcile_tick' );
+		}
+	}, 5 );
 
 	add_action( 'owc_asc_reconcile_tick', 'owc_asc_reconcile_run' );
 }
@@ -116,8 +132,11 @@ if ( ! function_exists( 'owc_asc_reconcile_run' ) ) {
 		if ( ! function_exists( 'owc_asc_refresh_user_roles_safe' ) ) {
 			return array( 'refreshed' => 0, 'rate_limited' => false );
 		}
-		$batch = (int) apply_filters( 'owc_asc_reconcile_batch', 20 );
-		$batch = max( 1, min( 40, $batch ) );
+		// Widened 5x (20→100, cap 40→200) alongside the tick interval move
+		// from 3 to 15 minutes, so total daily refresh volume — and sso's
+		// call load — stays the same; only the bootstrap count drops.
+		$batch = (int) apply_filters( 'owc_asc_reconcile_batch', 100 );
+		$batch = max( 1, min( 200, $batch ) );
 		$done  = 0;
 
 		// (a) Users the host says changed since we last looked — refresh now.
