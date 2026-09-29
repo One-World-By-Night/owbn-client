@@ -569,9 +569,10 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                  WHERE e.domain = 'disciplinary_actions' {$da_entry_scope} {$f_entry_chronicle} {$f_status} {$da_search}"
             );
             $rows = $wpdb->get_results(
-                "SELECT e.id, e.chronicle_slug, e.created_at,
+                "SELECT e.id, e.chronicle_slug, e.created_at, e.form_slug,
                     m_name.meta_value as player_name,
                     m_level.meta_value as da_level,
+                    m_action.meta_value as da_action,
                     m_details.meta_value as da_details,
                     m_date.meta_value as da_date,
                     m_type.meta_value as da_type,
@@ -579,6 +580,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                  FROM {$prefix}oat_entries e
                  LEFT JOIN {$prefix}oat_entry_meta m_name ON e.id = m_name.entry_id AND m_name.meta_key = 'player_name'
                  LEFT JOIN {$prefix}oat_entry_meta m_level ON e.id = m_level.entry_id AND m_level.meta_key = 'da_level'
+                 LEFT JOIN {$prefix}oat_entry_meta m_action ON e.id = m_action.entry_id AND m_action.meta_key = 'da_action'
                  LEFT JOIN {$prefix}oat_entry_meta m_details ON e.id = m_details.entry_id AND m_details.meta_key = 'da_details'
                  LEFT JOIN {$prefix}oat_entry_meta m_date ON e.id = m_date.entry_id AND m_date.meta_key = 'da_date'
                  LEFT JOIN {$prefix}oat_entry_meta m_type ON e.id = m_type.entry_id AND m_type.meta_key = 'da_type'
@@ -614,7 +616,14 @@ function owc_oat_render_report( $report, $filters, $scope ) {
                     $chron_title = $r->chronicle_slug
                         ? ( function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $r->chronicle_slug ) : $r->chronicle_slug )
                         : 'OWBN-Wide';
-                    $level_lbl = isset( $level_labels[ $r->da_level ] ) ? $level_labels[ $r->da_level ] : ( $r->da_level ?: '—' );
+                    if ( 'da_global' === $r->form_slug && $r->da_action ) {
+                        // Global DAs record their level in the Action taken dropdown.
+                        $level_lbl = $r->da_action;
+                    } elseif ( $r->da_level ) {
+                        $level_lbl = isset( $level_labels[ $r->da_level ] ) ? $level_labels[ $r->da_level ] : $r->da_level;
+                    } else {
+                        $level_lbl = '—';
+                    }
                     $status_color = $r->da_status === 'active' ? '#d63638' : ( $r->da_status === 'lifted' ? '#00a32a' : '#666' );
                     $detail_url = admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . $r->id );
                     echo '<tr>';
@@ -639,9 +648,10 @@ function owc_oat_render_report( $report, $filters, $scope ) {
         case 'da_by_level':
             echo '<h2>Disciplinary Actions by Level</h2>';
             $rows = $wpdb->get_results(
-                "SELECT IFNULL(m.meta_value, 'unknown') as da_level, COUNT(*) as cnt
+                "SELECT CASE WHEN e.form_slug = 'da_global' AND m_act.meta_value <> '' THEN m_act.meta_value ELSE IFNULL(m.meta_value, 'unknown') END as da_level, COUNT(*) as cnt
                  FROM {$prefix}oat_entries e
                  LEFT JOIN {$prefix}oat_entry_meta m ON e.id = m.entry_id AND m.meta_key = 'da_level'
+                 LEFT JOIN {$prefix}oat_entry_meta m_act ON e.id = m_act.entry_id AND m_act.meta_key = 'da_action'
                  WHERE e.domain = 'disciplinary_actions' {$da_entry_scope}
                  GROUP BY da_level ORDER BY cnt DESC"
             );
