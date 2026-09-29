@@ -80,6 +80,163 @@ function owc_oat_reports_user_scope() {
 }
 
 /**
+ * Returns a chronicle title in "City, ST, US: Name" form. "New York City, NY - USA, Kings of New York" (any dash) becomes "New York City, NY, US: Kings of New York"; "Metarie, LA: Louisiana Revolt" becomes "Metarie, LA, US: Louisiana Revolt" when a country is given; any other title is returned unchanged.
+ *
+ * @param string $title   Chronicle title as stored.
+ * @param string $country Country code from the chronicle's location, used when the title has none.
+ * @return string
+ */
+function owc_oat_chronicle_report_label( $title, $country = '' ) {
+    $title = trim( (string) $title );
+    if ( preg_match( '/^(.*?)\s+[-–—]\s+([^,]+),\s*(.+)$/u', $title, $m ) ) {
+        $place   = rtrim( trim( $m[1] ), ', ' );
+        $country = trim( $m[2] );
+        if ( 'USA' === $country ) {
+            $country = 'US';
+        }
+        return $place . ', ' . $country . ': ' . trim( $m[3] );
+    }
+    $country = trim( (string) $country );
+    if ( '' !== $country && preg_match( '/^([^:]+,[^:]+):\s*(.+)$/u', $title, $m ) ) {
+        return rtrim( trim( $m[1] ), ', ' ) . ', ' . ( 'USA' === $country ? 'US' : $country ) . ': ' . trim( $m[2] );
+    }
+    return $title;
+}
+
+/**
+ * Returns every chronicle's report label and lowercase filter text (title, label, region, state and city, slug), keyed by slug.
+ *
+ * @return array<string,array{known:bool,label:string,search:string}>
+ */
+function owc_oat_chronicle_report_index() {
+    static $index = null;
+    if ( null !== $index ) {
+        return $index;
+    }
+    $index = array();
+    $list  = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+    if ( is_wp_error( $list ) ) {
+        $list = array();
+    }
+    foreach ( (array) $list as $chronicle ) {
+        $chronicle = (array) $chronicle;
+        $slug      = isset( $chronicle['slug'] ) ? (string) $chronicle['slug'] : '';
+        if ( '' === $slug ) {
+            continue;
+        }
+        $title    = isset( $chronicle['title'] ) ? (string) $chronicle['title'] : $slug;
+        $location = isset( $chronicle['ooc_locations'] ) && is_array( $chronicle['ooc_locations'] ) ? $chronicle['ooc_locations'] : array();
+        $label    = owc_oat_chronicle_report_label( $title, isset( $location['country'] ) ? (string) $location['country'] : '' );
+        $index[ $slug ] = array(
+            'known'  => true,
+            'label'  => $label,
+            'search' => strtolower( implode( ' ', array_filter( array(
+                $title,
+                $label,
+                isset( $chronicle['chronicle_region'] ) ? (string) $chronicle['chronicle_region'] : '',
+                isset( $location['region'] ) ? (string) $location['region'] : '',
+                isset( $location['city'] ) ? (string) $location['city'] : '',
+                $slug,
+            ) ) ) ),
+        );
+    }
+    return $index;
+}
+
+/**
+ * Returns the report label, filter text and whether the chronicle is in the chronicle list, for one chronicle slug: from the index, else from its entity title, else the slug itself.
+ *
+ * @param string $slug  Chronicle slug.
+ * @param array  $index Result of owc_oat_chronicle_report_index().
+ * @return array{known:bool,label:string,search:string}
+ */
+function owc_oat_chronicle_report_meta( $slug, $index ) {
+    if ( isset( $index[ $slug ] ) ) {
+        return $index[ $slug ];
+    }
+    if ( '' === (string) $slug ) {
+        return array( 'known' => false, 'label' => 'No chronicle recorded', 'search' => 'no chronicle recorded' );
+    }
+    $title = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $slug ) : '';
+    $label = $title ? owc_oat_chronicle_report_label( $title ) : $slug . ' (not in the chronicle list)';
+    return array( 'known' => false, 'label' => $label, 'search' => strtolower( $label . ' ' . $slug ) );
+}
+
+/**
+ * Returns the Chronicle Reports visible to this scope, newest first, or only the undecided (pending) ones, oldest first.
+ *
+ * @param array $scope        Result of owc_oat_reports_user_scope().
+ * @param array $filters      Report filters; 'chronicle' narrows to one chronicle slug.
+ * @param bool  $pending_only True for pending reports only.
+ * @return array Rows with id, chronicle_slug, status, current_step, created_at, submitter_name, game_dates, approx_attendance.
+ */
+function owc_oat_chronicle_report_rows( $scope, $filters, $pending_only ) {
+    global $wpdb;
+    $prefix = $wpdb->prefix;
+    $where  = "e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting'";
+    if ( empty( $scope['is_global'] ) ) {
+        if ( empty( $scope['chronicles'] ) ) {
+            return array();
+        }
+        $where .= " AND e.chronicle_slug IN ('" . implode( "','", array_map( 'esc_sql', $scope['chronicles'] ) ) . "')";
+    }
+    if ( ! empty( $filters['chronicle'] ) ) {
+        $where .= $wpdb->prepare( ' AND e.chronicle_slug = %s', $filters['chronicle'] );
+    }
+    if ( $pending_only ) {
+        $where .= " AND e.status = 'pending'";
+    }
+    $order = $pending_only ? 'ASC' : 'DESC';
+    return $wpdb->get_results(
+        "SELECT e.id, e.chronicle_slug, e.status, e.current_step, e.created_at,
+                m_sub.meta_value   AS submitter_name,
+                m_dates.meta_value AS game_dates,
+                m_att.meta_value   AS approx_attendance
+         FROM {$prefix}oat_entries e
+         LEFT JOIN {$prefix}oat_entry_meta m_sub   ON e.id = m_sub.entry_id   AND m_sub.meta_key = 'submitter_name'
+         LEFT JOIN {$prefix}oat_entry_meta m_dates ON e.id = m_dates.entry_id AND m_dates.meta_key = 'game_dates'
+         LEFT JOIN {$prefix}oat_entry_meta m_att   ON e.id = m_att.entry_id   AND m_att.meta_key = 'approx_attendance'
+         WHERE {$where}
+         ORDER BY e.created_at {$order}, e.id {$order}"
+    );
+}
+
+/**
+ * Returns a report's submitted date as text.
+ *
+ * @param int|string $created_at Unix timestamp.
+ * @return string
+ */
+function owc_oat_chronicle_report_date( $created_at ) {
+    if ( ! $created_at ) {
+        return '—';
+    }
+    return function_exists( 'owc_oat_format_date' ) ? owc_oat_format_date( $created_at ) : gmdate( 'Y-m-d', (int) $created_at );
+}
+
+/**
+ * Returns a report's workflow state as a label and colour: approved, denied, awaiting archivist, or sent back to the submitter.
+ *
+ * @param object $row Report row with status and current_step.
+ * @return array{label:string,color:string}
+ */
+function owc_oat_chronicle_report_state( $row ) {
+    if ( 'approved' === $row->status ) {
+        return array( 'label' => 'Approved', 'color' => '#00a32a' );
+    }
+    if ( 'denied' === $row->status ) {
+        return array( 'label' => 'Denied', 'color' => '#d63638' );
+    }
+    if ( 'pending' === $row->status ) {
+        if ( 'submit' === $row->current_step ) {
+            return array( 'label' => 'Sent back to submitter', 'color' => '#b26200' );
+        }
+        return array( 'label' => 'Awaiting archivist', 'color' => '#b26200' );
+    }
+    return array( 'label' => ucfirst( (string) ( $row->status ?: 'unknown' ) ), 'color' => '#666' );
+}
+
+/**
  * Render the OAT Reports page.
  */
 function owc_oat_page_reports() {
@@ -101,6 +258,7 @@ function owc_oat_page_reports() {
 
     $reports = array(
         'chronicle_reports'       => 'Chronicle Reports',
+        'chronicle_reports_pending' => 'Pending Reports',
         'entries_by_domain'       => 'Entries by Domain',
         'entries_by_status'       => 'Entries by Status',
         'entries_by_coordinator'  => 'Entries by Coordinator',
@@ -223,89 +381,112 @@ function owc_oat_render_report( $report, $filters, $scope ) {
 
         case 'chronicle_reports':
             echo '<h2>Chronicle Reports</h2>';
-            echo '<p style="color:#666;font-size:13px;">Monthly Chronicle Reports, most recent first — scoped to your chronicle(s). Click a row to open the full report.</p>';
-
-            // Chronicle-scoped access: global roles (admin / exec-archivist / exec-membership coordinator) see all;
-            // chronicle HST/CM/staff see ONLY their chronicle(s); anyone else sees nothing.
-            $cr_scope = '';
-            if ( ! $scope['is_global'] ) {
-                if ( ! empty( $scope['chronicles'] ) ) {
-                    $slugs    = implode( "','", array_map( 'esc_sql', $scope['chronicles'] ) );
-                    $cr_scope = " AND e.chronicle_slug IN ('{$slugs}')";
-                } else {
-                    $cr_scope = ' AND 1=0';
+            echo '<p style="color:#666;font-size:13px;">Click a chronicle to see its reports, newest first. Type in the box to narrow the list, e.g. a chronicle name, city, state or region.</p>';
+            $cr_rows = owc_oat_chronicle_report_rows( $scope, $filters, false );
+            if ( empty( $cr_rows ) ) {
+                echo '<p>No chronicle reports found for your chronicle(s).</p>';
+                break;
+            }
+            $index  = owc_oat_chronicle_report_index();
+            $groups = array();
+            foreach ( $cr_rows as $r ) {
+                $groups[ (string) $r->chronicle_slug ][] = $r;
+            }
+            $ordered = array();
+            foreach ( $groups as $slug => $reports_for ) {
+                $ordered[] = array( 'slug' => $slug, 'meta' => owc_oat_chronicle_report_meta( $slug, $index ), 'rows' => $reports_for );
+            }
+            usort( $ordered, function ( $a, $b ) {
+                if ( $a['meta']['known'] !== $b['meta']['known'] ) {
+                    return $a['meta']['known'] ? -1 : 1;
                 }
-            }
-            $cr_filter = $filters['chronicle'] ? $wpdb->prepare( ' AND e.chronicle_slug = %s', $filters['chronicle'] ) : '';
-
-            // Server-side search across ALL rows (chronicle, submitter, game dates).
-            $cr_search = '';
-            if ( $q !== '' ) {
-                $like = '%' . $wpdb->esc_like( $q ) . '%';
-                $cr_search = $wpdb->prepare( " AND ( e.chronicle_slug LIKE %s OR m_sub.meta_value LIKE %s OR m_dates.meta_value LIKE %s )", $like, $like, $like );
-            }
-            $cr_joins = "LEFT JOIN {$prefix}oat_entry_meta m_sub   ON e.id = m_sub.entry_id   AND m_sub.meta_key = 'submitter_name'
-                         LEFT JOIN {$prefix}oat_entry_meta m_dates ON e.id = m_dates.entry_id AND m_dates.meta_key = 'game_dates'
-                         LEFT JOIN {$prefix}oat_entry_meta m_att   ON e.id = m_att.entry_id   AND m_att.meta_key = 'approx_attendance'";
-            $cr_where = "e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting' {$cr_scope} {$cr_filter} {$cr_search}";
-
-            $page   = isset( $_GET['rpg'] ) ? max( 0, (int) $_GET['rpg'] ) : 0;
-            $per    = 50;
-            $offset = $page * $per;
-
-            $total_rows = (int) $wpdb->get_var(
-                "SELECT COUNT(DISTINCT e.id) FROM {$prefix}oat_entries e {$cr_joins} WHERE {$cr_where}"
-            );
-            $rows = $wpdb->get_results(
-                "SELECT e.id, e.chronicle_slug, e.status, e.created_at,
-                        m_sub.meta_value   AS submitter_name,
-                        m_dates.meta_value AS game_dates,
-                        m_att.meta_value   AS approx_attendance
-                 FROM {$prefix}oat_entries e {$cr_joins}
-                 WHERE {$cr_where}
-                 ORDER BY e.created_at DESC
-                 LIMIT {$per} OFFSET {$offset}"
-            );
-            echo owc_oat_report_search_form( 'chronicle_reports', $filters, $q, 'oat-rpt-cr' );
-            if ( empty( $rows ) ) {
-                echo '<p>' . esc_html( $q !== '' ? 'No chronicle reports match your search.' : 'No chronicle reports found for your chronicle(s).' ) . '</p>';
-            } else {
-                echo '<table id="oat-rpt-cr" class="widefat striped oat-rpt-table"><thead><tr>';
-                echo '<th data-col="0" style="cursor:pointer;">Chronicle <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '<th data-col="1" style="cursor:pointer;">Submitted By <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '<th data-col="2" style="cursor:pointer;">Games Played <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '<th data-col="3" style="text-align:right;cursor:pointer;">Avg Att <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '<th data-col="4" style="cursor:pointer;">Status <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '<th data-col="5" style="cursor:pointer;">Submitted <span style="color:#999;font-size:10px;">&#x25B4;&#x25BE;</span></th>';
-                echo '</tr></thead><tbody>';
-                foreach ( $rows as $r ) {
-                    $chron_title = $r->chronicle_slug
-                        ? ( function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $r->chronicle_slug ) : $r->chronicle_slug )
-                        : '';
-                    $dates = trim( preg_replace( '/(\\\\n|\R)+/', ', ', (string) $r->game_dates ), ', ' );
-                    if ( strlen( $dates ) > 60 ) { $dates = substr( $dates, 0, 57 ) . '…'; }
-                    $status_color = $r->status === 'approved' ? '#00a32a' : ( $r->status === 'denied' ? '#d63638' : '#666' );
-                    $submitted    = $r->created_at
-                        ? ( function_exists( 'owc_oat_format_date' ) ? owc_oat_format_date( $r->created_at ) : gmdate( 'Y-m-d', (int) $r->created_at ) )
-                        : '—';
-                    $detail_url   = admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . (int) $r->id );
+                return strnatcasecmp( $a['meta']['label'], $b['meta']['label'] );
+            } );
+            $open_all = '' !== $filters['chronicle'];
+            echo '<p><input type="search" id="oat-cr-filter" placeholder="Filter chronicles…" style="width:320px;max-width:100%;" autocomplete="off"> ';
+            echo '<span id="oat-cr-count" style="color:#666;">' . esc_html( sprintf( '%d chronicles', count( $ordered ) ) ) . '</span></p>';
+            echo '<div id="oat-cr-list">';
+            foreach ( $ordered as $g ) {
+                $pending = 0;
+                foreach ( $g['rows'] as $r ) {
+                    if ( 'pending' === $r->status ) {
+                        $pending++;
+                    }
+                }
+                $latest = owc_oat_chronicle_report_date( $g['rows'][0]->created_at );
+                echo '<details class="oat-cr-chronicle" data-search="' . esc_attr( $g['meta']['search'] ) . '" style="border:1px solid #dcdcde;border-radius:4px;margin:0 0 6px;background:#fff;"' . ( $open_all ? ' open' : '' ) . '>';
+                echo '<summary style="cursor:pointer;padding:8px 12px;"><strong>' . esc_html( $g['meta']['label'] ) . '</strong>';
+                echo ' <span style="color:#666;">— ' . esc_html( sprintf( _n( '%d report', '%d reports', count( $g['rows'] ), 'owbn-archivist' ), count( $g['rows'] ) ) ) . ', latest ' . esc_html( $latest ) . '</span>';
+                if ( $pending ) {
+                    echo ' <span style="color:#b26200;font-weight:600;">· ' . esc_html( sprintf( '%d pending', $pending ) ) . '</span>';
+                }
+                echo '</summary>';
+                echo '<table class="widefat striped" style="border:0;border-top:1px solid #dcdcde;"><thead><tr><th>Submitted</th><th>Submitted By</th><th>Games Played</th><th style="text-align:right;">Avg Att</th><th>Status</th></tr></thead><tbody>';
+                foreach ( $g['rows'] as $r ) {
+                    $dates = wp_strip_all_tags( preg_replace( '#<br\s*/?>#i', ', ', (string) $r->game_dates ) );
+                    $dates = trim( preg_replace( '/(\\\\n|\R)+/', ', ', $dates ), ', ' );
+                    if ( strlen( $dates ) > 60 ) {
+                        $dates = substr( $dates, 0, 57 ) . '…';
+                    }
+                    $state = owc_oat_chronicle_report_state( $r );
                     echo '<tr>';
-                    echo '<td><a href="' . esc_url( $detail_url ) . '">' . esc_html( $chron_title ?: $r->chronicle_slug ?: '—' ) . '</a></td>';
+                    echo '<td><a href="' . esc_url( admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . (int) $r->id ) ) . '">' . esc_html( owc_oat_chronicle_report_date( $r->created_at ) ) . '</a></td>';
                     echo '<td>' . esc_html( $r->submitter_name ?: '—' ) . '</td>';
                     echo '<td>' . esc_html( $dates ?: '—' ) . '</td>';
-                    echo '<td style="text-align:right;">' . esc_html( ( $r->approx_attendance !== null && $r->approx_attendance !== '' ) ? $r->approx_attendance : '—' ) . '</td>';
-                    echo '<td><span style="color:' . $status_color . ';font-weight:600;">' . esc_html( ucfirst( $r->status ?: 'unknown' ) ) . '</span></td>';
-                    echo '<td data-sort="' . (int) $r->created_at . '">' . esc_html( $submitted ) . '</td>';
+                    echo '<td style="text-align:right;">' . esc_html( ( null !== $r->approx_attendance && '' !== $r->approx_attendance ) ? $r->approx_attendance : '—' ) . '</td>';
+                    echo '<td><span style="color:' . esc_attr( $state['color'] ) . ';font-weight:600;">' . esc_html( $state['label'] ) . '</span></td>';
                     echo '</tr>';
                 }
-                echo '</tbody></table>';
-                $base = admin_url( 'admin.php?page=owc-oat-reports&report=chronicle_reports' );
-                if ( $filters['chronicle'] ) {
-                    $base .= '&chronicle=' . urlencode( $filters['chronicle'] );
-                }
-                if ( $q !== '' ) { $base .= '&q=' . urlencode( $q ); }
-                owc_oat_render_pagination( $total_rows, $per, $page, $base );
+                echo '</tbody></table></details>';
             }
+            echo '</div>';
+            echo '<p id="oat-cr-none" style="display:none;">No chronicles match that filter.</p>';
+            ?>
+            <script>
+            (function () {
+                var input = document.getElementById('oat-cr-filter');
+                var items = document.querySelectorAll('#oat-cr-list .oat-cr-chronicle');
+                var count = document.getElementById('oat-cr-count');
+                var none = document.getElementById('oat-cr-none');
+                input.addEventListener('input', function () {
+                    var words = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+                    var shown = 0;
+                    items.forEach(function (el) {
+                        var text = el.getAttribute('data-search');
+                        var match = words.every(function (w) { return text.indexOf(w) !== -1; });
+                        el.style.display = match ? '' : 'none';
+                        if (match) { shown++; }
+                    });
+                    count.textContent = shown + (shown === 1 ? ' chronicle' : ' chronicles');
+                    none.style.display = shown ? 'none' : '';
+                });
+            })();
+            </script>
+            <?php
+            break;
+
+        case 'chronicle_reports_pending':
+            echo '<h2>Pending Reports</h2>';
+            echo '<p style="color:#666;font-size:13px;">Chronicle Reports not yet approved or denied, oldest first.</p>';
+            $pending_rows = owc_oat_chronicle_report_rows( $scope, $filters, true );
+            if ( empty( $pending_rows ) ) {
+                echo '<p>No pending chronicle reports.</p>';
+                break;
+            }
+            $index = owc_oat_chronicle_report_index();
+            echo '<table class="widefat striped"><thead><tr><th>Chronicle</th><th>Report Date</th><th>Status</th><th>Submitted By</th></tr></thead><tbody>';
+            foreach ( $pending_rows as $r ) {
+                $meta  = owc_oat_chronicle_report_meta( (string) $r->chronicle_slug, $index );
+                $state = owc_oat_chronicle_report_state( $r );
+                echo '<tr>';
+                echo '<td><a href="' . esc_url( admin_url( 'admin.php?page=owc-oat-entry&entry_id=' . (int) $r->id ) ) . '">' . esc_html( $meta['label'] ) . '</a></td>';
+                echo '<td>' . esc_html( owc_oat_chronicle_report_date( $r->created_at ) ) . '</td>';
+                echo '<td><span style="color:' . esc_attr( $state['color'] ) . ';font-weight:600;">' . esc_html( $state['label'] ) . '</span></td>';
+                echo '<td>' . esc_html( $r->submitter_name ?: '—' ) . '</td>';
+                echo '</tr>';
+            }
+            echo '</tbody></table>';
+            echo '<p style="color:#666;margin-top:8px;">' . esc_html( sprintf( '%d pending', count( $pending_rows ) ) ) . '</p>';
             break;
 
         case 'ru_active':
