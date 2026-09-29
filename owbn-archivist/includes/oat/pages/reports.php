@@ -42,7 +42,7 @@ function owc_oat_reports_has_access() {
  * Get the user's scoped filters based on their ASC roles.
  *
  * Returns arrays of chronicle slugs and coordinator genres
- * the user has access to.  WP Admin / exec/archivist sees all.
+ * the user has access to.  WP Admin, exec/archivist and exec/membership/coordinator see all.
  *
  * @return array { 'chronicles' => string[], 'genres' => string[], 'is_global' => bool }
  */
@@ -56,7 +56,7 @@ function owc_oat_reports_user_scope() {
     $is_global  = false;
 
     foreach ( $roles as $role ) {
-        if ( preg_match( '#^exec/archivist/(coordinator|staff)$#', $role ) ) {
+        if ( preg_match( '#^exec/(archivist/(coordinator|staff)|membership/coordinator)$#', $role ) ) {
             $is_global = true;
             break;
         }
@@ -225,7 +225,7 @@ function owc_oat_render_report( $report, $filters, $scope ) {
             echo '<h2>Chronicle Reports</h2>';
             echo '<p style="color:#666;font-size:13px;">Monthly Chronicle Reports, most recent first — scoped to your chronicle(s). Click a row to open the full report.</p>';
 
-            // Chronicle-scoped access: global roles (admin / exec-archivist) see all;
+            // Chronicle-scoped access: global roles (admin / exec-archivist / exec-membership coordinator) see all;
             // chronicle HST/CM/staff see ONLY their chronicle(s); anyone else sees nothing.
             $cr_scope = '';
             if ( ! $scope['is_global'] ) {
