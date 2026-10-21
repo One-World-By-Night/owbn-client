@@ -18,12 +18,12 @@ function owc_render_chronicles_page()
 
     // ── Cache actions ──────────────────────────────────────────────────────────
     if (isset($_POST['owc_clear_chronicles_cache']) && check_admin_referer('owc_chronicles_cache_action')) {
-        delete_transient('owc_chronicles_cache');
+        delete_transient('owc_chronicles_cache_v2');
         add_settings_error('owc_chronicles', 'cache_cleared', __('Chronicles cache cleared.', 'owbn-core'), 'success');
     }
 
     if (isset($_POST['owc_refresh_chronicles_cache']) && check_admin_referer('owc_chronicles_cache_action')) {
-        delete_transient('owc_chronicles_cache');
+        delete_transient('owc_chronicles_cache_v2');
         $result = owc_get_chronicles(true);
         if (is_wp_error($result)) {
             add_settings_error('owc_chronicles', 'refresh_failed', $result->get_error_message(), 'error');
@@ -35,7 +35,7 @@ function owc_render_chronicles_page()
     // ── Status data ────────────────────────────────────────────────────────────
     $is_local    = owc_manager_active() && owc_chronicles_enabled();
     $remote_base = owc_get_remote_base();
-    $cache       = get_transient('owc_chronicles_cache');
+    $cache       = get_transient('owc_chronicles_cache_v2');
     $cache_ttl   = owc_get_cache_ttl();
 
     $gw_enabled = (bool) get_option('owbn_gateway_enabled', false);

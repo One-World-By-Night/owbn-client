@@ -36,7 +36,7 @@ function owc_api_chronicle_saved( $post_id, $post, $update ) {
     }
 
     // Invalidate remote caches so fresh data is fetched on next request.
-    delete_transient( 'owc_chronicles_cache' );
+    delete_transient( 'owc_chronicles_cache_v2' );
     if ( $slug ) {
         delete_transient( 'owc_chronicle_' . sanitize_key( $slug ) );
     }
