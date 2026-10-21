@@ -823,7 +823,7 @@ function owc_clear_all_caches(): void
 {
     global $wpdb;
 
-    delete_transient('owc_chronicles_cache');
+    delete_transient('owc_chronicles_cache_v2');
     delete_transient('owc_coordinators_cache');
     delete_transient('owc_territories_cache');
     delete_transient('owc_asc_roles_all');

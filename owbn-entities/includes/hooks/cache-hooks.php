@@ -23,7 +23,7 @@ function owc_invalidate_chronicle_cache( $post_id, $post, $update ) {
 	}
 
 	// Always clear the list cache.
-	delete_transient( 'owc_chronicles_cache' );
+	delete_transient( 'owc_chronicles_cache_v2' );
 
 	// Clear detail cache if we have a slug.
 	$slug = get_post_meta( $post_id, 'chronicle_slug', true );
@@ -83,7 +83,7 @@ function owc_invalidate_cache_on_delete( $post_id ) {
 
 	switch ( $post_type ) {
 		case 'owbn_chronicle':
-			delete_transient( 'owc_chronicles_cache' );
+			delete_transient( 'owc_chronicles_cache_v2' );
 			$slug = get_post_meta( $post_id, 'chronicle_slug', true );
 			if ( $slug ) {
 				delete_transient( 'owc_chronicle_' . sanitize_key( $slug ) );

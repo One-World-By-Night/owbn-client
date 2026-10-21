@@ -345,7 +345,7 @@ $oat_mode   = owc_get_mode( 'oat' );
 $asc_mode   = get_option( owc_option_name( 'asc_mode' ), 'remote' );
 
 // Cache data (read-only, no remote fetches).
-$chronicles_cache   = get_transient( 'owc_chronicles_cache' );
+$chronicles_cache   = get_transient( 'owc_chronicles_cache_v2' );
 $coordinators_cache = get_transient( 'owc_coordinators_cache' );
 $territories_cache  = get_transient( 'owc_territories_cache' );
 $asc_roles_cache    = get_transient( 'owc_asc_roles_all' );

@@ -101,7 +101,7 @@ $detail_page    = get_option( owc_option_name( 'chronicles_detail_page' ), 0 );
 <h3><?php esc_html_e( 'Status', 'owbn-entities' ); ?></h3>
 <?php
 $manager_active   = owc_manager_active();
-$chronicles_cache = get_transient( 'owc_chronicles_cache' );
+$chronicles_cache = get_transient( 'owc_chronicles_cache_v2' );
 $default_remote   = get_option( owc_option_name( 'remote_url' ), '' );
 $effective_url    = $remote_url ? $remote_url : $default_remote;
 ?>
