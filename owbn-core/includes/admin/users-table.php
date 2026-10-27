@@ -12,6 +12,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// User meta key of the cached roles; defined here when the accessSchema module has not loaded.
+if ( ! defined( 'OWC_ASC_CACHE_KEY' ) ) {
+	define( 'OWC_ASC_CACHE_KEY', 'accessschema_cached_roles' );
+}
+
 
 /**
  * Add the ASC Roles column.
