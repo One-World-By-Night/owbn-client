@@ -248,12 +248,6 @@ function owc_render_territories_list(array $territories, string $context = ''): 
                             <span class="owc-value">${escapeHtml(t.update_date)}</span>
                         </div>
                     ` : ''}
-                    ${t.update_user ? `
-                        <div class="owc-territory-row">
-                            <span class="owc-label"><?php esc_html_e('Updated By', 'owbn-entities'); ?></span>
-                            <span class="owc-value">${escapeHtml(t.update_user)}</span>
-                        </div>
-                    ` : ''}
                 </div>
                 ${t.description ? `
                     <div class="owc-territory-description">
@@ -339,7 +333,6 @@ function owc_prepare_territory_list_data(array $territories): array
             'owner'         => $t['owner'] ?? '',
             'slugs'         => $t['slugs'] ?? [],
             'update_date'   => $t['update_date'] ?? '',
-            'update_user'   => $t['update_user'] ?? '',
         ];
     }, array_values($territories));
 }
