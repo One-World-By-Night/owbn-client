@@ -589,6 +589,53 @@ function owc_get_territories(bool $force_refresh = false)
 
 endif; // owc_get_territories
 
+if ( ! function_exists( 'owc_detail_cache_get' ) ) :
+/**
+ * Reads a cached remote detail. A cached failure comes back as the WP_Error the remote call returned.
+ *
+ * @param string $cache_key Transient key.
+ * @return mixed False when nothing is cached.
+ */
+function owc_detail_cache_get(string $cache_key)
+{
+    $cached = get_transient($cache_key);
+    if (is_array($cached) && isset($cached['__owc_error'])) {
+        $e = $cached['__owc_error'];
+        return new WP_Error($e['code'], $e['message'], $e['data']);
+    }
+    return $cached;
+}
+
+endif; // owc_detail_cache_get
+
+if ( ! function_exists( 'owc_detail_cache_set' ) ) :
+/**
+ * Caches a remote detail. Successes live for the cache TTL, a 404 for fifteen minutes at most, any other failure for one minute.
+ *
+ * @param string $cache_key Transient key.
+ * @param mixed  $data      Detail array or WP_Error.
+ */
+function owc_detail_cache_set(string $cache_key, $data): void
+{
+    $ttl = owc_get_cache_ttl();
+    if ($ttl <= 0) {
+        return;
+    }
+    if (!is_wp_error($data)) {
+        set_transient($cache_key, $data, $ttl);
+        return;
+    }
+    $err_data = $data->get_error_data();
+    $status   = is_array($err_data) && isset($err_data['status']) ? (int) $err_data['status'] : 0;
+    set_transient(
+        $cache_key,
+        ['__owc_error' => ['code' => $data->get_error_code(), 'message' => $data->get_error_message(), 'data' => $err_data]],
+        $status === 404 ? min($ttl, 900) : 60
+    );
+}
+
+endif; // owc_detail_cache_set
+
 if ( ! function_exists( 'owc_get_chronicle_detail' ) ) :
 function owc_get_chronicle_detail(string $slug)
 {
@@ -598,7 +645,7 @@ function owc_get_chronicle_detail(string $slug)
 
     $cache_key = 'owc_chronicle_' . sanitize_key($slug);
 
-    $cached = get_transient($cache_key);
+    $cached = owc_detail_cache_get($cache_key);
     if ($cached !== false) {
         return $cached;
     }
@@ -613,12 +660,7 @@ function owc_get_chronicle_detail(string $slug)
         $data = owc_remote_request($base . 'chronicles/' . rawurlencode($slug), $key);
     }
 
-    if (!is_wp_error($data)) {
-        $ttl = owc_get_cache_ttl();
-        if ($ttl > 0) {
-            set_transient($cache_key, $data, $ttl);
-        }
-    }
+    owc_detail_cache_set($cache_key, $data);
 
     return $data;
 }
@@ -634,7 +676,7 @@ function owc_get_coordinator_detail(string $slug)
 
     $cache_key = 'owc_coordinator_' . sanitize_key($slug);
 
-    $cached = get_transient($cache_key);
+    $cached = owc_detail_cache_get($cache_key);
     if ($cached !== false) {
         return $cached;
     }
@@ -649,12 +691,7 @@ function owc_get_coordinator_detail(string $slug)
         $data = owc_remote_request($base . 'coordinators/' . rawurlencode($slug), $key);
     }
 
-    if (!is_wp_error($data)) {
-        $ttl = owc_get_cache_ttl();
-        if ($ttl > 0) {
-            set_transient($cache_key, $data, $ttl);
-        }
-    }
+    owc_detail_cache_set($cache_key, $data);
 
     return $data;
 }
@@ -670,7 +707,7 @@ function owc_get_territory_detail(int $id)
 
     $cache_key = 'owc_territory_' . $id;
 
-    $cached = get_transient($cache_key);
+    $cached = owc_detail_cache_get($cache_key);
     if ($cached !== false) {
         return $cached;
     }
@@ -685,12 +722,7 @@ function owc_get_territory_detail(int $id)
         $data = owc_remote_request($base . 'territories/' . absint($id), $key);
     }
 
-    if (!is_wp_error($data)) {
-        $ttl = owc_get_cache_ttl();
-        if ($ttl > 0) {
-            set_transient($cache_key, $data, $ttl);
-        }
-    }
+    owc_detail_cache_set($cache_key, $data);
 
     return $data;
 }
