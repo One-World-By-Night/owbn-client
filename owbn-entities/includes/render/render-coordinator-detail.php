@@ -83,6 +83,14 @@ function owc_render_coordinator_description(array $coordinator): string
     $content = $coordinator['content'] ?? '';
     $office  = $coordinator['office_description'] ?? '';
 
+    // Office description is dropped when it carries the same text as the description above it.
+    $plain = function (string $html): string {
+        return trim(preg_replace('/\s+/', ' ', wp_strip_all_tags($html)));
+    };
+    if ('' !== $plain($office) && $plain($office) === $plain($content)) {
+        $office = '';
+    }
+
     if (empty(trim($content)) && empty(trim($office))) {
         return '';
     }

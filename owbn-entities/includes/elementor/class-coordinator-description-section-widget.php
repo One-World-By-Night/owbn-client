@@ -10,7 +10,7 @@ class OWC_Coordinator_Description_Section_Widget extends Widget_Base {
     public function get_title() { return __( 'Coordinator Description', 'owbn-entities' ); }
     public function get_icon() { return 'eicon-post-content'; }
     public function get_categories() { return array( 'owbn-entities' ); }
-    public function get_style_depends() { return array( 'owc-tables' ); }
+    public function get_style_depends() { return array( 'owc-tables', 'owc-client' ); }
 
     protected function register_controls() {
         $this->start_controls_section( 'content', array(

@@ -124,7 +124,8 @@
         font-weight: 600;
     }
     
-    .owc-list-row .owc-col-title::before {
+    .owc-list-row .owc-col-title::before,
+    .owc-list-row .owc-col-office::before {
         content: '';
     }
     
