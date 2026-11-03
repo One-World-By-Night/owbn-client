@@ -104,23 +104,23 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
         <div class="owc-col-title">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
-        <div class="owc-col-genres" data-label="<?php esc_attr_e('Genres', 'owbn-entities'); ?>">
-            <?php echo esc_html($genres_display ?: '—'); ?>
+        <div class="owc-col-genres<?php echo $genres_display ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Genres', 'owbn-entities'); ?>">
+            <?php echo esc_html($genres_display); ?>
         </div>
-        <div class="owc-col-region" data-label="<?php esc_attr_e('Region', 'owbn-entities'); ?>">
-            <?php echo esc_html($region ?: '—'); ?>
+        <div class="owc-col-region<?php echo $region ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Region', 'owbn-entities'); ?>">
+            <?php echo esc_html($region); ?>
         </div>
-        <div class="owc-col-state" data-label="<?php esc_attr_e('State/Province', 'owbn-entities'); ?>">
-            <?php echo esc_html($state ?: '—'); ?>
+        <div class="owc-col-state<?php echo $state ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('State/Province', 'owbn-entities'); ?>">
+            <?php echo esc_html($state); ?>
         </div>
-        <div class="owc-col-city" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
-            <?php echo esc_html($city ?: '—'); ?>
+        <div class="owc-col-city<?php echo $city ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
+            <?php echo esc_html($city); ?>
         </div>
-        <div class="owc-col-type" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
-            <?php echo esc_html($game_type ?: '—'); ?>
+        <div class="owc-col-type<?php echo $game_type ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
+            <?php echo esc_html($game_type); ?>
         </div>
-        <div class="owc-col-status" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
-            <?php echo esc_html($status ?: '—'); ?>
+        <div class="owc-col-status<?php echo $status ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
+            <?php echo esc_html($status); ?>
         </div>
     </div>
 <?php
