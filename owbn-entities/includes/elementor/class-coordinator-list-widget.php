@@ -565,13 +565,11 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 				<a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
 			</div>
 			<div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-entities'); ?>">
-				<?php echo esc_html($name ?: '—'); ?>
+				<?php echo esc_html($name ?: __('Vacant', 'owbn-entities')); ?>
 			</div>
-			<div class="owc-col-email" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
+			<div class="owc-col-email<?php echo $email ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
 				<?php if ($email) : ?>
 					<a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
-				<?php else : ?>
-					—
 				<?php endif; ?>
 			</div>
 		</div>
