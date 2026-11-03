@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: OWBN Entities 1.0.5\n"
+"Project-Id-Version: OWBN Entities 1.0.13\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-entities\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-02T23:47:54+00:00\n"
+"POT-Creation-Date: 2026-11-03T22:42:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: owbn-entities\n"
@@ -90,7 +90,7 @@ msgstr ""
 #: includes/admin/settings-tabs/tab-coordinators.php:79
 #: includes/admin/settings-tabs/tab-coordinators.php:90
 #: includes/elementor/class-chronicle-list-widget.php:740
-#: includes/elementor/class-coordinator-list-widget.php:585
+#: includes/elementor/class-coordinator-list-widget.php:583
 msgid "— Select Page —"
 msgstr ""
 
@@ -190,7 +190,7 @@ msgstr ""
 
 #: includes/admin/settings-tabs/tab-territories.php:18
 #: includes/render/render-chronicle-detail.php:417
-#: includes/render/render-coordinator-detail.php:374
+#: includes/render/render-coordinator-detail.php:382
 msgid "Territories"
 msgstr ""
 
@@ -546,67 +546,51 @@ msgid "About/Content"
 msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:239
-#: includes/elementor/class-chronicle-narrative-section-widget.php:66
-#: includes/render/render-chronicle-detail.php:157
+#: includes/elementor/class-chronicle-narrative-section-widget.php:56
+#: includes/render/render-chronicle-detail.php:155
 #: includes/shortcodes/shortcode-owbn.php:109
 #: includes/shortcodes/shortcodes-chronicle.php:171
 msgid "Premise"
 msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:240
-#: includes/elementor/class-chronicle-narrative-section-widget.php:69
-#: includes/render/render-chronicle-detail.php:158
-#: includes/shortcodes/shortcode-owbn.php:110
 #: includes/shortcodes/shortcodes-chronicle.php:172
-msgid "Theme"
-msgstr ""
-
-#: includes/elementor/class-chronicle-field-widget.php:241
-#: includes/elementor/class-chronicle-narrative-section-widget.php:72
-#: includes/render/render-chronicle-detail.php:159
-#: includes/shortcodes/shortcode-owbn.php:111
-#: includes/shortcodes/shortcodes-chronicle.php:173
-msgid "Mood"
-msgstr ""
-
-#: includes/elementor/class-chronicle-field-widget.php:242
-#: includes/shortcodes/shortcodes-chronicle.php:174
 msgid "Traveler Information"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:245
-#: includes/render/render-chronicle-detail.php:207
-#: includes/shortcodes/shortcodes-chronicle.php:177
+#: includes/elementor/class-chronicle-field-widget.php:243
+#: includes/render/render-chronicle-detail.php:202
+#: includes/shortcodes/shortcodes-chronicle.php:175
 msgid "Head Storyteller"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:246
-#: includes/shortcodes/shortcodes-chronicle.php:178
+#: includes/elementor/class-chronicle-field-widget.php:244
+#: includes/shortcodes/shortcodes-chronicle.php:176
 msgid "Chronicle Manager"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:247
+#: includes/elementor/class-chronicle-field-widget.php:245
 #: includes/render/render-helpers.php:60
-#: includes/shortcodes/shortcodes-chronicle.php:179
+#: includes/shortcodes/shortcodes-chronicle.php:177
 msgid "Assistant Storytellers"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:250
+#: includes/elementor/class-chronicle-field-widget.php:248
 msgid "Location (OOC)"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:251
-#: includes/shortcodes/shortcodes-chronicle.php:183
+#: includes/elementor/class-chronicle-field-widget.php:249
+#: includes/shortcodes/shortcodes-chronicle.php:181
 msgid "Game Sites"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:254
-#: includes/render/render-chronicle-detail.php:256
-#: includes/shortcodes/shortcodes-chronicle.php:186
+#: includes/elementor/class-chronicle-field-widget.php:252
+#: includes/render/render-chronicle-detail.php:250
+#: includes/shortcodes/shortcodes-chronicle.php:184
 msgid "Game Sessions"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:257
+#: includes/elementor/class-chronicle-field-widget.php:255
 #: includes/elementor/class-coordinator-field-widget.php:249
 #: includes/render/render-chronicle-detail.php:339
 #: includes/shortcodes/shortcodes-chronicle.php:189
@@ -614,26 +598,26 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:258
+#: includes/elementor/class-chronicle-field-widget.php:256
 #: includes/shortcodes/shortcodes-chronicle.php:190
 msgid "Social Links"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:259
+#: includes/elementor/class-chronicle-field-widget.php:257
 #: includes/shortcodes/shortcodes-chronicle.php:191
 msgid "Mailing Lists"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:260
+#: includes/elementor/class-chronicle-field-widget.php:258
 #: includes/elementor/class-coordinator-field-widget.php:251
 #: includes/render/render-chronicle-detail.php:361
-#: includes/render/render-coordinator-detail.php:239
+#: includes/render/render-coordinator-detail.php:247
 #: includes/shortcodes/shortcodes-chronicle.php:192
 #: includes/shortcodes/shortcodes-coordinator.php:167
 msgid "Player Lists"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:263
+#: includes/elementor/class-chronicle-field-widget.php:261
 #: includes/elementor/class-chronicle-list-widget.php:87
 #: includes/elementor/class-chronicle-list-widget.php:641
 #: includes/elementor/class-chronicle-list-widget.php:708
@@ -645,21 +629,21 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:264
+#: includes/elementor/class-chronicle-field-widget.php:262
 #: includes/render/render-vote-history.php:51
 #: includes/shortcodes/shortcodes-chronicle.php:196
 msgid "Start Date"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:265
+#: includes/elementor/class-chronicle-field-widget.php:263
 msgid "Probationary Status"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:266
+#: includes/elementor/class-chronicle-field-widget.php:264
 msgid "Satellite Status"
 msgstr ""
 
-#: includes/elementor/class-chronicle-field-widget.php:267
+#: includes/elementor/class-chronicle-field-widget.php:265
 #: includes/shortcodes/shortcodes-chronicle.php:199
 msgid "Parent Chronicle"
 msgstr ""
@@ -895,20 +879,12 @@ msgid "Show Premise"
 msgstr ""
 
 #: includes/elementor/class-chronicle-narrative-section-widget.php:32
-msgid "Show Theme"
-msgstr ""
-
-#: includes/elementor/class-chronicle-narrative-section-widget.php:37
-msgid "Show Mood"
-msgstr ""
-
-#: includes/elementor/class-chronicle-narrative-section-widget.php:42
 msgid "Show Traveler Info"
 msgstr ""
 
-#: includes/elementor/class-chronicle-narrative-section-widget.php:75
-#: includes/render/render-chronicle-detail.php:160
-#: includes/shortcodes/shortcode-owbn.php:112
+#: includes/elementor/class-chronicle-narrative-section-widget.php:59
+#: includes/render/render-chronicle-detail.php:156
+#: includes/shortcodes/shortcode-owbn.php:110
 msgid "Information for Travelers"
 msgstr ""
 
@@ -1021,7 +997,7 @@ msgid "Appointment"
 msgstr ""
 
 #: includes/elementor/class-coordinator-field-widget.php:238
-#: includes/render/render-coordinator-detail.php:98
+#: includes/render/render-coordinator-detail.php:106
 msgid "Office Description"
 msgstr ""
 
@@ -1031,7 +1007,7 @@ msgid "Coordinator Info"
 msgstr ""
 
 #: includes/elementor/class-coordinator-field-widget.php:242
-#: includes/render/render-coordinator-detail.php:152
+#: includes/render/render-coordinator-detail.php:160
 #: includes/shortcodes/shortcodes-coordinator.php:158
 msgid "Subcoordinators"
 msgstr ""
@@ -1045,13 +1021,13 @@ msgid "Term End Date"
 msgstr ""
 
 #: includes/elementor/class-coordinator-field-widget.php:250
-#: includes/render/render-coordinator-detail.php:292
+#: includes/render/render-coordinator-detail.php:300
 #: includes/shortcodes/shortcodes-coordinator.php:166
 msgid "Contact Lists"
 msgstr ""
 
 #: includes/elementor/class-coordinator-field-widget.php:254
-#: includes/render/render-coordinator-detail.php:341
+#: includes/render/render-coordinator-detail.php:349
 #: includes/shortcodes/shortcodes-coordinator.php:170
 msgid "Hosting Chronicle"
 msgstr ""
@@ -1112,7 +1088,7 @@ msgstr ""
 
 #: includes/elementor/class-coordinator-list-widget.php:532
 #: includes/elementor/class-coordinator-list-widget.php:567
-#: includes/render/render-coordinator-detail.php:123
+#: includes/render/render-coordinator-detail.php:131
 #: includes/render/render-coordinators-list.php:69
 #: includes/render/render-coordinators-list.php:108
 #: includes/shortcodes/shortcodes-coordinator.php:157
@@ -1121,11 +1097,16 @@ msgstr ""
 
 #: includes/elementor/class-coordinator-list-widget.php:533
 #: includes/elementor/class-coordinator-list-widget.php:570
-#: includes/render/render-coordinator-detail.php:157
+#: includes/render/render-coordinator-detail.php:165
 #: includes/render/render-coordinators-list.php:70
 #: includes/render/render-coordinators-list.php:111
 #: includes/shortcodes/shortcodes-coordinator.php:258
 msgid "Contact"
+msgstr ""
+
+#: includes/elementor/class-coordinator-list-widget.php:568
+#: includes/render/render-coordinators-list.php:109
+msgid "Vacant"
 msgstr ""
 
 #: includes/elementor/class-coordinator-player-lists-section-widget.php:10
@@ -1400,28 +1381,24 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:205
+#: includes/render/render-chronicle-detail.php:200
 msgid "Staff"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:208
+#: includes/render/render-chronicle-detail.php:203
 msgid "Council Member"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:209
-msgid "Admin Contact"
-msgstr ""
-
-#: includes/render/render-chronicle-detail.php:211
+#: includes/render/render-chronicle-detail.php:205
 msgid "AST"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:271
+#: includes/render/render-chronicle-detail.php:265
 #: includes/render/render-helpers.php:136
 msgid "Check-in:"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:274
+#: includes/render/render-chronicle-detail.php:268
 #: includes/render/render-helpers.php:141
 msgid "Start:"
 msgstr ""
@@ -1442,56 +1419,56 @@ msgstr ""
 msgid "← Back to Coordinators"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:155
-#: includes/render/render-coordinator-detail.php:242
+#: includes/render/render-coordinator-detail.php:163
+#: includes/render/render-coordinator-detail.php:250
 #: includes/shortcodes/shortcodes-coordinator.php:256
 msgid "Name"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:156
+#: includes/render/render-coordinator-detail.php:164
 #: includes/shortcodes/shortcodes-coordinator.php:257
 msgid "Role"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:203
+#: includes/render/render-coordinator-detail.php:211
 msgid "Genre Documents"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:209
+#: includes/render/render-coordinator-detail.php:217
 msgid "Document"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:212
-#: includes/render/render-helpers.php:202
+#: includes/render/render-coordinator-detail.php:220
+#: includes/render/render-helpers.php:210
 msgid "Updated:"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:217
+#: includes/render/render-coordinator-detail.php:225
 msgid "Downloads only available to authenticated users."
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:243
+#: includes/render/render-coordinator-detail.php:251
 msgid "Access"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:244
+#: includes/render/render-coordinator-detail.php:252
 msgid "IC/OOC"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:245
+#: includes/render/render-coordinator-detail.php:253
 msgid "Moderator"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:246
-#: includes/render/render-coordinator-detail.php:266
+#: includes/render/render-coordinator-detail.php:254
+#: includes/render/render-coordinator-detail.php:274
 msgid "Link"
 msgstr ""
 
-#: includes/render/render-coordinator-detail.php:347
+#: includes/render/render-coordinator-detail.php:355
 msgid "House Rules"
 msgstr ""
 
-#: includes/render/render-helpers.php:360
+#: includes/render/render-helpers.php:368
 msgid "Sign Up"
 msgstr ""
 
@@ -1553,7 +1530,7 @@ msgstr ""
 
 #: includes/render/render-territory-detail.php:60
 #: includes/render/render-territory-list.php:223
-#: includes/shortcodes/shortcodes-chronicle.php:182
+#: includes/shortcodes/shortcodes-chronicle.php:180
 msgid "Location"
 msgstr ""
 
@@ -1575,7 +1552,7 @@ msgid "Assigned To"
 msgstr ""
 
 #: includes/render/render-territory-detail.php:89
-#: includes/render/render-territory-list.php:260
+#: includes/render/render-territory-list.php:254
 msgid "Description & Approval Parameters"
 msgstr ""
 
@@ -1607,10 +1584,6 @@ msgstr ""
 
 #: includes/render/render-territory-list.php:247
 msgid "Last Updated"
-msgstr ""
-
-#: includes/render/render-territory-list.php:253
-msgid "Updated By"
 msgstr ""
 
 #: includes/render/render-vote-history.php:52
@@ -1660,6 +1633,14 @@ msgstr ""
 #: includes/shortcodes/shortcodes-chronicle.php:166
 #: includes/shortcodes/shortcodes-coordinator.php:150
 msgid "Website"
+msgstr ""
+
+#: includes/shortcodes/shortcodes-chronicle.php:185
+msgid "Upcoming Events"
+msgstr ""
+
+#: includes/shortcodes/shortcodes-chronicle.php:186
+msgid "Chronicle Timezone"
 msgstr ""
 
 #: includes/shortcodes/shortcodes-chronicle.php:276

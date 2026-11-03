@@ -4,16 +4,17 @@
  * Plugin Name: OWBN Entities
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Chronicles, coordinators, territories, and vote history for OWBN WordPress sites.
- * Version: 1.0.13
+ * Version: 1.0.14
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-entities
+ * Domain Path: /languages
  * License: GPL-2.0-or-later
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_ENTITIES_VERSION', '1.0.13' );
+define( 'OWC_ENTITIES_VERSION', '1.0.14' );
 define( 'OWC_ENTITIES_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_ENTITIES_URL', plugin_dir_url( __FILE__ ) );
 
@@ -24,6 +25,13 @@ if ( ! defined( 'OWC_ENTITIES_CSS_URL' ) ) {
 if ( ! defined( 'OWC_ENTITIES_JS_URL' ) ) {
     define( 'OWC_ENTITIES_JS_URL', OWC_ENTITIES_URL . 'includes/assets/js/' );
 }
+
+/**
+ * Loads the plugin's translations from its languages folder.
+ */
+add_action( 'init', function () {
+    load_plugin_textdomain( 'owbn-entities', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+} );
 
 // Activation hooks — must be registered at top level (before plugins_loaded).
 require_once OWC_ENTITIES_DIR . 'includes/activation.php';

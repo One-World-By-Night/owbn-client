@@ -1,0 +1,1672 @@
+# Portuguese (Brazil) translation of OWBN Entities.
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: OWBN Entities 1.0.14\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: owbn-entities\n"
+
+#. Plugin Name of the plugin
+#: owbn-entities.php
+#: includes/elementor/widgets-loader.php:39
+msgid "OWBN Entities"
+msgstr "OWBN Entities"
+
+#. Plugin URI of the plugin
+#: owbn-entities.php
+msgid "https://github.com/One-World-By-Night/owbn-client"
+msgstr ""
+
+#. Description of the plugin
+#: owbn-entities.php
+msgid "Chronicles, coordinators, territories, and vote history for OWBN WordPress sites."
+msgstr "Crônicas, coordenadores, territórios e histórico de votações para os sites WordPress da OWBN."
+
+#. Author of the plugin
+#: owbn-entities.php
+msgid "greghacke"
+msgstr ""
+
+#. Author URI of the plugin
+#: owbn-entities.php
+msgid "https://www.owbn.net"
+msgstr ""
+
+#: includes/admin/settings-tabs/tab-chronicles.php:20
+msgid "Chronicles"
+msgstr "Crônicas"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:26
+#: includes/admin/settings-tabs/tab-coordinators.php:26
+#: includes/admin/settings-tabs/tab-territories.php:24
+#: includes/admin/settings-tabs/tab-vote-history.php:25
+msgid "Data Source"
+msgstr "Fonte de Dados"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:35
+#: includes/admin/settings-tabs/tab-coordinators.php:35
+msgid "Local — Serve from Chronicle Manager CPTs on this site"
+msgstr "Local — Servir a partir dos CPTs do Chronicle Manager neste site"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:43
+#: includes/admin/settings-tabs/tab-coordinators.php:43
+#: includes/admin/settings-tabs/tab-territories.php:41
+#: includes/admin/settings-tabs/tab-vote-history.php:42
+msgid "Remote — Fetch from a remote gateway"
+msgstr "Remoto — Buscar de um gateway remoto"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:49
+#: includes/admin/settings-tabs/tab-coordinators.php:49
+#: includes/admin/settings-tabs/tab-territories.php:47
+#: includes/admin/settings-tabs/tab-vote-history.php:48
+msgid "Remote URL Override"
+msgstr "Substituir URL Remota"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:57
+msgid "Only set if chronicles come from a different gateway than the default."
+msgstr "Defina apenas se as crônicas vierem de um gateway diferente do padrão."
+
+#: includes/admin/settings-tabs/tab-chronicles.php:61
+#: includes/admin/settings-tabs/tab-coordinators.php:61
+#: includes/admin/settings-tabs/tab-territories.php:59
+#: includes/admin/settings-tabs/tab-vote-history.php:60
+msgid "API Key Override"
+msgstr "Substituir Chave de API"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:74
+msgid "Chronicles List Page"
+msgstr "Página da Lista de Crônicas"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:79
+#: includes/admin/settings-tabs/tab-chronicles.php:90
+#: includes/admin/settings-tabs/tab-coordinators.php:79
+#: includes/admin/settings-tabs/tab-coordinators.php:90
+#: includes/elementor/class-chronicle-list-widget.php:740
+#: includes/elementor/class-coordinator-list-widget.php:583
+msgid "— Select Page —"
+msgstr "— Selecione a Página —"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:85
+msgid "Chronicles Detail Page"
+msgstr "Página de Detalhes da Crônica"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:101
+#: includes/admin/settings-tabs/tab-coordinators.php:101
+#: includes/admin/settings-tabs/tab-territories.php:77
+#: includes/admin/settings-tabs/tab-vote-history.php:78
+#: includes/elementor/class-chronicle-list-widget.php:91
+#: includes/elementor/class-chronicle-list-widget.php:653
+#: includes/elementor/class-chronicle-list-widget.php:728
+#: includes/render/render-chronicles-list.php:57
+#: includes/render/render-chronicles-list.php:122
+#: includes/render/render-vote-history.php:53
+#: includes/render/render-vote-history.php:73
+msgid "Status"
+msgstr "Status"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:111
+#: includes/admin/settings-tabs/tab-coordinators.php:111
+#: includes/admin/settings-tabs/tab-territories.php:92
+#: includes/admin/settings-tabs/tab-vote-history.php:87
+msgid "Mode"
+msgstr "Modo"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:120
+#: includes/admin/settings-tabs/tab-coordinators.php:120
+msgid "C&C Manager"
+msgstr "C&C Manager"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:121
+#: includes/admin/settings-tabs/tab-coordinators.php:121
+#: includes/admin/settings-tabs/tab-territories.php:102
+#: includes/admin/settings-tabs/tab-vote-history.php:97
+#: includes/render/render-chronicle-box.php:49
+msgid "Active"
+msgstr "Ativo"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:121
+#: includes/admin/settings-tabs/tab-coordinators.php:121
+#: includes/admin/settings-tabs/tab-territories.php:102
+#: includes/admin/settings-tabs/tab-vote-history.php:97
+msgid "Not installed"
+msgstr "Não instalado"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:126
+#: includes/admin/settings-tabs/tab-coordinators.php:126
+#: includes/admin/settings-tabs/tab-territories.php:111
+#: includes/admin/settings-tabs/tab-vote-history.php:102
+msgid "Remote URL"
+msgstr "URL Remota"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:131
+#: includes/admin/settings-tabs/tab-coordinators.php:131
+#: includes/admin/settings-tabs/tab-territories.php:116
+msgid "Cached Records"
+msgstr "Registros em Cache"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:132
+#: includes/admin/settings-tabs/tab-coordinators.php:132
+#: includes/admin/settings-tabs/tab-territories.php:117
+msgid "None"
+msgstr "Nenhum"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:138
+#: includes/admin/settings-tabs/tab-coordinators.php:138
+#: includes/admin/settings-tabs/tab-territories.php:123
+msgid "Search Data"
+msgstr "Dados de Busca"
+
+#: includes/admin/settings-tabs/tab-chronicles.php:140
+msgid "Search chronicles..."
+msgstr "Buscar crônicas..."
+
+#: includes/admin/settings-tabs/tab-coordinators.php:20
+msgid "Coordinators"
+msgstr "Coordenadores"
+
+#: includes/admin/settings-tabs/tab-coordinators.php:57
+msgid "Only set if coordinators come from a different gateway than the default."
+msgstr "Defina apenas se os coordenadores vierem de um gateway diferente do padrão."
+
+#: includes/admin/settings-tabs/tab-coordinators.php:74
+msgid "Coordinators List Page"
+msgstr "Página da Lista de Coordenadores"
+
+#: includes/admin/settings-tabs/tab-coordinators.php:85
+msgid "Coordinators Detail Page"
+msgstr "Página de Detalhes do Coordenador"
+
+#: includes/admin/settings-tabs/tab-coordinators.php:140
+msgid "Search coordinators..."
+msgstr "Buscar coordenadores..."
+
+#: includes/admin/settings-tabs/tab-territories.php:18
+#: includes/render/render-chronicle-detail.php:417
+#: includes/render/render-coordinator-detail.php:382
+msgid "Territories"
+msgstr "Territórios"
+
+#: includes/admin/settings-tabs/tab-territories.php:33
+msgid "Local — Serve from Territory Manager CPTs on this site"
+msgstr "Local — Servir a partir dos CPTs do Territory Manager neste site"
+
+#: includes/admin/settings-tabs/tab-territories.php:55
+msgid "Only set if territories come from a different gateway than the default."
+msgstr "Defina apenas se os territórios vierem de um gateway diferente do padrão."
+
+#: includes/admin/settings-tabs/tab-territories.php:101
+msgid "Territory Manager"
+msgstr "Territory Manager"
+
+#: includes/admin/settings-tabs/tab-territories.php:105
+msgid "Published Territories"
+msgstr "Territórios Publicados"
+
+#: includes/admin/settings-tabs/tab-territories.php:125
+#: includes/render/render-territory-list.php:36
+msgid "Search territories..."
+msgstr "Buscar territórios..."
+
+#: includes/admin/settings-tabs/tab-vote-history.php:18
+#: includes/render/render-vote-history.php:46
+msgid "Vote History"
+msgstr "Histórico de Votações"
+
+#: includes/admin/settings-tabs/tab-vote-history.php:19
+msgid "Shows vote history on chronicle and coordinator detail pages."
+msgstr "Mostra o histórico de votações nas páginas de detalhes de crônicas e coordenadores."
+
+#: includes/admin/settings-tabs/tab-vote-history.php:34
+msgid "Local — Query wp-voting-plugin tables on this site"
+msgstr "Local — Consultar as tabelas do wp-voting-plugin neste site"
+
+#: includes/admin/settings-tabs/tab-vote-history.php:56
+msgid "Only set if vote data comes from a different gateway than the default remote URL."
+msgstr "Defina apenas se os dados de votação vierem de um gateway diferente da URL remota padrão."
+
+#: includes/admin/settings-tabs/tab-vote-history.php:96
+msgid "Voting Plugin"
+msgstr "Plugin de Votação"
+
+#: includes/core/data-singleton.php:30
+#: includes/elementor/class-chronicle-detail-widget.php:230
+#: includes/templates/detail-owbn-chronicle.php:28
+msgid "No chronicle specified."
+msgstr "Nenhuma crônica especificada."
+
+#: includes/core/data-singleton.php:36
+#: includes/core/data-singleton.php:65
+msgid "Data fetch not available."
+msgstr "Busca de dados indisponível."
+
+#: includes/core/data-singleton.php:59
+#: includes/elementor/class-coordinator-detail-widget.php:199
+#: includes/templates/detail-owbn-coordinator.php:28
+msgid "No coordinator specified."
+msgstr "Nenhum coordenador especificado."
+
+#: includes/elementor/class-chronicle-about-section-widget.php:10
+msgid "Chronicle About"
+msgstr "Sobre a Crônica"
+
+#: includes/elementor/class-chronicle-about-section-widget.php:17
+#: includes/elementor/class-chronicle-documents-section-widget.php:17
+#: includes/elementor/class-chronicle-header-section-widget.php:17
+#: includes/elementor/class-chronicle-in-brief-section-widget.php:17
+#: includes/elementor/class-chronicle-links-section-widget.php:17
+#: includes/elementor/class-chronicle-narrative-section-widget.php:17
+#: includes/elementor/class-chronicle-player-lists-section-widget.php:17
+#: includes/elementor/class-chronicle-satellites-section-widget.php:17
+#: includes/elementor/class-chronicle-sessions-section-widget.php:17
+#: includes/elementor/class-chronicle-staff-section-widget.php:17
+#: includes/elementor/class-chronicle-territories-section-widget.php:17
+#: includes/elementor/class-chronicle-votes-section-widget.php:17
+#: includes/elementor/class-coordinator-contacts-section-widget.php:17
+#: includes/elementor/class-coordinator-description-section-widget.php:17
+#: includes/elementor/class-coordinator-documents-section-widget.php:17
+#: includes/elementor/class-coordinator-header-section-widget.php:17
+#: includes/elementor/class-coordinator-hosting-section-widget.php:17
+#: includes/elementor/class-coordinator-info-section-widget.php:17
+#: includes/elementor/class-coordinator-player-lists-section-widget.php:17
+#: includes/elementor/class-coordinator-subcoords-section-widget.php:17
+#: includes/elementor/class-coordinator-territories-section-widget.php:17
+#: includes/elementor/class-coordinator-votes-section-widget.php:17
+msgid "Settings"
+msgstr "Configurações"
+
+#: includes/elementor/class-chronicle-about-section-widget.php:21
+#: includes/elementor/class-chronicle-detail-widget.php:82
+#: includes/elementor/class-chronicle-documents-section-widget.php:21
+#: includes/elementor/class-chronicle-field-widget.php:76
+#: includes/elementor/class-chronicle-header-section-widget.php:21
+#: includes/elementor/class-chronicle-in-brief-section-widget.php:21
+#: includes/elementor/class-chronicle-links-section-widget.php:21
+#: includes/elementor/class-chronicle-narrative-section-widget.php:21
+#: includes/elementor/class-chronicle-player-lists-section-widget.php:21
+#: includes/elementor/class-chronicle-satellites-section-widget.php:21
+#: includes/elementor/class-chronicle-sessions-section-widget.php:21
+#: includes/elementor/class-chronicle-staff-section-widget.php:21
+#: includes/elementor/class-chronicle-territories-section-widget.php:21
+#: includes/elementor/class-chronicle-votes-section-widget.php:21
+msgid "Chronicle Slug"
+msgstr "Slug da Crônica"
+
+#: includes/elementor/class-chronicle-about-section-widget.php:24
+#: includes/elementor/class-chronicle-documents-section-widget.php:24
+#: includes/elementor/class-chronicle-header-section-widget.php:24
+#: includes/elementor/class-chronicle-in-brief-section-widget.php:24
+#: includes/elementor/class-chronicle-links-section-widget.php:24
+#: includes/elementor/class-chronicle-narrative-section-widget.php:24
+#: includes/elementor/class-chronicle-player-lists-section-widget.php:24
+#: includes/elementor/class-chronicle-satellites-section-widget.php:24
+#: includes/elementor/class-chronicle-sessions-section-widget.php:24
+#: includes/elementor/class-chronicle-staff-section-widget.php:24
+#: includes/elementor/class-chronicle-territories-section-widget.php:24
+#: includes/elementor/class-chronicle-votes-section-widget.php:24
+#: includes/elementor/class-coordinator-contacts-section-widget.php:24
+#: includes/elementor/class-coordinator-description-section-widget.php:24
+#: includes/elementor/class-coordinator-documents-section-widget.php:24
+#: includes/elementor/class-coordinator-header-section-widget.php:24
+#: includes/elementor/class-coordinator-hosting-section-widget.php:24
+#: includes/elementor/class-coordinator-info-section-widget.php:24
+#: includes/elementor/class-coordinator-player-lists-section-widget.php:24
+#: includes/elementor/class-coordinator-subcoords-section-widget.php:24
+#: includes/elementor/class-coordinator-territories-section-widget.php:24
+#: includes/elementor/class-coordinator-votes-section-widget.php:24
+msgid "Leave empty to read from URL query parameter."
+msgstr "Deixe vazio para ler do parâmetro da URL."
+
+#: includes/elementor/class-chronicle-detail-widget.php:27
+msgid "Chronicle Detail"
+msgstr "Detalhes da Crônica"
+
+#: includes/elementor/class-chronicle-detail-widget.php:61
+#: includes/elementor/class-chronicle-field-widget.php:55
+#: includes/elementor/class-chronicle-list-widget.php:61
+#: includes/elementor/class-coordinator-detail-widget.php:59
+#: includes/elementor/class-coordinator-field-widget.php:55
+#: includes/elementor/class-coordinator-field-widget.php:237
+#: includes/elementor/class-coordinator-list-widget.php:61
+#: includes/elementor/class-territory-detail-widget.php:59
+#: includes/elementor/class-territory-list-widget.php:61
+#: includes/shortcodes/shortcodes-coordinator.php:153
+msgid "Content"
+msgstr "Conteúdo"
+
+#: includes/elementor/class-chronicle-detail-widget.php:69
+#: includes/elementor/class-chronicle-field-widget.php:63
+msgid "Chronicle Source"
+msgstr "Origem da Crônica"
+
+#: includes/elementor/class-chronicle-detail-widget.php:72
+#: includes/elementor/class-chronicle-field-widget.php:66
+#: includes/elementor/class-coordinator-detail-widget.php:70
+#: includes/elementor/class-coordinator-field-widget.php:66
+msgid "From URL Parameter (?slug=)"
+msgstr "Do Parâmetro da URL (?slug=)"
+
+#: includes/elementor/class-chronicle-detail-widget.php:73
+#: includes/elementor/class-chronicle-field-widget.php:67
+msgid "Fixed Chronicle"
+msgstr "Crônica Fixa"
+
+#: includes/elementor/class-chronicle-detail-widget.php:97
+#: includes/elementor/class-chronicle-list-widget.php:139
+#: includes/elementor/class-coordinator-detail-widget.php:95
+#: includes/elementor/class-coordinator-list-widget.php:108
+#: includes/elementor/class-territory-detail-widget.php:95
+#: includes/elementor/class-territory-list-widget.php:94
+msgid "Container"
+msgstr "Contêiner"
+
+#: includes/elementor/class-chronicle-detail-widget.php:105
+#: includes/elementor/class-chronicle-list-widget.php:147
+#: includes/elementor/class-chronicle-list-widget.php:209
+#: includes/elementor/class-chronicle-list-widget.php:280
+#: includes/elementor/class-chronicle-list-widget.php:312
+#: includes/elementor/class-chronicle-list-widget.php:445
+#: includes/elementor/class-coordinator-detail-widget.php:103
+#: includes/elementor/class-coordinator-list-widget.php:116
+#: includes/elementor/class-coordinator-list-widget.php:178
+#: includes/elementor/class-coordinator-list-widget.php:243
+#: includes/elementor/class-coordinator-list-widget.php:306
+#: includes/elementor/class-coordinator-list-widget.php:338
+#: includes/elementor/class-territory-detail-widget.php:103
+#: includes/elementor/class-territory-list-widget.php:102
+#: includes/elementor/class-territory-list-widget.php:164
+msgid "Background Color"
+msgstr "Cor de Fundo"
+
+#: includes/elementor/class-chronicle-detail-widget.php:116
+#: includes/elementor/class-chronicle-list-widget.php:186
+#: includes/elementor/class-chronicle-list-widget.php:239
+#: includes/elementor/class-chronicle-list-widget.php:347
+#: includes/elementor/class-chronicle-list-widget.php:486
+#: includes/elementor/class-coordinator-detail-widget.php:114
+#: includes/elementor/class-coordinator-list-widget.php:155
+#: includes/elementor/class-coordinator-list-widget.php:208
+#: includes/elementor/class-coordinator-list-widget.php:273
+#: includes/elementor/class-coordinator-list-widget.php:373
+#: includes/elementor/class-territory-detail-widget.php:114
+#: includes/elementor/class-territory-list-widget.php:141
+#: includes/elementor/class-territory-list-widget.php:205
+#: includes/elementor/class-widget-style-controls.php:37
+msgid "Padding"
+msgstr "Espaçamento Interno"
+
+#: includes/elementor/class-chronicle-detail-widget.php:131
+msgid "Header"
+msgstr "Cabeçalho"
+
+#: includes/elementor/class-chronicle-detail-widget.php:139
+#: includes/elementor/class-coordinator-detail-widget.php:137
+#: includes/elementor/class-territory-detail-widget.php:137
+msgid "Title Color"
+msgstr "Cor do Título"
+
+#: includes/elementor/class-chronicle-detail-widget.php:161
+msgid "Sections"
+msgstr "Seções"
+
+#: includes/elementor/class-chronicle-detail-widget.php:169
+msgid "Section Heading Color"
+msgstr "Cor do Título da Seção"
+
+#: includes/elementor/class-chronicle-detail-widget.php:188
+msgid "Content Text Color"
+msgstr "Cor do Texto"
+
+#: includes/elementor/class-chronicle-detail-widget.php:213
+#: includes/elementor/class-chronicle-field-widget.php:185
+#: includes/elementor/class-chronicle-list-widget.php:563
+#: includes/shortcodes/shortcodes.php:54
+#: includes/shortcodes/shortcodes.php:75
+msgid "Chronicles are not enabled."
+msgstr "As crônicas não estão ativadas."
+
+#: includes/elementor/class-chronicle-detail-widget.php:228
+#: includes/elementor/class-chronicle-field-widget.php:200
+msgid "No chronicle selected. Set a fixed slug or use ?slug= parameter."
+msgstr "Nenhuma crônica selecionada. Defina um slug fixo ou use o parâmetro ?slug=."
+
+#: includes/elementor/class-chronicle-detail-widget.php:240
+#: includes/elementor/class-chronicle-field-widget.php:214
+#: includes/render/render-chronicle-detail.php:15
+#: includes/templates/detail-owbn-chronicle.php:25
+msgid "Chronicle not found."
+msgstr "Crônica não encontrada."
+
+#: includes/elementor/class-chronicle-documents-section-widget.php:10
+msgid "Chronicle Documents"
+msgstr "Documentos da Crônica"
+
+#: includes/elementor/class-chronicle-field-widget.php:26
+msgid "Chronicle Field"
+msgstr "Campo da Crônica"
+
+#: includes/elementor/class-chronicle-field-widget.php:88
+#: includes/elementor/class-coordinator-field-widget.php:88
+msgid "Field to Display"
+msgstr "Campo a Exibir"
+
+#: includes/elementor/class-chronicle-field-widget.php:92
+msgid "Select which chronicle field to display"
+msgstr "Escolha qual campo da crônica exibir"
+
+#: includes/elementor/class-chronicle-field-widget.php:99
+#: includes/elementor/class-coordinator-field-widget.php:99
+msgid "Show Label"
+msgstr "Mostrar Rótulo"
+
+#: includes/elementor/class-chronicle-field-widget.php:101
+#: includes/elementor/class-chronicle-list-widget.php:71
+#: includes/elementor/class-coordinator-field-widget.php:101
+msgid "Show"
+msgstr "Mostrar"
+
+#: includes/elementor/class-chronicle-field-widget.php:102
+#: includes/elementor/class-chronicle-list-widget.php:72
+#: includes/elementor/class-coordinator-field-widget.php:102
+msgid "Hide"
+msgstr "Ocultar"
+
+#: includes/elementor/class-chronicle-field-widget.php:114
+#: includes/elementor/class-coordinator-field-widget.php:114
+msgid "Style"
+msgstr "Estilo"
+
+#: includes/elementor/class-chronicle-field-widget.php:122
+#: includes/elementor/class-coordinator-field-widget.php:122
+#: includes/elementor/class-widget-style-controls.php:171
+msgid "Label Color"
+msgstr "Cor do Rótulo"
+
+#: includes/elementor/class-chronicle-field-widget.php:147
+#: includes/elementor/class-coordinator-detail-widget.php:156
+#: includes/elementor/class-coordinator-field-widget.php:147
+#: includes/elementor/class-territory-detail-widget.php:156
+msgid "Content Color"
+msgstr "Cor do Conteúdo"
+
+#: includes/elementor/class-chronicle-field-widget.php:167
+#: includes/elementor/class-coordinator-field-widget.php:167
+msgid "Spacing"
+msgstr "Espaçamento"
+
+#: includes/elementor/class-chronicle-field-widget.php:230
+#: includes/render/render-territory-list.php:52
+#: includes/render/render-vote-history.php:50
+#: includes/render/render-vote-history.php:60
+msgid "Title"
+msgstr "Título"
+
+#: includes/elementor/class-chronicle-field-widget.php:231
+#: includes/elementor/class-coordinator-field-widget.php:231
+#: includes/shortcodes/shortcodes-chronicle.php:161
+#: includes/shortcodes/shortcodes-chronicle.php:162
+#: includes/shortcodes/shortcodes-coordinator.php:146
+#: includes/shortcodes/shortcodes-coordinator.php:147
+msgid "Slug"
+msgstr "Slug"
+
+#: includes/elementor/class-chronicle-field-widget.php:232
+#: includes/elementor/class-chronicle-list-widget.php:86
+#: includes/elementor/class-chronicle-list-widget.php:638
+#: includes/elementor/class-chronicle-list-widget.php:703
+#: includes/render/render-chronicles-list.php:52
+#: includes/render/render-chronicles-list.php:107
+#: includes/shortcodes/shortcodes-chronicle.php:163
+msgid "Genres"
+msgstr "Gêneros"
+
+#: includes/elementor/class-chronicle-field-widget.php:233
+#: includes/shortcodes/shortcodes-chronicle.php:164
+msgid "Game Type"
+msgstr "Tipo de Jogo"
+
+#: includes/elementor/class-chronicle-field-widget.php:234
+msgid "Active Player Count"
+msgstr "Número de Jogadores Ativos"
+
+#: includes/elementor/class-chronicle-field-widget.php:235
+#: includes/elementor/class-coordinator-field-widget.php:234
+msgid "Website URL"
+msgstr "URL do Site"
+
+#: includes/elementor/class-chronicle-field-widget.php:238
+msgid "About/Content"
+msgstr "Sobre/Conteúdo"
+
+#: includes/elementor/class-chronicle-field-widget.php:239
+#: includes/elementor/class-chronicle-narrative-section-widget.php:56
+#: includes/render/render-chronicle-detail.php:155
+#: includes/shortcodes/shortcode-owbn.php:109
+#: includes/shortcodes/shortcodes-chronicle.php:171
+msgid "Premise"
+msgstr "Premissa"
+
+#: includes/elementor/class-chronicle-field-widget.php:240
+#: includes/shortcodes/shortcodes-chronicle.php:172
+msgid "Traveler Information"
+msgstr "Informações para Viajantes"
+
+#: includes/elementor/class-chronicle-field-widget.php:243
+#: includes/render/render-chronicle-detail.php:202
+#: includes/shortcodes/shortcodes-chronicle.php:175
+msgid "Head Storyteller"
+msgstr "Narrador-Chefe"
+
+#: includes/elementor/class-chronicle-field-widget.php:244
+#: includes/shortcodes/shortcodes-chronicle.php:176
+msgid "Chronicle Manager"
+msgstr "Membro do Conselho"
+
+#: includes/elementor/class-chronicle-field-widget.php:245
+#: includes/render/render-helpers.php:60
+#: includes/shortcodes/shortcodes-chronicle.php:177
+msgid "Assistant Storytellers"
+msgstr "Narradores Assistentes"
+
+#: includes/elementor/class-chronicle-field-widget.php:248
+msgid "Location (OOC)"
+msgstr "Localização (OOC)"
+
+#: includes/elementor/class-chronicle-field-widget.php:249
+#: includes/shortcodes/shortcodes-chronicle.php:181
+msgid "Game Sites"
+msgstr "Locais de Jogo"
+
+#: includes/elementor/class-chronicle-field-widget.php:252
+#: includes/render/render-chronicle-detail.php:250
+#: includes/shortcodes/shortcodes-chronicle.php:184
+msgid "Game Sessions"
+msgstr "Sessões de Jogo"
+
+#: includes/elementor/class-chronicle-field-widget.php:255
+#: includes/elementor/class-coordinator-field-widget.php:249
+#: includes/render/render-chronicle-detail.php:339
+#: includes/shortcodes/shortcodes-chronicle.php:189
+#: includes/shortcodes/shortcodes-coordinator.php:165
+msgid "Documents"
+msgstr "Documentos"
+
+#: includes/elementor/class-chronicle-field-widget.php:256
+#: includes/shortcodes/shortcodes-chronicle.php:190
+msgid "Social Links"
+msgstr "Redes Sociais"
+
+#: includes/elementor/class-chronicle-field-widget.php:257
+#: includes/shortcodes/shortcodes-chronicle.php:191
+msgid "Mailing Lists"
+msgstr "Listas de E-mail"
+
+#: includes/elementor/class-chronicle-field-widget.php:258
+#: includes/elementor/class-coordinator-field-widget.php:251
+#: includes/render/render-chronicle-detail.php:361
+#: includes/render/render-coordinator-detail.php:247
+#: includes/shortcodes/shortcodes-chronicle.php:192
+#: includes/shortcodes/shortcodes-coordinator.php:167
+msgid "Player Lists"
+msgstr "Listas de Jogadores"
+
+#: includes/elementor/class-chronicle-field-widget.php:261
+#: includes/elementor/class-chronicle-list-widget.php:87
+#: includes/elementor/class-chronicle-list-widget.php:641
+#: includes/elementor/class-chronicle-list-widget.php:708
+#: includes/render/render-chronicles-list.php:53
+#: includes/render/render-chronicles-list.php:110
+#: includes/render/render-territory-detail.php:53
+#: includes/render/render-territory-list.php:217
+#: includes/shortcodes/shortcodes-chronicle.php:195
+msgid "Region"
+msgstr "Região"
+
+#: includes/elementor/class-chronicle-field-widget.php:262
+#: includes/render/render-vote-history.php:51
+#: includes/shortcodes/shortcodes-chronicle.php:196
+msgid "Start Date"
+msgstr "Data de Início"
+
+#: includes/elementor/class-chronicle-field-widget.php:263
+msgid "Probationary Status"
+msgstr "Status Probatório"
+
+#: includes/elementor/class-chronicle-field-widget.php:264
+msgid "Satellite Status"
+msgstr "Status de Satélite"
+
+#: includes/elementor/class-chronicle-field-widget.php:265
+#: includes/shortcodes/shortcodes-chronicle.php:199
+msgid "Parent Chronicle"
+msgstr "Crônica-Mãe"
+
+#: includes/elementor/class-chronicle-header-section-widget.php:10
+msgid "Chronicle Header"
+msgstr "Cabeçalho da Crônica"
+
+#: includes/elementor/class-chronicle-in-brief-section-widget.php:10
+msgid "Chronicle In Brief"
+msgstr "Crônica em Resumo"
+
+#: includes/elementor/class-chronicle-links-section-widget.php:10
+msgid "Chronicle Links"
+msgstr "Links da Crônica"
+
+#: includes/elementor/class-chronicle-list-widget.php:27
+msgid "Chronicle List"
+msgstr "Lista de Crônicas"
+
+#: includes/elementor/class-chronicle-list-widget.php:69
+msgid "Show Filter Toolbar"
+msgstr "Mostrar Barra de Filtros"
+
+#: includes/elementor/class-chronicle-list-widget.php:81
+msgid "Columns to Display"
+msgstr "Colunas a Exibir"
+
+#: includes/elementor/class-chronicle-list-widget.php:85
+#: includes/elementor/class-chronicle-list-widget.php:635
+#: includes/render/render-chronicles-list.php:51
+#: includes/shortcodes/shortcodes-chronicle.php:160
+msgid "Chronicle"
+msgstr "Crônica"
+
+#: includes/elementor/class-chronicle-list-widget.php:88
+#: includes/elementor/class-chronicle-list-widget.php:644
+#: includes/elementor/class-chronicle-list-widget.php:713
+#: includes/render/render-chronicles-list.php:54
+#: includes/render/render-chronicles-list.php:113
+msgid "State/Province"
+msgstr "Estado/Província"
+
+#: includes/elementor/class-chronicle-list-widget.php:89
+#: includes/elementor/class-chronicle-list-widget.php:647
+#: includes/elementor/class-chronicle-list-widget.php:718
+#: includes/render/render-chronicles-list.php:55
+#: includes/render/render-chronicles-list.php:116
+msgid "City"
+msgstr "Cidade"
+
+#: includes/elementor/class-chronicle-list-widget.php:90
+#: includes/elementor/class-chronicle-list-widget.php:650
+#: includes/elementor/class-chronicle-list-widget.php:723
+#: includes/elementor/class-coordinator-field-widget.php:232
+#: includes/render/render-chronicles-list.php:56
+#: includes/render/render-chronicles-list.php:119
+#: includes/shortcodes/shortcodes-coordinator.php:148
+msgid "Type"
+msgstr "Tipo"
+
+#: includes/elementor/class-chronicle-list-widget.php:100
+msgid "Chronicle Status"
+msgstr "Status da Crônica"
+
+#: includes/elementor/class-chronicle-list-widget.php:104
+msgid "Active (Published)"
+msgstr "Ativa (Publicada)"
+
+#: includes/elementor/class-chronicle-list-widget.php:105
+msgid "Decommissioned"
+msgstr "Desativada"
+
+#: includes/elementor/class-chronicle-list-widget.php:106
+msgid "All"
+msgstr "Todas"
+
+#: includes/elementor/class-chronicle-list-widget.php:108
+msgid "Which chronicles to show based on their status."
+msgstr "Quais crônicas mostrar, conforme o status."
+
+#: includes/elementor/class-chronicle-list-widget.php:115
+#: includes/elementor/class-coordinator-list-widget.php:84
+msgid "Detail Page"
+msgstr "Página de Detalhes"
+
+#: includes/elementor/class-chronicle-list-widget.php:119
+msgid "Page to link to for chronicle details (uses ?slug= parameter)"
+msgstr "Página para os detalhes da crônica (usa o parâmetro ?slug=)"
+
+#: includes/elementor/class-chronicle-list-widget.php:126
+#: includes/elementor/class-coordinator-list-widget.php:95
+#: includes/elementor/class-territory-list-widget.php:69
+msgid "Empty Message"
+msgstr "Mensagem Vazia"
+
+#: includes/elementor/class-chronicle-list-widget.php:128
+#: includes/elementor/class-chronicle-list-widget.php:129
+#: includes/elementor/class-chronicle-list-widget.php:584
+#: includes/render/render-chronicles-list.php:28
+msgid "No chronicles found."
+msgstr "Nenhuma crônica encontrada."
+
+#: includes/elementor/class-chronicle-list-widget.php:166
+#: includes/elementor/class-coordinator-list-widget.php:135
+#: includes/elementor/class-territory-list-widget.php:121
+#: includes/elementor/class-widget-style-controls.php:49
+msgid "Border Radius"
+msgstr "Raio da Borda"
+
+#: includes/elementor/class-chronicle-list-widget.php:201
+msgid "Header Row"
+msgstr "Linha de Cabeçalho"
+
+#: includes/elementor/class-chronicle-list-widget.php:220
+#: includes/elementor/class-chronicle-list-widget.php:291
+#: includes/elementor/class-chronicle-list-widget.php:323
+#: includes/elementor/class-coordinator-list-widget.php:189
+#: includes/elementor/class-coordinator-list-widget.php:254
+#: includes/elementor/class-coordinator-list-widget.php:317
+#: includes/elementor/class-coordinator-list-widget.php:349
+#: includes/elementor/class-widget-style-controls.php:81
+msgid "Text Color"
+msgstr "Cor do Texto"
+
+#: includes/elementor/class-chronicle-list-widget.php:262
+#: includes/elementor/class-coordinator-list-widget.php:288
+msgid "Rows"
+msgstr "Linhas"
+
+#: includes/elementor/class-chronicle-list-widget.php:273
+#: includes/elementor/class-chronicle-list-widget.php:380
+#: includes/elementor/class-coordinator-list-widget.php:299
+#: includes/elementor/class-coordinator-list-widget.php:398
+msgid "Normal"
+msgstr "Normal"
+
+#: includes/elementor/class-chronicle-list-widget.php:305
+#: includes/elementor/class-chronicle-list-widget.php:400
+#: includes/elementor/class-coordinator-list-widget.php:331
+#: includes/elementor/class-coordinator-list-widget.php:418
+msgid "Hover"
+msgstr "Ao Passar o Mouse"
+
+#: includes/elementor/class-chronicle-list-widget.php:370
+#: includes/elementor/class-coordinator-list-widget.php:388
+msgid "Links"
+msgstr "Links"
+
+#: includes/elementor/class-chronicle-list-widget.php:387
+#: includes/elementor/class-chronicle-list-widget.php:407
+#: includes/elementor/class-coordinator-list-widget.php:405
+#: includes/elementor/class-coordinator-list-widget.php:425
+msgid "Color"
+msgstr "Cor"
+
+#: includes/elementor/class-chronicle-list-widget.php:434
+msgid "Filter Toolbar"
+msgstr "Barra de Filtros"
+
+#: includes/elementor/class-chronicle-list-widget.php:456
+msgid "Input Background"
+msgstr "Fundo do Campo"
+
+#: includes/elementor/class-chronicle-list-widget.php:467
+msgid "Input Text Color"
+msgstr "Cor do Texto do Campo"
+
+#: includes/elementor/class-chronicle-list-widget.php:498
+#: includes/elementor/class-coordinator-list-widget.php:220
+msgid "Margin"
+msgstr "Margem"
+
+#: includes/elementor/class-chronicle-list-widget.php:513
+msgid "Status Badges"
+msgstr "Selos de Status"
+
+#: includes/elementor/class-chronicle-list-widget.php:521
+msgid "Probationary Background"
+msgstr "Fundo de Probatória"
+
+#: includes/elementor/class-chronicle-list-widget.php:532
+msgid "Satellite Background"
+msgstr "Fundo de Satélite"
+
+#: includes/elementor/class-chronicle-list-widget.php:543
+msgid "Full Member Background"
+msgstr "Fundo de Membro Pleno"
+
+#: includes/elementor/class-chronicle-list-widget.php:617
+#: includes/render/render-chronicles-list.php:42
+msgid "Filter Genres..."
+msgstr "Filtrar gêneros..."
+
+#: includes/elementor/class-chronicle-list-widget.php:620
+#: includes/render/render-chronicles-list.php:43
+msgid "Filter Region..."
+msgstr "Filtrar região..."
+
+#: includes/elementor/class-chronicle-list-widget.php:623
+#: includes/render/render-chronicles-list.php:44
+msgid "Filter State..."
+msgstr "Filtrar estado..."
+
+#: includes/elementor/class-chronicle-list-widget.php:626
+#: includes/render/render-chronicles-list.php:45
+msgid "Filter Type..."
+msgstr "Filtrar tipo..."
+
+#: includes/elementor/class-chronicle-list-widget.php:628
+#: includes/render/render-chronicles-list.php:46
+msgid "Clear"
+msgstr "Limpar"
+
+#: includes/elementor/class-chronicle-list-widget.php:662
+#: includes/render/render-chronicles-list.php:65
+msgid "No chronicles match your filters."
+msgstr "Nenhuma crônica corresponde aos filtros."
+
+#: includes/elementor/class-chronicle-list-widget.php:673
+#: includes/elementor/class-coordinator-list-widget.php:553
+#: includes/render/render-chronicles-list.php:80
+#: includes/render/render-coordinators-list.php:94
+msgid "Untitled"
+msgstr "Sem título"
+
+#: includes/elementor/class-chronicle-narrative-section-widget.php:10
+msgid "Chronicle Narrative"
+msgstr "Narrativa da Crônica"
+
+#: includes/elementor/class-chronicle-narrative-section-widget.php:27
+msgid "Show Premise"
+msgstr "Mostrar Premissa"
+
+#: includes/elementor/class-chronicle-narrative-section-widget.php:32
+msgid "Show Traveler Info"
+msgstr "Mostrar Informações para Viajantes"
+
+#: includes/elementor/class-chronicle-narrative-section-widget.php:59
+#: includes/render/render-chronicle-detail.php:156
+#: includes/shortcodes/shortcode-owbn.php:110
+msgid "Information for Travelers"
+msgstr "Informações para Viajantes"
+
+#: includes/elementor/class-chronicle-player-lists-section-widget.php:10
+msgid "Chronicle Player Lists"
+msgstr "Listas de Jogadores da Crônica"
+
+#: includes/elementor/class-chronicle-satellites-section-widget.php:10
+msgid "Chronicle Satellites"
+msgstr "Satélites da Crônica"
+
+#: includes/elementor/class-chronicle-sessions-section-widget.php:10
+msgid "Chronicle Sessions"
+msgstr "Sessões da Crônica"
+
+#: includes/elementor/class-chronicle-staff-section-widget.php:10
+msgid "Chronicle Staff"
+msgstr "Equipe da Crônica"
+
+#: includes/elementor/class-chronicle-territories-section-widget.php:10
+msgid "Chronicle Territories"
+msgstr "Territórios da Crônica"
+
+#: includes/elementor/class-chronicle-votes-section-widget.php:10
+msgid "Chronicle Vote History"
+msgstr "Histórico de Votações da Crônica"
+
+#: includes/elementor/class-coordinator-contacts-section-widget.php:10
+msgid "Coordinator Contacts"
+msgstr "Contatos do Coordenador"
+
+#: includes/elementor/class-coordinator-contacts-section-widget.php:21
+#: includes/elementor/class-coordinator-description-section-widget.php:21
+#: includes/elementor/class-coordinator-detail-widget.php:80
+#: includes/elementor/class-coordinator-documents-section-widget.php:21
+#: includes/elementor/class-coordinator-field-widget.php:76
+#: includes/elementor/class-coordinator-header-section-widget.php:21
+#: includes/elementor/class-coordinator-hosting-section-widget.php:21
+#: includes/elementor/class-coordinator-info-section-widget.php:21
+#: includes/elementor/class-coordinator-player-lists-section-widget.php:21
+#: includes/elementor/class-coordinator-subcoords-section-widget.php:21
+#: includes/elementor/class-coordinator-territories-section-widget.php:21
+#: includes/elementor/class-coordinator-votes-section-widget.php:21
+msgid "Coordinator Slug"
+msgstr "Slug do Coordenador"
+
+#: includes/elementor/class-coordinator-description-section-widget.php:10
+msgid "Coordinator Description"
+msgstr "Descrição do Coordenador"
+
+#: includes/elementor/class-coordinator-detail-widget.php:25
+msgid "Coordinator Detail"
+msgstr "Detalhes do Coordenador"
+
+#: includes/elementor/class-coordinator-detail-widget.php:67
+#: includes/elementor/class-coordinator-field-widget.php:63
+msgid "Coordinator Source"
+msgstr "Origem do Coordenador"
+
+#: includes/elementor/class-coordinator-detail-widget.php:71
+#: includes/elementor/class-coordinator-field-widget.php:67
+msgid "Fixed Coordinator"
+msgstr "Coordenador Fixo"
+
+#: includes/elementor/class-coordinator-detail-widget.php:129
+#: includes/elementor/class-territory-detail-widget.php:129
+#: includes/elementor/class-widget-style-controls.php:64
+msgid "Typography"
+msgstr "Tipografia"
+
+#: includes/elementor/class-coordinator-detail-widget.php:182
+#: includes/elementor/class-coordinator-field-widget.php:185
+#: includes/elementor/class-coordinator-list-widget.php:458
+#: includes/shortcodes/shortcodes.php:61
+#: includes/shortcodes/shortcodes.php:85
+msgid "Coordinators are not enabled."
+msgstr "Os coordenadores não estão ativados."
+
+#: includes/elementor/class-coordinator-detail-widget.php:197
+#: includes/elementor/class-coordinator-field-widget.php:200
+msgid "No coordinator selected. Set a fixed slug or use ?slug= parameter."
+msgstr "Nenhum coordenador selecionado. Defina um slug fixo ou use o parâmetro ?slug=."
+
+#: includes/elementor/class-coordinator-detail-widget.php:209
+#: includes/elementor/class-coordinator-field-widget.php:214
+#: includes/render/render-coordinator-detail.php:16
+#: includes/templates/detail-owbn-coordinator.php:25
+msgid "Coordinator not found."
+msgstr "Coordenador não encontrado."
+
+#: includes/elementor/class-coordinator-documents-section-widget.php:10
+msgid "Coordinator Documents"
+msgstr "Documentos do Coordenador"
+
+#: includes/elementor/class-coordinator-field-widget.php:26
+msgid "Coordinator Field"
+msgstr "Campo do Coordenador"
+
+#: includes/elementor/class-coordinator-field-widget.php:92
+msgid "Select which coordinator field to display"
+msgstr "Escolha qual campo do coordenador exibir"
+
+#: includes/elementor/class-coordinator-field-widget.php:230
+msgid "Office Title"
+msgstr "Título do Cargo"
+
+#: includes/elementor/class-coordinator-field-widget.php:233
+#: includes/shortcodes/shortcodes-coordinator.php:149
+msgid "Appointment"
+msgstr "Nomeação"
+
+#: includes/elementor/class-coordinator-field-widget.php:238
+#: includes/render/render-coordinator-detail.php:106
+msgid "Office Description"
+msgstr "Descrição do Cargo"
+
+#: includes/elementor/class-coordinator-field-widget.php:241
+#: includes/elementor/class-coordinator-info-section-widget.php:10
+msgid "Coordinator Info"
+msgstr "Informações do Coordenador"
+
+#: includes/elementor/class-coordinator-field-widget.php:242
+#: includes/render/render-coordinator-detail.php:160
+#: includes/shortcodes/shortcodes-coordinator.php:158
+msgid "Subcoordinators"
+msgstr "Subcoordenadores"
+
+#: includes/elementor/class-coordinator-field-widget.php:245
+msgid "Term Start Date"
+msgstr "Início do Mandato"
+
+#: includes/elementor/class-coordinator-field-widget.php:246
+msgid "Term End Date"
+msgstr "Fim do Mandato"
+
+#: includes/elementor/class-coordinator-field-widget.php:250
+#: includes/render/render-coordinator-detail.php:300
+#: includes/shortcodes/shortcodes-coordinator.php:166
+msgid "Contact Lists"
+msgstr "Listas de Contato"
+
+#: includes/elementor/class-coordinator-field-widget.php:254
+#: includes/render/render-coordinator-detail.php:349
+#: includes/shortcodes/shortcodes-coordinator.php:170
+msgid "Hosting Chronicle"
+msgstr "Crônica Anfitriã"
+
+#: includes/elementor/class-coordinator-header-section-widget.php:10
+msgid "Coordinator Header"
+msgstr "Cabeçalho do Coordenador"
+
+#: includes/elementor/class-coordinator-hosting-section-widget.php:10
+msgid "Coordinator Hosting Chronicle"
+msgstr "Crônica Anfitriã do Coordenador"
+
+#: includes/elementor/class-coordinator-list-widget.php:27
+msgid "Coordinator List"
+msgstr "Lista de Coordenadores"
+
+#: includes/elementor/class-coordinator-list-widget.php:69
+msgid "Types to Display"
+msgstr "Tipos a Exibir"
+
+#: includes/elementor/class-coordinator-list-widget.php:73
+msgid "Administrative"
+msgstr "Administrativo"
+
+#: includes/elementor/class-coordinator-list-widget.php:74
+msgid "Genre"
+msgstr "Gênero"
+
+#: includes/elementor/class-coordinator-list-widget.php:75
+msgid "Clan"
+msgstr "Clã"
+
+#: includes/elementor/class-coordinator-list-widget.php:88
+msgid "Page to link to for coordinator details (uses ?slug= parameter)"
+msgstr "Página para os detalhes do coordenador (usa o parâmetro ?slug=)"
+
+#: includes/elementor/class-coordinator-list-widget.php:97
+#: includes/elementor/class-coordinator-list-widget.php:98
+#: includes/elementor/class-coordinator-list-widget.php:470
+#: includes/render/render-coordinators-list.php:23
+msgid "No coordinators found."
+msgstr "Nenhum coordenador encontrado."
+
+#: includes/elementor/class-coordinator-list-widget.php:170
+msgid "Group Headers"
+msgstr "Cabeçalhos de Grupo"
+
+#: includes/elementor/class-coordinator-list-widget.php:235
+msgid "Table Header"
+msgstr "Cabeçalho da Tabela"
+
+#: includes/elementor/class-coordinator-list-widget.php:531
+#: includes/render/render-coordinators-list.php:68
+#: includes/shortcodes/shortcodes-coordinator.php:144
+#: includes/shortcodes/shortcodes-coordinator.php:145
+msgid "Office"
+msgstr "Cargo"
+
+#: includes/elementor/class-coordinator-list-widget.php:532
+#: includes/elementor/class-coordinator-list-widget.php:567
+#: includes/render/render-coordinator-detail.php:131
+#: includes/render/render-coordinators-list.php:69
+#: includes/render/render-coordinators-list.php:108
+#: includes/shortcodes/shortcodes-coordinator.php:157
+msgid "Coordinator"
+msgstr "Coordenador"
+
+#: includes/elementor/class-coordinator-list-widget.php:533
+#: includes/elementor/class-coordinator-list-widget.php:570
+#: includes/render/render-coordinator-detail.php:165
+#: includes/render/render-coordinators-list.php:70
+#: includes/render/render-coordinators-list.php:111
+#: includes/shortcodes/shortcodes-coordinator.php:258
+msgid "Contact"
+msgstr "Contato"
+
+#: includes/elementor/class-coordinator-list-widget.php:568
+#: includes/render/render-coordinators-list.php:109
+msgid "Vacant"
+msgstr "Vago"
+
+#: includes/elementor/class-coordinator-player-lists-section-widget.php:10
+msgid "Coordinator Player Lists"
+msgstr "Listas de Jogadores do Coordenador"
+
+#: includes/elementor/class-coordinator-subcoords-section-widget.php:10
+msgid "Coordinator Sub-Coordinators"
+msgstr "Subcoordenadores do Coordenador"
+
+#: includes/elementor/class-coordinator-territories-section-widget.php:10
+msgid "Coordinator Territories"
+msgstr "Territórios do Coordenador"
+
+#: includes/elementor/class-coordinator-votes-section-widget.php:10
+msgid "Coordinator Vote History"
+msgstr "Histórico de Votações do Coordenador"
+
+#: includes/elementor/class-territory-detail-widget.php:25
+msgid "Territory Detail"
+msgstr "Detalhes do Território"
+
+#: includes/elementor/class-territory-detail-widget.php:67
+msgid "Territory Source"
+msgstr "Origem do Território"
+
+#: includes/elementor/class-territory-detail-widget.php:70
+msgid "From URL Parameter (?id=)"
+msgstr "Do Parâmetro da URL (?id=)"
+
+#: includes/elementor/class-territory-detail-widget.php:71
+msgid "Fixed Territory"
+msgstr "Território Fixo"
+
+#: includes/elementor/class-territory-detail-widget.php:80
+msgid "Territory ID"
+msgstr "ID do Território"
+
+#: includes/elementor/class-territory-detail-widget.php:182
+#: includes/elementor/class-territory-list-widget.php:369
+#: includes/shortcodes/shortcodes.php:68
+#: includes/shortcodes/shortcodes.php:95
+msgid "Territories are not enabled."
+msgstr "Os territórios não estão ativados."
+
+#: includes/elementor/class-territory-detail-widget.php:197
+msgid "No territory selected. Set a fixed ID or use ?id= parameter."
+msgstr "Nenhum território selecionado. Defina um ID fixo ou use o parâmetro ?id=."
+
+#: includes/elementor/class-territory-detail-widget.php:199
+msgid "No territory specified."
+msgstr "Nenhum território especificado."
+
+#: includes/elementor/class-territory-detail-widget.php:209
+#: includes/render/render-territory-detail.php:35
+msgid "Territory not found."
+msgstr "Território não encontrado."
+
+#: includes/elementor/class-territory-list-widget.php:27
+msgid "Territory List"
+msgstr "Lista de Territórios"
+
+#: includes/elementor/class-territory-list-widget.php:71
+#: includes/elementor/class-territory-list-widget.php:72
+#: includes/elementor/class-territory-list-widget.php:384
+#: includes/render/render-territory-list.php:25
+#: includes/render/render-territory-list.php:187
+msgid "No territories found."
+msgstr "Nenhum território encontrado."
+
+#: includes/elementor/class-territory-list-widget.php:79
+msgid "Items Per Page"
+msgstr "Itens por Página"
+
+#: includes/elementor/class-territory-list-widget.php:156
+msgid "Search & Controls"
+msgstr "Busca e Controles"
+
+#: includes/elementor/class-territory-list-widget.php:175
+msgid "Search Input Background"
+msgstr "Fundo do Campo de Busca"
+
+#: includes/elementor/class-territory-list-widget.php:186
+msgid "Search Input Text"
+msgstr "Texto do Campo de Busca"
+
+#: includes/elementor/class-territory-list-widget.php:220
+#: includes/elementor/class-widget-style-controls.php:232
+msgid "Table"
+msgstr "Tabela"
+
+#: includes/elementor/class-territory-list-widget.php:228
+msgid "Header Background"
+msgstr "Fundo do Cabeçalho"
+
+#: includes/elementor/class-territory-list-widget.php:239
+#: includes/elementor/class-widget-style-controls.php:243
+msgid "Header Text Color"
+msgstr "Cor do Texto do Cabeçalho"
+
+#: includes/elementor/class-territory-list-widget.php:251
+#: includes/elementor/class-widget-style-controls.php:250
+msgid "Header Typography"
+msgstr "Tipografia do Cabeçalho"
+
+#: includes/elementor/class-territory-list-widget.php:259
+#: includes/elementor/class-widget-style-controls.php:117
+msgid "Row Background"
+msgstr "Fundo da Linha"
+
+#: includes/elementor/class-territory-list-widget.php:271
+msgid "Row Text Color"
+msgstr "Cor do Texto da Linha"
+
+#: includes/elementor/class-territory-list-widget.php:282
+#: includes/elementor/class-widget-style-controls.php:133
+msgid "Row Hover Background"
+msgstr "Fundo da Linha ao Passar o Mouse"
+
+#: includes/elementor/class-territory-list-widget.php:294
+msgid "Row Typography"
+msgstr "Tipografia da Linha"
+
+#: includes/elementor/class-territory-list-widget.php:314
+msgid "Pagination"
+msgstr "Paginação"
+
+#: includes/elementor/class-territory-list-widget.php:322
+msgid "Button Text Color"
+msgstr "Cor do Texto do Botão"
+
+#: includes/elementor/class-territory-list-widget.php:333
+msgid "Button Background"
+msgstr "Fundo do Botão"
+
+#: includes/elementor/class-territory-list-widget.php:344
+msgid "Button Hover Background"
+msgstr "Fundo do Botão ao Passar o Mouse"
+
+#: includes/elementor/class-widget-style-controls.php:26
+msgid "General"
+msgstr "Geral"
+
+#: includes/elementor/class-widget-style-controls.php:31
+msgid "Background"
+msgstr "Fundo"
+
+#: includes/elementor/class-widget-style-controls.php:69
+msgid "Heading Color"
+msgstr "Cor do Título"
+
+#: includes/elementor/class-widget-style-controls.php:76
+msgid "Heading Typography"
+msgstr "Tipografia do Título"
+
+#: includes/elementor/class-widget-style-controls.php:88
+msgid "Text Typography"
+msgstr "Tipografia do Texto"
+
+#: includes/elementor/class-widget-style-controls.php:93
+msgid "Link Color"
+msgstr "Cor do Link"
+
+#: includes/elementor/class-widget-style-controls.php:99
+msgid "Link Hover Color"
+msgstr "Cor do Link ao Passar o Mouse"
+
+#: includes/elementor/class-widget-style-controls.php:112
+msgid "List Rows"
+msgstr "Linhas da Lista"
+
+#: includes/elementor/class-widget-style-controls.php:125
+msgid "Alternating Row Background"
+msgstr "Fundo Alternado das Linhas"
+
+#: includes/elementor/class-widget-style-controls.php:141
+msgid "Row Divider Color"
+msgstr "Cor do Divisor de Linhas"
+
+#: includes/elementor/class-widget-style-controls.php:149
+msgid "Row Spacing"
+msgstr "Espaçamento das Linhas"
+
+#: includes/elementor/class-widget-style-controls.php:166
+msgid "Labels & Values"
+msgstr "Rótulos e Valores"
+
+#: includes/elementor/class-widget-style-controls.php:178
+msgid "Label Typography"
+msgstr "Tipografia do Rótulo"
+
+#: includes/elementor/class-widget-style-controls.php:183
+msgid "Value Color"
+msgstr "Cor do Valor"
+
+#: includes/elementor/class-widget-style-controls.php:190
+msgid "Value Typography"
+msgstr "Tipografia do Valor"
+
+#: includes/elementor/class-widget-style-controls.php:202
+msgid "Badges"
+msgstr "Selos"
+
+#: includes/elementor/class-widget-style-controls.php:207
+msgid "Badge Background"
+msgstr "Fundo do Selo"
+
+#: includes/elementor/class-widget-style-controls.php:213
+msgid "Badge Text Color"
+msgstr "Cor do Texto do Selo"
+
+#: includes/elementor/class-widget-style-controls.php:220
+msgid "Badge Typography"
+msgstr "Tipografia do Selo"
+
+#: includes/elementor/class-widget-style-controls.php:237
+msgid "Header Row Background"
+msgstr "Fundo da Linha de Cabeçalho"
+
+#: includes/elementor/class-widget-style-controls.php:262
+msgid "Icons"
+msgstr "Ícones"
+
+#: includes/elementor/class-widget-style-controls.php:267
+msgid "Icon Color"
+msgstr "Cor do Ícone"
+
+#: includes/elementor/class-widget-style-controls.php:273
+msgid "Icon Size"
+msgstr "Tamanho do Ícone"
+
+#: includes/render/render-chronicle-detail.php:27
+msgid "← Back to Chronicles"
+msgstr "← Voltar às Crônicas"
+
+#: includes/render/render-chronicle-detail.php:68
+#: includes/render/render-chronicles-list.php:141
+#: includes/shortcodes/shortcodes-chronicle.php:197
+msgid "Probationary"
+msgstr "Probatória"
+
+#: includes/render/render-chronicle-detail.php:71
+#: includes/render/render-chronicles-list.php:145
+#: includes/shortcodes/shortcodes-chronicle.php:198
+msgid "Satellite"
+msgstr "Satélite"
+
+#: includes/render/render-chronicle-detail.php:99
+msgid "In Brief"
+msgstr "Em Resumo"
+
+#: includes/render/render-chronicle-detail.php:104
+msgid "Genre(s):"
+msgstr "Gênero(s):"
+
+#: includes/render/render-chronicle-detail.php:107
+msgid "Game Type:"
+msgstr "Tipo de Jogo:"
+
+#: includes/render/render-chronicle-detail.php:110
+msgid "Number of Players:"
+msgstr "Número de Jogadores:"
+
+#: includes/render/render-chronicle-detail.php:113
+msgid "OWBN Region:"
+msgstr "Região OWBN:"
+
+#: includes/render/render-chronicle-detail.php:133
+#: includes/shortcodes/shortcodes-chronicle.php:169
+#: includes/shortcodes/shortcodes-chronicle.php:170
+#: includes/shortcodes/shortcodes-coordinator.php:154
+msgid "About"
+msgstr "Sobre"
+
+#: includes/render/render-chronicle-detail.php:200
+msgid "Staff"
+msgstr "Equipe"
+
+#: includes/render/render-chronicle-detail.php:203
+msgid "Council Member"
+msgstr "Membro do Conselho"
+
+#: includes/render/render-chronicle-detail.php:205
+msgid "AST"
+msgstr "Narrador Assistente"
+
+#: includes/render/render-chronicle-detail.php:265
+#: includes/render/render-helpers.php:136
+msgid "Check-in:"
+msgstr "Check-in:"
+
+#: includes/render/render-chronicle-detail.php:268
+#: includes/render/render-helpers.php:141
+msgid "Start:"
+msgstr "Início:"
+
+#: includes/render/render-chronicle-detail.php:299
+msgid "Links & Resources"
+msgstr "Links e Recursos"
+
+#: includes/render/render-chronicle-detail.php:391
+msgid "Satellite Parent:"
+msgstr "Crônica-Mãe:"
+
+#: includes/render/render-chronicles-list.php:149
+msgid "Full Member"
+msgstr "Membro Pleno"
+
+#: includes/render/render-coordinator-detail.php:33
+msgid "← Back to Coordinators"
+msgstr "← Voltar aos Coordenadores"
+
+#: includes/render/render-coordinator-detail.php:163
+#: includes/render/render-coordinator-detail.php:250
+#: includes/shortcodes/shortcodes-coordinator.php:256
+msgid "Name"
+msgstr "Nome"
+
+#: includes/render/render-coordinator-detail.php:164
+#: includes/shortcodes/shortcodes-coordinator.php:257
+msgid "Role"
+msgstr "Função"
+
+#: includes/render/render-coordinator-detail.php:211
+msgid "Genre Documents"
+msgstr "Documentos de Gênero"
+
+#: includes/render/render-coordinator-detail.php:217
+msgid "Document"
+msgstr "Documento"
+
+#: includes/render/render-coordinator-detail.php:220
+#: includes/render/render-helpers.php:210
+msgid "Updated:"
+msgstr "Atualizado:"
+
+#: includes/render/render-coordinator-detail.php:225
+msgid "Downloads only available to authenticated users."
+msgstr "Downloads disponíveis apenas para usuários autenticados."
+
+#: includes/render/render-coordinator-detail.php:251
+msgid "Access"
+msgstr "Acesso"
+
+#: includes/render/render-coordinator-detail.php:252
+msgid "IC/OOC"
+msgstr "IC/OOC"
+
+#: includes/render/render-coordinator-detail.php:253
+msgid "Moderator"
+msgstr "Moderador"
+
+#: includes/render/render-coordinator-detail.php:254
+#: includes/render/render-coordinator-detail.php:274
+msgid "Link"
+msgstr "Link"
+
+#: includes/render/render-coordinator-detail.php:355
+msgid "House Rules"
+msgstr "Regras da Casa"
+
+#: includes/render/render-helpers.php:368
+msgid "Sign Up"
+msgstr "Inscrever-se"
+
+#: includes/render/render-territory-box.php:36
+#: includes/render/render-territory-list.php:40
+msgid "Sort:"
+msgstr "Ordenar:"
+
+#: includes/render/render-territory-box.php:38
+#: includes/render/render-territory-list.php:42
+msgid "Title (A–Z)"
+msgstr "Título (A–Z)"
+
+#: includes/render/render-territory-box.php:39
+#: includes/render/render-territory-list.php:43
+msgid "Title (Z–A)"
+msgstr "Título (Z–A)"
+
+#: includes/render/render-territory-box.php:40
+msgid "Country (A–Z)"
+msgstr "País (A–Z)"
+
+#: includes/render/render-territory-box.php:41
+msgid "Country (Z–A)"
+msgstr "País (Z–A)"
+
+#: includes/render/render-territory-box.php:148
+msgid "Countries:"
+msgstr "Países:"
+
+#: includes/render/render-territory-box.php:151
+msgid "Region:"
+msgstr "Região:"
+
+#: includes/render/render-territory-box.php:154
+msgid "Location:"
+msgstr "Localização:"
+
+#: includes/render/render-territory-box.php:157
+msgid "Detail:"
+msgstr "Detalhe:"
+
+#: includes/render/render-territory-box.php:160
+msgid "Owner:"
+msgstr "Dono:"
+
+#: includes/render/render-territory-box.php:168
+msgid "Also claimed by:"
+msgstr "Também reivindicado por:"
+
+#: includes/render/render-territory-box.php:173
+msgid "Description:"
+msgstr "Descrição:"
+
+#: includes/render/render-territory-detail.php:46
+#: includes/render/render-territory-list.php:211
+msgid "Country"
+msgstr "País"
+
+#: includes/render/render-territory-detail.php:60
+#: includes/render/render-territory-list.php:223
+#: includes/shortcodes/shortcodes-chronicle.php:180
+msgid "Location"
+msgstr "Localização"
+
+#: includes/render/render-territory-detail.php:67
+#: includes/render/render-territory-list.php:53
+#: includes/render/render-territory-list.php:229
+msgid "Detail"
+msgstr "Detalhe"
+
+#: includes/render/render-territory-detail.php:74
+#: includes/render/render-territory-list.php:235
+msgid "Owner"
+msgstr "Dono"
+
+#: includes/render/render-territory-detail.php:81
+#: includes/render/render-territory-list.php:54
+#: includes/render/render-territory-list.php:241
+msgid "Assigned To"
+msgstr "Atribuído a"
+
+#: includes/render/render-territory-detail.php:89
+#: includes/render/render-territory-list.php:254
+msgid "Description & Approval Parameters"
+msgstr "Descrição e Parâmetros de Aprovação"
+
+#: includes/render/render-territory-list.php:61
+#: includes/render/render-vote-history.php:85
+msgid "Prev"
+msgstr "Anterior"
+
+#: includes/render/render-territory-list.php:63
+#: includes/render/render-vote-history.php:89
+msgid "Next"
+msgstr "Próxima"
+
+#: includes/render/render-territory-list.php:181
+msgid "Page"
+msgstr "Página"
+
+#: includes/render/render-territory-list.php:186
+msgid "Showing"
+msgstr "Mostrando"
+
+#: includes/render/render-territory-list.php:186
+msgid "of"
+msgstr "de"
+
+#: includes/render/render-territory-list.php:186
+msgid "territories"
+msgstr "territórios"
+
+#: includes/render/render-territory-list.php:247
+msgid "Last Updated"
+msgstr "Última Atualização"
+
+#: includes/render/render-vote-history.php:52
+msgid "End Date"
+msgstr "Data de Término"
+
+#: includes/render/render-vote-history.php:54
+#: includes/render/render-vote-history.php:76
+msgid "Vote"
+msgstr "Votação"
+
+#: includes/render/render-vote-history.php:67
+msgid "Start"
+msgstr "Início"
+
+#: includes/render/render-vote-history.php:70
+msgid "End"
+msgstr "Fim"
+
+#: includes/render/render-vote-history.php:87
+#, php-format
+msgid "Page %1$s of %2$s"
+msgstr "Página %1$s de %2$s"
+
+#. translators: %1$s is opening <a> tag, %2$s is closing </a> tag
+#: includes/render/render-vote-history.php:97
+#, php-format
+msgid "For additional vote-specific records, %1$sclick here%2$s."
+msgstr "Para mais registros de cada votação, %1$sclique aqui%2$s."
+
+#: includes/render/render-vote-history.php:166
+msgid "Open"
+msgstr "Aberta"
+
+#: includes/render/render-vote-history.php:167
+msgid "Completed"
+msgstr "Concluída"
+
+#: includes/render/render-vote-history.php:168
+msgid "Archived"
+msgstr "Arquivada"
+
+#: includes/shortcodes/shortcodes-chronicle.php:165
+msgid "Active Players"
+msgstr "Jogadores Ativos"
+
+#: includes/shortcodes/shortcodes-chronicle.php:166
+#: includes/shortcodes/shortcodes-coordinator.php:150
+msgid "Website"
+msgstr "Site"
+
+#: includes/shortcodes/shortcodes-chronicle.php:185
+msgid "Upcoming Events"
+msgstr "Próximos Eventos"
+
+#: includes/shortcodes/shortcodes-chronicle.php:186
+msgid "Chronicle Timezone"
+msgstr "Fuso Horário da Crônica"
+
+#: includes/shortcodes/shortcodes-chronicle.php:276
+msgid "Yes"
+msgstr "Sim"
+
+#: includes/shortcodes/shortcodes-chronicle.php:278
+msgid "No"
+msgstr "Não"
+
+#: includes/shortcodes/shortcodes-coordinator.php:161
+msgid "Term Started"
+msgstr "Mandato Iniciado"
+
+#: includes/shortcodes/shortcodes-coordinator.php:162
+msgid "Term Ends"
+msgstr "Fim do Mandato"
+
+#: includes/shortcodes/shortcodes.php:78
+msgid "No chronicle selected."
+msgstr "Nenhuma crônica selecionada."
+
+#: includes/shortcodes/shortcodes.php:88
+msgid "No coordinator selected."
+msgstr "Nenhum coordenador selecionado."
+
+#: includes/shortcodes/shortcodes.php:98
+msgid "No territory selected."
+msgstr "Nenhum território selecionado."
+
+#: includes/shortcodes/shortcodes.php:104
+msgid "Invalid shortcode type."
+msgstr "Tipo de shortcode inválido."
