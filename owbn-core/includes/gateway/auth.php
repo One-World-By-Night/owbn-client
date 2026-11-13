@@ -107,7 +107,7 @@ function owbn_gateway_authenticate( $request ) {
  */
 function owbn_gateway_log_request( $response, $server, $request ) {
     $route = $request->get_route();
-    if ( strpos( $route, '/owbn/v1/' ) !== 0 ) {
+    if ( strpos( $route, '/owbn/v1/' ) !== 0 || ! get_option( 'owbn_gateway_logging_enabled', false ) ) {
         return $response;
     }
 

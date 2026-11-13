@@ -18,17 +18,18 @@ if ( ! function_exists( 'owbn_gateway_respond' ) ) :
  */
 function owbn_gateway_respond( $data ) {
     if ( is_wp_error( $data ) ) {
-        $status = (int) $data->get_error_data( 'status' );
-        return new WP_REST_Response(
+        $error_data = $data->get_error_data();
+        $status     = is_array( $error_data ) && isset( $error_data['status'] ) ? (int) $error_data['status'] : 0;
+        $response   = new WP_REST_Response(
             array(
                 'code'    => $data->get_error_code(),
                 'message' => $data->get_error_message(),
             ),
-            $status > 0 ? $status : 400
+            $status >= 400 && $status < 600 ? $status : 400
         );
+    } else {
+        $response = new WP_REST_Response( $data, 200 );
     }
-
-    $response = new WP_REST_Response( $data, 200 );
     // Prevent SiteGround/nginx proxy from caching API responses.
     $response->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
     $response->header( 'Pragma', 'no-cache' );

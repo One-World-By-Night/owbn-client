@@ -4,3 +4,5 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/response.php';
 require_once __DIR__ . '/routes-users.php';
 require_once __DIR__ . '/handlers-users.php';
+
+add_filter( 'rest_post_dispatch', 'owbn_gateway_log_request', 10, 3 );
