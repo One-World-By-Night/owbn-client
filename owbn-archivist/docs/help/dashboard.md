@@ -30,7 +30,7 @@ Anyone signed in.
 
 ## Things to know
 
-- Pending Actions counts only requests at your step; it is the number to watch, because nobody is emailed when a request reaches you.
+- Pending Actions counts only requests at your step; it is the number to watch. You also get an email when a request reaches you.
 
 ## Troubleshooting
 

@@ -1277,6 +1277,12 @@ function owc_oat_resolve_step_role( $entry, $step_config ) {
         ),
         $pattern
     );
+    // Any other {field} token takes the value of that field on the request, as the workflow engine resolves it.
+    if ( ! empty( $entry->id ) && class_exists( 'OAT_Entry_Meta' ) && preg_match_all( '/\{([a-z_]+)\}/', $resolved, $tokens ) ) {
+        foreach ( array_unique( $tokens[1] ) as $key ) {
+            $resolved = str_replace( '{' . $key . '}', (string) OAT_Entry_Meta::get( (int) $entry->id, $key ), $resolved );
+        }
+    }
     return strtolower( $resolved );
 }
 

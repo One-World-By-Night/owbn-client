@@ -18,6 +18,7 @@ This is a reference page. Each request's own page shows the step it is at, who h
 | Staff Review | The HST of the character's chronicle (for Player Actions, the HST or the CM) | On most requests |
 | Coordinator Review | The Coordinator of the office the item belongs to | When the item needs a Coordinator's approval; custom content can need several, and each one approves |
 | Gaining Chronicle Review | The HST of the chronicle a character is moving to | Transfers |
+| Gaining Coordinator Review | The Coordinator of the office a character is moving to | Transfers to a Coordinator office |
 | Membership Review | The Membership Coordinator and their staff | Creating, decommissioning or changing the standing of a chronicle |
 | Executive Review, then Council Vote | The Head Coordinator | Global disciplinary actions |
 | Staff Comment & Signature, then Player Comment & Signature | The HST, then the player | Binding agreements |
@@ -27,7 +28,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 
 | Domain | Steps |
 | --- | --- |
-| Character Lifecycle | Submission → Staff Review → Gaining Chronicle Review (transfers) → Coordinator Review → Archivist Review |
+| Character Lifecycle | Submission → Staff Review → Gaining Chronicle Review or Gaining Coordinator Review (transfers) → Coordinator Review → Archivist Review |
 | Custom Content | Submission → Staff Review → Coordinator Review → Archivist Review |
 | Chronicle Actions | Submission → Membership Review → Archivist Review |
 | Disciplinary Actions | Submission → Staff Review (chronicle DAs) → Executive Review → Council Vote (global DAs) → Archivist Review |
@@ -52,7 +53,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 
 ## Things to know
 
-- **Nobody is emailed when a request reaches their step.** Reviewers find their requests in their Inbox, so check it.
+- **When a request reaches a step, everyone assigned to that step gets an email** with a link that signs them in and opens the request. Whoever moved it there isn't emailed. Your Inbox still lists everything waiting on you.
 - When a request is approved or denied, the person who filed it gets an email; a denial carries the reason. When it is sent back, whoever has it next gets an email.
 - An approved request shows under **Registry Entries** on the [Character Record](registry-detail.md). When the item belongs to a Coordinator office, the office gets access to the character.
 - **Hold** stops a request and its timer; **Resume** starts the timer again where it stopped.
@@ -61,7 +62,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 
 ## Troubleshooting
 
-- **My request has sat at a step for days.** The people who have it weren't emailed. Check **Assignees** on its page and ask them, or ask the Archivist.
+- **My request has sat at a step for days.** Check **Assignees** on its page and ask them, or ask the Archivist.
 - **It skipped a step I expected.** That step doesn't apply to this request; for example, Coordinator Review only runs when the item needs a Coordinator.
 - **It came back to Submission.** Someone clicked Request Changes. Their note on the Timeline says what to change; fix it and click **Resubmit**.
 

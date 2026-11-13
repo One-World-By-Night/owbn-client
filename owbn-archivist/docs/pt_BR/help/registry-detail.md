@@ -11,7 +11,7 @@ O que você pode alterar é o mesmo em todos os sites da OWbN, no wp-admin e no 
 | Quem | Pode alterar |
 | --- | --- |
 | Administradores do site; o Arquivista, AHC1, AHC2 e o Coordenador de Web | Todos os campos |
-| O HST, a staff ou o CM da própria crônica do personagem | Todos os campos, nos PCs e NPCs da crônica |
+| O HST, a staff, o CM ou o AST da própria crônica do personagem | Todos os campos, nos PCs e NPCs da crônica |
 | Um Coordenador ou Subcoordenador | Todos os campos, nos NPCs do próprio escritório |
 | O jogador vinculado ao personagem | Só o Status, para aposentá-lo |
 | Qualquer outra pessoa que possa abri-la | Nada; a ficha é só leitura |
@@ -85,7 +85,7 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 - Um PC cujo Player Email ainda não tem conta na OWbN se vincula a essa pessoa quando a conta dela chega ao site do Arquivista: na primeira vez que ela entra lá, ou usa as páginas do Arquivista em qualquer site da OWbN.
 - A busca de contas e o vínculo gravado usam sempre as contas do site do Arquivista, em qualquer site da OWbN onde você esteja.
 - Só staff, Coordenadores, o Arquivista e administradores do site podem buscar contas; um jogador não vê resultados.
-- Incluir um acesso é permitido a administradores do site, ao Arquivista, aos AHCs, ao Coordenador de Web e ao HST, à staff ou ao CM de qualquer crônica. Revogar um é permitido a administradores do site, ao Arquivista, aos AHCs e ao Coordenador de Web.
+- Incluir um acesso é permitido a administradores do site, ao Arquivista, aos AHCs, ao Coordenador de Web e ao HST, à staff, ao CM ou ao AST de qualquer crônica. Revogar um é permitido a administradores do site, ao Arquivista, aos AHCs e ao Coordenador de Web.
 - As listas de Creature trazem o que cada Seita pode escolher na criação do personagem. Um clã fora dessa lista é um Sect Defector pelos Character Bylaws, o que precisa da aprovação dos Coordenadores da Seita e do Clã; a ficha deixa você gravar depois que eles aprovarem.
 - Para voltar um personagem aposentado a ativo, o jogador precisa de um HST.
 

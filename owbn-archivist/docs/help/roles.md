@@ -17,7 +17,7 @@ This is a reference page; the other OAT help pages link here. Your roles are set
 | Player (any signed-in member) | Submit requests for your own characters. See your linked characters under My Characters. Retire your own PC by changing its Status |
 | HST | Everything a player can. Submit requests as staff for your chronicle's characters, and create a character while submitting. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Review the requests a workflow step gives your chronicle's staff. See your chronicle's reports |
 | Staff (ST) or CM | The same as the HST, except creating characters |
-| AST | See your chronicle's characters and submit requests as staff for them. No changes and no grants |
+| AST | Everything a player can. Submit requests as staff for your chronicle's characters. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. No reviews, no reports and no creating characters |
 | Coordinator | Review the items a workflow step gives your office. See the characters granted to your office, starting with the items your office owns (Show All adds the rest). Change every field on your office's NPCs. Create characters and office NPCs. See your office's reports |
 | Sub-Coordinator | The same as the Coordinator, except creating characters |
 | Archivist (and the Archivist's Sub-Coordinator) | See every character and change every field on it. Revoke grants. Act on the Archivist steps of requests. See every report |

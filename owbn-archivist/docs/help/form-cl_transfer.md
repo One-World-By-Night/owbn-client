@@ -25,7 +25,7 @@ Reviewers fill in their own fields on the request's page: **Review Note**, **Coo
 
 ### Where it goes
 
-Submission → Staff Review (the chronicle's HST) → Gaining Chronicle Review (the receiving chronicle's HST) → Coordinator Review, when a rule needs a Coordinator → Archivist Review.
+Submission → Staff Review (the chronicle's HST) → Gaining Chronicle Review (the receiving chronicle's HST), or Gaining Coordinator Review (the receiving office's Coordinator) for a move to a Coordinator office → Coordinator Review, when a rule needs a Coordinator → Archivist Review.
 
 ## Common tasks
 
@@ -37,7 +37,7 @@ Submission → Staff Review (the chronicle's HST) → Gaining Chronicle Review (
 
 ## Things to know
 
-- The receiving chronicle's HST reviews it too, at Gaining Chronicle Review.
+- The receiving chronicle's HST reviews it too, at Gaining Chronicle Review. A move to a Coordinator office goes to that office's Coordinator instead, at Gaining Coordinator Review.
 - A transfer into a Coordinator office has no gaining chronicle to review it; ask the Archivist before you file one.
 
 ## Troubleshooting

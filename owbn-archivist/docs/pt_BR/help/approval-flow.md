@@ -18,6 +18,7 @@ Esta é uma página de referência. A página de cada pedido mostra a etapa em q
 | Staff Review | O HST da crônica do personagem (em Player Actions, o HST ou o CM) | Na maioria dos pedidos |
 | Coordinator Review | O Coordenador do escritório a que o item pertence | Quando o item precisa da aprovação de um Coordenador; conteúdo personalizado pode precisar de vários, e cada um aprova |
 | Gaining Chronicle Review | O HST da crônica para onde o personagem vai | Transferências |
+| Gaining Coordinator Review | O Coordenador do escritório para onde o personagem vai | Transferências para um escritório de Coordenador |
 | Membership Review | O Coordenador de Membros e a staff dele | Criar, encerrar ou mudar a condição de uma crônica |
 | Executive Review, depois Council Vote | O Coordenador-Chefe | Ações disciplinares globais |
 | Staff Comment & Signature, depois Player Comment & Signature | O HST, depois o jogador | Acordos vinculantes |
@@ -27,7 +28,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 
 | Domínio | Etapas |
 | --- | --- |
-| Character Lifecycle | Submission → Staff Review → Gaining Chronicle Review (transferências) → Coordinator Review → Archivist Review |
+| Character Lifecycle | Submission → Staff Review → Gaining Chronicle Review ou Gaining Coordinator Review (transferências) → Coordinator Review → Archivist Review |
 | Custom Content | Submission → Staff Review → Coordinator Review → Archivist Review |
 | Chronicle Actions | Submission → Membership Review → Archivist Review |
 | Disciplinary Actions | Submission → Staff Review (DAs de crônica) → Executive Review → Council Vote (DAs globais) → Archivist Review |
@@ -52,7 +53,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 
 ## Bom saber
 
-- **Ninguém recebe email quando um pedido chega à sua etapa.** Os revisores encontram os pedidos no Inbox, então confira o seu.
+- **Quando um pedido chega a uma etapa, todos os designados para ela recebem um email** com um link que faz o login e abre o pedido. Quem o levou até lá não recebe. O seu Inbox continua listando tudo o que espera por você.
 - Quando um pedido é aprovado ou negado, quem o registrou recebe um email; uma negação traz o motivo. Quando ele é devolvido, quem fica com ele em seguida recebe um email.
 - Um pedido aprovado aparece em **Registry Entries** na [Ficha do Personagem](registry-detail.md). Quando o item pertence a um escritório de Coordenador, o escritório ganha acesso ao personagem.
 - **Hold** para um pedido e o prazo dele; **Resume** retoma o prazo de onde parou.
@@ -61,7 +62,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 
 ## Solução de problemas
 
-- **O meu pedido está parado em uma etapa há dias.** Quem está com ele não recebeu email. Confira **Assignees** na página dele e fale com essas pessoas, ou com o Arquivista.
+- **O meu pedido está parado em uma etapa há dias.** Confira **Assignees** na página dele e fale com essas pessoas, ou com o Arquivista.
 - **Ele pulou uma etapa que eu esperava.** Essa etapa não se aplica a este pedido; por exemplo, a Coordinator Review só acontece quando o item precisa de um Coordenador.
 - **Ele voltou para Submission.** Alguém clicou em Request Changes. A nota dessa pessoa na Timeline diz o que mudar; corrija e clique em **Resubmit**.
 

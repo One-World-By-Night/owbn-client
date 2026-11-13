@@ -11,7 +11,7 @@ What you can change is the same on every OWbN site, in wp-admin and on the front
 | Who | Can change |
 | --- | --- |
 | Site admins; the Archivist, AHC1, AHC2 and the Web Coordinator | Every field |
-| The HST, staff or CM of the character's own chronicle | Every field, on the chronicle's PCs and NPCs |
+| The HST, staff, CM or AST of the character's own chronicle | Every field, on the chronicle's PCs and NPCs |
 | A Coordinator or Sub-Coordinator | Every field, on their own office's NPCs |
 | The character's linked player | Status only, to retire it |
 | Anyone else who can open it | Nothing; the record is read-only |
@@ -85,7 +85,7 @@ When only Status is yours to change, the record shows its details as text and a 
 - A PC whose Player Email has no OWbN account yet links itself to that person once their account reaches the Archivist site: the first time they sign in there, or use the Archivist pages on any OWbN site.
 - The account search and the saved link always use the Archivist site's accounts, whichever OWbN site you are on.
 - Only staff, Coordinators, the Archivist and site admins can search accounts; a player sees no matches.
-- Adding a grant is open to site admins, the Archivist, the AHCs, the Web Coordinator and any chronicle's HST, staff or CM. Revoking one is open to site admins, the Archivist, the AHCs and the Web Coordinator.
+- Adding a grant is open to site admins, the Archivist, the AHCs, the Web Coordinator and any chronicle's HST, staff, CM or AST. Revoking one is open to site admins, the Archivist, the AHCs and the Web Coordinator.
 - The Creature lists list what each Sect may take at character creation. A clan off that list is a Sect Defector under the Character Bylaws, which needs the Sect and Clan Coordinators' approval; the record lets you save it once they have.
 - To make a retired character active again, a player needs an HST.
 

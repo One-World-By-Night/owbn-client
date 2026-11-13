@@ -25,7 +25,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Note**
 
 ### Para onde vai
 
-Submission → Staff Review (o HST da crônica) → Gaining Chronicle Review (o HST da crônica que recebe) → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review.
+Submission → Staff Review (o HST da crônica) → Gaining Chronicle Review (o HST da crônica que recebe), ou Gaining Coordinator Review (o Coordenador do escritório que recebe) para uma mudança para um escritório de Coordenador → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review.
 
 ## Tarefas comuns
 
@@ -37,7 +37,7 @@ Submission → Staff Review (o HST da crônica) → Gaining Chronicle Review (o 
 
 ## Bom saber
 
-- O HST da crônica que recebe também revisa, em Gaining Chronicle Review.
+- O HST da crônica que recebe também revisa, em Gaining Chronicle Review. Uma mudança para um escritório de Coordenador vai para o Coordenador desse escritório, em Gaining Coordinator Review.
 - Uma transferência para um escritório de Coordenador não tem crônica que a revise; fale com o Arquivista antes de registrar.
 
 ## Solução de problemas

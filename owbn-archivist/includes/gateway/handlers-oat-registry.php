@@ -244,9 +244,20 @@ function owbn_gateway_oat_registry_update_character( $request ) {
         ) );
     }
 
-    // Sanitize update data.
+    // Edit rights of the gateway user: the same rule as the character screen (full, status, none).
+    if ( ! function_exists( 'owc_oat_get_character_edit_mode' ) ) {
+        require_once dirname( __DIR__ ) . '/oat/pages/registry-character.php';
+    }
+    $edit_mode = owc_oat_get_character_edit_mode( (array) $character );
+    if ( 'full' !== $edit_mode && 'status' !== $edit_mode ) {
+        return owbn_gateway_respond( new WP_Error(
+            'forbidden', 'You do not have permission to edit this character.', array( 'status' => 403 )
+        ) );
+    }
+
+    // Sanitize update data. The linked player may change Status alone.
     $data = array();
-    $allowed = array(
+    $allowed = 'status' === $edit_mode ? array( 'status' ) : array(
         'character_name', 'chronicle_slug', 'player_name', 'player_email',
         'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
         'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
@@ -255,6 +266,13 @@ function owbn_gateway_oat_registry_update_character( $request ) {
         if ( isset( $body[ $field ] ) ) {
             $data[ $field ] = sanitize_text_field( $body[ $field ] );
         }
+    }
+
+    // The linked player may only mark the character inactive, dead or shelved.
+    if ( 'status' === $edit_mode && isset( $data['status'] ) && ! in_array( $data['status'], array( 'inactive', 'dead', 'shelved' ), true ) ) {
+        return owbn_gateway_respond( new WP_Error(
+            'forbidden', 'Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate.', array( 'status' => 403 )
+        ) );
     }
 
     if ( empty( $data ) ) {

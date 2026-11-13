@@ -30,7 +30,7 @@ Qualquer pessoa com login.
 
 ## Bom saber
 
-- Pending Actions conta só os pedidos na sua etapa; é o número para acompanhar, porque ninguém recebe email quando um pedido chega a você.
+- Pending Actions conta só os pedidos na sua etapa; é o número para acompanhar. Você também recebe um email quando um pedido chega a você.
 
 ## Solução de problemas
 

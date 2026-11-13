@@ -17,7 +17,7 @@ Esta é uma página de referência; as outras páginas de ajuda do OAT apontam p
 | Jogador (qualquer membro com login) | Fazer pedidos para os seus próprios personagens. Ver os seus personagens vinculados em My Characters. Aposentar o seu próprio PC mudando o Status dele |
 | HST | Tudo o que um jogador pode. Fazer pedidos como staff para os personagens da sua crônica, e criar um personagem ao fazer o pedido. Ver os personagens da sua crônica e alterar todos os campos deles, inclusive a conta vinculada e a Seita. Incluir acessos. Revisar os pedidos que uma etapa do fluxo dá à staff da sua crônica. Ver os relatórios da sua crônica |
 | Staff (ST) ou CM | O mesmo que o HST, menos criar personagens |
-| AST | Ver os personagens da sua crônica e fazer pedidos como staff para eles. Sem alterações e sem acessos |
+| AST | Tudo o que um jogador pode. Fazer pedidos como staff para os personagens da sua crônica. Ver os personagens da sua crônica e alterar todos os campos deles, inclusive a conta vinculada e a Seita. Incluir acessos. Sem revisões, sem relatórios e sem criar personagens |
 | Coordenador | Revisar os itens que uma etapa do fluxo dá ao seu escritório. Ver os personagens com acesso concedido ao seu escritório, começando pelos itens que o seu escritório controla (Show All acrescenta os demais). Alterar todos os campos nos NPCs do seu escritório. Criar personagens e NPCs de escritório. Ver os relatórios do seu escritório |
 | Subcoordenador | O mesmo que o Coordenador, menos criar personagens |
 | Arquivista (e o Subcoordenador do Arquivista) | Ver todos os personagens e alterar todos os campos deles. Revogar acessos. Agir nas etapas do Arquivista dos pedidos. Ver todos os relatórios |
