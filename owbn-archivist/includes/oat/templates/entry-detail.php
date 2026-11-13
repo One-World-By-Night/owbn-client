@@ -38,7 +38,7 @@ function owc_oat_user_name( $uid, $map ) {
     return isset( $map[ $uid ] ) ? $map[ $uid ] : '#' . $uid;
 }
 ?>
-<div class="wrap">
+<div class="wrap" data-oat-help-form="<?php echo esc_attr( isset( $form_slug ) ? $form_slug : '' ); ?>">
     <h1>Entry #<?php echo esc_html( $entry['id'] ); ?> &mdash; <?php echo esc_html( $domain_label ); ?></h1>
 
     <?php if ( $created ) : ?>

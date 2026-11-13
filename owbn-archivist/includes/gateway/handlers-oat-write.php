@@ -111,7 +111,7 @@ function owbn_gateway_oat_submit( $request ) {
                     if ( isset( $field_map[ $safe_key ] ) ) {
                         $meta[ $safe_key ] = owc_oat_sanitize_field( $field_map[ $safe_key ], $value );
                     } else {
-                        $meta[ $safe_key ] = sanitize_text_field( $value );
+                        $meta[ $safe_key ] = is_array( $value ) ? owc_oat_clean_meta_value( $value ) : sanitize_text_field( $value );
                     }
                 }
             } else {
@@ -119,7 +119,7 @@ function owbn_gateway_oat_submit( $request ) {
                 foreach ( $body['meta'] as $key => $value ) {
                     $safe_key = sanitize_key( $key );
                     if ( $safe_key !== '' ) {
-                        $meta[ $safe_key ] = wp_kses_post( $value );
+                        $meta[ $safe_key ] = owc_oat_clean_meta_value( $value );
                     }
                 }
             }
@@ -128,7 +128,7 @@ function owbn_gateway_oat_submit( $request ) {
             foreach ( $body['meta'] as $key => $value ) {
                 $safe_key = sanitize_key( $key );
                 if ( $safe_key !== '' ) {
-                    $meta[ $safe_key ] = wp_kses_post( $value );
+                    $meta[ $safe_key ] = owc_oat_clean_meta_value( $value );
                 }
             }
         }
@@ -227,6 +227,10 @@ function owbn_gateway_oat_action( $request ) {
         ) );
     }
 
+    if ( ! owc_oat_user_can_take_action( $entry, $user_id, $action_type ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_forbidden', 'You cannot take that action on this request.', array( 'status' => 403 ) ) );
+    }
+
     // Build action data.
     $action_data = array();
     if ( isset( $body['note'] ) ) {
@@ -292,6 +296,10 @@ function owbn_gateway_oat_watch( $request ) {
             'Entry not found.',
             array( 'status' => 404 )
         ) );
+    }
+
+    if ( 'remove' !== $watch_action && ! owc_oat_user_can_view_entry( $entry, $user_id ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_forbidden', 'You do not have access to this request.', array( 'status' => 403 ) ) );
     }
 
     if ( $watch_action === 'remove' ) {

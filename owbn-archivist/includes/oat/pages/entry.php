@@ -24,6 +24,9 @@ function owc_oat_page_entry() {
 
     // Fetch full entry bundle (local or remote).
     $bundle = owc_oat_get_entry( $entry_id );
+    if ( is_array( $bundle ) ) {
+        owc_oat_readonly_lookups( $bundle );
+    }
 
     if ( is_wp_error( $bundle ) ) {
         echo '<div class="wrap">';

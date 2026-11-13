@@ -49,7 +49,9 @@ function owbn_gateway_oat_build_user_map( $user_ids ) {
 function owbn_gateway_oat_serialize_entry( $entry ) {
     return array(
         'id'                 => (int) $entry->id,
+        'entry_id'           => (int) $entry->id,
         'domain'             => $entry->domain,
+        'domain_label'       => class_exists( 'OAT_Domain_Registry' ) ? ( OAT_Domain_Registry::get_label( $entry->domain ) ?: $entry->domain ) : $entry->domain,
         'form_slug'          => isset( $entry->form_slug ) ? $entry->form_slug : '',
         'status'             => $entry->status,
         'current_step'       => $entry->current_step,
@@ -80,28 +82,15 @@ function owbn_gateway_oat_inbox( $request ) {
     $body    = $request->get_json_params();
     $domain  = isset( $body['domain'] ) ? sanitize_text_field( $body['domain'] ) : '';
 
-    // Get assignments (entries where user is a pending assignee), deduped by entry_id.
-    $assignments = OAT_Assignee::inbox( $user_id );
+    // Assigned to Me: the open requests waiting on this user.
     $assigned_entries = array();
     $user_ids = array();
-    $seen_entry_ids = array();
 
-    foreach ( $assignments as $assignment ) {
-        $eid = (int) $assignment->entry_id;
-        if ( isset( $seen_entry_ids[ $eid ] ) ) {
-            continue;
-        }
-        $entry = OAT_Entry::find( $eid );
-        if ( ! $entry ) {
-            continue;
-        }
-        if ( $domain !== '' && $entry->domain !== $domain ) {
-            continue;
-        }
-        $seen_entry_ids[ $eid ] = true;
+    foreach ( owc_oat_entries_waiting_on( $user_id, $domain ) as $entry ) {
+        $eid = (int) $entry->id;
         $serialized = owbn_gateway_oat_serialize_entry( $entry );
-        $serialized['assignment_step']   = $assignment->step;
-        $serialized['assignment_status'] = $assignment->status;
+        $serialized['assignment_step']   = $entry->current_step;
+        $serialized['assignment_status'] = 'pending';
         $serialized['title'] = '';
         if ( class_exists( 'OAT_Entry_Meta' ) ) {
             $title = OAT_Entry_Meta::get( $eid, 'title' );
@@ -186,6 +175,9 @@ function owbn_gateway_oat_inbox( $request ) {
  * @return WP_REST_Response
  */
 function owbn_gateway_oat_entries( $request ) {
+    if ( ! owc_oat_is_super_user( (int) $request->get_param( '_oat_user_id' ) ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_forbidden', 'Only the Archivist\'s office can list every request.', array( 'status' => 403 ) ) );
+    }
     $body = $request->get_json_params();
 
     $args = array();
@@ -258,6 +250,9 @@ function owbn_gateway_oat_entry( $request ) {
             array( 'status' => 404 )
         ) );
     }
+    if ( ! owc_oat_user_can_view_entry( $entry, $user_id ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_forbidden', 'You do not have access to this request.', array( 'status' => 403 ) ) );
+    }
 
     // Collect all user IDs referenced in this entry for the user_map.
     $user_ids = array( (int) $entry->originator_id, $user_id );
@@ -309,8 +304,11 @@ function owbn_gateway_oat_entry( $request ) {
         }
     }
 
-    // Rules.
-    $rules = OAT_Entry_Rule::rules_for_entry( $entry_id );
+    // Rules: each regulation rule row plus the keys the entry page reads.
+    $rules = array();
+    foreach ( OAT_Entry_Rule::rules_for_entry( $entry_id ) as $rule_row ) {
+        $rules[] = array_merge( (array) $rule_row, owc_oat_linked_rule_row( $rule_row ) );
+    }
 
     // Timer.
     $timer_obj = OAT_Timer::active_for_entry( $entry_id );
@@ -319,6 +317,7 @@ function owbn_gateway_oat_entry( $request ) {
         $timer = array(
             'id'            => (int) $timer_obj->id,
             'step'          => $timer_obj->step,
+            'type'          => (string) $timer_obj->auto_action,
             'auto_action'   => $timer_obj->auto_action,
             'status'        => $timer_obj->status,
             'bump_count'    => isset( $timer_obj->bump_count ) ? (int) $timer_obj->bump_count : 0,
@@ -341,12 +340,8 @@ function owbn_gateway_oat_entry( $request ) {
         }
     }
 
-    // Available actions for this user.
-    $available_actions = array();
-    if ( class_exists( 'OAT_Authorization' ) ) {
-        // Determine what actions the current user can perform.
-        $available_actions = owbn_gateway_oat_get_available_actions( $entry, $user_id );
-    }
+    // Available actions for this user: the same list the action guard allows.
+    $available_actions = owc_oat_compute_available_actions( $entry, $user_id, OAT_Assignee::for_entry( $entry_id ) );
 
     // Watchers.
     $is_watching = OAT_Watcher::is_watching( $entry_id, $user_id );
@@ -375,6 +370,8 @@ function owbn_gateway_oat_entry( $request ) {
     return owbn_gateway_respond( array(
         'entry'             => $entry_data,
         'meta'              => $meta,
+        'characters'        => owc_oat_entry_character_map( $meta ),
+        'viewer_id'         => $user_id,
         'assignees'         => $assignees,
         'timeline'          => $timeline,
         'rules'             => $rules,
@@ -387,89 +384,6 @@ function owbn_gateway_oat_entry( $request ) {
         'user_map'          => $user_map,
     ) );
 }
-
-/**
- * Determine available actions for a user on an entry.
- *
- * Checks the user's role against the entry's current step and status
- * to determine which workflow actions they can perform.
- *
- * @param object $entry   Entry object.
- * @param int    $user_id User ID.
- * @return array List of available action type strings.
- */
-function owbn_gateway_oat_get_available_actions( $entry, $user_id ) {
-    $actions = array();
-    $entry_id = (int) $entry->id;
-
-    // Terminal statuses — no actions available (except council_override).
-    if ( OAT_Constants::is_terminal_status( $entry->status ) ) {
-        // Only council_override can act on terminal entries.
-        if ( OAT_Authorization::check( 'oat_exec_oversight' ) ) {
-            $actions[] = 'council_override';
-        }
-        return $actions;
-    }
-
-    // Is this user the originator?
-    $is_originator = ( (int) $entry->originator_id === $user_id );
-
-    // Is this user an assignee at the current step?
-    $is_assignee = false;
-    $current_assignees = OAT_Assignee::for_entry_step( $entry_id, $entry->current_step );
-    foreach ( $current_assignees as $a ) {
-        if ( (int) $a->user_id === $user_id && $a->status === 'pending' ) {
-            $is_assignee = true;
-            break;
-        }
-    }
-
-    // Originator actions.
-    if ( $is_originator ) {
-        $actions[] = 'cancel';
-        $actions[] = 'bump';
-        // Originator can resubmit when entry is sent back to submit step.
-        if ( $entry->current_step === 'submit' && $entry->status === 'pending' ) {
-            $actions[] = 'submit';
-        }
-        // Self-approve: originator at archivist step with self-approve privilege.
-        if ( $entry->current_step === 'archivist' && ! $is_assignee && function_exists( 'owc_oat_can_self_approve' ) && owc_oat_can_self_approve( $user_id ) ) {
-            $actions[] = 'approve';
-            $actions[] = 'deny';
-            $actions[] = 'request_changes';
-        }
-    }
-
-    // Assignee actions (review step).
-    if ( $is_assignee ) {
-        $actions[] = 'approve';
-        $actions[] = 'deny';
-        $actions[] = 'request_changes';
-        $actions[] = 'hold';
-        $actions[] = 'reassign';
-        $actions[] = 'delegate';
-    }
-
-    // Hold/resume toggling.
-    if ( $entry->status === 'on_hold' && $is_assignee ) {
-        $actions[] = 'resume';
-        // Remove hold since it's already on hold.
-        $actions = array_values( array_diff( $actions, array( 'hold' ) ) );
-    }
-
-    // Archivist actions.
-    if ( OAT_Authorization::check( 'oat_archivist' ) ) {
-        $actions[] = 'record';
-    }
-
-    // Exec actions.
-    if ( OAT_Authorization::check( 'oat_exec_oversight' ) ) {
-        $actions[] = 'council_override';
-    }
-
-    return array_values( array_unique( $actions ) );
-}
-
 
 /**
  * Handle POST /owbn/v1/oat/domains
@@ -692,11 +606,7 @@ function owbn_gateway_oat_dashboard_counts( $request ) {
     global $wpdb;
     $prefix = $wpdb->prefix;
 
-    $assigned = (int) $wpdb->get_var( $wpdb->prepare(
-        "SELECT COUNT(DISTINCT entry_id) FROM {$prefix}oat_assignees
-         WHERE user_id = %d AND status = 'active'",
-        $user_id
-    ) );
+    $assigned = count( owc_oat_entries_waiting_on( $user_id ) );
 
     $submissions = (int) $wpdb->get_var( $wpdb->prepare(
         "SELECT COUNT(*) FROM {$prefix}oat_entries
@@ -750,7 +660,7 @@ function owbn_gateway_oat_recent_activity( $request ) {
     $domain_clause = $domain ? $wpdb->prepare( "AND e.domain = %s", $domain ) : '';
 
     $rows = $wpdb->get_results( $wpdb->prepare(
-        "SELECT t.entry_id, e.domain, t.action_type, t.actor_id, t.note, t.created_at
+        "SELECT t.entry_id, e.domain, t.action_type, t.user_id AS actor_id, t.note, t.created_at
          FROM {$prefix}oat_timeline t
          INNER JOIN {$prefix}oat_entries e ON e.id = t.entry_id
          WHERE t.entry_id IN ({$entry_ids_sql})

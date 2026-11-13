@@ -10,6 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// ── Archivist-side helpers shared by the AJAX layer and the gateway ─────────
+require_once __DIR__ . '/oat-shared.php';
+
 // ── OAT Client Module (pages, admin menus, AJAX, Elementor widgets) ─────────
 require_once __DIR__ . '/oat/init.php';
 

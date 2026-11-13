@@ -603,10 +603,10 @@
                 window._oatTaxLoading = window._oatTaxLoading || [];
                 if (window._oatTaxLoading.length === 0) {
                     $.post(owc_oat_ajax.url, {
-                        action: 'oat_creature_taxonomy_picker',
-                        _ajax_nonce: owc_oat_ajax.creature_nonce || ''
+                        action: 'owc_oat_creature_taxonomy',
+                        nonce: owc_oat_ajax.nonce || ''
                     }, function(resp) {
-                        window._oatTaxData = resp.success ? resp.data : { genres: [], factions: {}, types: {}, variants: {} };
+                        window._oatTaxData = resp && resp.success ? resp.data : { genres: [], factions: {}, types: {}, variants: {} };
                         window._oatTaxLoading.forEach(function(cb) { cb(window._oatTaxData); });
                         window._oatTaxLoading = [];
                     });
@@ -620,11 +620,25 @@
                 fillSelect($ccGenre, taxData.genres, '-- Genre --');
             }
 
-            // ── PC/NPC select sync ──
-            var $ccPcNpc    = $wrap.find('.oat-cc-pc-npc');
-            var $ccPcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
+            // ── PC/NPC select sync; a PC shows the player fields ──
+            var $ccPcNpc       = $wrap.find('.oat-cc-pc-npc');
+            var $ccPcNpcVal    = $wrap.find('.oat-cc-pc-npc-val');
+            var $ccPlayer      = $wrap.find('.oat-cc-player-fields');
+            var $ccPlayerName  = $wrap.find('.oat-cc-player-name');
+            var $ccPlayerEmail = $wrap.find('.oat-cc-player-email');
+            var $ccMine        = $wrap.find('.oat-cc-player-mine');
+            function ccText(key, fallback) {
+                var strings = (window.owc_oat_ajax || {}).i18n || {};
+                return strings[key] || fallback;
+            }
             $ccPcNpc.on('change', function() {
                 $ccPcNpcVal.val($(this).val());
+                $ccPlayer.toggle($(this).val() === 'pc');
+            });
+            // "This is my character" fills in the creator's own name and email.
+            $ccMine.on('change', function() {
+                $ccPlayerName.val(this.checked ? (owc_oat_ajax.currentUserName || '') : '');
+                $ccPlayerEmail.val(this.checked ? (owc_oat_ajax.currentUserEmail || '') : '');
             });
 
             // ── Create character AJAX ──
@@ -635,11 +649,18 @@
                 var pcNpc      = $ccPcNpc.val();
                 var npcCoord   = $wrap.find('.oat-cc-npc-coordinator').val() || '';
 
-                if (!name) { alert(owc_oat_ajax.i18n.charRequired); return; }
+                var playerName  = $.trim($ccPlayerName.val() || '');
+                var playerEmail = $.trim($ccPlayerEmail.val() || '');
+
+                if (!name) { alert(ccText('charRequired', 'Character name is required.')); return; }
                 if (!pcNpc) { alert('PC/NPC designation is required.'); return; }
                 if (!chronSlug && !npcCoord) { alert('Choose a Home Chronicle, or select a Coordinator Office for an office NPC.'); return; }
+                if (pcNpc === 'pc' && !npcCoord) {
+                    if (!playerName || !playerEmail) { alert(ccText('playerRequired', "A PC needs its player's name and email.")); return; }
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(playerEmail)) { alert(ccText('emailInvalid', "That player email doesn't look right.")); return; }
+                }
 
-                $btn.prop('disabled', true).text(owc_oat_ajax.i18n.creating);
+                $btn.prop('disabled', true).text(ccText('creating', 'Creating...'));
 
                 $.post(owc_oat_ajax.url, {
                     action: 'owc_oat_create_character',
@@ -648,6 +669,8 @@
                     chronicle_slug: chronSlug || '',
                     npc_coordinator: npcCoord,
                     pc_npc: pcNpc,
+                    player_name: pcNpc === 'pc' ? playerName : '',
+                    player_email: pcNpc === 'pc' ? playerEmail : '',
                     creature_genre: $ccGenre.val() || '',
                     creature_type: $ccCreatureType.val() || '',
                     creature_sub_type: $ccFaction.val() || '',
@@ -659,13 +682,16 @@
                         // Reset and hide create panel.
                         $wrap.find('.oat-character-create-panel').hide();
                         $wrap.find('.oat-cc-name').val('');
+                        $ccPlayerName.val('');
+                        $ccPlayerEmail.val('');
+                        $ccMine.prop('checked', false);
                     } else {
-                        alert(owc_oat_ajax.i18n.error + ': ' + (response.data || ''));
+                        alert(ccText('error', 'Error') + ': ' + (response.data || ''));
                     }
-                    $btn.prop('disabled', false).text(owc_oat_ajax.i18n.creating || 'Create Character');
+                    $btn.prop('disabled', false).text(ccText('createCharacter', 'Create Character'));
                 }).fail(function() {
-                    alert(owc_oat_ajax.i18n.requestFailed);
-                    $btn.prop('disabled', false).text(owc_oat_ajax.i18n.creating || 'Create Character');
+                    alert(ccText('requestFailed', 'Request failed.'));
+                    $btn.prop('disabled', false).text(ccText('createCharacter', 'Create Character'));
                 });
             });
         });

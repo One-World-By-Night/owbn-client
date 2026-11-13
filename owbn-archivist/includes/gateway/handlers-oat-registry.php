@@ -64,6 +64,13 @@ function owbn_gateway_oat_registry_character( $request ) {
         ) );
     }
 
+    // Per-character view gate for the gateway user, the same one the local path applies.
+    if ( ! class_exists( 'OAT_REST_Registry' ) || ! OAT_REST_Registry::can_view_character( $character ) ) {
+        return owbn_gateway_respond( new WP_Error(
+            'forbidden', 'You do not have permission to view this character.', array( 'status' => 403 )
+        ) );
+    }
+
     $entries = OAT_Registry::get_registry_entries( $character_id );
     $grants  = OAT_Registry_Access::find_by_character( $character_id );
 
@@ -117,8 +124,11 @@ function owbn_gateway_oat_registry_character( $request ) {
         );
     }
 
+    $character_data                  = (array) $character;
+    $character_data['wp_user_label'] = owc_oat_linked_user_label( $character->wp_user_id );
+
     return owbn_gateway_respond( array(
-        'character'    => (array) $character,
+        'character'    => $character_data,
         'grants'       => $grants_data,
         'entries'      => $entries_data,
         'can_show_all' => $ctx['can_show_all'],
@@ -267,6 +277,52 @@ function owbn_gateway_oat_registry_update_character( $request ) {
 }
 
 
+
+
+/**
+ * Handle POST /owbn/v1/oat/registry/character/create
+ *
+ * Creates a character from a remote site's create panel for the gateway user, with the same
+ * checks as on archivist (owc_oat_create_character_record()).
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function owbn_gateway_oat_registry_create_character( $request ) {
+    $body = $request->get_json_params();
+    return owbn_gateway_respond( owc_oat_create_character_record( is_array( $body ) ? $body : array() ) );
+}
+
+
+/**
+ * Handle POST /owbn/v1/oat/users/search
+ *
+ * Archivist accounts for a remote site's account pickers, so the chosen id is an archivist id.
+ * Request body: { "term": "..." }
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+/**
+ * Character search for a remote site's character pickers, within the signed-in user's own scope.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function owbn_gateway_oat_characters_search( $request ) {
+    $body = $request->get_json_params();
+    return owbn_gateway_respond( array_values( owc_oat_search_characters_for_user(
+        isset( $body['term'] ) ? sanitize_text_field( (string) $body['term'] ) : '',
+        isset( $body['scope'] ) ? sanitize_text_field( (string) $body['scope'] ) : '',
+        isset( $body['chronicle_slug'] ) ? sanitize_text_field( (string) $body['chronicle_slug'] ) : ''
+    ) ) );
+}
+
+function owbn_gateway_oat_users_search( $request ) {
+    $body = $request->get_json_params();
+    $term = isset( $body['term'] ) ? sanitize_text_field( (string) $body['term'] ) : '';
+    return owbn_gateway_respond( array_values( owc_oat_search_link_users( $term ) ) );
+}
 // ── Character formatting helper ──────────────────────────────────────
 
 
@@ -405,7 +461,7 @@ function owbn_gateway_oat_cchub_entry( $request ) {
     $meta    = $wpdb->prefix . 'oat_entry_meta';
 
     $entry = $wpdb->get_row( $wpdb->prepare(
-        "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content'",
+        "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content' AND status = 'approved'",
         $entry_id
     ) );
 
@@ -444,7 +500,7 @@ function owbn_gateway_oat_cchub_entry( $request ) {
         $data[ $m->meta_key ] = $m->meta_value;
     }
 
-    return owbn_gateway_respond( $data );
+    return owbn_gateway_respond( owc_oat_cchub_public_fields( $data ) );
 }
 
 /**
@@ -480,6 +536,10 @@ function owbn_gateway_oat_registry_section_characters( $request ) {
 
     if ( ! class_exists( 'OAT_Registry' ) ) {
         return owbn_gateway_respond( array( 'characters' => array() ) );
+    }
+
+    if ( ! owc_oat_section_key_allowed( $section_key ) ) {
+        return owbn_gateway_respond( new WP_Error( 'forbidden', 'You do not have access to that registry section.', array( 'status' => 403 ) ) );
     }
 
     $characters = OAT_Registry::get_section_characters( $user_id, $section_key );

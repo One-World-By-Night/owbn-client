@@ -186,6 +186,20 @@ function owc_oat_render_registry_character() {
 
 
 add_action( 'admin_enqueue_scripts', 'owc_oat_enqueue_assets' );
+add_action( 'admin_enqueue_scripts', 'owc_oat_dequeue_toolkit_picker', 100 );
+
+/**
+ * On these OAT client pages, drops OAT's own copy of the creature picker (loaded on every
+ * "oat-" admin page), so only owc-oat-creature-picker runs on the selects.
+ *
+ * @param string $hook Admin page hook suffix.
+ * @return void
+ */
+function owc_oat_dequeue_toolkit_picker( $hook ) {
+    if ( strpos( $hook, 'owc-oat-' ) !== false ) {
+        wp_dequeue_script( 'oat-creature-picker' );
+    }
+}
 
 /**
  * Enqueue OAT CSS and JS on OAT pages only.
@@ -199,7 +213,7 @@ function owc_oat_enqueue_assets( $hook ) {
     }
 
     $base_url = plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'includes/oat/assets/';
-    $version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.6';
+    $version  = defined( 'OWC_ARCHIVIST_VERSION' ) ? OWC_ARCHIVIST_VERSION : ( defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.6' );
 
     wp_enqueue_style(
         'owc-oat-client',
@@ -220,42 +234,17 @@ function owc_oat_enqueue_assets( $hook ) {
     $is_super = $current_user && $current_user->ID && function_exists( 'owc_oat_is_super_user' )
         ? owc_oat_is_super_user( $current_user->ID )
         : false;
-    // Build creature taxonomy URL for remote sites.
-    $oat_local             = class_exists( 'OAT_Admin' );
-    $creature_taxonomy_url = '';
-    if ( ! $oat_local ) {
-        $gw_base = owc_get_remote_base( 'oat' );
-        if ( $gw_base ) {
-            $creature_taxonomy_url = $gw_base . 'oat/creature-taxonomy';
-        }
-    }
 
     wp_localize_script( 'owc-oat-client', 'owc_oat_ajax', array(
         'url'                   => admin_url( 'admin-ajax.php' ),
         'nonce'                 => wp_create_nonce( 'owc_oat_nonce' ),
         'creature_nonce'        => wp_create_nonce( 'oat_creature_picker' ),
-        'creatureTaxonomyUrl'   => $creature_taxonomy_url,
-        'apiKey'                => $oat_local ? '' : owc_get_remote_key( 'oat' ),
         'currentUserName'       => $current_user && $current_user->ID ? $current_user->display_name : '',
         'currentUserId'         => $current_user && $current_user->ID ? $current_user->ID : 0,
         'isSuperUser'           => $is_super ? '1' : '0',
         'canCreateCharacter'    => owc_oat_can_create_character() ? '1' : '0',
-        'i18n' => array(
-            'processing'    => __( 'Processing...', 'owbn-archivist' ),
-            'submit'        => __( 'Submit', 'owbn-archivist' ),
-            'watch'         => __( 'Watch', 'owbn-archivist' ),
-            'unwatch'       => __( 'Unwatch', 'owbn-archivist' ),
-            'watching'      => __( 'Watching', 'owbn-archivist' ),
-            'creating'      => __( 'Creating...', 'owbn-archivist' ),
-            'charRequired'  => __( 'Character name is required.', 'owbn-archivist' ),
-            'requestFailed' => __( 'Request failed.', 'owbn-archivist' ),
-            'showTimeline'  => __( 'Show Timeline', 'owbn-archivist' ),
-            'hideTimeline'  => __( 'Hide Timeline', 'owbn-archivist' ),
-            'error'         => __( 'Error', 'owbn-archivist' ),
-            'rulePrefix'    => __( 'Rule #', 'owbn-archivist' ),
-            'searchRules'   => __( 'Search rules or type free text, then press Enter...', 'owbn-archivist' ),
-            'addPrefix'     => __( 'Add: ', 'owbn-archivist' ),
-        ),
+        'currentUserEmail'      => $current_user && $current_user->ID ? $current_user->user_email : '',
+        'i18n'                  => owc_oat_js_i18n(),
     ) );
 
     // Creature type picker (works local via AJAX or remote via gateway).
@@ -266,6 +255,18 @@ function owc_oat_enqueue_assets( $hook ) {
         $version,
         true
     );
+
+    // Account link picker on the character screen.
+    wp_register_script(
+        'owc-oat-account-link',
+        $base_url . 'js/oat-account-link.js',
+        array( 'jquery', 'jquery-ui-autocomplete', 'owc-oat-client' ),
+        $version,
+        true
+    );
+    if ( strpos( $hook, 'owc-oat-registry-character' ) !== false ) {
+        wp_enqueue_script( 'owc-oat-account-link' );
+    }
 
     // Submit page: preload editor scripts so AJAX-loaded htmlarea fields work.
     // Also load on workspace since submit tab can be active.

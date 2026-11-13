@@ -117,3 +117,33 @@ function owc_oat_render_registry_shell( $args = array() ) {
     </script>
     <?php
 }
+
+/**
+ * The account a character is linked to, with search, "Use the Player Email" and Unlink.
+ * Used by the wp-admin character screen and the front-end Registry Detail widget; the
+ * behaviour is in assets/js/oat-account-link.js and the choice saves with the form.
+ *
+ * @param int    $wp_user_id Linked archivist account id, 0 when none.
+ * @param string $label      "Name (email)" of the linked account, from the character payload.
+ * @return void
+ */
+function owc_oat_render_account_link( $wp_user_id, $label ) {
+	$wp_user_id = (int) $wp_user_id;
+	wp_enqueue_script( 'owc-oat-account-link' );
+	?>
+	<div class="oat-account-link">
+		<input type="hidden" name="wp_user_id" class="oat-account-id" value="<?php echo esc_attr( $wp_user_id ); ?>">
+		<div class="oat-account-row">
+			<strong><?php esc_html_e( 'Currently linked:', 'owbn-archivist' ); ?></strong>
+			<span class="oat-account-current"><?php echo $wp_user_id ? esc_html( $label ) : '<em>' . esc_html__( 'Not linked', 'owbn-archivist' ) . '</em>'; ?></span>
+			<button type="button" class="button button-small oat-account-unlink" style="margin-left:4px;<?php echo $wp_user_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Unlink', 'owbn-archivist' ); ?></button>
+		</div>
+		<div class="oat-account-find" style="margin-top:6px;">
+			<input type="text" class="regular-text oat-account-search" autocomplete="off" aria-label="<?php esc_attr_e( 'Find an account', 'owbn-archivist' ); ?>" placeholder="<?php esc_attr_e( 'Name, email, login or role path…', 'owbn-archivist' ); ?>">
+			<button type="button" class="button button-small oat-account-by-email"><?php esc_html_e( 'Use the Player Email', 'owbn-archivist' ); ?></button>
+		</div>
+		<p class="oat-account-message description" aria-live="polite"></p>
+		<p class="description"><?php esc_html_e( 'Links this character to an account, so it shows under My Characters for that person. Choosing an account fills in Player Name and Player Email when they are empty.', 'owbn-archivist' ); ?></p>
+	</div>
+	<?php
+}

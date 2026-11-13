@@ -101,7 +101,7 @@ class OWC_OAT_Elementor_Loader
 	public static function register_frontend_assets()
 	{
 		$base_url = plugin_dir_url( dirname( __FILE__ ) ) . 'assets/';
-		$version  = defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.6';
+		$version  = defined( 'OWC_ARCHIVIST_VERSION' ) ? OWC_ARCHIVIST_VERSION : ( defined( 'OWC_VERSION' ) ? OWC_VERSION : '1.0.6' );
 
 		// Register existing admin assets for frontend reuse.
 		if ( ! wp_style_is( 'owc-oat-client', 'registered' ) ) {
@@ -124,17 +124,21 @@ class OWC_OAT_Elementor_Loader
 		}
 
 		// Register frontend-specific assets.
+		if ( function_exists( 'owc_oat_register_help_assets' ) ) {
+			owc_oat_register_help_assets();
+		}
+
 		wp_register_style(
 			'owc-oat-frontend',
 			$base_url . 'css/oat-frontend.css',
-			array( 'owc-oat-client' ),
+			array( 'owc-oat-client', 'owc-oat-help' ),
 			$version
 		);
 
 		wp_register_script(
 			'owc-oat-frontend',
 			$base_url . 'js/oat-frontend.js',
-			array( 'jquery', 'owc-oat-client' ),
+			array( 'jquery', 'owc-oat-client', 'owc-oat-help' ),
 			$version,
 			true
 		);
@@ -150,7 +154,7 @@ class OWC_OAT_Elementor_Loader
 		wp_register_script(
 			'oat-fame-registry',
 			$base_url . 'js/oat-fame-registry.js',
-			array(),
+			array( 'owc-oat-help' ),
 			$version,
 			true
 		);
@@ -160,26 +164,26 @@ class OWC_OAT_Elementor_Loader
 		$is_super = $current_user && $current_user->ID && function_exists( 'owc_oat_is_super_user' )
 			? owc_oat_is_super_user( $current_user->ID )
 			: false;
-		$oat_local             = class_exists( 'OAT_Admin' );
-		$creature_taxonomy_url = '';
-		if ( ! $oat_local && function_exists( 'owc_get_remote_base' ) ) {
-			$gw_base = owc_get_remote_base( 'oat' );
-			if ( $gw_base ) {
-				$creature_taxonomy_url = $gw_base . 'oat/creature-taxonomy';
-			}
-		}
-
 		wp_localize_script( 'owc-oat-frontend', 'owc_oat_ajax', array(
 			'url'                   => admin_url( 'admin-ajax.php' ),
 			'nonce'                 => wp_create_nonce( 'owc_oat_nonce' ),
 			'creature_nonce'        => wp_create_nonce( 'oat_creature_picker' ),
-			'creatureTaxonomyUrl'   => $creature_taxonomy_url,
-			'apiKey'                => $oat_local ? '' : ( function_exists( 'owc_get_remote_key' ) ? owc_get_remote_key( 'oat' ) : '' ),
 			'currentUserName'       => $current_user && $current_user->ID ? $current_user->display_name : '',
+			'currentUserEmail'      => $current_user && $current_user->ID ? $current_user->user_email : '',
 			'currentUserId'         => $current_user && $current_user->ID ? $current_user->ID : 0,
 			'isSuperUser'           => $is_super ? '1' : '0',
 			'canCreateCharacter'    => ( function_exists( 'owc_oat_can_create_character' ) && owc_oat_can_create_character() ) ? '1' : '0',
+			'i18n'                  => function_exists( 'owc_oat_js_i18n' ) ? owc_oat_js_i18n() : array(),
 		) );
+
+		// Account link picker on the Registry Detail widget.
+		wp_register_script(
+			'owc-oat-account-link',
+			$base_url . 'js/oat-account-link.js',
+			array( 'jquery', 'jquery-ui-autocomplete', 'owc-oat-client' ),
+			$version,
+			true
+		);
 
 		// Creature type picker (works local via AJAX or remote via gateway).
 		wp_register_script(

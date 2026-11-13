@@ -12,7 +12,8 @@ class OWC_CCHub_Categories_Widget extends Widget_Base {
 	public function get_icon() { return 'eicon-folder-o'; }
 	public function get_categories() { return array( 'owbn-oat' ); }
 	public function get_keywords() { return array( 'cchub', 'custom', 'content', 'categories' ); }
-	public function get_style_depends() { return array( 'owc-oat-client' ); }
+	public function get_style_depends() { return array( 'owc-oat-client', 'owc-oat-help' ); }
+	public function get_script_depends() { return array( 'owc-oat-help' ); }
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', array(

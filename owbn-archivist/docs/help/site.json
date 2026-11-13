@@ -1,0 +1,15 @@
+{
+	"site": "https://support.owbn.net",
+	"category": { "slug": "oat", "name": "OWBN Archivist Toolkit" },
+	"slugPrefix": "oat-",
+	"guides": {
+		"overview": "what-is-the-archivist-toolkit",
+		"submitting-guide": "submitting-a-request",
+		"reviewing-guide": "reviewing-requests",
+		"admin-guide": "oat-admin-guide"
+	},
+	"redirects": {
+		"regulation-rules": "oat-admin-regulation-rules",
+		"understanding-domains-and-forms": "oat-admin-domains"
+	}
+}

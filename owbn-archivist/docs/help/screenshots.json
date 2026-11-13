@@ -1,0 +1,431 @@
+{
+	"site": "http://localhost:8921",
+	"viewport": {
+		"width": 1280,
+		"height": 900
+	},
+	"accounts": {
+		"archie": "Dana Whitfield, the Archivist (site admin)",
+		"josh": "Riley Navarro, HST of Lantern Bay",
+		"brucoord": "Casey Brandt, Brujah Coordinator",
+		"loren": "Sam Okafor, a player",
+		"visitor": "not signed in"
+	},
+	"notes": "Captured from the archivist sandbox (~/owbn/_localwp-oat) after seed-help-shots.php; the ids in paths are that seed's. OAT screens are English-only, so the Portuguese pages reuse these images with Portuguese alt text.",
+	"pages": {
+		"dashboard": [
+			{
+				"heading": "Archivist Dashboard",
+				"path": "/oat-dashboard/",
+				"account": "josh",
+				"alt": {
+					"en": "The Archivist Dashboard for an HST: three requests waiting on him, four he filed, twelve he watches, and buttons for New Submission, View Inbox and Registry.",
+					"pt_BR": "O Archivist Dashboard de um HST: três pedidos esperando por ele, quatro que ele registrou, doze que acompanha, e os botões New Submission, View Inbox e Registry."
+				}
+			}
+		],
+		"inbox": [
+			{
+				"heading": "Archivist Inbox",
+				"path": "/oat-inbox/",
+				"account": "josh",
+				"alt": {
+					"en": "The Archivist Inbox on Assigned to Me: three requests at Staff Review, each with who filed it, its domain, status, step and date, and a View button.",
+					"pt_BR": "O Archivist Inbox em Assigned to Me: três pedidos em Staff Review, cada um com quem o registrou, o domínio, o status, a etapa e a data, e um botão View."
+				}
+			}
+		],
+		"submit": [
+			{
+				"heading": "Submit a Request",
+				"path": "/oat-submit/",
+				"account": "josh",
+				"steps": [
+					{
+						"select": "#oat-domain-select",
+						"value": "character_lifecycle"
+					},
+					{
+						"select": "#oat-form-select",
+						"value": "cl_ru_request"
+					}
+				],
+				"alt": {
+					"en": "Submit a Request with Character Lifecycle and R&U Request picked: the chronicle, the character picker with Create New Character, Character Status and the Regulation Rules picker.",
+					"pt_BR": "Fazer um Pedido com Character Lifecycle e R&U Request escolhidos: a crônica, o seletor de personagem com Create New Character, Character Status e o seletor de Regulation Rules."
+				}
+			}
+		],
+		"entry": [
+			{
+				"heading": "A Request's Page",
+				"path": "/oat-entry/?oat_entry=11",
+				"account": "brucoord",
+				"alt": {
+					"en": "An R&U request at Coordinator Review, seen by the Brujah Coordinator: its status and step, who filed it, the chronicle, the character, the rule it falls under and its controlling Coordinator.",
+					"pt_BR": "Um pedido de R&U em Coordinator Review, visto pela Coordenadora Brujah: o status e a etapa, quem o registrou, a crônica, o personagem, a regra em que ele se encaixa e o Coordenador que o controla."
+				}
+			}
+		],
+		"registry": [
+			{
+				"heading": "Archivist Registry",
+				"path": "/oat-registry/",
+				"account": "josh",
+				"steps": [
+					{
+						"click": ".oat-registry-tab[data-scope=\"chronicles\"]"
+					},
+					{
+						"click": ".oat-registry-section-header"
+					}
+				],
+				"alt": {
+					"en": "The Archivist Registry for an HST on the Chronicles tab, with Lantern Bay open: six characters with their chronicle and status, and Display Options for more columns.",
+					"pt_BR": "O Archivist Registry de um HST na aba Chronicles, com Lantern Bay aberta: seis personagens com a crônica e o status, e Display Options para mais colunas."
+				}
+			}
+		],
+		"registry-detail": [
+			{
+				"heading": "Character Record",
+				"path": "/oat-registry-detail/?character_id=1",
+				"account": "josh",
+				"alt": {
+					"en": "A Character Record open to its HST: name, chronicle, the Genre, Faction and Type pickers, PC/NPC, Status, Player Name and Email, and the Linked Account with Unlink.",
+					"pt_BR": "Uma Ficha do Personagem aberta para o HST: nome, crônica, os seletores de Genre, Faction e Type, PC/NPC, Status, Player Name e Email, e a Linked Account com Unlink."
+				}
+			},
+			{
+				"heading": "Record a sect defection",
+				"path": "/oat-registry-detail/?character_id=3",
+				"account": "josh",
+				"crop": "tr:has([data-creature-picker])",
+				"alt": {
+					"en": "The Creature row of a Camarilla character whose Type reads \"Tzimisce (Sect Defector)\", with the note on what changing the Faction does.",
+					"pt_BR": "A linha Creature de um personagem da Camarilla cujo Type mostra \"Tzimisce (Sect Defector)\", com a nota sobre o que acontece ao mudar a Faction."
+				}
+			}
+		],
+		"fame-registry": [
+			{
+				"heading": "Fame Registry",
+				"path": "/fame-registry/",
+				"account": "josh",
+				"alt": {
+					"en": "The Fame Registry: famous characters with their public identity, Fame level, influence areas and chronicle.",
+					"pt_BR": "O Fame Registry: personagens famosos com a identidade pública, o nível de Fama, as áreas de influência e a crônica."
+				}
+			}
+		],
+		"cchub": [
+			{
+				"heading": "ccHub",
+				"path": "/cchub-browse/",
+				"account": "visitor",
+				"alt": {
+					"en": "ccHub's browse page, open to everyone: approved custom content with its type, XP cost, Coordinator and chronicle.",
+					"pt_BR": "A página de busca do ccHub, aberta a todos: conteúdo personalizado aprovado com o tipo, o custo de XP, o Coordenador e a crônica."
+				}
+			}
+		],
+		"reports": [
+			{
+				"heading": "Reports",
+				"path": "/wp-admin/admin.php?page=owc-oat-reports",
+				"account": "archie",
+				"alt": {
+					"en": "OAT Reports in wp-admin: the report picker and the counts of requests by domain and status.",
+					"pt_BR": "OAT Reports no wp-admin: o seletor de relatório e as contagens de pedidos por domínio e status."
+				}
+			}
+		],
+		"approval-flow": [
+			{
+				"heading": "How a Request Moves",
+				"path": "/oat-entry/?oat_entry=1",
+				"account": "archie",
+				"crop": ".oat-entry-section:has(.oat-timeline)",
+				"alt": {
+					"en": "The Timeline of an approved registration: filed, approved at Staff Review, approved by the Archivist, each with who, when and the note.",
+					"pt_BR": "A Timeline de um registro aprovado: registrado, aprovado em Staff Review, aprovado pelo Arquivista, cada passo com quem, quando e a nota."
+				}
+			}
+		],
+		"admin-entries": [
+			{
+				"heading": "All Entries",
+				"path": "/wp-admin/admin.php?page=oat-entries",
+				"account": "archie",
+				"alt": {
+					"en": "All Entries: every request with its domain, form, status, step, chronicle and dates, filters on top.",
+					"pt_BR": "All Entries: todos os pedidos com domínio, formulário, status, etapa, crônica e datas, com filtros no topo."
+				}
+			}
+		],
+		"admin-toolbox": [
+			{
+				"heading": "Archivist Toolbox",
+				"path": "/wp-admin/admin.php?page=oat-toolbox",
+				"account": "archie",
+				"alt": {
+					"en": "The Archivist Toolbox with its Domains, Forms, Workflow Steps and Form Fields tabs.",
+					"pt_BR": "O Archivist Toolbox com as abas Domains, Forms, Workflow Steps e Form Fields."
+				}
+			}
+		],
+		"admin-domains": [
+			{
+				"heading": "Domains",
+				"path": "/wp-admin/admin.php?page=oat-toolbox&tab=domains",
+				"account": "archie",
+				"alt": {
+					"en": "The Domains tab: each domain with its label, slug, forms and status.",
+					"pt_BR": "A aba Domains: cada domínio com o rótulo, o slug, os formulários e o status."
+				}
+			}
+		],
+		"admin-forms": [
+			{
+				"heading": "Forms",
+				"path": "/wp-admin/admin.php?page=oat-toolbox&tab=forms",
+				"account": "archie",
+				"alt": {
+					"en": "The Forms tab: each form with its domain, label, slug and status, and Manage Form Fields.",
+					"pt_BR": "A aba Forms: cada formulário com o domínio, o rótulo, o slug e o status, e Manage Form Fields."
+				}
+			}
+		],
+		"admin-form-fields": [
+			{
+				"heading": "Form Fields",
+				"path": "/wp-admin/admin.php?page=oat-toolbox&tab=fields&domain=cl_ru_request",
+				"account": "archie",
+				"alt": {
+					"en": "The Form Fields of the R&U Request form: each field's key, label, type, whether it is required, and its order.",
+					"pt_BR": "Os Form Fields do formulário R&U Request: a chave, o rótulo, o tipo, se é obrigatório e a ordem de cada campo."
+				}
+			}
+		],
+		"admin-workflow-steps": [
+			{
+				"heading": "Workflow Steps",
+				"path": "/wp-admin/admin.php?page=oat-toolbox&tab=steps&domain=character_lifecycle",
+				"account": "archie",
+				"alt": {
+					"en": "The Workflow Steps of Character Lifecycle: each step with who it goes to and where approving, denying or sending it back leads.",
+					"pt_BR": "Os Workflow Steps de Character Lifecycle: cada etapa com para quem vai e para onde levam aprovar, negar ou devolver."
+				}
+			}
+		],
+		"admin-regulation-rules": [
+			{
+				"heading": "Regulation Rules",
+				"path": "/wp-admin/admin.php?page=oat-settings&tab=rules",
+				"account": "archie",
+				"alt": {
+					"en": "The Regulation Rules tab: the R&U list with each item's genre, category, item, PC and NPC levels and controlling Coordinator.",
+					"pt_BR": "A aba Regulation Rules: a lista de R&U com o gênero, a categoria, o item, os níveis de PC e NPC e o Coordenador de cada item."
+				}
+			}
+		],
+		"admin-submission-rules": [
+			{
+				"heading": "Submission Rules",
+				"path": "/wp-admin/admin.php?page=oat-submission-rules",
+				"account": "archie",
+				"alt": {
+					"en": "Submission Rules: each rule with what it checks, what it does and the message members see.",
+					"pt_BR": "Submission Rules: cada regra com o que confere, o que faz e a mensagem que os membros veem."
+				}
+			}
+		],
+		"admin-taxonomy": [
+			{
+				"heading": "Creature Taxonomy",
+				"path": "/wp-admin/admin.php?page=oat-settings&tab=taxonomy",
+				"account": "archie",
+				"alt": {
+					"en": "The Creature Taxonomy tab: genres, their factions, and the types and variants on each list.",
+					"pt_BR": "A aba Creature Taxonomy: os gêneros, as facções de cada um, e os tipos e variantes de cada lista."
+				}
+			}
+		],
+		"admin-settings": [
+			{
+				"heading": "Archivist Settings",
+				"path": "/wp-admin/admin.php?page=oat-settings",
+				"account": "archie",
+				"alt": {
+					"en": "Archivist Settings, General tab: the role patterns allowed to create characters.",
+					"pt_BR": "Archivist Settings, aba General: os padrões de cargo que podem criar personagens."
+				}
+			}
+		],
+		"form-binding_agreements": [
+			{
+				"heading": "Binding Agreements",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=binding_agreements&form=binding_agreements",
+				"account": "archie",
+				"alt": {
+					"en": "The Binding Agreements form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Binding Agreements na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-ca_manage_satellites": [
+			{
+				"heading": "Manage Satellites",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=chronicle_actions&form=ca_manage_satellites",
+				"account": "archie",
+				"alt": {
+					"en": "The Manage Satellites form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Manage Satellites na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-ca_reporting": [
+			{
+				"heading": "Chronicle Report",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=chronicle_actions&form=ca_reporting",
+				"account": "archie",
+				"alt": {
+					"en": "The Chronicle Report form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Chronicle Report na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_death": [
+			{
+				"heading": "Death",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_death",
+				"account": "archie",
+				"alt": {
+					"en": "The Death form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Death na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_fame_registry": [
+			{
+				"heading": "Fame Registry",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_fame_registry",
+				"account": "archie",
+				"alt": {
+					"en": "The Fame Registry form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Fame Registry na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_learn_custom_content": [
+			{
+				"heading": "Learn Custom Content",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_learn_custom_content",
+				"account": "archie",
+				"alt": {
+					"en": "The Learn Custom Content form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Learn Custom Content na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_registration": [
+			{
+				"heading": "Registration",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_registration",
+				"account": "archie",
+				"alt": {
+					"en": "The Registration form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Registration na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_ru_request": [
+			{
+				"heading": "R&U Request",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_ru_request",
+				"account": "archie",
+				"alt": {
+					"en": "The R&U Request form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário R&U Request na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-cl_transfer": [
+			{
+				"heading": "Transfer",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=character_lifecycle&form=cl_transfer",
+				"account": "archie",
+				"alt": {
+					"en": "The Transfer form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Transfer na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-custom_content": [
+			{
+				"heading": "Custom Content",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=custom_content&form=custom_content",
+				"account": "archie",
+				"alt": {
+					"en": "The Custom Content form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Custom Content na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-da_chronicle": [
+			{
+				"heading": "Chronicle / Local DA",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=disciplinary_actions&form=da_chronicle",
+				"account": "archie",
+				"alt": {
+					"en": "The Chronicle / Local DA form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Chronicle / Local DA na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-da_global": [
+			{
+				"heading": "Global DA",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=disciplinary_actions&form=da_global",
+				"account": "archie",
+				"alt": {
+					"en": "The Global DA form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Global DA na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-disciplinary_actions": [
+			{
+				"heading": "Disciplinary Actions",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=disciplinary_actions&form=disciplinary_actions",
+				"account": "archie",
+				"alt": {
+					"en": "The Disciplinary Actions form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Disciplinary Actions na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-governance_records": [
+			{
+				"heading": "Governance Records",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=governance_records&form=governance_records",
+				"account": "archie",
+				"alt": {
+					"en": "The Governance Records form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Governance Records na aba New Submission, pronto para preencher."
+				}
+			}
+		],
+		"form-player_actions": [
+			{
+				"heading": "Player Actions",
+				"path": "/wp-admin/admin.php?page=owc-oat-workspace&tab=submit&domain=player_actions&form=player_actions",
+				"account": "archie",
+				"alt": {
+					"en": "The Player Actions form on the New Submission tab, ready to fill in.",
+					"pt_BR": "O formulário Player Actions na aba New Submission, pronto para preencher."
+				}
+			}
+		]
+	}
+}

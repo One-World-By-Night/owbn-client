@@ -18,6 +18,7 @@ add_action( 'wp_ajax_owc_oat_get_domain_fields', 'owc_oat_ajax_get_domain_fields
 add_action( 'wp_ajax_owc_oat_get_domain_forms', 'owc_oat_ajax_get_domain_forms' );
 add_action( 'wp_ajax_owc_oat_search_characters', 'owc_oat_ajax_search_characters' );
 add_action( 'wp_ajax_owc_oat_create_character', 'owc_oat_ajax_create_character' );
+add_action( 'wp_ajax_owc_oat_creature_taxonomy', 'owc_oat_ajax_creature_taxonomy' );
 add_action( 'wp_ajax_owc_oat_lookup_hst', 'owc_oat_ajax_lookup_hst' );
 add_action( 'wp_ajax_owc_oat_search_users', 'owc_oat_ajax_search_users' );
 add_action( 'wp_ajax_owc_oat_get_coordinators_for_rules', 'owc_oat_ajax_get_coordinators_for_rules' );
@@ -28,7 +29,6 @@ add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' 
 add_action( 'wp_ajax_owc_oat_registry_search', 'owc_oat_ajax_registry_search' );
 add_action( 'wp_ajax_owc_oat_save_registry_columns', 'owc_oat_ajax_save_registry_columns' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
-add_action( 'wp_ajax_owc_oat_lookup_wp_user', 'owc_oat_ajax_lookup_wp_user' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
 /**
@@ -228,57 +228,31 @@ function owc_oat_ajax_search_characters() {
     if ( strlen( $term ) < 2 ) {
         wp_send_json( array() );
     }
+    $scope          = isset( $_GET['scope'] ) ? sanitize_text_field( $_GET['scope'] ) : '';
+    $chronicle_slug = isset( $_GET['chronicle_slug'] ) ? strtolower( sanitize_text_field( $_GET['chronicle_slug'] ) ) : '';
 
-    if ( ! class_exists( 'OAT_Character' ) ) {
-        wp_send_json( array() );
+    if ( owc_oat_is_local() ) {
+        wp_send_json( owc_oat_search_characters_for_user( $term, $scope, $chronicle_slug ) );
     }
-
-    global $wpdb;
-    $table = $wpdb->prefix . 'oat_characters';
-    $like  = '%' . $wpdb->esc_like( $term ) . '%';
-
-    // Role-based scope filtering (P4a / CC-002).
-    $scope           = isset( $_GET['scope'] ) ? sanitize_text_field( $_GET['scope'] ) : '';
-    $chronicle_slug  = isset( $_GET['chronicle_slug'] ) ? sanitize_text_field( $_GET['chronicle_slug'] ) : '';
-    $where_extra     = '';
-    $prepare_args    = array( $like );
-
-    if ( $scope === 'player' ) {
-        $user = wp_get_current_user();
-        if ( $user && $user->user_email ) {
-            $where_extra = ' AND player_email = %s';
-            $prepare_args[] = $user->user_email;
-        }
-    } elseif ( $scope === 'staff' && $chronicle_slug ) {
-        $where_extra = ' AND chronicle_slug = %s';
-        $prepare_args[] = $chronicle_slug;
-    }
-    // 'coordinator' and 'archivist' scopes have no filter — all characters.
-
-    $sql = "SELECT uuid, character_name, chronicle_slug, player_name, pc_npc FROM {$table} WHERE character_name LIKE %s{$where_extra} ORDER BY character_name ASC LIMIT 15";
-    $rows = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) );
-
-    $results = array();
-    foreach ( $rows as $row ) {
-        $chron_title = '';
-        if ( $row->chronicle_slug && function_exists( 'owc_entity_get_title' ) ) {
-            $chron_title = owc_entity_get_title( 'chronicle', $row->chronicle_slug );
-        }
-        $results[] = array(
-            'uuid'            => $row->uuid,
-            'character_name'  => $row->character_name,
-            'chronicle_slug'  => $row->chronicle_slug ? $row->chronicle_slug : '',
-            'chronicle_title' => $chron_title ? $chron_title : ( $row->chronicle_slug ? $row->chronicle_slug : '' ),
-            'player_name'     => $row->player_name,
-            'pc_npc'          => isset( $row->pc_npc ) ? $row->pc_npc : 'pc',
-        );
-    }
-
-    wp_send_json( $results );
+    $results = owc_oat_request( 'characters/search', array( 'term' => $term, 'scope' => $scope, 'chronicle_slug' => $chronicle_slug ) );
+    wp_send_json( is_array( $results ) ? array_values( $results ) : array() );
 }
 
 /**
- * AJAX: Create a new character inline (D-056).
+ * AJAX: The creature taxonomy for the pickers, on every site (no gateway key in the browser).
+ *
+ * @return void
+ */
+function owc_oat_ajax_creature_taxonomy() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+    wp_send_json_success( owc_oat_get_creature_taxonomy() );
+}
+
+/**
+ * AJAX: Create a new character inline from the create panel.
+ *
+ * The create itself runs on archivist (owc_oat_create_character_record()), directly or
+ * through the gateway, so the player link is an archivist account on every site.
  *
  * @return void
  */
@@ -289,84 +263,18 @@ function owc_oat_ajax_create_character() {
         wp_send_json_error( 'You do not have permission to create characters.' );
     }
 
-    if ( ! class_exists( 'OAT_Character' ) ) {
-        wp_send_json_error( 'OAT_Character model not available.' );
+    $input = array();
+    foreach ( array( 'character_name', 'chronicle_slug', 'pc_npc', 'npc_coordinator', 'player_name', 'player_email', 'creature_genre', 'creature_sub_type', 'creature_type', 'creature_variant' ) as $field ) {
+        $input[ $field ] = isset( $_POST[ $field ] ) ? sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) : '';
     }
 
-    $char_name       = isset( $_POST['character_name'] ) ? sanitize_text_field( $_POST['character_name'] ) : '';
-    $chronicle_slug  = isset( $_POST['chronicle_slug'] ) ? sanitize_text_field( $_POST['chronicle_slug'] ) : '';
-    $pc_npc          = isset( $_POST['pc_npc'] ) ? sanitize_text_field( $_POST['pc_npc'] ) : 'pc';
-    $npc_coordinator = isset( $_POST['npc_coordinator'] ) ? strtolower( sanitize_text_field( $_POST['npc_coordinator'] ) ) : '';
-
-    if ( empty( $char_name ) ) {
-        wp_send_json_error( 'Character name is required.' );
+    $result = owc_oat_create_character( $input );
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
     }
 
-    // Office NPC: a coordinator may create an NPC owned by their office (no chronicle
-    // required). Verify the current user actually holds that office before accepting.
-    if ( '' !== $npc_coordinator ) {
-        $offices = function_exists( 'owc_oat_current_user_coordinator_offices' ) ? owc_oat_current_user_coordinator_offices() : array();
-        if ( ! isset( $offices[ $npc_coordinator ] ) ) {
-            wp_send_json_error( 'You are not authorized to create NPCs for that Coordinator office.' );
-        }
-    }
-
-    $user = wp_get_current_user();
-    if ( ! $user || ! $user->ID ) {
-        wp_send_json_error( 'You must be logged in.' );
-    }
-
-    $creature_genre    = isset( $_POST['creature_genre'] ) ? sanitize_text_field( $_POST['creature_genre'] ) : '';
-    $creature_type     = isset( $_POST['creature_type'] ) ? sanitize_text_field( $_POST['creature_type'] ) : '';
-    $creature_sub_type = isset( $_POST['creature_sub_type'] ) ? sanitize_text_field( $_POST['creature_sub_type'] ) : '';
-    $creature_variant  = isset( $_POST['creature_variant'] ) ? sanitize_text_field( $_POST['creature_variant'] ) : '';
-
-    $create_data = array(
-        'character_name' => $char_name,
-        'chronicle_slug' => $chronicle_slug,
-        'player_email'   => $user->user_email,
-        'player_name'    => $user->display_name,
-        'wp_user_id'     => $user->ID,
-    );
-    if ( in_array( $pc_npc, array( 'pc', 'npc' ), true ) ) {
-        $create_data['pc_npc'] = $pc_npc;
-    }
-    if ( '' !== $npc_coordinator ) {
-        $create_data['npc_coordinator'] = $npc_coordinator;
-        $create_data['pc_npc']          = 'npc'; // office-owned characters are NPCs
-    }
-    if ( $creature_genre ) {
-        $create_data['creature_genre'] = $creature_genre;
-    }
-    if ( $creature_type ) {
-        $create_data['creature_type'] = $creature_type;
-    }
-    if ( $creature_sub_type ) {
-        $create_data['creature_sub_type'] = $creature_sub_type;
-    }
-    if ( $creature_variant ) {
-        $create_data['creature_variant'] = $creature_variant;
-    }
-
-    $id = OAT_Character::create( $create_data );
-
-    if ( ! $id ) {
-        wp_send_json_error( 'Failed to create character.' );
-    }
-
-    $char = OAT_Character::find( $id );
-    if ( ! $char ) {
-        wp_send_json_error( 'Character created but could not be retrieved.' );
-    }
-
-    wp_send_json_success( array(
-        'uuid'           => $char->uuid,
-        'character_name' => $char->character_name,
-        'chronicle_slug' => $char->chronicle_slug ? $char->chronicle_slug : '',
-        'pc_npc'         => isset( $char->pc_npc ) ? $char->pc_npc : 'pc',
-    ) );
+    wp_send_json_success( $result );
 }
-
 /**
  * AJAX: Look up HST display name for a chronicle slug (D-058).
  *
@@ -414,138 +322,24 @@ function owc_oat_ajax_lookup_hst() {
 }
 
 /**
- * AJAX: Search users by name for reassign/delegate autocomplete.
+ * AJAX: Search accounts for the account pickers (character link, reassign, delegate, user fields).
  *
- * Returns users matching display_name or user_login, plus ASC role path
- * matches if the term looks like a role path (contains '/').
+ * Returns archivist accounts, matched by name, login or email, or by a role path, and only to
+ * site admins, staff, coordinators and the Archivist.
  *
  * @return void
  */
 function owc_oat_ajax_search_users() {
     check_ajax_referer( 'owc_oat_nonce', 'nonce' );
 
-    $term = isset( $_GET['term'] ) ? sanitize_text_field( $_GET['term'] ) : '';
+    $term = isset( $_REQUEST['term'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['term'] ) ) : '';
     if ( strlen( $term ) < 2 ) {
         wp_send_json( array() );
     }
 
-    $results = array();
-
-    // Search WordPress users by display_name or user_login.
-    $users = get_users( array(
-        'search'         => '*' . $term . '*',
-        'search_columns' => array( 'user_login', 'display_name', 'user_email' ),
-        'number'         => 15,
-        'orderby'        => 'display_name',
-    ) );
-
-    foreach ( $users as $user ) {
-        $results[] = array(
-            'id'           => $user->ID,
-            'label'        => $user->display_name . ' (' . $user->user_login . ')',
-            'value'        => $user->display_name,
-            'type'         => 'user',
-            'display_name' => $user->display_name,
-            'email'        => $user->user_email,
-        );
-    }
-
-    // If term contains '/' it might be an ASC role path — resolve to user(s).
-    if ( strpos( $term, '/' ) !== false && function_exists( 'owc_asc_get_users_by_role' ) ) {
-        // Exact role path match first.
-        $role_users = owc_asc_get_users_by_role( 'oat', $term );
-
-        // No exact match — try prefix match (e.g. "coordinator/tremere" matches
-        // users with "coordinator/tremere/coordinator").
-        if ( empty( $role_users ) || is_wp_error( $role_users ) ) {
-            $role_users = owc_oat_search_users_by_role_prefix( $term );
-        }
-
-        if ( is_array( $role_users ) ) {
-            $seen_ids = array();
-            foreach ( $results as $r ) {
-                $seen_ids[ $r['id'] ] = true;
-            }
-            foreach ( $role_users as $ru ) {
-                $ru  = (array) $ru;
-                $uid = isset( $ru['user_id'] ) ? (int) $ru['user_id'] : 0;
-                if ( ! $uid || isset( $seen_ids[ $uid ] ) ) {
-                    continue;
-                }
-                $name = isset( $ru['display_name'] ) ? $ru['display_name'] : '';
-                $path = isset( $ru['role_path'] ) ? $ru['role_path'] : $term;
-                $user_obj = get_userdata( $uid );
-                $email    = $user_obj ? $user_obj->user_email : '';
-                $results[] = array(
-                    'id'           => $uid,
-                    'label'        => $name . ' (via ' . $path . ')',
-                    'value'        => $name,
-                    'type'         => 'role',
-                    'display_name' => $name,
-                    'email'        => $email,
-                );
-                $seen_ids[ $uid ] = true;
-            }
-        }
-    }
-
-    wp_send_json( $results );
+    $results = owc_oat_find_link_users( $term );
+    wp_send_json( is_array( $results ) ? array_values( $results ) : array() );
 }
-
-/**
- * Search users whose cached ASC roles start with a given prefix.
- *
- * E.g. prefix "coordinator/tremere" matches users holding
- * "coordinator/tremere/coordinator" or "coordinator/tremere/sub-coordinator".
- *
- * @param string $prefix Role path prefix.
- * @return array Array of arrays with user_id, display_name, role_path.
- */
-function owc_oat_search_users_by_role_prefix( $prefix ) {
-    if ( ! defined( 'OWC_ASC_CACHE_KEY' ) ) {
-        return array();
-    }
-
-    global $wpdb;
-    $prefix = sanitize_text_field( $prefix );
-    $like   = '%' . $wpdb->esc_like( $prefix ) . '%';
-
-    $user_ids = $wpdb->get_col( $wpdb->prepare(
-        "SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = %s AND meta_value LIKE %s",
-        OWC_ASC_CACHE_KEY,
-        $like
-    ) );
-
-    if ( empty( $user_ids ) ) {
-        return array();
-    }
-
-    $results    = array();
-    $prefix_low = strtolower( $prefix );
-
-    foreach ( $user_ids as $uid ) {
-        $cached_roles = get_user_meta( (int) $uid, OWC_ASC_CACHE_KEY, true );
-        if ( ! is_array( $cached_roles ) ) {
-            continue;
-        }
-        foreach ( $cached_roles as $cached_path ) {
-            if ( strpos( strtolower( $cached_path ), $prefix_low ) === 0 ) {
-                $user = get_user_by( 'id', (int) $uid );
-                if ( $user ) {
-                    $results[] = array(
-                        'user_id'      => $user->ID,
-                        'display_name' => $user->display_name,
-                        'role_path'    => $cached_path,
-                    );
-                }
-                break;
-            }
-        }
-    }
-
-    return $results;
-}
-
 /**
  * AJAX: Get controlling coordinator(s) for a set of regulation rule IDs.
  *
@@ -926,29 +720,3 @@ function owc_oat_ajax_save_registry_columns() {
     wp_send_json_success();
 }
 
-/**
- * AJAX: Look up a WP user by email for character association.
- */
-function owc_oat_ajax_lookup_wp_user() {
-    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
-
-    if ( ! current_user_can( 'edit_users' ) && ! current_user_can( 'manage_options' ) ) {
-        wp_send_json_error( 'Permission denied.' );
-    }
-
-    $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-    if ( ! $email ) {
-        wp_send_json_error( 'No email provided.' );
-    }
-
-    $user = get_user_by( 'email', $email );
-    if ( ! $user ) {
-        wp_send_json_success( array( 'user_id' => 0 ) );
-    }
-
-    wp_send_json_success( array(
-        'user_id'      => $user->ID,
-        'display_name' => $user->display_name,
-        'email'        => $user->user_email,
-    ) );
-}

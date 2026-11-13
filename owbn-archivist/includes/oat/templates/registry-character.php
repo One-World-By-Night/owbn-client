@@ -30,11 +30,7 @@ $player_name     = isset( $character['player_name'] ) ? $character['player_name'
 $npc_coordinator = isset( $character['npc_coordinator'] ) ? $character['npc_coordinator'] : '';
 $npc_type        = isset( $character['npc_type'] ) ? $character['npc_type'] : '';
 $wp_user_id      = isset( $character['wp_user_id'] ) ? (int) $character['wp_user_id'] : 0;
-$wp_user_display = '';
-if ( $wp_user_id ) {
-    $linked_user = get_userdata( $wp_user_id );
-    $wp_user_display = $linked_user ? $linked_user->display_name . ' (' . $linked_user->user_email . ')' : "User #{$wp_user_id} (not found)";
-}
+$wp_user_display = isset( $character['wp_user_label'] ) && '' !== (string) $character['wp_user_label'] ? (string) $character['wp_user_label'] : ( $wp_user_id ? '#' . $wp_user_id : '' );
 
 // Build the entity-picker value for chronicle_slug_typed. NPCs tied to a coordinator
 // use the "coordinator/<slug>" form; everything else uses "chronicle/<slug>".
@@ -74,23 +70,8 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
                     <td><input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text"></td>
                 </tr>
                 <tr>
-                    <th><?php esc_html_e( 'Linked WP User', 'owbn-archivist' ); ?></th>
-                    <td>
-                        <input type="hidden" name="wp_user_id" id="wp_user_id" value="<?php echo esc_attr( $wp_user_id ); ?>">
-                        <div>
-                            <input type="text" id="owc-wp-user-search" class="regular-text" autocomplete="off"
-                                placeholder="<?php esc_attr_e( 'Search by name, login, email, or role path (type 2+ chars)…', 'owbn-archivist' ); ?>">
-                        </div>
-                        <div style="margin-top:6px;">
-                            <strong><?php esc_html_e( 'Currently linked:', 'owbn-archivist' ); ?></strong>
-                            <span id="wp_user_display"><?php echo $wp_user_id ? esc_html( $wp_user_display ) : '<em>' . esc_html__( 'Not linked', 'owbn-archivist' ) . '</em>'; ?></span>
-                            <button type="button" class="button button-small" id="owc-unlink-wp-user" style="margin-left:4px;<?php echo $wp_user_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Unlink', 'owbn-archivist' ); ?></button>
-                        </div>
-                        <div style="margin-top:6px;">
-                            <button type="button" class="button button-small" id="owc-lookup-wp-user"><?php esc_html_e( 'Fallback: Lookup by exact Player Email', 'owbn-archivist' ); ?></button>
-                        </div>
-                        <p class="description"><?php esc_html_e( 'Links this character to a WordPress user account for "My Characters" in the registry. The search picker auto-fills Player Name and Email if they are empty.', 'owbn-archivist' ); ?></p>
-                    </td>
+                    <th><?php esc_html_e( 'Linked Account', 'owbn-archivist' ); ?></th>
+                    <td><?php owc_oat_render_account_link( $wp_user_id, $wp_user_display ); ?></td>
                 </tr>
                 <tr>
                     <th><label for="chronicle_slug_typed">Chronicle</label></th>
@@ -493,67 +474,3 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
 </script>
 <?php endif; ?>
 
-<?php if ( ! empty( $can_edit ) ) : ?>
-<script>
-jQuery(function($) {
-    function applyLink(u) {
-        $('#wp_user_id').val(u.id);
-        $('#wp_user_display').text(u.display_name + ' (' + u.email + ')');
-        $('#owc-unlink-wp-user').show();
-        if (!$('#player_name').val()) { $('#player_name').val(u.display_name); }
-        if (!$('#player_email').val()) { $('#player_email').val(u.email); }
-    }
-
-    // Live-search autocomplete picker (primary path).
-    if (typeof owc_oat_ajax !== 'undefined' && $.ui && $.ui.autocomplete) {
-        $('#owc-wp-user-search').autocomplete({
-            source: function(request, response) {
-                $.getJSON(owc_oat_ajax.url, {
-                    action: 'owc_oat_search_users',
-                    nonce:  owc_oat_ajax.nonce,
-                    term:   request.term
-                }, function(data) { response(data || []); });
-            },
-            minLength: 2,
-            select: function(event, ui) {
-                event.preventDefault();
-                applyLink({ id: ui.item.id, display_name: ui.item.display_name || ui.item.value, email: ui.item.email || '' });
-                $(this).val('');
-                return false;
-            },
-            focus: function(event, ui) { event.preventDefault(); }
-        });
-    }
-
-    // Fallback: exact-email lookup (legacy button).
-    $('#owc-lookup-wp-user').on('click', function() {
-        var email = $('#player_email').val();
-        if (!email) { alert('Enter a player email first.'); return; }
-
-        var $btn = $(this);
-        var origLabel = $btn.text();
-        $btn.prop('disabled', true).text('Looking up...');
-        $.post(ajaxurl, {
-            action: 'owc_oat_lookup_wp_user',
-            nonce: typeof owc_oat_ajax !== 'undefined' ? owc_oat_ajax.nonce : '',
-            email: email
-        }, function(resp) {
-            $btn.prop('disabled', false).text(origLabel);
-            if (resp.success && resp.data.user_id) {
-                applyLink({ id: resp.data.user_id, display_name: resp.data.display_name, email: resp.data.email });
-            } else {
-                $('#wp_user_display').html('<em>No WP user found for that email</em>');
-                $('#wp_user_id').val('0');
-                $('#owc-unlink-wp-user').hide();
-            }
-        });
-    });
-
-    $('#owc-unlink-wp-user').on('click', function() {
-        $('#wp_user_id').val('0');
-        $('#wp_user_display').html('<em>Not linked</em>');
-        $(this).hide();
-    });
-});
-</script>
-<?php endif; ?>

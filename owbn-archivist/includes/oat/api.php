@@ -127,8 +127,8 @@ function owc_oat_format_remote_timestamps( $data ) {
         }
     }
 
-    // Format assignments/watched arrays.
-    foreach ( array( 'assignments', 'watched' ) as $list_key ) {
+    // Format assignments/watched/my_entries arrays.
+    foreach ( array( 'assignments', 'watched', 'my_entries' ) as $list_key ) {
         if ( isset( $data[ $list_key ] ) && is_array( $data[ $list_key ] ) ) {
             foreach ( $data[ $list_key ] as &$item ) {
                 foreach ( $ts_fields as $f ) {
@@ -142,6 +142,49 @@ function owc_oat_format_remote_timestamps( $data ) {
     }
 
     return $data;
+}
+
+
+/**
+ * Labels the read-only field renderer uses for characters and regulation rules when this site cannot look them up
+ * itself; on sites other than archivist they arrive with the request from the gateway.
+ *
+ * @param array|null $bundle A request bundle from owc_oat_get_entry() to take the labels from, or null to read them.
+ * @return array{characters: array<string,array>, rules: array<int,string>}
+ */
+function owc_oat_readonly_lookups( $bundle = null ) {
+    static $lookups = array( 'characters' => array(), 'rules' => array() );
+    if ( is_array( $bundle ) ) {
+        $lookups = array( 'characters' => array(), 'rules' => array() );
+        foreach ( (array) ( $bundle['characters'] ?? array() ) as $uuid => $character ) {
+            $lookups['characters'][ (string) $uuid ] = (array) $character;
+        }
+        foreach ( (array) ( $bundle['rules'] ?? array() ) as $rule ) {
+            $rule = (array) $rule;
+            $id   = (int) ( $rule['rule_id'] ?? $rule['id'] ?? 0 );
+            if ( $id ) {
+                $condition                 = (string) ( $rule['condition'] ?? $rule['condition_name'] ?? '' );
+                $label                     = sprintf( '%s — %s', $rule['genre'] ?? '', $rule['category'] ?? '' );
+                $lookups['rules'][ $id ] = '' !== $condition ? $label . ' — ' . $condition : $label;
+            }
+        }
+    }
+    return $lookups;
+}
+
+
+/**
+ * A submitted field value made safe to store: a list (ticked boxes) becomes a JSON array of plain strings; anything
+ * else keeps the HTML a post may hold.
+ *
+ * @param mixed $value Submitted value.
+ * @return string
+ */
+function owc_oat_clean_meta_value( $value ) {
+    if ( is_array( $value ) ) {
+        return (string) wp_json_encode( array_values( array_map( 'sanitize_text_field', array_filter( $value, 'is_scalar' ) ) ) );
+    }
+    return wp_kses_post( (string) $value );
 }
 
 
@@ -315,53 +358,20 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
     if ( owc_oat_is_local() ) {
         $user_id = get_current_user_id();
 
-        // Assignments: explicit assignee rows.
-        $assignments_raw = OAT_Assignee::inbox( $user_id );
-        if ( $domain_filter ) {
-            $assignments_raw = array_filter( $assignments_raw, function ( $a ) use ( $domain_filter ) {
-                return isset( $a->domain ) && $a->domain === $domain_filter;
-            } );
-            $assignments_raw = array_values( $assignments_raw );
-        }
-
-        // Deduplicate assignments by entry_id (user may have multiple step assignments).
+        // Assigned to Me: the open requests waiting on this user.
+        $waiting     = owc_oat_entries_waiting_on( $user_id, $domain_filter );
         $assignments = array();
-        $seen_entries = array();
-        foreach ( $assignments_raw as $a ) {
-            $eid = (int) $a->entry_id;
-            if ( isset( $seen_entries[ $eid ] ) ) {
-                continue;
-            }
-            $seen_entries[ $eid ] = true;
+        foreach ( $waiting as $we ) {
+            $eid           = (int) $we->id;
             $assignments[] = array(
                 'entry_id'      => $eid,
-                'domain'        => $a->domain,
-                'domain_label'  => OAT_Domain_Registry::get_label( $a->domain ) ?: $a->domain,
-                'originator_id' => isset( $a->originator_id ) ? (int) $a->originator_id : 0,
-                'status'        => isset( $a->entry_status ) ? $a->entry_status : $a->status,
-                'current_step'  => isset( $a->current_step ) ? $a->current_step : '',
-                'title'         => isset( $a->title ) ? $a->title : '',
-                'created_at'    => owc_oat_format_date( isset( $a->created_at ) ? $a->created_at : '' ),
-            );
-        }
-
-        // Capability-based inbox: entries at steps the user can act on.
-        $cap_entries = owc_oat_capability_inbox_entries( $user_id, $domain_filter );
-        foreach ( $cap_entries as $ce ) {
-            $eid = (int) $ce->id;
-            if ( isset( $seen_entries[ $eid ] ) ) {
-                continue;
-            }
-            $seen_entries[ $eid ] = true;
-            $assignments[] = array(
-                'entry_id'      => $eid,
-                'domain'        => $ce->domain,
-                'domain_label'  => OAT_Domain_Registry::get_label( $ce->domain ) ?: $ce->domain,
-                'originator_id' => isset( $ce->originator_id ) ? (int) $ce->originator_id : 0,
-                'status'        => $ce->status,
-                'current_step'  => $ce->current_step,
-                'title'         => isset( $ce->title ) ? $ce->title : '',
-                'created_at'    => owc_oat_format_date( $ce->created_at ),
+                'domain'        => $we->domain,
+                'domain_label'  => OAT_Domain_Registry::get_label( $we->domain ) ?: $we->domain,
+                'originator_id' => (int) $we->originator_id,
+                'status'        => $we->status,
+                'current_step'  => $we->current_step,
+                'title'         => class_exists( 'OAT_Entry_Meta' ) ? (string) OAT_Entry_Meta::get( $eid, 'title' ) : '',
+                'created_at'    => owc_oat_format_date( $we->created_at ),
             );
         }
 
@@ -382,7 +392,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
         }
 
         // User's own entries (recent).
-        $my_entries_raw = OAT_Entry::for_originator( $user_id, array( 'per_page' => 10 ) );
+        $my_entries_raw = OAT_Entry::for_originator( $user_id );
         $my_entries = array();
         foreach ( $my_entries_raw as $e ) {
             $my_entries[] = array(
@@ -398,14 +408,12 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
 
         // Build user map.
         $user_ids = array();
-        foreach ( $assignments_raw as $a ) {
-            if ( isset( $a->originator_id ) ) {
-                $user_ids[] = (int) $a->originator_id;
-            }
+        foreach ( $waiting as $we ) {
+            $user_ids[] = (int) $we->originator_id;
         }
-        foreach ( $cap_entries as $ce ) {
-            if ( isset( $ce->originator_id ) ) {
-                $user_ids[] = (int) $ce->originator_id;
+        foreach ( $watched_raw as $w ) {
+            if ( isset( $w->originator_id ) ) {
+                $user_ids[] = (int) $w->originator_id;
             }
         }
         $user_ids[] = $user_id;
@@ -533,6 +541,9 @@ function owc_oat_get_entry( $entry_id ) {
         }
 
         $user_id = get_current_user_id();
+        if ( ! owc_oat_user_can_view_entry( $entry, $user_id ) ) {
+            return new WP_Error( 'oat_forbidden', 'You do not have access to this request.', array( 'status' => 403 ) );
+        }
 
         // Meta.
         $meta_raw = OAT_Entry_Meta::all( $entry_id );
@@ -568,7 +579,7 @@ function owc_oat_get_entry( $entry_id ) {
         foreach ( $timeline_raw as $t ) {
             $timeline[] = array(
                 'action_type'     => $t->action_type,
-                'actor_id'        => (int) $t->actor_id,
+                'actor_id'        => owc_oat_timeline_actor_id( $t ),
                 'step'            => $t->step,
                 'visibility_tier' => $t->visibility_tier,
                 'note'            => $t->note,
@@ -577,30 +588,19 @@ function owc_oat_get_entry( $entry_id ) {
         }
 
         // Rules.
-        $rules_raw = OAT_Entry_Rule::for_entry( $entry_id );
-        $rules = array();
-        foreach ( $rules_raw as $r ) {
-            $rule_detail = OAT_Regulation_Rule::find( $r->rule_id );
-            $rules[] = array(
-                'rule_id'      => (int) $r->rule_id,
-                'genre'        => $rule_detail ? $rule_detail->genre : '',
-                'category'     => $rule_detail ? $rule_detail->category : '',
-                'subcategory'  => $rule_detail ? $rule_detail->subcategory : '',
-                'condition'    => $rule_detail ? $rule_detail->condition_name : '',
-                'pc_level'     => $rule_detail ? $rule_detail->pc_level : '',
-                'coordinator'  => $rule_detail ? $rule_detail->controlling_coordinator : '',
-                'elevation'    => $rule_detail ? (int) $rule_detail->elevation : 0,
-            );
-        }
+        $rules = array_map( 'owc_oat_linked_rule_row', OAT_Entry_Rule::for_entry( $entry_id ) );
 
         // Timer.
         $timer_raw = OAT_Timer::active_for_entry( $entry_id );
         $timer = null;
         if ( $timer_raw ) {
             $timer = array(
-                'type'       => $timer_raw->timer_type,
-                'expires_at' => owc_oat_format_date( $timer_raw->expires_at ),
-                'status'     => $timer_raw->status,
+                'type'          => (string) ( $timer_raw->auto_action ?? '' ),
+                'auto_action'   => (string) ( $timer_raw->auto_action ?? '' ),
+                'bump_count'    => (int) ( $timer_raw->bump_count ?? 0 ),
+                'bump_required' => (int) ( $timer_raw->bump_required ?? 0 ),
+                'expires_at'    => owc_oat_format_date( $timer_raw->expires_at ),
+                'status'        => $timer_raw->status,
             );
         }
 
@@ -633,7 +633,7 @@ function owc_oat_get_entry( $entry_id ) {
             $user_ids[] = (int) $a->user_id;
         }
         foreach ( $timeline_raw as $t ) {
-            $user_ids[] = (int) $t->actor_id;
+            $user_ids[] = owc_oat_timeline_actor_id( $t );
         }
         foreach ( $watchers_raw as $w ) {
             $user_ids[] = (int) $w->user_id;
@@ -681,6 +681,8 @@ function owc_oat_get_entry( $entry_id ) {
                 'updated_at'      => owc_oat_format_date( $entry->updated_at ),
             ),
             'meta'              => $meta,
+            'characters'        => owc_oat_entry_character_map( $meta ),
+            'viewer_id'         => $user_id,
             'assignees'         => $assignees,
             'timeline'          => $timeline,
             'rules'             => $rules,
@@ -757,7 +759,7 @@ function owc_oat_submit( $data ) {
             foreach ( $data['meta'] as $key => $value ) {
                 $safe_key = sanitize_key( $key );
                 if ( $safe_key !== '' ) {
-                    $meta[ $safe_key ] = wp_kses_post( $value );
+                    $meta[ $safe_key ] = owc_oat_clean_meta_value( $value );
                 }
             }
         }
@@ -889,6 +891,9 @@ function owc_oat_execute_action( $entry_id, $action_type, $note = '', $extra_dat
         if ( ! $entry ) {
             return new WP_Error( 'oat_not_found', 'Entry not found.', array( 'status' => 404 ) );
         }
+        if ( ! owc_oat_user_can_take_action( $entry, $user_id, $action_type ) ) {
+            return new WP_Error( 'oat_forbidden', 'You cannot take that action on this request.', array( 'status' => 403 ) );
+        }
 
         // Admin Edit: save meta fields without advancing workflow.
         if ( 'admin_edit' === $action_type ) {
@@ -1001,6 +1006,9 @@ function owc_oat_toggle_watch( $entry_id, $watch_action = 'toggle' ) {
         // Auto-detect: if already watching, remove; otherwise add.
         if ( $watch_action === 'toggle' ) {
             $watch_action = OAT_Watcher::is_watching( $entry_id, $user_id ) ? 'remove' : 'add';
+        }
+        if ( 'remove' !== $watch_action && ! owc_oat_user_can_view_entry( $entry, $user_id ) ) {
+            return new WP_Error( 'oat_forbidden', 'You do not have access to this request.', array( 'status' => 403 ) );
         }
 
         if ( $watch_action === 'remove' ) {
@@ -1213,7 +1221,7 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
         $actions[] = 'timer_extend';
     }
 
-    if ( $entry->status === OAT_Constants::STATUS_HELD ) {
+    if ( $entry->status === OAT_Constants::STATUS_HELD && ( $is_assignee || ( class_exists( 'OAT_Authorization' ) && OAT_Authorization::check( OAT_Constants::CAP_EXEC_OVERSIGHT ) ) ) ) {
         $actions[] = 'resume';
     }
 
@@ -1320,6 +1328,111 @@ function owc_oat_is_super_user( $user_id ) {
 }
 
 /**
+ * Whether a user may see a request: site admins and the exec offices that oversee OAT, its filer, anyone ever
+ * assigned to it, anyone holding its current step's role, its chronicle's staff, its Coordinator offices (including
+ * offices flagged on a chronicle report), its character's player, and, for Disciplinary Actions, anyone holding a
+ * staff, Coordinator or exec role, as on the Reports page.
+ *
+ * @param object $entry   Entry row.
+ * @param int    $user_id WordPress user id.
+ * @return bool
+ */
+function owc_oat_user_can_view_entry( $entry, $user_id ) {
+    $user_id = (int) $user_id;
+    if ( ! $entry || $user_id <= 0 ) {
+        return false;
+    }
+    if ( (int) $entry->originator_id === $user_id || owc_oat_is_super_user( $user_id ) ) {
+        return true;
+    }
+    if ( class_exists( 'OAT_Assignee' ) ) {
+        foreach ( OAT_Assignee::for_entry( (int) $entry->id ) as $assignee ) {
+            if ( (int) $assignee->user_id === $user_id ) {
+                return true;
+            }
+        }
+    }
+    if ( $user_id === get_current_user_id() && class_exists( 'OAT_Authorization' ) ) {
+        OAT_Authorization::get_user_roles();
+    }
+    $roles = owc_oat_get_user_asc_roles( $user_id );
+    if ( owc_oat_is_archivist_oversight( $roles ) || owc_oat_user_can_act_on_step( $entry, $user_id ) ) {
+        return true;
+    }
+    $chronicle = strtolower( (string) $entry->chronicle_slug );
+    $offices   = array();
+    if ( ! empty( $entry->coordinator_genre ) ) {
+        $offices[] = strtolower( (string) $entry->coordinator_genre );
+    }
+    if ( class_exists( 'OAT_Entry_Coordinator' ) && method_exists( 'OAT_Entry_Coordinator', 'slugs_for_entry' ) ) {
+        foreach ( (array) OAT_Entry_Coordinator::slugs_for_entry( (int) $entry->id ) as $slug ) {
+            $offices[] = strtolower( (string) $slug );
+        }
+    }
+    if ( class_exists( 'OAT_Entry_Meta' ) ) {
+        $flagged = OAT_Entry_Meta::get( (int) $entry->id, 'notify_coordinators' );
+        if ( is_string( $flagged ) && '' !== $flagged ) {
+            $decoded = json_decode( $flagged, true );
+            $flagged = is_array( $decoded ) ? $decoded : array_map( 'trim', explode( ',', $flagged ) );
+        }
+        foreach ( (array) $flagged as $slug ) {
+            $offices[] = sanitize_title( (string) $slug );
+        }
+    }
+    $is_da = 'disciplinary_actions' === $entry->domain;
+    foreach ( $roles as $role ) {
+        if ( 'exec/archivist/staff' === $role || preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin|membership)/coordinator$#', $role ) ) {
+            return true;
+        }
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|ast)$#', $role, $m ) ) {
+            if ( ( '' !== $chronicle && $m[1] === $chronicle ) || ( $is_da && 'ast' !== $m[2] ) ) {
+                return true;
+            }
+            continue;
+        }
+        if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#', $role, $m ) || preg_match( '#^exec/([^/]+)/coordinator$#', $role, $m ) ) {
+            if ( $is_da || in_array( $m[1], $offices, true ) ) {
+                return true;
+            }
+        }
+    }
+    if ( ! empty( $entry->character_id ) && class_exists( 'OAT_Character' ) ) {
+        $character = OAT_Character::find( (int) $entry->character_id );
+        if ( $character && (int) $character->wp_user_id === $user_id ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Whether a user may take an action on a request: they can see it, and the request's page offers them that action.
+ *
+ * @param object $entry       Entry row.
+ * @param int    $user_id     WordPress user id.
+ * @param string $action_type Action slug.
+ * @return bool
+ */
+function owc_oat_user_can_take_action( $entry, $user_id, $action_type ) {
+    if ( ! owc_oat_user_can_view_entry( $entry, $user_id ) || ! class_exists( 'OAT_Assignee' ) ) {
+        return false;
+    }
+    $allowed = owc_oat_compute_available_actions( $entry, (int) $user_id, OAT_Assignee::for_entry( (int) $entry->id ) );
+    return in_array( (string) $action_type, $allowed, true );
+}
+
+/**
+ * The fields of an approved Custom Content request that ccHub shows publicly.
+ *
+ * @param array $data Entry fields and meta.
+ * @return array Only the fields the ccHub detail view displays.
+ */
+function owc_oat_cchub_public_fields( array $data ) {
+    $keep = array( 'id', 'coordinator_genre', 'coordinator_title', 'chronicle_slug', 'chronicle_title', 'content_name', 'content_type', 'blood_magic_category', 'xp_cost', 'source_hst', 'archival_date', 'discipline_requirements', 'teachable_abilities', 'met_rules', 'summary' );
+    return array_intersect_key( $data, array_flip( $keep ) );
+}
+
+/**
  * Check if a user can self-approve their own fast-tracked entries.
  *
  * Only WP Admin, exec/archivist/coordinator, and exec/archivist/staff can self-approve.
@@ -1359,6 +1472,11 @@ function owc_oat_can_create_character() {
 
     $patterns = owc_oat_get_create_role_patterns();
 
+    // The patterns could not be read: nobody but a site admin may create.
+    if ( null === $patterns ) {
+        return false;
+    }
+
     // Empty = allow all authenticated users.
     if ( empty( $patterns ) ) {
         return true;
@@ -1391,9 +1509,10 @@ function owc_oat_can_create_character() {
  * Fetch the character creation allowed role patterns.
  *
  * Local: reads get_option directly.
- * Remote: fetches via gateway and caches in transient for 5 minutes.
+ * Remote: fetches via gateway and caches in transient for 5 minutes; a failed fetch is
+ * remembered for a minute and returns null.
  *
- * @return array
+ * @return array|null Patterns, or null when they could not be read.
  */
 function owc_oat_get_create_role_patterns() {
     if ( owc_oat_is_local() ) {
@@ -1407,10 +1526,14 @@ function owc_oat_get_create_role_patterns() {
     if ( is_array( $cached ) ) {
         return $cached;
     }
+    if ( 'unavailable' === $cached ) {
+        return null;
+    }
 
-    $response = owc_oat_request( 'oat/settings/create-roles' );
+    $response = owc_oat_request( 'settings/create-roles' );
     if ( is_wp_error( $response ) || ! isset( $response['roles'] ) ) {
-        return array();
+        set_transient( $cache_key, 'unavailable', MINUTE_IN_SECONDS );
+        return null;
     }
 
     $roles = is_array( $response['roles'] ) ? $response['roles'] : array();
@@ -1614,11 +1737,7 @@ function owc_oat_get_dashboard_counts( $user_id ) {
         global $wpdb;
         $prefix = $wpdb->prefix;
 
-        $assigned = (int) $wpdb->get_var( $wpdb->prepare(
-            "SELECT COUNT(DISTINCT entry_id) FROM {$prefix}oat_assignees
-             WHERE user_id = %d AND status = 'active'",
-            $user_id
-        ) );
+        $assigned = count( owc_oat_entries_waiting_on( $user_id ) );
 
         $submissions = (int) $wpdb->get_var( $wpdb->prepare(
             "SELECT COUNT(*) FROM {$prefix}oat_entries
@@ -1685,7 +1804,7 @@ function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
         $domain_clause = $domain ? $wpdb->prepare( "AND e.domain = %s", $domain ) : '';
 
         $rows = $wpdb->get_results( $wpdb->prepare(
-            "SELECT t.entry_id, e.domain, t.action_type, t.actor_id, t.note, t.created_at
+            "SELECT t.entry_id, e.domain, t.action_type, t.user_id AS actor_id, t.note, t.created_at
              FROM {$prefix}oat_timeline t
              INNER JOIN {$prefix}oat_entries e ON e.id = t.entry_id
              WHERE t.entry_id IN ({$entry_ids_sql})
@@ -1895,6 +2014,9 @@ function owc_oat_get_registry_sections( $scope ) {
  */
 function owc_oat_get_section_characters( $section_key ) {
     if ( owc_oat_is_local() ) {
+        if ( ! function_exists( 'owc_oat_section_key_allowed' ) || ! owc_oat_section_key_allowed( $section_key ) ) {
+            return new WP_Error( 'forbidden', 'You do not have access to that registry section.' );
+        }
         $user_id    = get_current_user_id();
         $characters = OAT_Registry::get_section_characters( $user_id, $section_key );
         // Normalize to arrays for consistency with remote mode.
@@ -1968,6 +2090,8 @@ function owc_oat_get_character_registry( $character_id, $show_all = false ) {
             $entry->coordinators = $coordinators;
             $out[] = $entry;
         }
+
+        $character->wp_user_label = owc_oat_linked_user_label( $character->wp_user_id );
 
         return array(
             'character'    => $character,
@@ -2083,6 +2207,96 @@ function owc_oat_update_character( $character_id, $data ) {
     }
 
     return owc_oat_request( 'registry/character/' . (int) $character_id . '/update', $data );
+}
+
+/**
+ * Create a character from the create panel's fields, on archivist directly or through the gateway.
+ *
+ * @param array $input See owc_oat_create_character_record().
+ * @return array|WP_Error uuid, character_name, chronicle_slug, pc_npc, linked.
+ */
+function owc_oat_create_character( array $input ) {
+    if ( owc_oat_is_local() ) {
+        return owc_oat_create_character_record( $input );
+    }
+    return owc_oat_request( 'registry/character/create', $input );
+}
+
+/**
+ * Archivist accounts for the account pickers, on archivist directly or through the gateway,
+ * so the ids are archivist ids on every site.
+ *
+ * @param string $term At least two characters.
+ * @return array|WP_Error Arrays with id, label, value, type, display_name, email.
+ */
+function owc_oat_find_link_users( $term ) {
+    if ( owc_oat_is_local() ) {
+        return owc_oat_search_link_users( $term );
+    }
+    return owc_oat_request( 'users/search', array( 'term' => (string) $term ) );
+}
+
+/**
+ * The creature taxonomy for the Genre / Faction / Type / Variant pickers: read from OAT on
+ * archivist, fetched server-side through the gateway elsewhere and cached for an hour.
+ *
+ * @return array genres, factions, types, variants.
+ */
+function owc_oat_get_creature_taxonomy() {
+    $empty = array( 'genres' => array(), 'factions' => array(), 'types' => array(), 'variants' => array() );
+    if ( owc_oat_is_local() ) {
+        return class_exists( 'OAT_Creature_Taxonomy' ) ? OAT_Creature_Taxonomy::get_picker_data() : $empty;
+    }
+
+    $cached = get_transient( 'owc_oat_creature_taxonomy' );
+    if ( is_array( $cached ) ) {
+        return $cached;
+    }
+
+    $response = owc_oat_request( 'creature-taxonomy' );
+    if ( is_wp_error( $response ) || ! is_array( $response ) ) {
+        return $empty;
+    }
+    $data = isset( $response['genres'] ) ? $response : ( isset( $response['data']['genres'] ) ? $response['data'] : null );
+    if ( ! is_array( $data ) ) {
+        return $empty;
+    }
+
+    set_transient( 'owc_oat_creature_taxonomy', $data, HOUR_IN_SECONDS );
+    return $data;
+}
+
+/**
+ * Strings the OAT scripts show, shared by the wp-admin and the front-end script settings.
+ *
+ * @return array<string,string>
+ */
+function owc_oat_js_i18n() {
+    return array(
+        'processing'      => __( 'Processing...', 'owbn-archivist' ),
+        'submit'          => __( 'Submit', 'owbn-archivist' ),
+        'watch'           => __( 'Watch', 'owbn-archivist' ),
+        'unwatch'         => __( 'Unwatch', 'owbn-archivist' ),
+        'watching'        => __( 'Watching', 'owbn-archivist' ),
+        'creating'        => __( 'Creating...', 'owbn-archivist' ),
+        'createCharacter' => __( 'Create Character', 'owbn-archivist' ),
+        'charRequired'    => __( 'Character name is required.', 'owbn-archivist' ),
+        'playerRequired'  => __( "A PC needs its player's name and email.", 'owbn-archivist' ),
+        'emailInvalid'    => __( "That player email doesn't look right.", 'owbn-archivist' ),
+        'requestFailed'   => __( 'Request failed.', 'owbn-archivist' ),
+        'showTimeline'    => __( 'Show Timeline', 'owbn-archivist' ),
+        'hideTimeline'    => __( 'Hide Timeline', 'owbn-archivist' ),
+        'error'           => __( 'Error', 'owbn-archivist' ),
+        'rulePrefix'      => __( 'Rule #', 'owbn-archivist' ),
+        'searchRules'     => __( 'Search rules or type free text, then press Enter...', 'owbn-archivist' ),
+        'addPrefix'       => __( 'Add: ', 'owbn-archivist' ),
+        'notLinked'       => __( 'Not linked', 'owbn-archivist' ),
+        'unlinkPending'   => __( 'Not linked (saved when you click Update Character)', 'owbn-archivist' ),
+        'noAccounts'      => __( 'No account matches that.', 'owbn-archivist' ),
+        'emailFirst'      => __( 'Enter a player email first.', 'owbn-archivist' ),
+        'sectDefector'    => __( 'Sect Defector', 'owbn-archivist' ),
+        'notOnList'       => __( 'not on this list', 'owbn-archivist' ),
+    );
 }
 
 /**
@@ -2230,7 +2444,7 @@ function owc_oat_get_cchub_entry( $entry_id ) {
         $meta    = $wpdb->prefix . 'oat_entry_meta';
 
         $entry = $wpdb->get_row( $wpdb->prepare(
-            "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content'",
+            "SELECT * FROM {$entries} WHERE id = %d AND domain = 'custom_content' AND status = 'approved'",
             $entry_id
         ) );
 
@@ -2265,7 +2479,7 @@ function owc_oat_get_cchub_entry( $entry_id ) {
             }
             $data[ $m->meta_key ] = $m->meta_value;
         }
-        return $data;
+        return owc_oat_cchub_public_fields( $data );
     }
 
     return owc_oat_request( 'cchub/entry/' . (int) $entry_id );

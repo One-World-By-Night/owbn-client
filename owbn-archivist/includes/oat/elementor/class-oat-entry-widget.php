@@ -294,6 +294,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		}
 
 		$bundle = owc_oat_get_entry( $entry_id );
+		if ( is_array( $bundle ) && function_exists( 'owc_oat_readonly_lookups' ) ) {
+			owc_oat_readonly_lookups( $bundle );
+		}
 
 		if ( is_wp_error( $bundle ) ) {
 			echo '<div class="oat-submit-error">' . esc_html( $bundle->get_error_message() ) . '</div>';
@@ -315,6 +318,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$bbp_eligible      = isset( $bundle['bbp_eligible'] ) ? $bundle['bbp_eligible'] : false;
 		$available_actions = isset( $bundle['available_actions'] ) ? $bundle['available_actions'] : array();
 		$is_watching       = isset( $bundle['is_watching'] ) ? $bundle['is_watching'] : false;
+		$viewer_id         = isset( $bundle['viewer_id'] ) ? (int) $bundle['viewer_id'] : 0;
 		$domain_label      = isset( $bundle['domain_label'] ) ? $bundle['domain_label'] : '';
 		$step_label        = isset( $bundle['step_label'] ) ? $bundle['step_label'] : '';
 		$user_map          = isset( $bundle['user_map'] ) ? $bundle['user_map'] : array();
@@ -341,9 +345,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		// Enqueue jQuery UI autocomplete for user picker fields in action cards.
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		?>
-		<div class="oat-entry-widget">
+		<div class="oat-entry-widget" data-oat-help-form="<?php echo esc_attr( $form_slug ); ?>">
 
-			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees ); ?>
+			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees, $viewer_id ); ?>
 
 			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map ); ?>
 
@@ -527,7 +531,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	/**
 	 * Render entry header: title, status badge, watch toggle.
 	 */
-	private function render_header( $entry, $domain_label, $step_label, $is_watching, $assignees = array() )
+	private function render_header( $entry, $domain_label, $step_label, $is_watching, $assignees = array(), $viewer_id = 0 )
 	{
 		ob_start();
 		$status     = isset( $entry['status'] ) ? $entry['status'] : '';
@@ -535,7 +539,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$entry_id   = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
 
 		// Determine if current user is an assignee — no need for Watch button.
-		$current_uid  = get_current_user_id();
+		$current_uid  = $viewer_id > 0 ? (int) $viewer_id : get_current_user_id();
 		$is_assignee  = false;
 		foreach ( $assignees as $a ) {
 			$uid = is_array( $a ) ? ( (int) ( $a['user_id'] ?? 0 ) ) : ( (int) ( $a->user_id ?? 0 ) );

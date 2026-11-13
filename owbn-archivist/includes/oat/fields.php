@@ -671,6 +671,15 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-archivist' ) . '</option>';
 			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-archivist' ) . '</option>';
 			echo '</select></label></p>';
+			// Player of a PC: name and email; the PC links to the account with that email.
+			echo '<div class="oat-cc-player-fields" style="display:none;">';
+			echo '<p><label>' . esc_html__( 'Player Name', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
+			echo '<input type="text" class="oat-cc-player-name regular-text" autocomplete="off" /></label></p>';
+			echo '<p><label>' . esc_html__( 'Player Email', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
+			echo '<input type="email" class="oat-cc-player-email regular-text" autocomplete="off" /></label><br>';
+			echo '<span class="description">' . esc_html__( 'The email the player uses for their OWbN account. The character is linked to that account now, or the first time they sign in with that email.', 'owbn-archivist' ) . '</span></p>';
+			echo '<p><label><input type="checkbox" class="oat-cc-player-mine" /> ' . esc_html__( 'This is my character', 'owbn-archivist' ) . '</label></p>';
+			echo '</div>';
 			// Hidden inputs for storing values as entry meta.
 			echo '<input type="hidden" name="oat_meta_creature_genre" class="oat-cc-genre-val" />';
 			echo '<input type="hidden" name="oat_meta_creature_type" class="oat-cc-creature-type-val" />';
@@ -1040,6 +1049,11 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 							}
 							echo '<li>' . esc_html( $rlabel ) . '</li>';
 						}
+					} elseif ( function_exists( 'owc_oat_readonly_lookups' ) ) {
+						$known_rules = owc_oat_readonly_lookups()['rules'];
+						if ( isset( $known_rules[ (int) $item ] ) ) {
+							echo '<li>' . esc_html( $known_rules[ (int) $item ] ) . '</li>';
+						}
 					}
 				}
 				echo '</ul>';
@@ -1068,6 +1082,16 @@ function owc_oat_render_field_readonly( $field, $value = '' ) {
 		case 'character_picker':
 			$char_display = '';
 			$char_link_id = isset( $field['_character_id'] ) ? (int) $field['_character_id'] : 0;
+			$known_characters = function_exists( 'owc_oat_readonly_lookups' ) ? owc_oat_readonly_lookups()['characters'] : array();
+			if ( $value && ! class_exists( 'OAT_Character' ) && isset( $known_characters[ $value ] ) ) {
+				$known        = $known_characters[ $value ];
+				$char_display = (string) ( $known['name'] ?? '' );
+				$char_link_id = (int) ( $known['id'] ?? 0 );
+				if ( ! empty( $known['chronicle_slug'] ) ) {
+					$chron_title   = function_exists( 'owc_entity_get_title' ) ? owc_entity_get_title( 'chronicle', $known['chronicle_slug'] ) : '';
+					$char_display .= ' (' . ( $chron_title ? $chron_title : $known['chronicle_slug'] ) . ')';
+				}
+			}
 			if ( $value && class_exists( 'OAT_Character' ) ) {
 				$char = OAT_Character::find_by_uuid( $value );
 				if ( $char ) {
@@ -1176,6 +1200,7 @@ function owc_oat_sanitize_field( $field, $raw_value ) {
 			return $raw_value ? '1' : '';
 
 		case 'checkboxes':
+		case 'coordinator_checkboxes':
 			if ( is_array( $raw_value ) ) {
 				return wp_json_encode( array_map( 'sanitize_text_field', $raw_value ) );
 			}

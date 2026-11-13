@@ -175,10 +175,22 @@ function owc_oat_chronicle_report_rows( $scope, $filters, $pending_only ) {
     $prefix = $wpdb->prefix;
     $where  = "e.domain = 'chronicle_actions' AND e.form_slug = 'ca_reporting'";
     if ( empty( $scope['is_global'] ) ) {
-        if ( empty( $scope['chronicles'] ) ) {
+        // Own chronicles' reports, plus reports that flagged one of the viewer's Coordinator offices.
+        $in_scope = array();
+        if ( ! empty( $scope['chronicles'] ) ) {
+            $in_scope[] = "e.chronicle_slug IN ('" . implode( "','", array_map( 'esc_sql', $scope['chronicles'] ) ) . "')";
+        }
+        if ( ! empty( $scope['genres'] ) ) {
+            $flags = array();
+            foreach ( $scope['genres'] as $office ) {
+                $flags[] = $wpdb->prepare( 'm_flag.meta_value LIKE %s', '%' . $wpdb->esc_like( '"' . strtolower( $office ) . '"' ) . '%' );
+            }
+            $in_scope[] = "EXISTS (SELECT 1 FROM {$prefix}oat_entry_meta m_flag WHERE m_flag.entry_id = e.id AND m_flag.meta_key = 'notify_coordinators' AND (" . implode( ' OR ', $flags ) . '))';
+        }
+        if ( empty( $in_scope ) ) {
             return array();
         }
-        $where .= " AND e.chronicle_slug IN ('" . implode( "','", array_map( 'esc_sql', $scope['chronicles'] ) ) . "')";
+        $where .= ' AND (' . implode( ' OR ', $in_scope ) . ')';
     }
     if ( ! empty( $filters['chronicle'] ) ) {
         $where .= $wpdb->prepare( ' AND e.chronicle_slug = %s', $filters['chronicle'] );

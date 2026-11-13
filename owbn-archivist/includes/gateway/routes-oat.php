@@ -189,6 +189,27 @@ function owbn_gateway_register_oat_routes() {
         ),
     ) );
 
+    // Create a character from a remote site's create panel.
+    register_rest_route( $namespace, '/oat/registry/character/create', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_registry_create_character',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Character search for a remote site's character pickers, within the user's own scope.
+    register_rest_route( $namespace, '/oat/characters/search', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_characters_search',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    // Account search for a remote site's account pickers (returns archivist ids).
+    register_rest_route( $namespace, '/oat/users/search', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_users_search',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
     // ── Registry lazy-load (API key + user email) ─────────────────────
 
     // Section headers with counts for a scope.
