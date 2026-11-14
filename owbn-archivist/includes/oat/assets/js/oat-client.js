@@ -512,19 +512,40 @@
             // ── Chronicle search in create panel ──
             var $ccChronicle = $wrap.find('.oat-cc-chronicle');
             var $ccChronSlug = $wrap.find('.oat-cc-chronicle-slug');
-            // Reuse the inline chronicle data from any existing chronicle picker on the page.
+            // The chronicles to search: the inline list of a searchable chronicle picker on the page, else the
+            // options of the form's chronicle dropdown (shown instead of the search to anyone with 20 or fewer).
             var chronEntries = [];
             var $existingChronWrap = $('.oat-chronicle-autocomplete-wrap').first();
             if ($existingChronWrap.length) {
                 chronEntries = $existingChronWrap.data('entries') || [];
             }
+            if (!chronEntries.length) {
+                $('select[name="oat_meta_chronicle_slug"] option').each(function() {
+                    var v = $(this).val();
+                    if (v) {
+                        chronEntries.push({ value: v, label: $.trim($(this).text()) });
+                    }
+                });
+            }
+            // A typed or pasted name that matches a chronicle exactly (spacing and case aside) counts as picking it.
+            var squash = function(s) { return $.trim(String(s)).replace(/\s+/g, ' ').toLowerCase(); };
+            $ccChronicle.on('change blur', function() {
+                var typed = squash($ccChronicle.val());
+                $ccChronSlug.val('');
+                for (var i = 0; i < chronEntries.length; i++) {
+                    if (squash(chronEntries[i].label) === typed) {
+                        $ccChronSlug.val(chronEntries[i].value);
+                        break;
+                    }
+                }
+            });
             if (chronEntries.length) {
                 $ccChronicle.autocomplete({
                     source: function(request, response) {
-                        var term = request.term.toLowerCase();
+                        var term = squash(request.term);
                         var matches = [];
                         for (var i = 0; i < chronEntries.length; i++) {
-                            if (chronEntries[i].label.toLowerCase().indexOf(term) !== -1) {
+                            if (squash(chronEntries[i].label).indexOf(term) !== -1) {
                                 matches.push(chronEntries[i]);
                                 if (matches.length >= 20) break;
                             }
