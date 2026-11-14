@@ -118,6 +118,11 @@ function owc_oat_format_remote_timestamps( $data ) {
         unset( $t );
     }
 
+    // Format the send-back note's time.
+    if ( isset( $data['changes_note']['created_at'] ) ) {
+        $data['changes_note']['created_at'] = owc_oat_format_date( $data['changes_note']['created_at'] );
+    }
+
     // Format timer timestamps.
     if ( isset( $data['timer'] ) && is_array( $data['timer'] ) ) {
         foreach ( $ts_fields as $f ) {
@@ -563,18 +568,9 @@ function owc_oat_get_entry( $entry_id ) {
             );
         }
 
-        // Determine visibility tier.
-        $tier = OAT_Constants::TIER_STAFF;
-        if ( class_exists( 'OAT_Authorization' ) ) {
-            if ( OAT_Authorization::check( OAT_Constants::CAP_ARCHIVIST ) ) {
-                $tier = OAT_Constants::TIER_ARCHIVIST;
-            } elseif ( OAT_Authorization::check( OAT_Constants::CAP_COORD_REVIEW ) ) {
-                $tier = OAT_Constants::TIER_COORDINATOR;
-            }
-        }
-
-        // Timeline (tier-filtered).
-        $timeline_raw = OAT_Timeline::for_entry( $entry_id, $tier );
+        // Timeline: for the request's staff and up, to the tier their capabilities give them; players see none.
+        $tier         = owc_oat_entry_timeline_tier( $entry, $user_id );
+        $timeline_raw = '' === $tier ? array() : OAT_Timeline::for_entry( $entry_id, $tier );
         $timeline = array();
         foreach ( $timeline_raw as $t ) {
             $timeline[] = array(
@@ -638,6 +634,14 @@ function owc_oat_get_entry( $entry_id ) {
         foreach ( $watchers_raw as $w ) {
             $user_ids[] = (int) $w->user_id;
         }
+
+        // The latest send-back note, for the filer and the request's staff, while the request is back at Submission.
+        $changes_note = ( (int) $entry->originator_id === $user_id || '' !== $tier ) ? owc_oat_entry_changes_note( $entry ) : null;
+        if ( $changes_note ) {
+            $user_ids[]                 = $changes_note['actor_id'];
+            $changes_note['created_at'] = owc_oat_format_date( $changes_note['created_at'] );
+        }
+
         $user_ids = array_unique( array_filter( $user_ids ) );
         $user_map = array();
         foreach ( $user_ids as $uid ) {
@@ -685,6 +689,7 @@ function owc_oat_get_entry( $entry_id ) {
             'viewer_id'         => $user_id,
             'assignees'         => $assignees,
             'timeline'          => $timeline,
+            'changes_note'      => $changes_note,
             'rules'             => $rules,
             'timer'             => $timer,
             'bbp_eligible'      => $bbp_eligible,
@@ -1193,7 +1198,8 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
         $is_assignee = owc_oat_user_can_act_on_step( $entry, $user_id );
     }
 
-    if ( $is_assignee ) {
+    // Submission is the filer's own step: being assigned there (a request sent back) gives Resubmit, not a reviewer's buttons.
+    if ( $is_assignee && 'submit' !== $entry->current_step ) {
         $actions[] = 'approve';
         $actions[] = 'deny';
         $actions[] = 'request_changes';
@@ -1334,28 +1340,34 @@ function owc_oat_is_super_user( $user_id ) {
 }
 
 /**
- * Whether a user may see a request: site admins and the exec offices that oversee OAT, its filer, anyone ever
- * assigned to it, anyone holding its current step's role, its chronicle's staff, its Coordinator offices (including
- * offices flagged on a chronicle report), its character's player, and, for Disciplinary Actions, anyone holding a
- * staff, Coordinator or exec role, as on the Reports page.
+ * How a user reaches a request. 'staff': a site admin or an exec office that oversees OAT, anyone assigned to one of
+ * its review steps, anyone holding its current step's role, its chronicle's staff, its Coordinator offices (including
+ * offices flagged on a chronicle report) and, for Disciplinary Actions, anyone holding a staff, Coordinator or exec
+ * role, as on the Reports page. 'player': its filer, its character's player, or the person a player step (a User/
+ * role) is assigned to, when no staff path applies. '': neither.
  *
  * @param object $entry   Entry row.
  * @param int    $user_id WordPress user id.
- * @return bool
+ * @return string 'staff', 'player' or ''.
  */
-function owc_oat_user_can_view_entry( $entry, $user_id ) {
+function owc_oat_entry_access( $entry, $user_id ) {
     $user_id = (int) $user_id;
     if ( ! $entry || $user_id <= 0 ) {
-        return false;
+        return '';
     }
-    if ( (int) $entry->originator_id === $user_id || owc_oat_is_super_user( $user_id ) ) {
-        return true;
+    if ( owc_oat_is_super_user( $user_id ) ) {
+        return 'staff';
     }
+    $player = (int) $entry->originator_id === $user_id;
     if ( class_exists( 'OAT_Assignee' ) ) {
         foreach ( OAT_Assignee::for_entry( (int) $entry->id ) as $assignee ) {
-            if ( (int) $assignee->user_id === $user_id ) {
-                return true;
+            if ( (int) $assignee->user_id !== $user_id ) {
+                continue;
             }
+            if ( ! owc_oat_is_player_step( $entry, (string) $assignee->step ) ) {
+                return 'staff';
+            }
+            $player = true;
         }
     }
     if ( $user_id === get_current_user_id() && class_exists( 'OAT_Authorization' ) ) {
@@ -1363,7 +1375,7 @@ function owc_oat_user_can_view_entry( $entry, $user_id ) {
     }
     $roles = owc_oat_get_user_asc_roles( $user_id );
     if ( owc_oat_is_archivist_oversight( $roles ) || owc_oat_user_can_act_on_step( $entry, $user_id ) ) {
-        return true;
+        return 'staff';
     }
     $chronicle = strtolower( (string) $entry->chronicle_slug );
     $offices   = array();
@@ -1388,27 +1400,104 @@ function owc_oat_user_can_view_entry( $entry, $user_id ) {
     $is_da = 'disciplinary_actions' === $entry->domain;
     foreach ( $roles as $role ) {
         if ( 'exec/archivist/staff' === $role || preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin|membership)/coordinator$#', $role ) ) {
-            return true;
+            return 'staff';
         }
         if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|ast)$#', $role, $m ) ) {
             if ( ( '' !== $chronicle && $m[1] === $chronicle ) || ( $is_da && 'ast' !== $m[2] ) ) {
-                return true;
+                return 'staff';
             }
             continue;
         }
         if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#', $role, $m ) || preg_match( '#^exec/([^/]+)/coordinator$#', $role, $m ) ) {
             if ( $is_da || in_array( $m[1], $offices, true ) ) {
-                return true;
+                return 'staff';
             }
         }
     }
-    if ( ! empty( $entry->character_id ) && class_exists( 'OAT_Character' ) ) {
+    if ( ! $player && ! empty( $entry->character_id ) && class_exists( 'OAT_Character' ) ) {
         $character = OAT_Character::find( (int) $entry->character_id );
-        if ( $character && (int) $character->wp_user_id === $user_id ) {
-            return true;
-        }
+        $player    = $character && (int) $character->wp_user_id === $user_id;
     }
-    return false;
+    return $player ? 'player' : '';
+}
+
+/**
+ * Whether a user may see a request: owc_oat_entry_access() finds a way in.
+ *
+ * @param object $entry   Entry row.
+ * @param int    $user_id WordPress user id.
+ * @return bool
+ */
+function owc_oat_user_can_view_entry( $entry, $user_id ) {
+    return '' !== owc_oat_entry_access( $entry, $user_id );
+}
+
+/**
+ * Whether a step of a request belongs to a player rather than a reviewer: Submission and any other step with no
+ * role (a request sent back there is assigned to its filer), or a step assigned to one person by account (a User/
+ * role, as Binding Agreements' player comment step is).
+ *
+ * @param object $entry   Entry row.
+ * @param string $step_id Step id.
+ * @return bool
+ */
+function owc_oat_is_player_step( $entry, $step_id ) {
+    if ( 'submit' === (string) $step_id ) {
+        return true;
+    }
+    if ( ! class_exists( 'OAT_Workflow_Engine' ) ) {
+        return false;
+    }
+    $config = OAT_Workflow_Engine::get_step_config( $entry, $step_id );
+    $role   = is_array( $config ) && isset( $config['assignee_role'] ) ? trim( (string) $config['assignee_role'] ) : '';
+    return '' === $role || 0 === stripos( $role, 'user/' );
+}
+
+/**
+ * The most of a request's timeline a user sees: '' (none) when they reach the request only as a player, otherwise the
+ * archivist, coordinator or staff tier their capabilities give them.
+ *
+ * @param object $entry   Entry row.
+ * @param int    $user_id WordPress user id.
+ * @return string Tier, or '' for no timeline.
+ */
+function owc_oat_entry_timeline_tier( $entry, $user_id ) {
+    if ( ! class_exists( 'OAT_Constants' ) || 'staff' !== owc_oat_entry_access( $entry, $user_id ) ) {
+        return '';
+    }
+    if ( user_can( (int) $user_id, OAT_Constants::CAP_ARCHIVIST ) ) {
+        return OAT_Constants::TIER_ARCHIVIST;
+    }
+    if ( user_can( (int) $user_id, OAT_Constants::CAP_COORD_REVIEW ) ) {
+        return OAT_Constants::TIER_COORDINATOR;
+    }
+    return OAT_Constants::TIER_STAFF;
+}
+
+/**
+ * The latest send-back note on a request that is back at Submission (the same note its filer is emailed): note,
+ * actor id and time, or null.
+ *
+ * @param object $entry Entry row.
+ * @return array|null
+ */
+function owc_oat_entry_changes_note( $entry ) {
+    if ( ! $entry || 'submit' !== (string) $entry->current_step || ! class_exists( 'OAT_Timeline' ) ) {
+        return null;
+    }
+    global $wpdb;
+    $row = $wpdb->get_row( $wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}oat_timeline WHERE entry_id = %d AND action_type = 'request_changes' ORDER BY created_at DESC, id DESC LIMIT 1",
+        (int) $entry->id
+    ) );
+    if ( ! $row || '' === trim( (string) $row->note ) ) {
+        return null;
+    }
+    return array(
+        'note'       => (string) $row->note,
+        'actor_id'   => owc_oat_timeline_actor_id( $row ),
+        'created_at' => $row->created_at,
+    );
 }
 
 /**
@@ -1788,7 +1877,7 @@ function owc_oat_get_dashboard_counts( $user_id ) {
  */
 function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
     $user_id = (int) $user_id;
-    $limit   = max( 1, (int) $limit );
+    $limit   = min( 100, max( 1, (int) $limit ) );
     $domain  = sanitize_key( $domain );
 
     if ( owc_oat_is_local() ) {
@@ -1809,17 +1898,42 @@ function owc_oat_get_recent_activity( $user_id, $limit = 10, $domain = '' ) {
 
         $domain_clause = $domain ? $wpdb->prepare( "AND e.domain = %s", $domain ) : '';
 
-        $rows = $wpdb->get_results( $wpdb->prepare(
+        // Events are for the request's staff and up: the archivist tier sees every event, Coordinators staff- and
+        // coordinator-tier ones, everyone else staff-tier ones, and only on requests they reach as staff.
+        if ( user_can( $user_id, OAT_Constants::CAP_ARCHIVIST ) ) {
+            $tier_clause = '';
+        } elseif ( user_can( $user_id, OAT_Constants::CAP_COORD_REVIEW ) ) {
+            $tier_clause = "AND t.visibility_tier IN ('staff','coordinator')";
+        } else {
+            $tier_clause = "AND t.visibility_tier = 'staff'";
+        }
+
+        $candidates = $wpdb->get_results( $wpdb->prepare(
             "SELECT t.entry_id, e.domain, t.action_type, t.user_id AS actor_id, t.note, t.created_at
              FROM {$prefix}oat_timeline t
              INNER JOIN {$prefix}oat_entries e ON e.id = t.entry_id
              WHERE t.entry_id IN ({$entry_ids_sql})
-               AND t.visibility_tier IN ('public','player')
+               {$tier_clause}
                {$domain_clause}
              ORDER BY t.created_at DESC
              LIMIT %d",
-            $limit
+            $limit * 5
         ), ARRAY_A );
+
+        $rows     = array();
+        $is_staff = array();
+        foreach ( (array) $candidates as $row ) {
+            $eid = (int) $row['entry_id'];
+            if ( ! isset( $is_staff[ $eid ] ) ) {
+                $is_staff[ $eid ] = 'staff' === owc_oat_entry_access( OAT_Entry::find( $eid ), $user_id );
+            }
+            if ( $is_staff[ $eid ] ) {
+                $rows[] = $row;
+                if ( count( $rows ) >= $limit ) {
+                    break;
+                }
+            }
+        }
 
         if ( ! $rows ) {
             return array();

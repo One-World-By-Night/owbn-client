@@ -8,8 +8,8 @@ HSTs, staff e CMs veem as próprias crônicas; Coordenadores e Subcoordenadores 
 
 | Tela de relatórios | Tudo para |
 | --- | --- |
-| OAT Reports (todos os sites da OWbN) | Administradores do site, o Arquivista e a staff do Arquivista, o Coordenador de Membros |
-| Details (o site do Arquivista) | Os mesmos, mais o Coordenador-Chefe, os AHCs, o Coordenador de Web e o escritório Admin |
+| OAT Reports (todos os sites da OWbN) | Administradores do site, o Arquivista e a staff do Arquivista, o Coordenador de Membros, o Coordenador-Chefe, os AHCs, o Coordenador de Web e o escritório Admin |
+| Details (o site do Arquivista) | Os mesmos |
 
 Jogadores e ASTs não têm relatórios.
 

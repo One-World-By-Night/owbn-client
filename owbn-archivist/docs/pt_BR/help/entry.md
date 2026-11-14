@@ -29,7 +29,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 - **Actions** - os botões que você tem, cada um com uma caixa de nota.
 - **Assignees** - quem teve cada etapa, e o status de cada um.
 - **Linked Entries** - o pedido **Parent:** e os pedidos registrados a partir deste.
-- **Timeline** - cada ação, com quem a tomou, quando, e a nota. **Show Timeline** e **Hide Timeline** recolhem a linha do tempo.
+- **Timeline** - cada ação, com quem a tomou, quando, e a nota, para a staff do pedido, os Coordenadores e o Arquivista; um jogador vê o status e a etapa do pedido. **Show Timeline** e **Hide Timeline** recolhem a linha do tempo.
 
 ## Tarefas comuns
 
@@ -41,7 +41,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 
 ### Corrigir e reenviar um pedido devolvido a você
 
-1. Abra o pedido; a nota na Timeline diz o que mudar.
+1. Abra o pedido; o quadro **Changes Requested** no topo diz o que mudar. A mesma nota chega por email.
 2. Mude o que foi pedido, acrescente uma nota e clique em **Resubmit**.
 
 ### Passar um pedido para outra pessoa
@@ -58,7 +58,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 
 - Toda ação, menos Bump, precisa de uma nota.
 - **Bump** conta para os bumps que algumas etapas com prazo precisam antes de aprovar ou negar sozinhas. Só funciona enquanto a etapa tem um prazo ativo, e não muda o prazo.
-- A Timeline mostra a cada pessoa o que o papel dela permite: a staff vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo.
+- A Timeline mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem a Timeline.
 - O que acontece depois que você aprova depende do formulário; veja [Como um Pedido Anda](approval-flow.md).
 
 ## Solução de problemas

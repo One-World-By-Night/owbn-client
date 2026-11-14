@@ -313,6 +313,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$meta              = isset( $bundle['meta'] ) ? $bundle['meta'] : array();
 		$assignees         = isset( $bundle['assignees'] ) ? $bundle['assignees'] : array();
 		$timeline          = isset( $bundle['timeline'] ) ? $bundle['timeline'] : array();
+		$changes_note      = isset( $bundle['changes_note'] ) && is_array( $bundle['changes_note'] ) ? $bundle['changes_note'] : null;
 		$rules             = isset( $bundle['rules'] ) ? $bundle['rules'] : array();
 		$timer             = isset( $bundle['timer'] ) ? $bundle['timer'] : null;
 		$bbp_eligible      = isset( $bundle['bbp_eligible'] ) ? $bundle['bbp_eligible'] : false;
@@ -349,7 +350,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees, $viewer_id ); ?>
 
-			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map ); ?>
+			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note ); ?>
 
 			<?php echo $this->render_meta_grid( $entry, $user_map ); ?>
 
@@ -483,28 +484,34 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	/**
 	 * Render a banner when changes have been requested.
 	 *
-	 * Shows the most recent request_changes note prominently at the top.
+	 * Shows the most recent request_changes note prominently at the top: the request's send-back note when the
+	 * bundle carries one, else the latest request_changes event in the timeline.
 	 */
-	private function render_changes_requested_banner( $entry, $timeline, $user_map )
+	private function render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note = null )
 	{
 		// Only show when entry is back at submit step (sent back for changes).
 		$step = isset( $entry['current_step'] ) ? $entry['current_step'] : '';
-		if ( 'submit' !== $step || empty( $timeline ) ) {
+		if ( 'submit' !== $step || ( empty( $timeline ) && empty( $changes_note ) ) ) {
 			return '';
 		}
 
-		// Find the most recent request_changes event.
+		// The most recent request_changes note.
 		$note = '';
 		$actor = '';
 		$when = '';
-		foreach ( $timeline as $t ) {
-			$action = is_array( $t ) ? ( $t['action_type'] ?? '' ) : ( $t->action_type ?? '' );
-			if ( 'request_changes' === $action ) {
-				$note  = is_array( $t ) ? ( $t['note'] ?? '' ) : ( $t->note ?? '' );
-				$actor_id = is_array( $t ) ? ( $t['actor_id'] ?? 0 ) : ( $t->actor_id ?? 0 );
-				$actor = $this->resolve_user( $actor_id, $user_map );
-				$when  = is_array( $t ) ? ( $t['created_at'] ?? '' ) : ( $t->created_at ?? '' );
-				break; // Timeline is newest-first.
+		if ( ! empty( $changes_note['note'] ) ) {
+			$note  = (string) $changes_note['note'];
+			$actor = $this->resolve_user( isset( $changes_note['actor_id'] ) ? $changes_note['actor_id'] : 0, $user_map );
+			$when  = isset( $changes_note['created_at'] ) ? (string) $changes_note['created_at'] : '';
+		} else {
+			foreach ( $timeline as $t ) {
+				$action = is_array( $t ) ? ( $t['action_type'] ?? '' ) : ( $t->action_type ?? '' );
+				if ( 'request_changes' === $action ) {
+					$note  = is_array( $t ) ? ( $t['note'] ?? '' ) : ( $t->note ?? '' );
+					$actor_id = is_array( $t ) ? ( $t['actor_id'] ?? 0 ) : ( $t->actor_id ?? 0 );
+					$actor = $this->resolve_user( $actor_id, $user_map );
+					$when  = is_array( $t ) ? ( $t['created_at'] ?? '' ) : ( $t->created_at ?? '' );
+				}
 			}
 		}
 

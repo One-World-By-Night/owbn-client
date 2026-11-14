@@ -41,6 +41,7 @@ function owc_oat_page_entry() {
     $meta              = isset( $bundle['meta'] ) ? $bundle['meta'] : array();
     $assignees         = isset( $bundle['assignees'] ) ? $bundle['assignees'] : array();
     $timeline          = isset( $bundle['timeline'] ) ? $bundle['timeline'] : array();
+    $changes_note      = isset( $bundle['changes_note'] ) && is_array( $bundle['changes_note'] ) ? $bundle['changes_note'] : null;
     $rules             = isset( $bundle['rules'] ) ? $bundle['rules'] : array();
     $timer             = isset( $bundle['timer'] ) ? $bundle['timer'] : null;
     $bbp_eligible      = isset( $bundle['bbp_eligible'] ) ? $bundle['bbp_eligible'] : false;

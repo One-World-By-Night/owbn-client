@@ -7,6 +7,7 @@
  *   $meta              array  Key => value meta.
  *   $assignees         array  Assignee records.
  *   $timeline          array  Timeline events.
+ *   $changes_note      array|null  The latest send-back note while the request is back at Submission.
  *   $rules             array  Linked regulation rules.
  *   $timer             array|null  Active timer info.
  *   $bbp_eligible      bool   Whether BBP auto-approve is available.
@@ -43,6 +44,19 @@ function owc_oat_user_name( $uid, $map ) {
 
     <?php if ( $created ) : ?>
         <div class="notice notice-success"><p>Entry created successfully.</p></div>
+    <?php endif; ?>
+
+    <?php if ( ! empty( $changes_note['note'] ) && 'submit' === $current_step ) : ?>
+        <div class="notice notice-warning inline">
+            <p><strong>Changes Requested</strong></p>
+            <p><?php echo nl2br( esc_html( $changes_note['note'] ) ); ?></p>
+            <p class="description">
+                <?php echo esc_html( owc_oat_user_name( isset( $changes_note['actor_id'] ) ? $changes_note['actor_id'] : 0, $user_map ) ); ?>
+                <?php if ( ! empty( $changes_note['created_at'] ) ) : ?>
+                    &mdash; <?php echo esc_html( $changes_note['created_at'] ); ?>
+                <?php endif; ?>
+            </p>
+        </div>
     <?php endif; ?>
 
     <!-- Watch Toggle + Delete -->

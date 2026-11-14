@@ -41,7 +41,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 ### Follow your request
 
 1. Open it from your Archivist Inbox or Dashboard.
-2. **Step:** says where it is, **Assignees** says who has it, and the **Timeline** shows what has happened.
+2. **Step:** says where it is, **Assignees** says who has it, and the **Timeline** (for its staff and up) shows what has happened.
 
 ### Find what is waiting on you
 
@@ -58,13 +58,14 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 - An approved request shows under **Registry Entries** on the [Character Record](registry-detail.md). When the item belongs to a Coordinator office, the office gets access to the character.
 - **Hold** stops a request and its timer; **Resume** starts the timer again where it stopped.
 - A regulation rule marked **Elevated** stops a timed step from approving itself; a person has to act.
-- The Timeline shows each person what their part allows: staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything.
+- The Timeline shows each person what their part allows: the request's staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything. Players don't see the Timeline.
+- A send-back goes to the step before, passing over any step that didn't apply to the request.
 
 ## Troubleshooting
 
 - **My request has sat at a step for days.** Check **Assignees** on its page and ask them, or ask the Archivist.
 - **It skipped a step I expected.** That step doesn't apply to this request; for example, Coordinator Review only runs when the item needs a Coordinator.
-- **It came back to Submission.** Someone clicked Request Changes. Their note on the Timeline says what to change; fix it and click **Resubmit**.
+- **It came back to Submission.** Someone clicked Request Changes. Their note, in the **Changes Requested** box at the top of the request and in your email, says what to change; fix it and click **Resubmit**.
 
 ## Related
 

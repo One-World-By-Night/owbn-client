@@ -29,7 +29,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 - **Actions** - the buttons you have, each with a note box.
 - **Assignees** - who has had each step, and their status.
 - **Linked Entries** - the **Parent:** request and any requests filed from this one.
-- **Timeline** - every action, with who took it, when, and the note. **Show Timeline** and **Hide Timeline** fold it.
+- **Timeline** - every action, with who took it, when, and the note, for the request's staff, Coordinators and the Archivist; a player sees the request's status and step instead. **Show Timeline** and **Hide Timeline** fold it.
 
 ## Common tasks
 
@@ -41,7 +41,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 
 ### Fix and resubmit a request sent back to you
 
-1. Open the request; the note on the Timeline says what to change.
+1. Open the request; the **Changes Requested** box at the top says what to change. The same note comes by email.
 2. Change what's asked, add a note, and click **Resubmit**.
 
 ### Pass a request to someone else
@@ -58,7 +58,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 
 - Every action except Bump needs a note.
 - **Bump** counts toward the bumps some timed steps need before they approve or deny on their own. It works only while the step has an active timer, and it doesn't move the deadline.
-- The Timeline shows each person what their part allows: staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything.
+- The Timeline shows each person what their part allows: the request's staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything. Players don't see the Timeline.
 - What happens after you approve depends on the form; see [How a Request Moves](approval-flow.md).
 
 ## Troubleshooting

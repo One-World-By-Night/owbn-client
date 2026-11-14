@@ -41,7 +41,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 ### Acompanhar o seu pedido
 
 1. Abra-o pelo seu Archivist Inbox ou Dashboard.
-2. **Step:** diz onde ele está, **Assignees** diz com quem ele está, e a **Timeline** mostra o que já aconteceu.
+2. **Step:** diz onde ele está, **Assignees** diz com quem ele está, e a **Timeline** (para a staff dele e acima) mostra o que já aconteceu.
 
 ### Encontrar o que está esperando por você
 
@@ -58,13 +58,14 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 - Um pedido aprovado aparece em **Registry Entries** na [Ficha do Personagem](registry-detail.md). Quando o item pertence a um escritório de Coordenador, o escritório ganha acesso ao personagem.
 - **Hold** para um pedido e o prazo dele; **Resume** retoma o prazo de onde parou.
 - Uma regra de regulamentação marcada como **Elevated** impede uma etapa com prazo de se aprovar sozinha; uma pessoa tem de agir.
-- A Timeline mostra a cada pessoa o que o papel dela permite: a staff vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo.
+- A Timeline mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem a Timeline.
+- Uma devolução vai para a etapa anterior, passando por cima de qualquer etapa que não se aplicou ao pedido.
 
 ## Solução de problemas
 
 - **O meu pedido está parado em uma etapa há dias.** Confira **Assignees** na página dele e fale com essas pessoas, ou com o Arquivista.
 - **Ele pulou uma etapa que eu esperava.** Essa etapa não se aplica a este pedido; por exemplo, a Coordinator Review só acontece quando o item precisa de um Coordenador.
-- **Ele voltou para Submission.** Alguém clicou em Request Changes. A nota dessa pessoa na Timeline diz o que mudar; corrija e clique em **Resubmit**.
+- **Ele voltou para Submission.** Alguém clicou em Request Changes. A nota dessa pessoa, no quadro **Changes Requested** no topo do pedido e no seu email, diz o que mudar; corrija e clique em **Resubmit**.
 
 ## Relacionados
 

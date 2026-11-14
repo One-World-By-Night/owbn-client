@@ -7,6 +7,7 @@
  *   chronicle/<slug>/hst|cm|staff
  *   coordinator/<slug>/coordinator|sub-coordinator
  *   exec/<slug>/coordinator
+ *   exec/archivist/staff
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -31,7 +32,7 @@ function owc_oat_reports_has_access() {
         if ( preg_match( '#^coordinator/[^/]+/(coordinator|sub-coordinator)$#', $role ) ) {
             return true;
         }
-        if ( preg_match( '#^exec/[^/]+/coordinator$#', $role ) ) {
+        if ( preg_match( '#^exec/[^/]+/coordinator$#', $role ) || preg_match( '#^exec/archivist/staff$#i', $role ) ) {
             return true;
         }
     }
@@ -42,7 +43,8 @@ function owc_oat_reports_has_access() {
  * Get the user's scoped filters based on their ASC roles.
  *
  * Returns arrays of chronicle slugs and coordinator genres
- * the user has access to.  WP Admin, exec/archivist and exec/membership/coordinator see all.
+ * the user has access to. Site admins, exec/archivist/staff and the Archivist, Web, Head Coordinator, AHC1, AHC2,
+ * Admin and Membership coordinators see all, as on OAT's Details page.
  *
  * @return array { 'chronicles' => string[], 'genres' => string[], 'is_global' => bool }
  */
@@ -56,7 +58,7 @@ function owc_oat_reports_user_scope() {
     $is_global  = false;
 
     foreach ( $roles as $role ) {
-        if ( preg_match( '#^exec/(archivist/(coordinator|staff)|membership/coordinator)$#', $role ) ) {
+        if ( preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin|membership)/coordinator$#i', $role ) || preg_match( '#^exec/archivist/staff$#i', $role ) ) {
             $is_global = true;
             break;
         }

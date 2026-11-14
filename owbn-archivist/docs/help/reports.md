@@ -8,8 +8,8 @@ HSTs, staff and CMs see their own chronicles; Coordinators and Sub-Coordinators 
 
 | Report screen | Everything for |
 | --- | --- |
-| OAT Reports (every OWbN site) | Site admins, the Archivist and the Archivist's staff, the Membership Coordinator |
-| Details (the Archivist site) | The same, plus the Head Coordinator, the AHCs, the Web Coordinator and the Admin office |
+| OAT Reports (every OWbN site) | Site admins, the Archivist and the Archivist's staff, the Membership Coordinator, the Head Coordinator, the AHCs, the Web Coordinator and the Admin office |
+| Details (the Archivist site) | The same |
 
 Players and ASTs have no reports.
 
