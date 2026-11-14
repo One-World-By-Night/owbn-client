@@ -109,6 +109,39 @@ function owc_parse_asc_path(string $path): ?array
 }
 
 /**
+ * The cached registry list's entry for a chronicle, coordinator or exec office slug, read once per request.
+ *
+ * @param string $type chronicle, coordinator or exec.
+ * @param string $slug Entity slug.
+ * @return array|false|null The entry; false when the list was read and holds no such slug; null when the list could
+ *                          not be read.
+ */
+function owc_registry_list_entry(string $type, string $slug)
+{
+    static $index = [];
+
+    $list_type = 'chronicle' === $type ? 'chronicles' : 'coordinators';
+    if (!array_key_exists($list_type, $index)) {
+        $index[$list_type] = null;
+        $enabled = 'chronicles' === $list_type ? owc_chronicles_enabled() : owc_coordinators_enabled();
+        $list    = $enabled ? ('chronicles' === $list_type ? owc_get_chronicles() : owc_get_coordinators()) : null;
+        if (is_array($list) && $list) {
+            $index[$list_type] = [];
+            foreach ($list as $entry) {
+                if (is_array($entry) && isset($entry['slug']) && '' !== (string) $entry['slug']) {
+                    $index[$list_type][strtolower((string) $entry['slug'])] = $entry;
+                }
+            }
+        }
+    }
+
+    if (null === $index[$list_type]) {
+        return null;
+    }
+    return $index[$list_type][strtolower($slug)] ?? false;
+}
+
+/**
  * Resolve an AccessSchema path to entity data.
  *
  * @param string            $path         The ASC path (e.g. "chronicle/kony/cm").
@@ -127,16 +160,25 @@ function owc_resolve_asc_path(string $path, $fields = null, bool $with_suffix = 
     $slug = $parsed['slug'];
     $role = $parsed['role'];
 
-    switch ($type) {
-        case 'chronicle':
-            $data = owc_get_chronicle_detail($slug);
-            break;
-        case 'coordinator':
-        case 'exec':
-            $data = owc_get_coordinator_detail($slug);
-            break;
-        default:
+    if (!in_array($type, ['chronicle', 'coordinator', 'exec'], true)) {
+        return null;
+    }
+
+    // Requested fields the registry list already carries come from the one cached list, not a lookup per slug.
+    $data   = null;
+    $wanted = is_string($fields) ? [$fields] : (is_array($fields) ? $fields : null);
+    if (null !== $wanted) {
+        $entry = owc_registry_list_entry($type, $slug);
+        if (false === $entry) {
             return null;
+        }
+        if (is_array($entry) && !array_diff($wanted, array_keys($entry))) {
+            $data = $entry;
+        }
+    }
+
+    if (null === $data) {
+        $data = 'chronicle' === $type ? owc_get_chronicle_detail($slug) : owc_get_coordinator_detail($slug);
     }
 
     if (!$data || is_wp_error($data)) {

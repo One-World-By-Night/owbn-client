@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.12.8
+Stable tag: 1.12.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.12.9 =
+* Faster vote results on council: chronicle and coordinator titles come from the one cached registry list instead of one remote lookup per chronicle, and a chronicle the registry doesn't have costs no lookup at all. A council-sized results page went from 138 remote calls to 2 when its caches are cold, and none once they're warm.
 
 = 1.12.8 =
 * Added help for every OWbN plugin's wp-admin screens: a ? next to the screen's title opens that screen's help page in English or Portuguese, read from the plugin's own docs/help folder (also in the block editor's top bar).
