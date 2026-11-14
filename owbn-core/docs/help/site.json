@@ -1,0 +1,36 @@
+{
+	"id": "owbn-core",
+	"site": "https://support.owbn.net",
+	"category": { "slug": "owbn-client", "name": "OWBN Client" },
+	"slugPrefix": "owbn-client-",
+	"guides": {
+		"overview": "what-is-owbn-client"
+	},
+	"redirects": {
+		"owbn-client-for-web-admins": "owbn-client-settings-general",
+		"what-your-site-gets": "owbn-client-settings-data"
+	},
+	"screens": {
+		"page:owbn-owc-settings": {
+			"": "settings-general",
+			"general": "settings-general",
+			"owbn-menu": "settings-owbn-menu",
+			"chronicles": "settings-data",
+			"coordinators": "settings-data",
+			"territories": "settings-data",
+			"vote-history": "settings-data",
+			"player-id": "settings-player-id",
+			"oat": "settings-oat",
+			"accessschema": "settings-accessschema"
+		},
+		"page:owbn-owc-reports": {
+			"": "reports-chronicle-staff",
+			"chronicle-staff": "reports-chronicle-staff",
+			"conflicts": "reports-conflicts"
+		},
+		"page:owc-workspace-links": "workspace-links",
+		"screen:users": "users",
+		"screen:profile": "users",
+		"screen:user-edit": "users"
+	}
+}

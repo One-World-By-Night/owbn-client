@@ -66,6 +66,9 @@ if ( file_exists( __DIR__ . '/editor/init.php' ) ) {
 // ── UX Feedback ─────────────────────────────────────────────────────────────
 require_once __DIR__ . '/feedback/init.php';
 
+// Help panel on the wp-admin screens of plugins that ship docs/help/site.json.
+require_once __DIR__ . '/help/help.php';
+
 /**
  * Allow child plugins to register settings tabs.
  *

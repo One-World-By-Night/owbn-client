@@ -16,6 +16,22 @@ defined('ABSPATH') || exit;
  * @param string $url Raw URL value from settings form.
  * @return string Sanitized URL, or empty string if blocked.
  */
+/**
+ * A key field's saved value: the new key, or the stored one when the field was left empty or still shows the masked
+ * placeholder (dots and the key's last four characters).
+ *
+ * @param mixed  $new_val     Submitted value.
+ * @param string $option_name Option holding the key.
+ * @return string
+ */
+function owc_sanitize_secret( $new_val, $option_name ) {
+    $new_val = sanitize_text_field( (string) $new_val );
+    if ( '' === $new_val || false !== strpos( $new_val, "\u{25CF}" ) ) {
+        return (string) get_option( $option_name, '' );
+    }
+    return $new_val;
+}
+
 function owc_sanitize_remote_url( $url ) {
     $url = esc_url_raw( $url );
     if ( empty( $url ) ) {
@@ -132,8 +148,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = 'owbn_gateway_api_key';
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, 'owbn_gateway_auth_methods', [
@@ -179,8 +194,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = 'owbn_gateway_sso_api_key';
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, owc_option_name('remote_url'), [
@@ -191,8 +205,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, owc_option_name('enable_chronicles'), [
@@ -271,8 +284,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'chronicles_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, owc_option_name('chronicles_list_page'), [
@@ -302,8 +314,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'coordinators_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, owc_option_name('coordinators_list_page'), [
@@ -333,8 +344,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'territories_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
 
@@ -354,8 +364,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'votes_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
 
@@ -388,8 +397,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'oat_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
 
@@ -411,8 +419,7 @@ add_action('admin_init', function () {
         'type'              => 'string',
         'sanitize_callback' => function( $new_val ) {
             $option_name = owc_option_name( 'asc_remote_api_key' );
-            $new_val = sanitize_text_field( $new_val );
-            return $new_val !== '' ? $new_val : get_option( $option_name, '' );
+            return owc_sanitize_secret( $new_val, $option_name );
         },
     ]);
     register_setting($g, owc_option_name('asc_cache_ttl'), [

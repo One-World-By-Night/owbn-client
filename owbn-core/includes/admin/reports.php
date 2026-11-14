@@ -25,8 +25,8 @@ function owc_get_reports_tabs() {
 }
 
 function owc_render_reports_page() {
-    if ( ! is_user_logged_in() ) {
-        return;
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'owbn-core' ) );
     }
 
     $client_id  = owc_get_client_id();

@@ -32,12 +32,12 @@ add_action('admin_menu', function () {
         'owc_render_settings_page'
     );
 
-    // Reports — top-level menu, visible to any logged-in user.
+    // Reports — top-level menu for site admins (its reports list staff contact emails).
     $reports_slug = $client_id . '-owc-reports';
     add_menu_page(
         __('OWBN Reports', 'owbn-core'),
         __('Reports', 'owbn-core'),
-        'read',
+        'manage_options',
         $reports_slug,
         'owc_render_reports_page',
         'dashicons-chart-bar',
@@ -47,7 +47,7 @@ add_action('admin_menu', function () {
         $reports_slug,
         __('Chronicle Staff', 'owbn-core'),
         __('Chronicle Staff', 'owbn-core'),
-        'read',
+        'manage_options',
         $reports_slug,
         'owc_render_reports_page'
     );

@@ -230,7 +230,8 @@ function _owc_asc_batch_load_roles_remote() {
  * Render the ASC role filter dropdown above the Users table.
  */
 function owc_asc_users_filter_ui( $which ) {
-	if ( 'top' !== $which ) {
+	// On the accessSchema server's own site, its role filter is already on this screen.
+	if ( 'top' !== $which || function_exists( 'accessSchema_add_role' ) ) {
 		return;
 	}
 
@@ -256,6 +257,7 @@ function owc_asc_users_filter_ui( $which ) {
 		<?php endforeach; ?>
 	</select>
 	<?php
+	submit_button( __( 'Filter', 'owbn-core' ), '', 'owc_asc_filter', false );
 }
 add_action( 'restrict_manage_users', 'owc_asc_users_filter_ui' );
 
@@ -475,9 +477,12 @@ function owc_asc_handle_bulk_refresh( $redirect_url, $action, $user_ids ) {
 		return $redirect_url;
 	}
 
+	// AccessSchema answers about 60 lookups a minute per site, so one run refreshes at most 25 users.
+	$max       = 25;
 	$refreshed = 0;
+	$left      = max( 0, count( (array) $user_ids ) - $max );
 	if ( function_exists( 'owc_asc_refresh_user_roles' ) ) {
-		foreach ( $user_ids as $uid ) {
+		foreach ( array_slice( (array) $user_ids, 0, $max ) as $uid ) {
 			$result = owc_asc_refresh_user_roles( (int) $uid );
 			if ( ! is_wp_error( $result ) ) {
 				++$refreshed;
@@ -485,7 +490,7 @@ function owc_asc_handle_bulk_refresh( $redirect_url, $action, $user_ids ) {
 		}
 	}
 
-	return add_query_arg( 'owc_asc_refreshed', $refreshed, $redirect_url );
+	return add_query_arg( array( 'owc_asc_refreshed' => $refreshed, 'owc_asc_left' => $left ), $redirect_url );
 }
 add_filter( 'handle_bulk_actions-users', 'owc_asc_handle_bulk_refresh', 10, 3 );
 
@@ -498,12 +503,21 @@ function owc_asc_bulk_refresh_notice() {
 	}
 
 	$count = absint( $_GET['owc_asc_refreshed'] );
+	$left  = isset( $_GET['owc_asc_left'] ) ? absint( $_GET['owc_asc_left'] ) : 0;
+	$text  = sprintf(
+		_n( 'Refreshed ASC roles for %d user.', 'Refreshed ASC roles for %d users.', $count, 'owbn-core' ),
+		$count
+	);
+	if ( $left ) {
+		$text .= ' ' . sprintf(
+			_n( '%d more was not refreshed: refresh at most 25 users at a time.', '%d more were not refreshed: refresh at most 25 users at a time.', $left, 'owbn-core' ),
+			$left
+		);
+	}
 	printf(
-		'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-		esc_html( sprintf(
-			_n( 'Refreshed ASC roles for %d user.', 'Refreshed ASC roles for %d users.', $count, 'owbn-core' ),
-			$count
-		) )
+		'<div class="notice %s is-dismissible"><p>%s</p></div>',
+		$left ? 'notice-warning' : 'notice-success',
+		esc_html( $text )
 	);
 }
 add_action( 'admin_notices', 'owc_asc_bulk_refresh_notice' );

@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 1.12.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,17 @@ Provides shared functionality across all One World by Night sites:
 * Country/territory helpers
 
 == Changelog ==
+
+Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.12.8 =
+* Added help for every OWbN plugin's wp-admin screens: a ? next to the screen's title opens that screen's help page in English or Portuguese, read from the plugin's own docs/help folder (also in the block editor's top bar).
+* Fixed saving any settings tab wiping the API keys shown masked: a masked or empty key now keeps its saved value.
+* Fixed Generate making keys with Math.random: it now uses crypto.getRandomValues.
+* Fixed the Reports menu and page, which list staff emails, being open to every member: site admins only.
+* Fixed bulk Refresh ASC Roles pulling any number of users at once: at most 25 per run.
+* Fixed the Users list's ASC role filter having no Filter button, and showing twice on the accessSchema server's own site.
+* Corrected the help pages' account of where chronicles and coordinators are kept.
 
 = 1.9.0 =
 * Added Anonymize Post Author setting (General tab, default off). When enabled, new posts of non-excluded types insert with post_author=0; updates are untouched so admins can claim authorship via the metabox afterward. Revisions preserve edit history. Excluded types: attachment, revision, wo_client, bp_character, ticket, ticket_reply, ticket_history, owbn_chronicle, owbn_territory. Plugins can skip anonymization per-insert via the owc_anonymize_author_skip filter.

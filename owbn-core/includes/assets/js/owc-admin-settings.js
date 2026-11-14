@@ -13,9 +13,11 @@
     // ── Generate API key ────────────────────────────────────────────────
     $('#owbn_gateway_generate_key').on('click', function() {
         var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var bytes = new Uint8Array(48);
+        window.crypto.getRandomValues(bytes);
         var key = '';
-        for (var i = 0; i < 48; i++) {
-            key += chars.charAt(Math.floor(Math.random() * chars.length));
+        for (var i = 0; i < bytes.length; i++) {
+            key += chars.charAt(bytes[i] % chars.length);
         }
         $('#owbn_gateway_api_key').val(key);
     });

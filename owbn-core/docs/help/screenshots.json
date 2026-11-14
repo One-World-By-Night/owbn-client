@@ -1,0 +1,124 @@
+{
+	"site": "http://localhost:8921",
+	"viewport": {
+		"width": 1280,
+		"height": 900
+	},
+	"accounts": {
+		"archie": "Dana Whitfield, site admin"
+	},
+	"notes": "Captured from the archivist sandbox (~/owbn/_localwp-oat) after seed-help-shots.php: made-up people, chronicles and keys. OWBN Core's screens are English-only, so the Portuguese pages reuse these images with Portuguese alt text.",
+	"pages": {
+		"settings-general": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=general",
+				"account": "archie",
+				"height": 1300,
+				"alt": {
+					"en": "OWBN Core Settings on the General tab: the API Gateway section with Enable Gateway, Gateway Base URL, a masked API Key with Generate, Auth Methods, Domain Whitelist and Request Logging.",
+					"pt_BR": "OWBN Core Settings na aba General: a seção API Gateway com Enable Gateway, Gateway Base URL, uma API Key mascarada com Generate, Auth Methods, Domain Whitelist e Request Logging."
+				}
+			}
+		],
+		"settings-data": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=chronicles",
+				"account": "archie",
+				"alt": {
+					"en": "The Chronicles tab: Data Source with Local and Remote, the Remote URL and API Key overrides, the list and detail pages, Status and Search Data.",
+					"pt_BR": "A aba Chronicles: Data Source com Local e Remote, as substituições de Remote URL e API Key, as páginas de lista e de detalhe, Status e Search Data."
+				}
+			}
+		],
+		"settings-oat": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=oat",
+				"account": "archie",
+				"alt": {
+					"en": "The OAT tab: Data Source with Local and Remote, the Remote URL and API Key overrides, and Status.",
+					"pt_BR": "A aba OAT: Data Source com Local e Remote, as substituições de Remote URL e API Key, e Status."
+				}
+			}
+		],
+		"settings-player-id": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=player-id",
+				"account": "archie",
+				"alt": {
+					"en": "The Player ID tab: Mode with Server and Client, the SSO Server URL, and Status.",
+					"pt_BR": "A aba Player ID: Mode com Server e Client, a SSO Server URL e Status."
+				}
+			}
+		],
+		"settings-accessschema": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=accessschema",
+				"account": "archie",
+				"alt": {
+					"en": "The accessSchema tab: Mode with Local and Remote, Server URL, a masked API Key, Role Cache TTL, Status with the roles cache and Registered Clients, and Search Data.",
+					"pt_BR": "A aba accessSchema: Mode com Local e Remote, Server URL, uma API Key mascarada, Role Cache TTL, Status com o cache de cargos e Registered Clients, e Search Data."
+				}
+			}
+		],
+		"settings-owbn-menu": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=owbn-menu",
+				"account": "archie",
+				"alt": {
+					"en": "The OWBN Menu tab: the admin bar links, each with a Title, a URL and a remove button, then + Add Link, Save Links and a Preview.",
+					"pt_BR": "A aba OWBN Menu: os links da barra de administração, cada um com Title, URL e um botão de remover, e depois + Add Link, Save Links e uma Preview."
+				}
+			}
+		],
+		"reports-chronicle-staff": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-reports&tab=chronicle-staff",
+				"account": "archie",
+				"alt": {
+					"en": "The Chronicle Staff report, By Chronicle: the filters, then one row per chronicle with its HST, CM, their emails, Prob, Sat and the CM role holder, coloured by match.",
+					"pt_BR": "O relatório Chronicle Staff, By Chronicle: os filtros e uma linha por crônica com o HST, o CM, os emails deles, Prob, Sat e quem tem o cargo de CM, coloridos pela correspondência."
+				}
+			}
+		],
+		"reports-conflicts": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owbn-owc-reports&tab=conflicts",
+				"account": "archie",
+				"alt": {
+					"en": "The Conflicts report with Refresh Data and the list of accounts holding more than one staff position.",
+					"pt_BR": "O relatório Conflicts com Refresh Data e a lista de contas com mais de um cargo de staff."
+				}
+			}
+		],
+		"workspace-links": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/admin.php?page=owc-workspace-links",
+				"account": "archie",
+				"alt": {
+					"en": "Workspace Links: the Resources, Bylaws and Voting groups, each with its links' labels and addresses, and Save Workspace Links.",
+					"pt_BR": "Workspace Links: os grupos Resources, Bylaws e Voting, cada um com os rótulos e endereços dos seus links, e Save Workspace Links."
+				}
+			}
+		],
+		"users": [
+			{
+				"heading": "The screen",
+				"path": "/wp-admin/users.php",
+				"account": "archie",
+				"alt": {
+					"en": "The Users list with the ASC Roles and Player ID columns and the Filter by ASC role menu.",
+					"pt_BR": "A lista Users com as colunas ASC Roles e Player ID e o menu Filter by ASC role."
+				}
+			}
+		]
+	}
+}
