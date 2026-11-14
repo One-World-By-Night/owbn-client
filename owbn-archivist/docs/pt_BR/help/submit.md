@@ -4,7 +4,7 @@ Onde você registra um pedido com o Arquivista: R&U, conteúdo personalizado, o 
 
 ## Quem pode usar
 
-Qualquer pessoa com login. Quais personagens você pode escolher depende de quem você é: um jogador escolhe os próprios personagens, a staff escolhe os da sua crônica, e os Coordenadores e o Arquivista escolhem entre todos. Só HSTs, Coordenadores, os escritórios executivos e administradores do site podem criar um personagem aqui. Veja [Quem Pode Fazer o Quê](roles.md).
+Qualquer pessoa com login. Quais personagens você pode escolher depende de quem você é: um jogador escolhe os próprios personagens, a staff escolhe os da sua crônica, e os Coordenadores e o Arquivista escolhem entre todos. Jogadores, a staff das crônicas (HST, ST, CM e AST), Coordenadores, os escritórios executivos e administradores do site podem criar um personagem aqui: a staff nas próprias crônicas, um jogador só o próprio PC na sua crônica. Veja [Quem Pode Fazer o Quê](roles.md).
 
 ## Como chegar
 
@@ -17,8 +17,8 @@ Qualquer pessoa com login. Quais personagens você pode escolher depende de quem
 - **Form** - o pedido em si, quando o domínio tem mais de um. Os campos do formulário carregam abaixo.
 - **Os campos do formulário** - mudam de formulário para formulário; cada formulário tem a sua página de ajuda, listada em [Relacionados](#relacionados).
 - **Character Name** (nos formulários sobre um personagem) - procure o personagem pelo nome; **(clear)** recomeça.
-- **Create New Character** (HSTs, Coordenadores, os escritórios executivos e administradores do site) - para um personagem que o registro ainda não tem. Abre um painel:
-  - **Character Name**, **Home Chronicle** e **PC / NPC**, todos obrigatórios.
+- **Create New Character** (jogadores, a staff das crônicas, Coordenadores, os escritórios executivos e administradores do site) - para um personagem que o registro ainda não tem. Abre um painel:
+  - **Character Name**, **Home Chronicle** e **PC / NPC**, todos obrigatórios. **Home Chronicle** oferece as crônicas a que você pertence. O painel de um jogador não tem a escolha PC / NPC: cria o PC dele, com o nome e o email dele.
   - **Coordinator Office (owns this NPC)** - só Coordenadores; escolha o seu escritório para registrar um NPC que ele controla, sem crônica.
   - **Genre**, **Faction**, **Creature Type** e **Variant**.
   - **Player Name** e **Player Email** - obrigatórios para um PC: o jogador que o joga, e o email da conta dele na OWbN. **This is my character** preenche o seu próprio nome e email.
@@ -37,13 +37,20 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 3. Preencha os campos do formulário.
 4. Clique em **Submit Request**.
 
-### Registrar um pedido para um personagem que o registro não tem (HST)
+### Registrar um pedido para um personagem que o registro não tem (staff)
 
 1. Escolha o Domain e o Form.
 2. Clique em **Create New Character**.
 3. Preencha Character Name, Home Chronicle, as listas de criatura e **PC / NPC**.
 4. Para um PC, preencha **Player Name** e **Player Email** do jogador. Se ele tem conta na OWbN, o personagem é vinculado a ela agora; se não tem, ele se vincula sozinho na primeira vez que a conta dele chega ao site do Arquivista.
 5. Clique em **Create Character**, depois termine o formulário e clique em **Submit Request**.
+
+### Registrar o seu próprio PC novo (jogador)
+
+1. Escolha o Domain e o Form.
+2. Clique em **Create New Character**.
+3. Preencha Character Name, escolha a sua crônica em Home Chronicle e preencha as listas de criatura.
+4. Clique em **Create Character**, depois termine o formulário e clique em **Submit Request**.
 
 ### Registrar um NPC que o seu escritório controla (Coordenador)
 
@@ -65,7 +72,9 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 - **"A PC needs its player's name and email."** Preencha Player Name e Player Email, ou marque This is my character se o PC é seu.
 - **"That player email doesn't look right."** Confira se o email tem erro de digitação.
 - **"Choose a Home Chronicle, or select a Coordinator Office for an office NPC."** Escolha a crônica do personagem; um NPC de escritório precisa do seu escritório.
-- **"You do not have permission to create characters."** Só HSTs, Coordenadores, os escritórios executivos e administradores do site criam personagens. Fale com o seu HST.
+- **"You do not have permission to create characters."** Jogadores, a staff das crônicas, Coordenadores, os escritórios executivos e administradores do site criam personagens. Se o seu cargo ainda não chegou ao OAT, saia e entre de novo.
+- **"You can only create characters in a chronicle you belong to."** Escolha uma crônica em que você é jogador ou staff; para outra crônica, fale com o HST dela.
+- **"Only staff can create NPCs."** Jogadores criam os próprios PCs; peça um NPC ao seu HST.
 - **O personagem de que preciso não aparece na busca.** Não é um personagem para o qual você pode registrar pedidos: um jogador só vê os próprios personagens e a staff só os da sua crônica. O HST dele ou um Coordenador pode registrar.
 
 ## Relacionados

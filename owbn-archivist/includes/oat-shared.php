@@ -209,13 +209,72 @@ if ( ! function_exists( 'owc_oat_search_link_users' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_create_scope' ) ) :
+	/**
+	 * How far the current user may create characters in a chronicle: 'any' for site admins, exec offices and
+	 * Coordinators; 'staff' for the chronicle's HST, CM, staff or AST; 'player' for a player there (their own PC only);
+	 * '' for anyone else.
+	 *
+	 * @param string $chronicle_slug Chronicle slug.
+	 * @return string
+	 */
+	function owc_oat_create_scope( $chronicle_slug ) {
+		$user_id = get_current_user_id();
+		if ( ! $user_id ) {
+			return '';
+		}
+		if ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) {
+			return 'any';
+		}
+		$slug  = strtolower( (string) $chronicle_slug );
+		$scope = '';
+		$roles = function_exists( 'owc_oat_get_user_asc_roles' ) ? owc_oat_get_user_asc_roles( $user_id ) : array();
+		foreach ( (array) $roles as $role ) {
+			$role = strtolower( (string) $role );
+			if ( preg_match( '#^exec/[^/]+/coordinator$#', $role ) || preg_match( '#^coordinator/[^/]+/(coordinator|sub-coordinator)$#', $role ) ) {
+				return 'any';
+			}
+			if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|st|ast)$#', $role, $m ) && $m[1] === $slug ) {
+				$scope = 'staff';
+			} elseif ( '' === $scope && 'chronicle/' . $slug . '/player' === $role ) {
+				$scope = 'player';
+			}
+		}
+		return $scope;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_creates_own_pc_only' ) ) :
+	/**
+	 * Whether the current user may only create their own PC: they hold no staff, exec or Coordinator role and aren't
+	 * a site admin.
+	 *
+	 * @return bool
+	 */
+	function owc_oat_creates_own_pc_only() {
+		$user_id = get_current_user_id();
+		if ( ! $user_id || ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) ) {
+			return false;
+		}
+		$roles = function_exists( 'owc_oat_get_user_asc_roles' ) ? owc_oat_get_user_asc_roles( $user_id ) : array();
+		foreach ( (array) $roles as $role ) {
+			if ( preg_match( '#^(exec/[^/]+/coordinator|coordinator/[^/]+/(coordinator|sub-coordinator)|chronicle/[^/]+/(hst|cm|staff|st|ast))$#', strtolower( (string) $role ) ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 	/**
 	 * Creates a character for the current user from the create panel's fields.
 	 *
 	 * A PC needs its player's name and email; it is linked to the archivist account with that
 	 * email when one exists and left unlinked otherwise. An NPC has no player. A Coordinator
-	 * office NPC needs the user to hold that office.
+	 * office NPC needs the user to hold that office. A chronicle character needs the user to
+	 * belong to that chronicle (owc_oat_create_scope()); a player there creates only their own
+	 * PC, under their own name and email.
 	 *
 	 * @param array $input character_name, chronicle_slug, pc_npc, npc_coordinator, player_name,
 	 *                     player_email, creature_genre, creature_sub_type, creature_type, creature_variant.
@@ -263,6 +322,18 @@ if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 		} elseif ( '' === $chronicle_slug ) {
 			return new WP_Error( 'invalid', __( 'Choose a Home Chronicle, or a Coordinator office for an office NPC.', 'owbn-archivist' ) );
 		} else {
+			$scope = owc_oat_create_scope( $chronicle_slug );
+			if ( '' === $scope ) {
+				return new WP_Error( 'forbidden', __( 'You can only create characters in a chronicle you belong to.', 'owbn-archivist' ) );
+			}
+			if ( 'player' === $scope ) {
+				if ( 'npc' === $pc_npc ) {
+					return new WP_Error( 'forbidden', __( 'Only staff can create NPCs.', 'owbn-archivist' ) );
+				}
+				$me                    = wp_get_current_user();
+				$input['player_name']  = $me->display_name;
+				$input['player_email'] = $me->user_email;
+			}
 			$data['chronicle_slug'] = $chronicle_slug;
 			if ( 'npc' === $pc_npc ) {
 				$data['npc_type'] = 'chronicle';

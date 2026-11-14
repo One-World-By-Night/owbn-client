@@ -14,10 +14,10 @@ This is a reference page; the other OAT help pages link here. Your roles are set
 
 | Role | In OAT |
 | --- | --- |
-| Player (any signed-in member) | Submit requests for your own characters. See your linked characters under My Characters. Retire your own PC by changing its Status |
-| HST | Everything a player can. Submit requests as staff for your chronicle's characters, and create a character while submitting. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Review the requests a workflow step gives your chronicle's staff. See your chronicle's reports |
-| Staff (ST) or CM | The same as the HST, except creating characters |
-| AST | Everything a player can. Submit requests as staff for your chronicle's characters. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. No reviews, no reports and no creating characters |
+| Player (any signed-in member) | Submit requests for your own characters, and create your own PC in your chronicle while submitting. See your linked characters under My Characters. Retire your own PC by changing its Status |
+| HST | Everything a player can. Submit requests as staff for your chronicle's characters, and create a character in your chronicle while submitting. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Review the requests a workflow step gives your chronicle's staff. See your chronicle's reports |
+| Staff (ST) or CM | The same as the HST, except reviews: workflow steps go to the HST, and to the CM on Player Actions |
+| AST | Everything a player can. Submit requests as staff for your chronicle's characters. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Create characters in your chronicle. No reviews and no reports |
 | Coordinator | Review the items a workflow step gives your office. See the characters granted to your office, starting with the items your office owns (Show All adds the rest). Change every field on your office's NPCs. Create characters and office NPCs. See your office's reports |
 | Sub-Coordinator | The same as the Coordinator, except creating characters |
 | Archivist (and the Archivist's Sub-Coordinator) | See every character and change every field on it. Revoke grants. Act on the Archivist steps of requests. See every report |
@@ -47,7 +47,7 @@ This is a reference page; the other OAT help pages link here. Your roles are set
 
 ## Troubleshooting
 
-- **"You do not have permission to create characters."** Only HSTs, Coordinators and the exec offices create characters. Ask your HST.
+- **"You do not have permission to create characters."** Players, chronicle staff, Coordinators and the exec offices create characters; Sub-Coordinators don't. If your role hasn't reached OAT yet, sign out and back in.
 - **"You do not have permission to view this character."** The character isn't linked to you and isn't granted to your chronicle or office.
 - **A tab or section you expect is empty.** Your account may not hold the role yet. Sign out and back in; if it is still empty, ask whoever gives that role.
 

@@ -28,6 +28,7 @@ Three tabs:
 ## Things to know
 
 - Site admins can always create characters, whatever the list says.
+- The list says who may create at all. Where: staff only in chronicles they're staff of, and a player only their own PC in their own chronicle; Coordinators and the exec offices anywhere.
 - Other OWbN sites read this list through the Archivist site and keep a copy for five minutes. If they can't reach it, nobody but site admins can create characters there until they can.
 
 ## Troubleshooting

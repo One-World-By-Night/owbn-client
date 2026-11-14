@@ -664,19 +664,26 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<p class="oat-creature-variant-wrap"><label>' . esc_html__( 'Variant', 'owbn-archivist' ) . '<br>';
 			echo '<select name="creature_variant" class="oat-cc-variant" style="width:100%;"></select></label></p>';
 			echo '</div>';
-			// PC / NPC designation (D-056, required for regulation level matching).
-			echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
-			echo '<select class="oat-cc-pc-npc">';
-			echo '<option value="">' . esc_html__( '-- Select --', 'owbn-archivist' ) . '</option>';
-			echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-archivist' ) . '</option>';
-			echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-archivist' ) . '</option>';
-			echo '</select></label></p>';
-			// Player of a PC: name and email; the PC links to the account with that email.
+			// PC / NPC designation (D-056, required for regulation level matching). A player creates only their own PC.
+			$own_only = function_exists( 'owc_oat_creates_own_pc_only' ) && owc_oat_creates_own_pc_only();
+			if ( $own_only ) {
+				$me = wp_get_current_user();
+				echo '<input type="hidden" class="oat-cc-pc-npc" value="pc" />';
+				echo '<p class="description">' . esc_html__( 'This creates your own PC, under your name and email.', 'owbn-archivist' ) . '</p>';
+			} else {
+				echo '<p><label>' . esc_html__( 'PC / NPC', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
+				echo '<select class="oat-cc-pc-npc">';
+				echo '<option value="">' . esc_html__( '-- Select --', 'owbn-archivist' ) . '</option>';
+				echo '<option value="pc">' . esc_html__( 'PC (Player Character)', 'owbn-archivist' ) . '</option>';
+				echo '<option value="npc">' . esc_html__( 'NPC (Non-Player Character)', 'owbn-archivist' ) . '</option>';
+				echo '</select></label></p>';
+			}
+			// Player of a PC: name and email; the PC links to the account with that email. A player's own are filled in.
 			echo '<div class="oat-cc-player-fields" style="display:none;">';
 			echo '<p><label>' . esc_html__( 'Player Name', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
-			echo '<input type="text" class="oat-cc-player-name regular-text" autocomplete="off" /></label></p>';
+			echo '<input type="text" class="oat-cc-player-name regular-text" autocomplete="off" value="' . ( $own_only ? esc_attr( $me->display_name ) : '' ) . '" /></label></p>';
 			echo '<p><label>' . esc_html__( 'Player Email', 'owbn-archivist' ) . ' <span class="required">*</span><br>';
-			echo '<input type="email" class="oat-cc-player-email regular-text" autocomplete="off" /></label><br>';
+			echo '<input type="email" class="oat-cc-player-email regular-text" autocomplete="off" value="' . ( $own_only ? esc_attr( $me->user_email ) : '' ) . '" /></label><br>';
 			echo '<span class="description">' . esc_html__( 'The email the player uses for their OWbN account. The character is linked to that account now, or the first time they sign in with that email.', 'owbn-archivist' ) . '</span></p>';
 			echo '<p><label><input type="checkbox" class="oat-cc-player-mine" /> ' . esc_html__( 'This is my character', 'owbn-archivist' ) . '</label></p>';
 			echo '</div>';

@@ -698,13 +698,13 @@
                     creature_variant: $ccVariant.val() || ''
                 }, function(response) {
                     if (response.success && response.data) {
-                        selectCharacter(response.data.uuid, response.data.character_name, pcNpc);
+                        selectCharacter(response.data.uuid, response.data.character_name, pcNpc, response.data.chronicle_slug || '');
                         syncHiddenVals();
                         // Reset and hide create panel.
                         $wrap.find('.oat-character-create-panel').hide();
                         $wrap.find('.oat-cc-name').val('');
-                        $ccPlayerName.val('');
-                        $ccPlayerEmail.val('');
+                        $ccPlayerName.val($ccPlayerName.prop('defaultValue'));
+                        $ccPlayerEmail.val($ccPlayerEmail.prop('defaultValue'));
                         $ccMine.prop('checked', false);
                     } else {
                         alert(ccText('error', 'Error') + ': ' + (response.data || ''));

@@ -28,6 +28,7 @@ Três abas:
 ## Bom saber
 
 - Administradores do site sempre podem criar personagens, diga a lista o que disser.
+- A lista diz quem pode criar. Onde: a staff só nas crônicas em que é staff, e um jogador só o próprio PC na própria crônica; Coordenadores e os escritórios executivos em qualquer uma.
 - Os outros sites da OWbN leem esta lista pelo site do Arquivista e guardam uma cópia por cinco minutos. Se não conseguem lê-la, ninguém além dos administradores do site cria personagens ali até conseguirem.
 
 ## Solução de problemas
