@@ -21,7 +21,7 @@ This is a reference page. Each OAT help page also ends with its own troubleshoot
 | My request has sat at a step for days | Nobody is emailed when a request reaches them. See [How a Request Moves](approval-flow.md#troubleshooting) |
 | I have no buttons on a request | The current step isn't yours. See [A Request's Page](entry.md#troubleshooting) |
 | "You do not have access to this request." | The request isn't part of your work. See [A Request's Page](entry.md#who-can-use-this) |
-| "You do not have permission to create characters." | Only HSTs, Coordinators and the exec offices create them. See [Submit a Request](submit.md#troubleshooting) |
+| "You do not have permission to create characters." | Players, chronicle staff, Coordinators and the exec offices create them: staff in their own chronicles, a player only their own PC. See [Submit a Request](submit.md#troubleshooting) |
 | "A PC needs its player's name and email." | Fill in the player's name and email. See [Submit a Request](submit.md#troubleshooting) |
 | "Submission failed. Please check the form and try again." | A required field is empty. See the form's own page from [Submit a Request](submit.md#related) |
 | "No account matches that." | Nobody has an account with that name or email yet. See [Character Record](registry-detail.md#troubleshooting) |

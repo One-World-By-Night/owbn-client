@@ -21,7 +21,7 @@ Esta é uma página de referência. Cada página de ajuda do OAT também termina
 | O meu pedido está parado em uma etapa há dias | Ninguém recebe email quando um pedido chega a ele. Veja [Como um Pedido Anda](approval-flow.md#solução-de-problemas) |
 | Não tenho botões em um pedido | A etapa atual não é sua. Veja [A Página de um Pedido](entry.md#solução-de-problemas) |
 | "You do not have access to this request." | O pedido não faz parte do seu trabalho. Veja [A Página de um Pedido](entry.md#quem-pode-usar) |
-| "You do not have permission to create characters." | Só HSTs, Coordenadores e os escritórios executivos criam personagens. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |
+| "You do not have permission to create characters." | Jogadores, a staff das crônicas, Coordenadores e os escritórios executivos criam personagens: a staff nas próprias crônicas, um jogador só o próprio PC. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |
 | "A PC needs its player's name and email." | Preencha o nome e o email do jogador. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |
 | "Submission failed. Please check the form and try again." | Um campo obrigatório está vazio. Veja a página do formulário a partir de [Fazer um Pedido](submit.md#relacionados) |
 | "No account matches that." | Ninguém tem uma conta com esse nome ou email ainda. Veja [Ficha do Personagem](registry-detail.md#solução-de-problemas) |
