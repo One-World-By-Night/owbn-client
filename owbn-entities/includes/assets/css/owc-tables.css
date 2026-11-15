@@ -104,7 +104,9 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .owc-list-header {
+    .owc-list-header,
+    .elementor-widget-container .owc-list-header,
+    .elementor-widget .owc-list-header {
         display: none;
     }
     

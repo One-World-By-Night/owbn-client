@@ -38,11 +38,7 @@ function owc_render_chronicles_list(array $chronicles): string
 
     ob_start();
 ?>
-    <div class="owc-chronicles-filters">
-        <?php echo owc_render_chronicles_filters($chronicles); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
-        <input type="search" id="owc-filter-search" class="owc-filter-input" placeholder="<?php esc_attr_e('Search name, state or city', 'owbn-entities'); ?>" aria-label="<?php esc_attr_e('Search name, state or city', 'owbn-entities'); ?>" data-column="0,3,4">
-        <button type="button" id="owc-clear-filters" class="owc-clear-filters"><?php esc_html_e('Clear', 'owbn-entities'); ?></button>
-    </div>
+    <?php echo owc_render_chronicles_filter_bar($chronicles); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
 
     <div class="owc-chronicles-list">
         <div class="owc-list-header">
@@ -211,6 +207,70 @@ function owc_list_country(array $chronicle): string
 }
 
 /**
+ * A chronicle's first out-of-character location (stored as one location or a list of them).
+ *
+ * @param array $chronicle Chronicle data.
+ * @return array
+ */
+function owc_chronicle_ooc(array $chronicle): array
+{
+    $ooc = $chronicle['ooc_locations'] ?? [];
+    if (is_array($ooc) && isset($ooc[0]) && is_array($ooc[0])) {
+        $ooc = $ooc[0];
+    }
+    return is_array($ooc) ? $ooc : [];
+}
+
+/**
+ * The data a Find a Game row carries for its dropdown filters: genre tokens, region, country, game type, language.
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string HTML attributes, escaped.
+ */
+function owc_chronicle_row_data_attrs(array $chronicle): string
+{
+    $genres = $chronicle['genres'] ?? [];
+    return 'data-genres="' . esc_attr('|' . implode('|', array_keys(owc_list_genre_tokens(is_array($genres) ? $genres : [$genres]))) . '|') . '"'
+        . ' data-region="' . esc_attr(strtolower(trim((string) ($chronicle['chronicle_region'] ?? '')))) . '"'
+        . ' data-country="' . esc_attr(strtolower(owc_list_country($chronicle))) . '"'
+        . ' data-type="' . esc_attr(strtolower(trim((string) ($chronicle['game_type'] ?? '')))) . '"'
+        . ' data-language="' . esc_attr(owc_chronicle_language($chronicle)) . '"';
+}
+
+/**
+ * A Find a Game row's Type cell: the game type with its platform when known, and the players under it.
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string HTML, escaped; '' when there is nothing to show.
+ */
+function owc_chronicle_type_cell_html(array $chronicle): string
+{
+    $html    = esc_html(owc_chronicle_game_type_text($chronicle));
+    $players = trim((string) ($chronicle['active_player_count'] ?? ''));
+    if ('' !== $players) {
+        /* translators: %s: rough number of active players, e.g. 21-30 */
+        $html .= ' <span class="owc-players">' . esc_html(sprintf(__('%s players', 'owbn-entities'), $players)) . '</span>';
+    }
+    return trim($html);
+}
+
+/**
+ * Find a Game's filter bar: the dropdowns, one search box over the given columns, and Clear.
+ *
+ * @param array  $chronicles     The chronicles listed.
+ * @param string $search_columns Comma-separated positions of the name, state and city columns in each row.
+ * @return string HTML.
+ */
+function owc_render_chronicles_filter_bar(array $chronicles, string $search_columns = '0,3,4'): string
+{
+    return '<div class="owc-chronicles-filters">'
+        . owc_render_chronicles_filters($chronicles)
+        . '<input type="search" id="owc-filter-search" class="owc-filter-input" placeholder="' . esc_attr__('Search name, state or city', 'owbn-entities') . '" aria-label="' . esc_attr__('Search name, state or city', 'owbn-entities') . '" data-column="' . esc_attr($search_columns) . '">'
+        . '<button type="button" id="owc-clear-filters" class="owc-clear-filters">' . esc_html__('Clear', 'owbn-entities') . '</button>'
+        . '</div>';
+}
+
+/**
  * Render single chronicle row.
  *
  * @param array  $chronicle Chronicle data
@@ -224,12 +284,9 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
     $url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
     // Location fields
-    $ooc = $chronicle['ooc_locations'] ?? [];
-    if (is_array($ooc) && isset($ooc[0]) && is_array($ooc[0])) {
-        $ooc = $ooc[0];
-    }
-    $state = is_array($ooc) ? ($ooc['region'] ?? '') : '';
-    $city = is_array($ooc) ? ($ooc['city'] ?? '') : '';
+    $ooc   = owc_chronicle_ooc($chronicle);
+    $state = $ooc['region'] ?? '';
+    $city  = $ooc['city'] ?? '';
 
     // Region
     $region = $chronicle['chronicle_region'] ?? '';
@@ -239,16 +296,14 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
     $genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
     // Type, with the platform and the players when known
-    $game_type = $chronicle['game_type'] ?? '';
-    $type_text = owc_chronicle_game_type_text($chronicle);
-    $players   = trim((string) ($chronicle['active_player_count'] ?? ''));
+    $type_cell = owc_chronicle_type_cell_html($chronicle);
 
     // Status flags
     $status = owc_format_status($chronicle);
 
     ob_start();
 ?>
-    <div class="owc-list-row" data-genres="<?php echo esc_attr('|' . implode('|', array_keys(owc_list_genre_tokens(is_array($genres) ? $genres : [$genres]))) . '|'); ?>" data-region="<?php echo esc_attr(strtolower(trim((string) $region))); ?>" data-country="<?php echo esc_attr(strtolower(owc_list_country($chronicle))); ?>" data-type="<?php echo esc_attr(strtolower(trim((string) $game_type))); ?>" data-language="<?php echo esc_attr(owc_chronicle_language($chronicle)); ?>">
+    <div class="owc-list-row" <?php echo owc_chronicle_row_data_attrs($chronicle); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>>
         <div class="owc-col-title">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
@@ -264,11 +319,8 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
         <div class="owc-col-city<?php echo $city ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
             <?php echo esc_html($city); ?>
         </div>
-        <div class="owc-col-type<?php echo ($type_text || $players) ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
-            <?php echo esc_html($type_text); ?>
-            <?php if ('' !== $players) : ?>
-                <span class="owc-players"><?php /* translators: %s: rough number of active players, e.g. 21-30 */ echo esc_html(sprintf(__('%s players', 'owbn-entities'), $players)); ?></span>
-            <?php endif; ?>
+        <div class="owc-col-type<?php echo '' !== $type_cell ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
+            <?php echo $type_cell; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
         </div>
         <div class="owc-col-status<?php echo $status ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
             <?php echo esc_html($status); ?>
