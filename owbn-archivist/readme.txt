@@ -14,6 +14,7 @@ OAT (OWBN Archivist Toolkit) — workflow engine, character registry, submission
 Provides the Archivist Toolkit (OAT) module for OWBN sites, including:
 
 * Inbox — assignments and watched entries
+* Alerts — what is waiting on you and which watched requests changed this week, on the OAT dashboard and as a My Dashboard tile; on the Archivist, the choice of one email per update or one a day
 * Submit — create new workflow entries
 * Registry — character registry with detail views
 * Reports — aggregated data for local OAT hosts

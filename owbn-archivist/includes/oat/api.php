@@ -393,6 +393,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
                 'current_step'  => isset( $w->current_step ) ? $w->current_step : '',
                 'title'         => isset( $w->title ) ? $w->title : '',
                 'updated_at'    => owc_oat_format_date( isset( $w->updated_at ) ? $w->updated_at : '' ),
+                'updated_ts'    => isset( $w->updated_at ) ? (int) $w->updated_at : 0,
             );
         }
 

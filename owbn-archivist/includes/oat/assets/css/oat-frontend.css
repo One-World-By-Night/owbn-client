@@ -888,3 +888,40 @@
 		max-width: 100%;
 	}
 }
+
+/* Archivist alerts (top of the OAT dashboard; also the My Dashboard tile) */
+.oat-alerts {
+	margin: 0 0 1.5em;
+}
+.oat-alerts__heading {
+	margin: 0.75em 0 0.35em;
+	font-size: 1em;
+}
+.oat-alerts__list {
+	margin: 0;
+	padding-left: 1.1em;
+}
+.oat-alerts__item {
+	margin: 0.2em 0;
+	overflow-wrap: anywhere;
+}
+.oat-alerts__meta {
+	opacity: 0.75;
+	font-size: 0.9em;
+}
+.oat-alerts__empty {
+	margin: 0.2em 0;
+	opacity: 0.8;
+}
+.oat-alerts__email {
+	margin-top: 0.75em;
+}
+.oat-alerts__email fieldset {
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+.oat-alerts__email label {
+	display: inline-block;
+	margin-right: 1em;
+}

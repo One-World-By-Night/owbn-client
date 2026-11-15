@@ -61,6 +61,7 @@ function owbn_gateway_oat_serialize_entry( $entry ) {
         'coordinator_genre'  => isset( $entry->coordinator_genre ) ? $entry->coordinator_genre : '',
         'created_at'         => $entry->created_at,
         'updated_at'         => $entry->updated_at,
+        'updated_ts'         => (int) $entry->updated_at,
     );
 }
 

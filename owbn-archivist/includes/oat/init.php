@@ -27,6 +27,9 @@ require_once __DIR__ . '/admin.php';
 // AJAX handlers.
 require_once __DIR__ . '/ajax.php';
 
+// Alerts: waiting on you, watched requests changed this week, the email choice.
+require_once __DIR__ . '/alerts.php';
+
 // Registry shared shell (used by widget + backend template).
 require_once __DIR__ . '/registry-shell.php';
 

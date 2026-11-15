@@ -241,6 +241,9 @@ class OWC_OAT_Dashboard_Widget extends Widget_Base
 		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 			$counts = array( 'assigned' => 3, 'submissions' => 12, 'watching' => 5 );
 		}
+		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() && function_exists( 'owc_oat_render_alerts' ) ) {
+			echo owc_oat_render_alerts(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in owc_oat_render_alerts().
+		}
 		?>
 		<div class="oat-dashboard">
 			<?php if ( $show_pending ) : ?>
