@@ -127,9 +127,27 @@ function owbn_www_form_shortcode( $atts ) {
 	}
 	$style  = $styled ? '' : '<style>.owbn-www-form{padding-inline:8px;max-width:100%;box-sizing:border-box}</style>';
 	$styled = true;
-	return $style . '<div class="owbn-www-form">' . gravity_form( $ids[ $atts['key'] ], false, true, false, null, false, 0, false ) . '</div>';
+	return $style . '<div class="owbn-www-form">' . gravity_form( $ids[ $atts['key'] ], false, false, false, null, false, 0, false ) . '</div>';
 }
 add_shortcode( 'owbn_www_form', 'owbn_www_form_shortcode' );
+
+/**
+ * [owbn_www_listing_link page="/find-a-game/listing-problem/"]: on the chronicle detail page (?slug=), a line linking
+ * to the listing-problem form with that chronicle already picked. Nothing for a slug that isn't a listed chronicle.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string
+ */
+function owbn_www_listing_link_shortcode( $atts ) {
+	$atts = shortcode_atts( array( 'page' => '/find-a-game/listing-problem/' ), $atts, 'owbn_www_listing_link' );
+	$slug = isset( $_GET['slug'] ) ? sanitize_title( wp_unslash( $_GET['slug'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification -- read-only page parameter.
+	if ( '' === $slug || ! in_array( 'chronicle/' . $slug, wp_list_pluck( owbn_www_form_choices( 'teams' ), 'value' ), true ) ) {
+		return '';
+	}
+	$url = add_query_arg( 'chronicle', rawurlencode( $slug ), home_url( (string) $atts['page'] ) );
+	return '<p class="owbn-www-listing-link">' . esc_html__( 'Something on this page out of date?', 'owbn-www' ) . ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Tell the Head Storyteller', 'owbn-www' ) . '</a></p>';
+}
+add_shortcode( 'owbn_www_listing_link', 'owbn_www_listing_link_shortcode' );
 
 /**
  * Choices for a pick-list: 'teams' (chronicles, then coordinator offices), 'chronicles', or 'genres'.
@@ -270,7 +288,8 @@ function owbn_www_office_emails( array $slugs ) {
 
 /**
  * Sends the two private forms to the right people: a bad first game to the Executive Team (HC, AHC1, AHC2), a listing
- * problem to that chronicle's Head Storyteller with the web team copied.
+ * problem to that chronicle's Head Storyteller with the web team copied. With the option owbn_www_forms_inbox set (a
+ * site that isn't live yet), both go to that one address instead, with the intended recipients in the subject.
  *
  * @param array $notification Gravity Forms notification.
  * @param array $form         Form.
@@ -297,6 +316,12 @@ function owbn_www_route_notification( $notification, $form, $entry ) {
 		}
 		$notification['to'] = $hst ? $hst : $web;
 		$notification['cc'] = $hst ? $web : '';
+	}
+	$inbox = sanitize_email( (string) get_option( 'owbn_www_forms_inbox', '' ) );
+	if ( $inbox && in_array( $id, array( 'owbnwwwexec', 'owbnwwwhst' ), true ) ) {
+		$notification['subject'] = '[' . wp_parse_url( home_url(), PHP_URL_HOST ) . ', for ' . $notification['to'] . '] ' . $notification['subject'];
+		$notification['to']      = $inbox;
+		$notification['cc']      = '';
 	}
 	return $notification;
 }
