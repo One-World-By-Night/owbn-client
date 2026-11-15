@@ -462,8 +462,22 @@ function owbn_www_publish_on_approval( $step_id, $entry_id, $form_id, $status, $
 		return;
 	}
 	gform_update_meta( $entry_id, 'owbn_www_post_id', $result );
+	owbn_www_purge_listing_pages();
 }
 add_action( 'gravityflow_step_complete', 'owbn_www_publish_on_approval', 10, 5 );
+
+/**
+ * Clears SiteGround's page cache for the pages that list news and events (Home and News & Events, in both languages),
+ * so an approved item shows at once. Does nothing without the SiteGround Speed Optimizer plugin.
+ */
+function owbn_www_purge_listing_pages() {
+	if ( ! function_exists( 'sg_cachepress_purge_cache' ) ) {
+		return;
+	}
+	foreach ( (array) apply_filters( 'owbn_www_purge_paths', array( '/', '/news/', '/pt/', '/pt/news/' ) ) as $path ) {
+		sg_cachepress_purge_cache( home_url( $path ) );
+	}
+}
 
 /**
  * Who approved posts are written by: the reviewer, else the first administrator.
