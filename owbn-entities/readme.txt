@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.2 =
+* Find a Game and a chronicle's In Brief show just Virtual or Hybrid again, without a platform in brackets: not every virtual game is on one platform.
 
 = 1.1.1 =
 * The Elementor Chronicle List widget (dev's Find a Game page uses it) draws the same filter bar and rows as `[owbn type="chronicle-list"]`: the genre, region, country, game type and language dropdowns, one search box over name, state and city (wherever those columns sit), a Clear button that works (the old one was never wired), and the platform and players in the Type column. 1.1.0 had given these to the shortcode only. The widget's filter colours and border settings now style the dropdowns too.

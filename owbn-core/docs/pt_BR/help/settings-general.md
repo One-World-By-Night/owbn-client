@@ -15,7 +15,8 @@ wp-admin → **OWBN Core** → **Settings** (a tela se chama **OWBN Client Setti
 - **API Gateway**
   - **Enable Gateway** - liga as rotas `owbn/v1/` deste site, de onde os outros sites da OWbN leem dados. Só precisa dele um site que fornece dados aos outros.
   - **Gateway Base URL** - só leitura: o endereço que os outros sites usam.
-  - **API Key** - a chave única que os outros sites enviam para ler os dados deste site. Aparece como pontos e os quatro últimos caracteres. Clique nela para digitar uma chave nova, ou clique em **Generate** para uma aleatória.
+  - **API Key** - a chave completa que os outros sites da OWbN enviam a este site. Ela abre todas as rotas, inclusive as que gravam, então só sites que agem pelos membros devem tê-la. Aparece como pontos e os quatro últimos caracteres. Clique nela para digitar uma chave nova, ou clique em **Generate** para uma aleatória.
+  - **Read-only Keys** - chaves para um site público que só lê: as listas de crônicas, coordenadores e territórios, as votações públicas abertas, as mudanças recentes no estatuto e os próximos eventos. Cada linha mostra o nome da chave, os oito primeiros caracteres da impressão digital e o dia em que foi criada. A equipe da web cria a chave e a entrega uma vez; aqui fica só o hash.
   - **Auth Methods** - **API Key (x-api-key header)** e **Application Password (Authorization: Basic)**.
   - **Domain Whitelist** - um domínio por linha. Só vale para pedidos feitos por um navegador (os que dizem de que página vieram); os pedidos entre sites da OWbN dependem só da chave. Deixe vazio para aceitar qualquer domínio.
   - **Request Logging** - grava uma linha por pedido ao gateway no log de erros PHP do site.

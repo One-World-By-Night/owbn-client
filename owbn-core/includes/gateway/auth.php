@@ -13,7 +13,7 @@ defined('ABSPATH') || exit;
  * Permission callback for all gateway routes.
  *
  * Checks (in order):
- *   1. x-api-key header against owbn_gateway_api_key
+ *   1. x-api-key header against owbn_gateway_api_key, or against a read-only key on a read route
  *   2. Authorization: Basic header against WP application passwords
  *   3. Optional domain whitelist (Origin/Referer)
  *
@@ -31,6 +31,12 @@ function owbn_gateway_authenticate( $request ) {
 
         if ( $provided_key && $stored_key && hash_equals( $stored_key, $provided_key ) ) {
             $authenticated = true;
+        } elseif ( $provided_key && owbn_gateway_is_read_route( $request->get_route() ) && '' !== owbn_gateway_read_key_label( $provided_key ) ) {
+            $authenticated = true;
+            // A read-only key sees public votes only, whatever it asks for.
+            if ( '/owbn/v1/wpvp/votes/open' === $request->get_route() ) {
+                $request->set_param( 'visibility', 'public' );
+            }
         }
     }
 
@@ -172,4 +178,80 @@ function owbn_gateway_cors_headers( $served, $result, $request, $server ) {
     header( 'Access-Control-Max-Age: 86400' );
 
     return $served;
+}
+
+/**
+ * Whether a gateway route only reads data a public site may show: the chronicle, coordinator and territory lists,
+ * open votes, recent bylaw changes and upcoming events. Ballots, single votes, RSVPs, OAT and users are not.
+ *
+ * @param string $route REST route, e.g. "/owbn/v1/chronicles".
+ * @return bool
+ */
+function owbn_gateway_is_read_route( $route ) {
+    $patterns = apply_filters(
+        'owbn_gateway_read_routes',
+        array(
+            '#^/owbn/v1/(chronicles|coordinators)(/[a-z0-9\-]+)?$#',
+            '#^/owbn/v1/territories(/\d+|/by-slug/(chronicle|coordinator)/[a-z0-9\-]+)?$#',
+            '#^/owbn/v1/wpvp/votes/open$#',
+            '#^/owbn/v1/bylaws/clauses/recent$#',
+            '#^/owbn/v1/events/(upcoming|upcoming-for-host|in-window)$#',
+        )
+    );
+    foreach ( (array) $patterns as $pattern ) {
+        if ( preg_match( $pattern, (string) $route ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * The label of the read-only key a request carries, '' when it carries none. Read-only keys are stored only as a
+ * SHA-256 hash with a label (option owbn_gateway_read_keys).
+ *
+ * @param string $key Key from the x-api-key header.
+ * @return string
+ */
+function owbn_gateway_read_key_label( $key ) {
+    $hash = hash( 'sha256', (string) $key );
+    foreach ( (array) get_option( 'owbn_gateway_read_keys', array() ) as $stored ) {
+        if ( is_array( $stored ) && ! empty( $stored['hash'] ) && hash_equals( (string) $stored['hash'], $hash ) ) {
+            return (string) ( $stored['label'] ?? '' ) ?: 'read key';
+        }
+    }
+    return '';
+}
+
+/**
+ * Makes a read-only key for one consuming site and stores its hash. The key itself is returned once and kept nowhere.
+ *
+ * @param string $label Who holds it, e.g. "dev.owbn.net".
+ * @return string The new key, 64 hex characters.
+ */
+function owbn_gateway_add_read_key( $label ) {
+    $key    = bin2hex( random_bytes( 32 ) );
+    $keys   = (array) get_option( 'owbn_gateway_read_keys', array() );
+    $keys[] = array(
+        'label'   => sanitize_text_field( (string) $label ),
+        'hash'    => hash( 'sha256', $key ),
+        'created' => time(),
+    );
+    update_option( 'owbn_gateway_read_keys', array_values( $keys ), false );
+    return $key;
+}
+
+/**
+ * Revokes read-only keys by label.
+ *
+ * @param string $label Label given when the key was made.
+ * @return int How many were revoked.
+ */
+function owbn_gateway_revoke_read_key( $label ) {
+    $keys = (array) get_option( 'owbn_gateway_read_keys', array() );
+    $kept = array_values( array_filter( $keys, static function ( $k ) use ( $label ) {
+        return ! is_array( $k ) || (string) ( $k['label'] ?? '' ) !== (string) $label;
+    } ) );
+    update_option( 'owbn_gateway_read_keys', $kept, false );
+    return count( $keys ) - count( $kept );
 }

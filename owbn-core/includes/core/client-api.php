@@ -194,7 +194,6 @@ function owc_get_local_chronicles()
             'session_one_offs'       => get_post_meta($id, 'session_one_offs', true) ?: [],
             'primary_language'       => (string) get_post_meta($id, 'primary_language', true),
             'active_player_count'    => (string) get_post_meta($id, 'active_player_count', true),
-            'virtual_platform'       => owc_chronicle_virtual_platform(get_post_meta($id, 'game_site_list', true)),
             'hst_info'               => get_post_meta($id, 'hst_info', true) ?: [],
             'cm_info'                => get_post_meta($id, 'cm_info', true) ?: [],
         ];
@@ -202,53 +201,6 @@ function owc_get_local_chronicles()
 }
 
 endif; // owc_get_local_chronicles
-
-if ( ! function_exists( 'owc_chronicle_virtual_platform' ) ) :
-/**
- * The online platform a chronicle's games run on, read from its game sites: 'discord', 'zoom', 'google-meet',
- * 'teams', 'roll20' or 'foundry' when a site's address is on one of them; 'other' when a site is marked online but
- * its address is elsewhere or missing; '' when no game site is online. Only the platform's name is returned, never
- * the address.
- *
- * @param mixed $sites The chronicle's game_site_list.
- * @return string
- */
-function owc_chronicle_virtual_platform( $sites ) {
-	$known = array(
-		'discord.gg'          => 'discord',
-		'discord.com'         => 'discord',
-		'discordapp.com'      => 'discord',
-		'zoom.us'             => 'zoom',
-		'meet.google.com'     => 'google-meet',
-		'teams.microsoft.com' => 'teams',
-		'teams.live.com'      => 'teams',
-		'roll20.net'          => 'roll20',
-		'foundryvtt.com'      => 'foundry',
-		'forge-vtt.com'       => 'foundry',
-	);
-	$found = '';
-	foreach ( (array) $sites as $site ) {
-		if ( ! is_array( $site ) ) {
-			continue;
-		}
-		$online = ! empty( $site['online'] ) && ! in_array( strtolower( (string) $site['online'] ), array( '0', 'false', 'no', 'off' ), true );
-		$url    = trim( (string) ( $site['url'] ?? '' ) );
-		if ( '' !== $url ) {
-			$host = strtolower( (string) wp_parse_url( ( false === strpos( $url, '://' ) ? 'https://' : '' ) . $url, PHP_URL_HOST ) );
-			$host = (string) preg_replace( '/^www\./', '', $host );
-			foreach ( $known as $domain => $platform ) {
-				if ( $host === $domain || substr( $host, -strlen( '.' . $domain ) ) === '.' . $domain ) {
-					return $platform;
-				}
-			}
-		}
-		if ( $online ) {
-			$found = 'other';
-		}
-	}
-	return $found;
-}
-endif;
 
 if ( ! function_exists( 'owc_get_local_coordinators' ) ) :
 function owc_get_local_coordinators()
@@ -378,7 +330,6 @@ function owc_get_local_chronicle_detail(string $slug)
         'traveler_info'          => get_post_meta($id, 'traveler_info', true),
         'active_player_count'    => get_post_meta($id, 'active_player_count', true),
         'primary_language'       => (string) get_post_meta($id, 'primary_language', true),
-        'virtual_platform'       => owc_chronicle_virtual_platform(get_post_meta($id, 'game_site_list', true)),
         'hst_info'               => get_post_meta($id, 'hst_info', true) ?: [],
         'cm_info'                => get_post_meta($id, 'cm_info', true) ?: [],
         'ast_list'               => get_post_meta($id, 'ast_list', true) ?: [],
