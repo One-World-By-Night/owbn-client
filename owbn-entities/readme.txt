@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.3 =
+* Council Votes leaves out demo votes, the ones council classifies "Demo" so people can try the voting, and a demo vote no longer takes a real vote's place in a short box.
 
 = 1.1.2 =
 * Find a Game and a chronicle's In Brief show just Virtual or Hybrid again, without a platform in brackets: not every virtual game is on one platform.

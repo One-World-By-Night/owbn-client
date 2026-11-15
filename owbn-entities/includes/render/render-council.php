@@ -52,6 +52,27 @@ function owc_council_vote_type_label( $type ) {
 }
 
 /**
+ * Whether a vote is a demo, open for people to try the voting: one of its classifications is "Demo" (any case).
+ *
+ * @param array $vote Vote from owbn-core's wpvp functions; its classification a JSON list, a list or one name.
+ * @return bool
+ */
+function owc_council_vote_is_demo( array $vote ) {
+	$names = $vote['classification'] ?? array();
+	if ( is_string( $names ) ) {
+		$decoded = json_decode( $names, true );
+		$names   = is_array( $decoded ) ? $decoded : array( $names );
+	}
+	$demo = array_map( 'strtolower', array_map( 'trim', (array) apply_filters( 'owc_council_demo_classifications', array( 'Demo' ) ) ) );
+	foreach ( (array) $names as $name ) {
+		if ( is_scalar( $name ) && in_array( strtolower( trim( (string) $name ) ), $demo, true ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * A day as markup: the day and month in words, carrying the date so the page script can write it in the page's
  * language. The day is shown as given, without moving it between timezones.
  *
@@ -69,7 +90,7 @@ function owc_council_day_html( $date ) {
 
 /**
  * What the Council is voting on: the open votes anyone may see, soonest closing first, each linking to its page on the
- * votes site. Votes the votes site marks private or restricted are never listed.
+ * votes site. Votes the votes site marks private or restricted are never listed, nor demo votes.
  *
  * @param array $args {
  *     @type int    $limit     Most votes (default 5).
@@ -97,21 +118,21 @@ function owc_render_council_votes( array $args = array() ) {
 		)
 	);
 	$limit = max( 1, min( 50, (int) $args['limit'] ) );
-	$key   = 'owc_council_votes_public_' . $limit;
+	$key   = 'owc_council_votes_shown_' . $limit;
 	$votes = get_transient( $key );
 	if ( false === $votes ) {
-		$votes = owc_wpvp_get_open_votes_or_error( $limit, 'public' );
+		$votes = owc_wpvp_get_open_votes_or_error( 0, 'public' );
 		if ( is_wp_error( $votes ) ) {
 			$votes = array( 'error' => $votes->get_error_code() );
 		} else {
 			$public = array();
 			foreach ( $votes as $vote ) {
 				$vote = (array) $vote;
-				if ( 'public' === ( $vote['visibility'] ?? '' ) ) {
+				if ( 'public' === ( $vote['visibility'] ?? '' ) && ! owc_council_vote_is_demo( $vote ) ) {
 					$public[] = $vote;
 				}
 			}
-			$votes = $public;
+			$votes = array_slice( $public, 0, $limit );
 		}
 		set_transient( $key, $votes, isset( $votes['error'] ) ? 5 * MINUTE_IN_SECONDS : 10 * MINUTE_IN_SECONDS );
 	}
