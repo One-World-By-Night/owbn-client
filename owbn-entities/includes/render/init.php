@@ -30,3 +30,4 @@ require_once __DIR__ . '/render-vote-history.php';
 require_once __DIR__ . '/render-games.php';
 // Council votes, bylaw changes
 require_once __DIR__ . '/render-council.php';
+require_once __DIR__ . '/render-events.php';

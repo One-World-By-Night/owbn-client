@@ -64,6 +64,7 @@ class OWC_Entities_Elementor_Loader {
         require_once $dir . '/class-owbn-numbers-widget.php';
         require_once $dir . '/class-council-votes-widget.php';
         require_once $dir . '/class-bylaw-changes-widget.php';
+        require_once $dir . '/class-upcoming-events-widget.php';
 
         $widgets_manager->register( new OWC_Chronicle_List_Widget() );
         $widgets_manager->register( new OWC_Chronicle_Detail_Widget() );
@@ -77,6 +78,7 @@ class OWC_Entities_Elementor_Loader {
         $widgets_manager->register( new OWC_Owbn_Numbers_Widget() );
         $widgets_manager->register( new OWC_Council_Votes_Widget() );
         $widgets_manager->register( new OWC_Bylaw_Changes_Widget() );
+        $widgets_manager->register( new OWC_Upcoming_Events_Widget() );
 
         // ── Chronicle section widgets (decomposed detail) ──────────────
         require_once $dir . '/class-chronicle-header-section-widget.php';

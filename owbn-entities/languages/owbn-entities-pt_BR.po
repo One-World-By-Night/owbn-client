@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OWBN Entities 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-entities\n"
-"POT-Creation-Date: 2026-11-15T03:03:43+00:00\n"
+"POT-Creation-Date: 2026-11-15T03:10:38+00:00\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -280,6 +280,7 @@ msgstr "Mudanças no estatuto"
 #: includes/elementor/class-owbn-numbers-widget.php:42
 #: includes/elementor/class-territory-detail-widget.php:59
 #: includes/elementor/class-territory-list-widget.php:61
+#: includes/elementor/class-upcoming-events-widget.php:41
 #: includes/shortcodes/shortcodes-coordinator.php:153
 msgid "Content"
 msgstr "Conteúdo"
@@ -306,6 +307,7 @@ msgstr "Endereço do link \"Estatuto completo\". Vazio para nenhum link."
 #: includes/elementor/class-council-votes-widget.php:76
 #: includes/elementor/class-games-this-week-widget.php:124
 #: includes/elementor/class-territory-list-widget.php:69
+#: includes/elementor/class-upcoming-events-widget.php:67
 msgid "Empty Message"
 msgstr "Mensagem Vazia"
 
@@ -600,7 +602,7 @@ msgstr "Sobre/Conteúdo"
 #: includes/elementor/class-chronicle-field-widget.php:239
 #: includes/elementor/class-chronicle-narrative-section-widget.php:56
 #: includes/render/render-chronicle-detail.php:158
-#: includes/shortcodes/shortcode-owbn.php:157
+#: includes/shortcodes/shortcode-owbn.php:165
 #: includes/shortcodes/shortcodes-chronicle.php:171
 msgid "Premise"
 msgstr "Premissa"
@@ -929,7 +931,7 @@ msgstr "Mostrar Informações para Viajantes"
 
 #: includes/elementor/class-chronicle-narrative-section-widget.php:59
 #: includes/render/render-chronicle-detail.php:159
-#: includes/shortcodes/shortcode-owbn.php:158
+#: includes/shortcodes/shortcode-owbn.php:166
 msgid "Information for Travelers"
 msgstr "Informações para Viajantes"
 
@@ -1416,6 +1418,27 @@ msgstr "Fundo do Botão"
 msgid "Button Hover Background"
 msgstr "Fundo do Botão ao Passar o Mouse"
 
+#: includes/elementor/class-upcoming-events-widget.php:18
+#: includes/shortcodes/shortcodes-chronicle.php:185
+msgid "Upcoming Events"
+msgstr "Próximos Eventos"
+
+#: includes/elementor/class-upcoming-events-widget.php:48
+msgid "Most events"
+msgstr "Máximo de eventos"
+
+#: includes/elementor/class-upcoming-events-widget.php:58
+msgid "All events address"
+msgstr "Endereço do link \"Todos os eventos\""
+
+#: includes/elementor/class-upcoming-events-widget.php:61
+msgid "Address for an \"All events\" link. Empty for none."
+msgstr "Endereço do link \"Todos os eventos\". Vazio para nenhum link."
+
+#: includes/elementor/class-upcoming-events-widget.php:70
+msgid "Shown when no event is coming up. Empty for the standard text."
+msgstr "Mostrado quando não há eventos por vir. Vazio para o texto padrão."
+
 #: includes/elementor/class-widget-style-controls.php:26
 msgid "General"
 msgstr "Geral"
@@ -1756,6 +1779,20 @@ msgstr "Alterada em %s"
 msgid "All bylaws"
 msgstr "Estatuto completo"
 
+#. translators: 1: first day of the event, 2: last day
+#: includes/render/render-events.php:59
+#, php-format
+msgid "%1$s to %2$s"
+msgstr "%1$s a %2$s"
+
+#: includes/render/render-events.php:98
+msgid "No events are coming up right now."
+msgstr "Nenhum evento por vir agora."
+
+#: includes/render/render-events.php:121
+msgid "All events"
+msgstr "Todos os eventos"
+
 #. translators: %d: number of days
 #: includes/render/render-games.php:114
 #, php-format
@@ -1983,10 +2020,6 @@ msgstr "Jogadores Ativos"
 #: includes/shortcodes/shortcodes-coordinator.php:150
 msgid "Website"
 msgstr "Site"
-
-#: includes/shortcodes/shortcodes-chronicle.php:185
-msgid "Upcoming Events"
-msgstr "Próximos Eventos"
 
 #: includes/shortcodes/shortcodes-chronicle.php:186
 msgid "Chronicle Timezone"

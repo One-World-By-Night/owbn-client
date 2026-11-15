@@ -11,6 +11,7 @@
  *   [owbn type="owbn-numbers" show_genres="true"]
  *   [owbn type="council-votes" limit="5"]
  *   [owbn type="bylaw-changes" days="30" limit="5" all_url="https://council.owbn.net/..."]
+ *   [owbn type="upcoming-events" limit="5" all_url=""]
  *
  * Slug defaults to $_GET['slug'] if omitted.
  */
@@ -116,6 +117,13 @@ function owbn_shortcode_handler( $atts ) {
         case 'bylaw-changes':
             return owc_render_bylaw_changes( array(
                 'days'    => absint( $atts['days'] ) ? absint( $atts['days'] ) : 30,
+                'limit'   => absint( $atts['limit'] ) ? absint( $atts['limit'] ) : 5,
+                'all_url' => esc_url_raw( $atts['all_url'] ),
+                'empty'   => sanitize_text_field( $atts['empty'] ),
+            ) );
+
+        case 'upcoming-events':
+            return owc_render_upcoming_events( array(
                 'limit'   => absint( $atts['limit'] ) ? absint( $atts['limit'] ) : 5,
                 'all_url' => esc_url_raw( $atts['all_url'] ),
                 'empty'   => sanitize_text_field( $atts['empty'] ),
