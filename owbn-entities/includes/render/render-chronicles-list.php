@@ -238,14 +238,14 @@ function owc_chronicle_row_data_attrs(array $chronicle): string
 }
 
 /**
- * A Find a Game row's Type cell: the game type with its platform when known, and the players under it.
+ * A Find a Game row's Type cell: the game type, and the players under it.
  *
  * @param array $chronicle Chronicle data.
  * @return string HTML, escaped; '' when there is nothing to show.
  */
 function owc_chronicle_type_cell_html(array $chronicle): string
 {
-    $html    = esc_html(owc_chronicle_game_type_text($chronicle));
+    $html    = esc_html(trim((string) ($chronicle['game_type'] ?? '')));
     $players = trim((string) ($chronicle['active_player_count'] ?? ''));
     if ('' !== $players) {
         /* translators: %s: rough number of active players, e.g. 21-30 */
@@ -295,7 +295,7 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
     $genres = $chronicle['genres'] ?? [];
     $genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
-    // Type, with the platform and the players when known
+    // Type, with the players when known
     $type_cell = owc_chronicle_type_cell_html($chronicle);
 
     // Status flags

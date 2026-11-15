@@ -84,6 +84,22 @@ $anonymize_author = (bool) get_option( owc_option_name( 'anonymize_author' ), fa
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
+            <th scope="row"><?php esc_html_e( 'Read-only Keys', 'owbn-core' ); ?></th>
+            <td>
+                <?php $gw_read_keys = array_filter( (array) get_option( 'owbn_gateway_read_keys', array() ), 'is_array' ); ?>
+                <?php if ( $gw_read_keys ) : ?>
+                    <ul style="margin-top:0;">
+                        <?php foreach ( $gw_read_keys as $read_key ) : ?>
+                            <li><?php echo esc_html( sprintf( '%1$s · %2$s · %3$s', (string) ( $read_key['label'] ?? '' ), substr( (string) ( $read_key['hash'] ?? '' ), 0, 8 ), ! empty( $read_key['created'] ) ? wp_date( get_option( 'date_format' ), (int) $read_key['created'] ) : '' ) ); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else : ?>
+                    <p style="margin-top:0;"><?php esc_html_e( 'None.', 'owbn-core' ); ?></p>
+                <?php endif; ?>
+                <p class="description"><?php esc_html_e( 'Keys for public sites that only read: the chronicle, coordinator and territory lists, public open votes, recent bylaw changes and upcoming events. They open nothing else. Each is shown once when made; only its hash is kept.', 'owbn-core' ); ?></p>
+            </td>
+        </tr>
+        <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>
             <th scope="row"><?php esc_html_e( 'Auth Methods', 'owbn-core' ); ?></th>
             <td>
                 <fieldset>

@@ -675,7 +675,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		$genres = $chronicle['genres'] ?? [];
 		$genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
-		// Type, with the platform and the players when known
+		// Type, with the players when known
 		$type_cell = owc_chronicle_type_cell_html($chronicle);
 
 		// Status flags

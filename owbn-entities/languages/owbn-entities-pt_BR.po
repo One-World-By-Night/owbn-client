@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OWBN Entities 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-entities\n"
-"POT-Creation-Date: 2026-11-15T03:10:38+00:00\n"
+"POT-Creation-Date: 2026-11-15T03:38:09+00:00\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -90,7 +90,7 @@ msgstr "Página da Lista de Crônicas"
 #: includes/admin/settings-tabs/tab-chronicles.php:90
 #: includes/admin/settings-tabs/tab-coordinators.php:79
 #: includes/admin/settings-tabs/tab-coordinators.php:90
-#: includes/elementor/class-chronicle-list-widget.php:740
+#: includes/elementor/class-chronicle-list-widget.php:730
 #: includes/elementor/class-coordinator-list-widget.php:583
 #: includes/elementor/class-games-this-week-widget.php:153
 msgid "— Select Page —"
@@ -105,10 +105,10 @@ msgstr "Página de Detalhes da Crônica"
 #: includes/admin/settings-tabs/tab-territories.php:77
 #: includes/admin/settings-tabs/tab-vote-history.php:78
 #: includes/elementor/class-chronicle-list-widget.php:91
-#: includes/elementor/class-chronicle-list-widget.php:653
-#: includes/elementor/class-chronicle-list-widget.php:728
-#: includes/render/render-chronicles-list.php:55
-#: includes/render/render-chronicles-list.php:273
+#: includes/elementor/class-chronicle-list-widget.php:643
+#: includes/elementor/class-chronicle-list-widget.php:718
+#: includes/render/render-chronicles-list.php:51
+#: includes/render/render-chronicles-list.php:325
 #: includes/render/render-vote-history.php:53
 #: includes/render/render-vote-history.php:73
 msgid "Status"
@@ -572,11 +572,11 @@ msgstr "Slug"
 
 #: includes/elementor/class-chronicle-field-widget.php:232
 #: includes/elementor/class-chronicle-list-widget.php:86
-#: includes/elementor/class-chronicle-list-widget.php:638
-#: includes/elementor/class-chronicle-list-widget.php:703
+#: includes/elementor/class-chronicle-list-widget.php:628
+#: includes/elementor/class-chronicle-list-widget.php:693
 #: includes/elementor/class-games-this-week-widget.php:63
-#: includes/render/render-chronicles-list.php:50
-#: includes/render/render-chronicles-list.php:255
+#: includes/render/render-chronicles-list.php:46
+#: includes/render/render-chronicles-list.php:310
 #: includes/shortcodes/shortcodes-chronicle.php:163
 msgid "Genres"
 msgstr "Gêneros"
@@ -673,11 +673,11 @@ msgstr "Listas de Jogadores"
 
 #: includes/elementor/class-chronicle-field-widget.php:261
 #: includes/elementor/class-chronicle-list-widget.php:87
-#: includes/elementor/class-chronicle-list-widget.php:641
-#: includes/elementor/class-chronicle-list-widget.php:708
-#: includes/render/render-chronicles-list.php:51
-#: includes/render/render-chronicles-list.php:166
-#: includes/render/render-chronicles-list.php:258
+#: includes/elementor/class-chronicle-list-widget.php:631
+#: includes/elementor/class-chronicle-list-widget.php:698
+#: includes/render/render-chronicles-list.php:47
+#: includes/render/render-chronicles-list.php:162
+#: includes/render/render-chronicles-list.php:313
 #: includes/render/render-territory-detail.php:53
 #: includes/render/render-territory-list.php:217
 #: includes/shortcodes/shortcodes-chronicle.php:195
@@ -728,34 +728,34 @@ msgid "Columns to Display"
 msgstr "Colunas a Exibir"
 
 #: includes/elementor/class-chronicle-list-widget.php:85
-#: includes/elementor/class-chronicle-list-widget.php:635
-#: includes/render/render-chronicles-list.php:49
+#: includes/elementor/class-chronicle-list-widget.php:625
+#: includes/render/render-chronicles-list.php:45
 #: includes/shortcodes/shortcodes-chronicle.php:160
 msgid "Chronicle"
 msgstr "Crônica"
 
 #: includes/elementor/class-chronicle-list-widget.php:88
-#: includes/elementor/class-chronicle-list-widget.php:644
-#: includes/elementor/class-chronicle-list-widget.php:713
-#: includes/render/render-chronicles-list.php:52
-#: includes/render/render-chronicles-list.php:261
+#: includes/elementor/class-chronicle-list-widget.php:634
+#: includes/elementor/class-chronicle-list-widget.php:703
+#: includes/render/render-chronicles-list.php:48
+#: includes/render/render-chronicles-list.php:316
 msgid "State/Province"
 msgstr "Estado/Província"
 
 #: includes/elementor/class-chronicle-list-widget.php:89
-#: includes/elementor/class-chronicle-list-widget.php:647
-#: includes/elementor/class-chronicle-list-widget.php:718
-#: includes/render/render-chronicles-list.php:53
-#: includes/render/render-chronicles-list.php:264
+#: includes/elementor/class-chronicle-list-widget.php:637
+#: includes/elementor/class-chronicle-list-widget.php:708
+#: includes/render/render-chronicles-list.php:49
+#: includes/render/render-chronicles-list.php:319
 msgid "City"
 msgstr "Cidade"
 
 #: includes/elementor/class-chronicle-list-widget.php:90
-#: includes/elementor/class-chronicle-list-widget.php:650
-#: includes/elementor/class-chronicle-list-widget.php:723
+#: includes/elementor/class-chronicle-list-widget.php:640
+#: includes/elementor/class-chronicle-list-widget.php:713
 #: includes/elementor/class-coordinator-field-widget.php:232
-#: includes/render/render-chronicles-list.php:54
-#: includes/render/render-chronicles-list.php:267
+#: includes/render/render-chronicles-list.php:50
+#: includes/render/render-chronicles-list.php:322
 #: includes/shortcodes/shortcodes-coordinator.php:148
 msgid "Type"
 msgstr "Tipo"
@@ -884,35 +884,14 @@ msgstr "Fundo de Satélite"
 msgid "Full Member Background"
 msgstr "Fundo de Membro Pleno"
 
-#: includes/elementor/class-chronicle-list-widget.php:617
-msgid "Filter Genres..."
-msgstr "Filtrar gêneros..."
-
-#: includes/elementor/class-chronicle-list-widget.php:620
-msgid "Filter Region..."
-msgstr "Filtrar região..."
-
-#: includes/elementor/class-chronicle-list-widget.php:623
-msgid "Filter State..."
-msgstr "Filtrar estado..."
-
-#: includes/elementor/class-chronicle-list-widget.php:626
-msgid "Filter Type..."
-msgstr "Filtrar tipo..."
-
-#: includes/elementor/class-chronicle-list-widget.php:628
-#: includes/render/render-chronicles-list.php:44
-msgid "Clear"
-msgstr "Limpar"
-
-#: includes/elementor/class-chronicle-list-widget.php:662
-#: includes/render/render-chronicles-list.php:63
+#: includes/elementor/class-chronicle-list-widget.php:652
+#: includes/render/render-chronicles-list.php:59
 msgid "No chronicles match your filters."
 msgstr "Nenhuma crônica corresponde aos filtros."
 
-#: includes/elementor/class-chronicle-list-widget.php:673
+#: includes/elementor/class-chronicle-list-widget.php:663
 #: includes/elementor/class-coordinator-list-widget.php:553
-#: includes/render/render-chronicles-list.php:223
+#: includes/render/render-chronicles-list.php:283
 #: includes/render/render-coordinators-list.php:94
 msgid "Untitled"
 msgstr "Sem título"
@@ -1101,7 +1080,7 @@ msgid "Administrative"
 msgstr "Administrativo"
 
 #: includes/elementor/class-coordinator-list-widget.php:74
-#: includes/render/render-chronicles-list.php:146
+#: includes/render/render-chronicles-list.php:142
 msgid "Genre"
 msgstr "Gênero"
 
@@ -1229,7 +1208,7 @@ msgstr ""
 "Vazio para todos."
 
 #: includes/elementor/class-games-this-week-widget.php:72
-#: includes/render/render-chronicles-list.php:168
+#: includes/render/render-chronicles-list.php:164
 msgid "Game type"
 msgstr "Tipo de jogo"
 
@@ -1258,7 +1237,7 @@ msgstr ""
 "Lakes\"). Vazio para todas."
 
 #: includes/elementor/class-games-this-week-widget.php:95
-#: includes/render/render-chronicles-list.php:167
+#: includes/render/render-chronicles-list.php:163
 #: includes/render/render-territory-detail.php:46
 #: includes/render/render-territory-list.php:211
 msgid "Country"
@@ -1536,13 +1515,13 @@ msgid "← Back to Chronicles"
 msgstr "← Voltar às Crônicas"
 
 #: includes/render/render-chronicle-detail.php:68
-#: includes/render/render-chronicles-list.php:292
+#: includes/render/render-chronicles-list.php:344
 #: includes/shortcodes/shortcodes-chronicle.php:197
 msgid "Probationary"
 msgstr "Probatória"
 
 #: includes/render/render-chronicle-detail.php:71
-#: includes/render/render-chronicles-list.php:296
+#: includes/render/render-chronicles-list.php:348
 #: includes/shortcodes/shortcodes-chronicle.php:198
 msgid "Satellite"
 msgstr "Satélite"
@@ -1608,47 +1587,51 @@ msgstr "Links e Recursos"
 msgid "Satellite Parent:"
 msgstr "Crônica-Mãe:"
 
-#: includes/render/render-chronicles-list.php:43
-msgid "Search name, state or city"
-msgstr "Buscar nome, estado ou cidade"
-
-#: includes/render/render-chronicles-list.php:147
+#: includes/render/render-chronicles-list.php:143
 msgid "All genres"
 msgstr "Todos os gêneros"
 
 #. translators: %s: genre family, e.g. Vampire
-#: includes/render/render-chronicles-list.php:157
+#: includes/render/render-chronicles-list.php:153
 #, php-format
 msgid "%s (all)"
 msgstr "%s (todos)"
 
-#: includes/render/render-chronicles-list.php:166
+#: includes/render/render-chronicles-list.php:162
 msgid "All regions"
 msgstr "Todas as regiões"
 
-#: includes/render/render-chronicles-list.php:167
+#: includes/render/render-chronicles-list.php:163
 msgid "All countries"
 msgstr "Todos os países"
 
-#: includes/render/render-chronicles-list.php:168
+#: includes/render/render-chronicles-list.php:164
 msgid "All game types"
 msgstr "Todos os tipos de jogo"
 
-#: includes/render/render-chronicles-list.php:171
+#: includes/render/render-chronicles-list.php:167
 msgid "Language"
 msgstr "Idioma"
 
-#: includes/render/render-chronicles-list.php:171
+#: includes/render/render-chronicles-list.php:167
 msgid "All languages"
 msgstr "Todos os idiomas"
 
 #. translators: %s: rough number of active players, e.g. 21-30
-#: includes/render/render-chronicles-list.php:270
+#: includes/render/render-chronicles-list.php:252
 #, php-format
 msgid "%s players"
 msgstr "%s jogadores"
 
-#: includes/render/render-chronicles-list.php:300
+#: includes/render/render-chronicles-list.php:268
+msgid "Search name, state or city"
+msgstr "Buscar nome, estado ou cidade"
+
+#: includes/render/render-chronicles-list.php:269
+msgid "Clear"
+msgstr "Limpar"
+
+#: includes/render/render-chronicles-list.php:352
 msgid "Full Member"
 msgstr "Membro Pleno"
 
@@ -1856,12 +1839,6 @@ msgstr "Francês"
 #: includes/render/render-helpers.php:498
 msgid "Other language"
 msgstr "Outro idioma"
-
-#. translators: 1: game type, e.g. Virtual; 2: platform, e.g. Discord
-#: includes/render/render-helpers.php:538
-#, php-format
-msgid "%1$s (%2$s)"
-msgstr "%1$s (%2$s)"
 
 #: includes/render/render-territory-box.php:36
 #: includes/render/render-territory-list.php:40

@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.13.0
+Stable tag: 1.13.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,10 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.1 =
+* Read-only gateway keys: a site that only shows public data (the new www) can hold a key that opens just the read routes (the chronicle, coordinator and territory lists, open votes, recent bylaw changes, upcoming events) and nothing else: no ballots, single votes, RSVPs, OAT or users. On open votes a read-only key always gets public votes only. Stored as a SHA-256 hash with a label (`owbn_gateway_read_keys`), made with `owbn_gateway_add_read_key()` (the key is returned once) and revoked with `owbn_gateway_revoke_read_key()`; listed under General > API Gateway. The full API key works as before.
+* The chronicle list and detail no longer carry `virtual_platform`: the website shows just Virtual or Hybrid, since not every virtual game is on one platform.
 
 = 1.13.0 =
 * Games in a window of time: `owc_get_sessions_in_window()` turns each published chronicle's schedule (1st to 5th weekday of the month, weekly, every other week from its start date) and one-off events into dated sessions, soonest first, filtered by genre, OWBN region, country, game type and kind. Rules that can't be put on a calendar ("Random", "Other", a day of "Week", every other week with no start date) are left out rather than guessed, as are chronicles whose timezone is unset or "UTC". Cached an hour.

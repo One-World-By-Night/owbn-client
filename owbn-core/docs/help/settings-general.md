@@ -15,7 +15,8 @@ wp-admin → **OWBN Core** → **Settings** (the screen is titled **OWBN Client 
 - **API Gateway**
   - **Enable Gateway** - turns on this site's `owbn/v1/` routes, which other OWbN sites read data from. Only a site that serves data to others needs it.
   - **Gateway Base URL** - read-only: the address other sites use.
-  - **API Key** - the one key other sites send to read this site's data. It shows as dots and its last four characters. Click in it to type a new key, or click **Generate** for a random one.
+  - **API Key** - the full key other OWbN sites send to this site. It opens every route, writes included, so only sites that act for members should hold it. It shows as dots and its last four characters. Click in it to type a new key, or click **Generate** for a random one.
+  - **Read-only Keys** - keys for a public site that only reads: the chronicle, coordinator and territory lists, public open votes, recent bylaw changes and upcoming events. Each line shows the key's label, the first eight characters of its fingerprint and the day it was made. The web team makes a key and hands it over once; only its hash is kept here.
   - **Auth Methods** - **API Key (x-api-key header)** and **Application Password (Authorization: Basic)**.
   - **Domain Whitelist** - one domain per line. It only judges requests from a browser (ones that say which page they came from); requests between OWbN sites rely on the key alone. Leave it empty to allow any domain.
   - **Request Logging** - writes one line per gateway request to the site's PHP error log.
