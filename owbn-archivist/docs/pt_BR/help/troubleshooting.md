@@ -23,8 +23,8 @@ Esta é uma página de referência. Cada página de ajuda do OAT também termina
 | "You do not have access to this request." | O pedido não faz parte do seu trabalho. Veja [A Página de um Pedido](entry.md#quem-pode-usar) |
 | "You do not have permission to create characters." | Jogadores, a staff das crônicas, Coordenadores e os escritórios executivos criam personagens: a staff nas próprias crônicas, um jogador só o próprio PC. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |
 | "A PC needs its player's name and email." | Preencha o nome e o email do jogador. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |
-| "Submission failed. Please check the form and try again." | Um campo obrigatório está vazio. Veja a página do formulário a partir de [Fazer um Pedido](submit.md#relacionados) |
-| "No account matches that." | Ninguém tem uma conta com esse nome ou email ainda. Veja [Ficha do Personagem](registry-detail.md#solução-de-problemas) |
+| "Submission failed. Please check the form and try again." | Um campo obrigatório está vazio, ou algo no formulário foi recusado; um pedido recusado fica em My Submissions como Cancelled. Veja a página do formulário a partir de [Fazer um Pedido](submit.md#relacionados) |
+| "No account matches that." | Ninguém tem uma conta com esse nome, login ou endereço de email ainda, ou só parte de um endereço foi digitada. Veja [Ficha do Personagem](registry-detail.md#solução-de-problemas) |
 | Um relatório mostra só parte da OWbN | Ele mostra o que os seus cargos alcançam. Veja [Relatórios](reports.md) |
 
 ## Tarefas comuns

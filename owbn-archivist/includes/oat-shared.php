@@ -145,8 +145,12 @@ endif;
 
 if ( ! function_exists( 'owc_oat_search_link_users' ) ) :
 	/**
-	 * Archivist accounts matching a name, login or email, or holding a role path, for the
-	 * account pickers (character link, reassign, delegate, user fields on forms).
+	 * Archivist accounts for the account pickers (character link, reassign, delegate, user fields on forms): the one
+	 * account with an email address searched in full, or accounts whose name or login holds the term, or holders of a
+	 * role path.
+	 *
+	 * An account's email comes back only to a search for that exact address. A name or login that is itself an email
+	 * address is neither matched by part nor shown.
 	 *
 	 * Role holders from AccessSchema carry AccessSchema ids, so they are matched to archivist
 	 * accounts by email, then by login.
@@ -160,31 +164,44 @@ if ( ! function_exists( 'owc_oat_search_link_users' ) ) :
 			return array();
 		}
 
+		$exact   = is_email( $term ) ? strtolower( $term ) : '';
 		$results = array();
 		$seen    = array();
-		$add     = function ( $user, $type, $via = '' ) use ( &$results, &$seen ) {
+		$add     = function ( $user, $type, $via = '' ) use ( &$results, &$seen, $exact ) {
 			if ( ! $user || isset( $seen[ $user->ID ] ) ) {
 				return;
 			}
 			$seen[ $user->ID ] = true;
-			$results[]         = array(
+			$is_match = '' !== $exact && strtolower( (string) $user->user_email ) === $exact;
+			/* translators: %d: account id */
+			$name      = ( ! $is_match && is_email( $user->display_name ) ) ? sprintf( __( 'Account #%d', 'owbn-archivist' ), (int) $user->ID ) : $user->display_name;
+			$handle    = is_email( $user->user_login ) ? '#' . (int) $user->ID : $user->user_login;
+			$results[] = array(
 				'id'           => (int) $user->ID,
-				'label'        => $user->display_name . ' (' . ( '' !== $via ? 'via ' . $via : $user->user_login ) . ')',
-				'value'        => $user->display_name,
+				'label'        => $name . ' (' . ( '' !== $via ? 'via ' . $via : $handle ) . ')',
+				'value'        => $name,
 				'type'         => $type,
-				'display_name' => $user->display_name,
-				'email'        => $user->user_email,
+				'display_name' => $name,
+				'email'        => $is_match ? $user->user_email : '',
 			);
 		};
 
-		$users = get_users( array(
-			'search'         => '*' . $term . '*',
-			'search_columns' => array( 'user_login', 'display_name', 'user_email' ),
-			'number'         => 15,
-			'orderby'        => 'display_name',
-		) );
-		foreach ( $users as $user ) {
-			$add( $user, 'user' );
+		if ( '' !== $exact ) {
+			$add( get_user_by( 'email', $exact ), 'user' );
+		} else {
+			$users = get_users( array(
+				'search'         => '*' . $term . '*',
+				'search_columns' => array( 'user_login', 'display_name' ),
+				'number'         => 15,
+				'orderby'        => 'display_name',
+			) );
+			foreach ( $users as $user ) {
+				$by_name  = ! is_email( $user->display_name ) && false !== stripos( (string) $user->display_name, $term );
+				$by_login = ! is_email( $user->user_login ) && false !== stripos( (string) $user->user_login, $term );
+				if ( $by_name || $by_login ) {
+					$add( $user, 'user' );
+				}
+			}
 		}
 
 		if ( false !== strpos( $term, '/' ) ) {
@@ -206,6 +223,38 @@ if ( ! function_exists( 'owc_oat_search_link_users' ) ) :
 		}
 
 		return $results;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_cancel_refused_submission' ) ) :
+	/**
+	 * Keeps a request the submit step refused as cancelled, with the reason on its timeline, instead of open at
+	 * Submission with no fields. A request the step moved on, or one already closed, is left as it is.
+	 *
+	 * @param int      $entry_id Request id.
+	 * @param int      $user_id  The filer.
+	 * @param WP_Error $error    Why the submit step refused it.
+	 * @return void
+	 */
+	function owc_oat_cancel_refused_submission( $entry_id, $user_id, $error ) {
+		if ( ! class_exists( 'OAT_Entry' ) || ! class_exists( 'OAT_Constants' ) || ! is_wp_error( $error ) ) {
+			return;
+		}
+		$entry = OAT_Entry::find( (int) $entry_id );
+		if ( ! $entry || 'submit' !== (string) $entry->current_step || OAT_Constants::is_terminal_status( $entry->status ) ) {
+			return;
+		}
+		OAT_Entry::update_status( (int) $entry_id, OAT_Constants::STATUS_CANCELLED, 'submit' );
+		if ( class_exists( 'OAT_Timeline' ) ) {
+			OAT_Timeline::append( array(
+				'entry_id'        => (int) $entry_id,
+				'action_type'     => OAT_Constants::ACTION_CANCEL,
+				'actor_id'        => (int) $user_id,
+				'step'            => 'submit',
+				'visibility_tier' => OAT_Constants::TIER_STAFF,
+				'note'            => 'Not accepted at submission: ' . $error->get_error_message(),
+			) );
+		}
 	}
 endif;
 

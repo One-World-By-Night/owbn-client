@@ -861,6 +861,7 @@ function owc_oat_submit( $data ) {
         ) );
 
         if ( is_wp_error( $result ) ) {
+            owc_oat_cancel_refused_submission( $entry_id, $user_id, $result );
             return $result;
         }
 

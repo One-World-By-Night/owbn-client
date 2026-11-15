@@ -30,7 +30,7 @@ O Arquivista e cada site da OWbN com o registro (chronicles, council, players) m
 - **Player Name** e **Player Email** (só PCs) - a pessoa que joga o personagem, como texto.
 - **Linked Account** (quando você pode alterar todos os campos; no site, só PCs) - a conta da OWbN à qual o personagem pertence. É ela que decide em qual My Characters o personagem aparece.
   - **Currently linked** mostra a conta, com **Unlink**.
-  - A caixa de busca encontra contas por nome, login, email ou caminho de cargo (dois caracteres ou mais). Cada opção mostra o nome e o email da pessoa. Escolher uma preenche Player Name e Player Email quando estão vazios.
+  - A caixa de busca encontra contas por nome, login ou caminho de cargo (dois caracteres ou mais), ou por um endereço de email inteiro; parte de um endereço não encontra ninguém. Cada opção mostra o nome da pessoa com o login dela, ou o cargo pelo qual ela foi encontrada, e uma busca pelo endereço inteiro mostra esse endereço. Escolher uma preenche Player Name quando está vazio, e também Player Email quando você buscou pelo endereço.
   - **Use the Player Email** encontra a conta cujo email é exatamente o de Player Email.
 - **NPC Owner** (só NPCs) - a crônica ou o escritório de Coordenador que controla o NPC. O wp-admin mostra isso como **NPC Coordinator** (o escritório) e **NPC Type** (chronicle ou coordinator).
 - **Update Character** - grava as alterações. Um vínculo ou desvínculo só vale quando você grava.
@@ -48,7 +48,7 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 ### Vincular um personagem à conta do jogador
 
 1. Abra a ficha.
-2. Em **Linked Account**, digite parte do nome ou do email do jogador e escolha-o na lista pelo nome e email. Se **Player Email** já tem o endereço dele, clique em **Use the Player Email**.
+2. Em **Linked Account**, digite parte do nome ou do login do jogador, ou o endereço de email inteiro dele, e escolha-o na lista. Se **Player Email** já tem o endereço dele, clique em **Use the Player Email**.
 3. Clique em **Update Character**.
 
 ### Passar um personagem para outra conta
@@ -94,7 +94,7 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 - **"You do not have permission to view this character."** O personagem não está vinculado à sua conta nem tem acesso concedido à sua crônica ou escritório. Fale com o HST dele ou com o Arquivista.
 - **"You do not have permission to edit this character."** Só o Status cabe a você, ou nada. Veja [Quem pode usar](#quem-pode-usar).
 - **"Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate."** Escolha Inactive, Dead ou Shelved; um HST é quem volta um personagem a ativo.
-- **"No account matches that."** Ninguém tem uma conta da OWbN com esse nome ou email ainda, ou você é jogador e não pode buscar contas. Deixe o Player Email preenchido: o personagem se vincula sozinho quando a pessoa entrar pela primeira vez.
+- **"No account matches that."** Ninguém tem uma conta da OWbN com esse nome, login ou endereço de email ainda, ou você digitou só parte de um endereço (digite-o inteiro), ou você é jogador e não pode buscar contas. Deixe o Player Email preenchido: o personagem se vincula sozinho quando a pessoa entrar pela primeira vez.
 - **O personagem não aparece em My Characters do jogador.** A Linked Account dele está vazia ou é de outra pessoa. Vincule-o como acima.
 - **O Type aparece como "(Sect Defector)".** O clã do personagem não está na lista de criação da Seita dele. Isso é esperado depois de uma deserção aprovada.
 

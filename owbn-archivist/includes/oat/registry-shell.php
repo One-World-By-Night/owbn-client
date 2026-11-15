@@ -143,7 +143,7 @@ function owc_oat_render_account_link( $wp_user_id, $label ) {
 			<button type="button" class="button button-small oat-account-by-email"><?php esc_html_e( 'Use the Player Email', 'owbn-archivist' ); ?></button>
 		</div>
 		<p class="oat-account-message description" aria-live="polite"></p>
-		<p class="description"><?php esc_html_e( 'Links this character to an account, so it shows under My Characters for that person. Choosing an account fills in Player Name and Player Email when they are empty.', 'owbn-archivist' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Links this character to an account, so it shows under My Characters for that person. Choosing an account fills in Player Name when it is empty, and Player Email too when you searched by the whole address.', 'owbn-archivist' ); ?></p>
 	</div>
 	<?php
 }
