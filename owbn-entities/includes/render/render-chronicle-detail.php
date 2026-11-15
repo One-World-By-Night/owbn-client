@@ -104,7 +104,10 @@ function owc_render_in_brief(array $chronicle): string
             <div class="owc-brief-item"><strong><?php esc_html_e('Genre(s):', 'owbn-entities'); ?></strong> <?php echo esc_html($genres_display); ?></div>
         <?php endif; ?>
         <?php if (!empty($chronicle['game_type'])) : ?>
-            <div class="owc-brief-item"><strong><?php esc_html_e('Game Type:', 'owbn-entities'); ?></strong> <?php echo esc_html($chronicle['game_type']); ?></div>
+            <div class="owc-brief-item"><strong><?php esc_html_e('Game Type:', 'owbn-entities'); ?></strong> <?php echo esc_html(owc_chronicle_game_type_text($chronicle)); ?></div>
+        <?php endif; ?>
+        <?php if ('' !== owc_chronicle_language($chronicle)) : ?>
+            <div class="owc-brief-item"><strong><?php esc_html_e('Language:', 'owbn-entities'); ?></strong> <?php echo esc_html(owc_language_label(owc_chronicle_language($chronicle))); ?></div>
         <?php endif; ?>
         <?php if (!empty($chronicle['active_player_count'])) : ?>
             <div class="owc-brief-item"><strong><?php esc_html_e('Number of Players:', 'owbn-entities'); ?></strong> <?php echo esc_html($chronicle['active_player_count']); ?></div>

@@ -470,3 +470,70 @@ function owc_render_territory_countries(array $codes): string
     // Fallback if territory-manager not active
     return implode(', ', $codes);
 }
+
+/**
+ * A chronicle's language as a filter value: the stored name in lower case ("portuguese"), '' when unset.
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string
+ */
+function owc_chronicle_language(array $chronicle): string
+{
+    return strtolower(trim((string) ($chronicle['primary_language'] ?? '')));
+}
+
+/**
+ * A language's name in the page's language ("Portuguese", "Português"), from its stored name.
+ *
+ * @param string $language Stored name, any case.
+ * @return string
+ */
+function owc_language_label(string $language): string
+{
+    $labels = [
+        'english'    => __('English', 'owbn-entities'),
+        'portuguese' => __('Portuguese', 'owbn-entities'),
+        'spanish'    => __('Spanish', 'owbn-entities'),
+        'french'     => __('French', 'owbn-entities'),
+        'other'      => __('Other language', 'owbn-entities'),
+    ];
+    $key = strtolower(trim($language));
+    return $labels[$key] ?? ucwords($key);
+}
+
+/**
+ * The platform a virtual or hybrid chronicle plays on, by name ("Discord"); '' for an in-person game, an unknown
+ * platform or none.
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string
+ */
+function owc_chronicle_platform_label(array $chronicle): string
+{
+    if (!in_array(strtolower(trim((string) ($chronicle['game_type'] ?? ''))), ['virtual', 'hybrid'], true)) {
+        return '';
+    }
+    $names = [
+        'discord'     => 'Discord',
+        'zoom'        => 'Zoom',
+        'google-meet' => 'Google Meet',
+        'teams'       => 'Microsoft Teams',
+        'roll20'      => 'Roll20',
+        'foundry'     => 'Foundry VTT',
+    ];
+    return $names[(string) ($chronicle['virtual_platform'] ?? '')] ?? '';
+}
+
+/**
+ * A chronicle's game type with its platform when known ("Virtual (Discord)").
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string Plain text.
+ */
+function owc_chronicle_game_type_text(array $chronicle): string
+{
+    $type     = trim((string) ($chronicle['game_type'] ?? ''));
+    $platform = owc_chronicle_platform_label($chronicle);
+    /* translators: 1: game type, e.g. Virtual; 2: platform, e.g. Discord */
+    return '' !== $platform ? sprintf(__('%1$s (%2$s)', 'owbn-entities'), $type, $platform) : $type;
+}

@@ -16,9 +16,9 @@
         try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
         var applied = false;
 
-        // Dropdowns: ?genre=Sabbat picks "Sabbat" under Vampire, ?genre=Vampire the whole family; region, country and
-        // type match a value or its label.
-        var selects = { genre: 'genres', genres: 'genres', region: 'region', country: 'country', type: 'type' };
+        // Dropdowns: ?genre=Sabbat picks "Sabbat" under Vampire, ?genre=Vampire the whole family; region, country,
+        // type and language match a value or its label.
+        var selects = { genre: 'genres', genres: 'genres', region: 'region', country: 'country', type: 'type', language: 'language' };
         Object.keys(selects).forEach(function(key) {
             var val = params.get(key);
             if (val === null || val === '') return;

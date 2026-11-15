@@ -106,6 +106,7 @@ function owc_render_chronicles_filters(array $chronicles): string
     $regions  = [];
     $countries = [];
     $types    = [];
+    $languages = [];
     foreach ($chronicles as $chronicle) {
         foreach (owc_list_genre_tokens((array) ($chronicle['genres'] ?? [])) as $token => $label) {
             $family = strtolower(owc_list_token_family($token));
@@ -127,6 +128,10 @@ function owc_render_chronicles_filters(array $chronicles): string
         if ('' !== $type) {
             $types[strtolower($type)] = $type;
         }
+        $language = owc_chronicle_language($chronicle);
+        if ('' !== $language) {
+            $languages[$language] = owc_language_label($language);
+        }
     }
     uksort($families, static function ($a, $b) {
         return [('other' === $a), $a] <=> [('other' === $b), $b];
@@ -134,6 +139,9 @@ function owc_render_chronicles_filters(array $chronicles): string
     ksort($regions);
     ksort($countries);
     ksort($types);
+    uksort($languages, static function ($a, $b) {
+        return [('other' === $a), $a] <=> [('other' === $b), $b];
+    });
 
     $html  = '<select id="owc-filter-genre" class="owc-filter-select" data-attr="genres" aria-label="' . esc_attr__('Genre', 'owbn-entities') . '">';
     $html .= '<option value="">' . esc_html__('All genres', 'owbn-entities') . '</option>';
@@ -159,6 +167,9 @@ function owc_render_chronicles_filters(array $chronicles): string
         ['country', __('Country', 'owbn-entities'), __('All countries', 'owbn-entities'), $countries],
         ['type', __('Game type', 'owbn-entities'), __('All game types', 'owbn-entities'), $types],
     ];
+    if ($languages) {
+        $simple[] = ['language', __('Language', 'owbn-entities'), __('All languages', 'owbn-entities'), $languages];
+    }
     foreach ($simple as $select) {
         $html .= '<select id="owc-filter-' . esc_attr($select[0]) . '" class="owc-filter-select" data-attr="' . esc_attr($select[0]) . '" aria-label="' . esc_attr($select[1]) . '">';
         $html .= '<option value="">' . esc_html($select[2]) . '</option>';
@@ -227,15 +238,17 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
     $genres = $chronicle['genres'] ?? [];
     $genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
-    // Type
+    // Type, with the platform and the players when known
     $game_type = $chronicle['game_type'] ?? '';
+    $type_text = owc_chronicle_game_type_text($chronicle);
+    $players   = trim((string) ($chronicle['active_player_count'] ?? ''));
 
     // Status flags
     $status = owc_format_status($chronicle);
 
     ob_start();
 ?>
-    <div class="owc-list-row" data-genres="<?php echo esc_attr('|' . implode('|', array_keys(owc_list_genre_tokens(is_array($genres) ? $genres : [$genres]))) . '|'); ?>" data-region="<?php echo esc_attr(strtolower(trim((string) $region))); ?>" data-country="<?php echo esc_attr(strtolower(owc_list_country($chronicle))); ?>" data-type="<?php echo esc_attr(strtolower(trim((string) $game_type))); ?>">
+    <div class="owc-list-row" data-genres="<?php echo esc_attr('|' . implode('|', array_keys(owc_list_genre_tokens(is_array($genres) ? $genres : [$genres]))) . '|'); ?>" data-region="<?php echo esc_attr(strtolower(trim((string) $region))); ?>" data-country="<?php echo esc_attr(strtolower(owc_list_country($chronicle))); ?>" data-type="<?php echo esc_attr(strtolower(trim((string) $game_type))); ?>" data-language="<?php echo esc_attr(owc_chronicle_language($chronicle)); ?>">
         <div class="owc-col-title">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>
@@ -251,8 +264,11 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
         <div class="owc-col-city<?php echo $city ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
             <?php echo esc_html($city); ?>
         </div>
-        <div class="owc-col-type<?php echo $game_type ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
-            <?php echo esc_html($game_type); ?>
+        <div class="owc-col-type<?php echo ($type_text || $players) ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
+            <?php echo esc_html($type_text); ?>
+            <?php if ('' !== $players) : ?>
+                <span class="owc-players"><?php /* translators: %s: rough number of active players, e.g. 21-30 */ echo esc_html(sprintf(__('%s players', 'owbn-entities'), $players)); ?></span>
+            <?php endif; ?>
         </div>
         <div class="owc-col-status<?php echo $status ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Status', 'owbn-entities'); ?>">
             <?php echo esc_html($status); ?>

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-15T02:54:38+00:00\n"
+"POT-Creation-Date: 2026-11-15T03:03:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: owbn-entities\n"
@@ -107,7 +107,7 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:653
 #: includes/elementor/class-chronicle-list-widget.php:728
 #: includes/render/render-chronicles-list.php:55
-#: includes/render/render-chronicles-list.php:257
+#: includes/render/render-chronicles-list.php:273
 #: includes/render/render-vote-history.php:53
 #: includes/render/render-vote-history.php:73
 msgid "Status"
@@ -190,7 +190,7 @@ msgid "Search coordinators..."
 msgstr ""
 
 #: includes/admin/settings-tabs/tab-territories.php:18
-#: includes/render/render-chronicle-detail.php:417
+#: includes/render/render-chronicle-detail.php:420
 #: includes/render/render-coordinator-detail.php:382
 msgid "Territories"
 msgstr ""
@@ -562,7 +562,7 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:703
 #: includes/elementor/class-games-this-week-widget.php:63
 #: includes/render/render-chronicles-list.php:50
-#: includes/render/render-chronicles-list.php:242
+#: includes/render/render-chronicles-list.php:255
 #: includes/shortcodes/shortcodes-chronicle.php:163
 msgid "Genres"
 msgstr ""
@@ -587,7 +587,7 @@ msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:239
 #: includes/elementor/class-chronicle-narrative-section-widget.php:56
-#: includes/render/render-chronicle-detail.php:155
+#: includes/render/render-chronicle-detail.php:158
 #: includes/shortcodes/shortcode-owbn.php:157
 #: includes/shortcodes/shortcodes-chronicle.php:171
 msgid "Premise"
@@ -599,7 +599,7 @@ msgid "Traveler Information"
 msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:243
-#: includes/render/render-chronicle-detail.php:202
+#: includes/render/render-chronicle-detail.php:205
 #: includes/shortcodes/shortcodes-chronicle.php:175
 msgid "Head Storyteller"
 msgstr ""
@@ -625,14 +625,14 @@ msgid "Game Sites"
 msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:252
-#: includes/render/render-chronicle-detail.php:250
+#: includes/render/render-chronicle-detail.php:253
 #: includes/shortcodes/shortcodes-chronicle.php:184
 msgid "Game Sessions"
 msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:255
 #: includes/elementor/class-coordinator-field-widget.php:249
-#: includes/render/render-chronicle-detail.php:339
+#: includes/render/render-chronicle-detail.php:342
 #: includes/shortcodes/shortcodes-chronicle.php:189
 #: includes/shortcodes/shortcodes-coordinator.php:165
 msgid "Documents"
@@ -650,7 +650,7 @@ msgstr ""
 
 #: includes/elementor/class-chronicle-field-widget.php:258
 #: includes/elementor/class-coordinator-field-widget.php:251
-#: includes/render/render-chronicle-detail.php:361
+#: includes/render/render-chronicle-detail.php:364
 #: includes/render/render-coordinator-detail.php:247
 #: includes/shortcodes/shortcodes-chronicle.php:192
 #: includes/shortcodes/shortcodes-coordinator.php:167
@@ -662,8 +662,8 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:641
 #: includes/elementor/class-chronicle-list-widget.php:708
 #: includes/render/render-chronicles-list.php:51
-#: includes/render/render-chronicles-list.php:158
-#: includes/render/render-chronicles-list.php:245
+#: includes/render/render-chronicles-list.php:166
+#: includes/render/render-chronicles-list.php:258
 #: includes/render/render-territory-detail.php:53
 #: includes/render/render-territory-list.php:217
 #: includes/shortcodes/shortcodes-chronicle.php:195
@@ -724,7 +724,7 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:644
 #: includes/elementor/class-chronicle-list-widget.php:713
 #: includes/render/render-chronicles-list.php:52
-#: includes/render/render-chronicles-list.php:248
+#: includes/render/render-chronicles-list.php:261
 msgid "State/Province"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:647
 #: includes/elementor/class-chronicle-list-widget.php:718
 #: includes/render/render-chronicles-list.php:53
-#: includes/render/render-chronicles-list.php:251
+#: includes/render/render-chronicles-list.php:264
 msgid "City"
 msgstr ""
 
@@ -741,7 +741,7 @@ msgstr ""
 #: includes/elementor/class-chronicle-list-widget.php:723
 #: includes/elementor/class-coordinator-field-widget.php:232
 #: includes/render/render-chronicles-list.php:54
-#: includes/render/render-chronicles-list.php:254
+#: includes/render/render-chronicles-list.php:267
 #: includes/shortcodes/shortcodes-coordinator.php:148
 msgid "Type"
 msgstr ""
@@ -898,7 +898,7 @@ msgstr ""
 
 #: includes/elementor/class-chronicle-list-widget.php:673
 #: includes/elementor/class-coordinator-list-widget.php:553
-#: includes/render/render-chronicles-list.php:212
+#: includes/render/render-chronicles-list.php:223
 #: includes/render/render-coordinators-list.php:94
 msgid "Untitled"
 msgstr ""
@@ -916,7 +916,7 @@ msgid "Show Traveler Info"
 msgstr ""
 
 #: includes/elementor/class-chronicle-narrative-section-widget.php:59
-#: includes/render/render-chronicle-detail.php:156
+#: includes/render/render-chronicle-detail.php:159
 #: includes/shortcodes/shortcode-owbn.php:158
 msgid "Information for Travelers"
 msgstr ""
@@ -1086,7 +1086,7 @@ msgid "Administrative"
 msgstr ""
 
 #: includes/elementor/class-coordinator-list-widget.php:74
-#: includes/render/render-chronicles-list.php:138
+#: includes/render/render-chronicles-list.php:146
 msgid "Genre"
 msgstr ""
 
@@ -1200,7 +1200,7 @@ msgid "Only these genres, comma-separated (e.g. \"Camarilla, Sabbat\"). A name m
 msgstr ""
 
 #: includes/elementor/class-games-this-week-widget.php:72
-#: includes/render/render-chronicles-list.php:160
+#: includes/render/render-chronicles-list.php:168
 msgid "Game type"
 msgstr ""
 
@@ -1225,7 +1225,7 @@ msgid "Only this region, as the chronicle records name it (e.g. \"Great Lakes\")
 msgstr ""
 
 #: includes/elementor/class-games-this-week-widget.php:95
-#: includes/render/render-chronicles-list.php:159
+#: includes/render/render-chronicles-list.php:167
 #: includes/render/render-territory-detail.php:46
 #: includes/render/render-territory-list.php:211
 msgid "Country"
@@ -1478,13 +1478,13 @@ msgid "← Back to Chronicles"
 msgstr ""
 
 #: includes/render/render-chronicle-detail.php:68
-#: includes/render/render-chronicles-list.php:276
+#: includes/render/render-chronicles-list.php:292
 #: includes/shortcodes/shortcodes-chronicle.php:197
 msgid "Probationary"
 msgstr ""
 
 #: includes/render/render-chronicle-detail.php:71
-#: includes/render/render-chronicles-list.php:280
+#: includes/render/render-chronicles-list.php:296
 #: includes/shortcodes/shortcodes-chronicle.php:198
 msgid "Satellite"
 msgstr ""
@@ -1502,47 +1502,51 @@ msgid "Game Type:"
 msgstr ""
 
 #: includes/render/render-chronicle-detail.php:110
-msgid "Number of Players:"
+msgid "Language:"
 msgstr ""
 
 #: includes/render/render-chronicle-detail.php:113
+msgid "Number of Players:"
+msgstr ""
+
+#: includes/render/render-chronicle-detail.php:116
 msgid "OWBN Region:"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:133
+#: includes/render/render-chronicle-detail.php:136
 #: includes/shortcodes/shortcodes-chronicle.php:169
 #: includes/shortcodes/shortcodes-chronicle.php:170
 #: includes/shortcodes/shortcodes-coordinator.php:154
 msgid "About"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:200
+#: includes/render/render-chronicle-detail.php:203
 msgid "Staff"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:203
+#: includes/render/render-chronicle-detail.php:206
 msgid "Council Member"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:205
+#: includes/render/render-chronicle-detail.php:208
 msgid "AST"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:265
+#: includes/render/render-chronicle-detail.php:268
 #: includes/render/render-helpers.php:136
 msgid "Check-in:"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:268
+#: includes/render/render-chronicle-detail.php:271
 #: includes/render/render-helpers.php:141
 msgid "Start:"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:299
+#: includes/render/render-chronicle-detail.php:302
 msgid "Links & Resources"
 msgstr ""
 
-#: includes/render/render-chronicle-detail.php:391
+#: includes/render/render-chronicle-detail.php:394
 msgid "Satellite Parent:"
 msgstr ""
 
@@ -1550,29 +1554,43 @@ msgstr ""
 msgid "Search name, state or city"
 msgstr ""
 
-#: includes/render/render-chronicles-list.php:139
+#: includes/render/render-chronicles-list.php:147
 msgid "All genres"
 msgstr ""
 
 #. translators: %s: genre family, e.g. Vampire
-#: includes/render/render-chronicles-list.php:149
+#: includes/render/render-chronicles-list.php:157
 #, php-format
 msgid "%s (all)"
 msgstr ""
 
-#: includes/render/render-chronicles-list.php:158
+#: includes/render/render-chronicles-list.php:166
 msgid "All regions"
 msgstr ""
 
-#: includes/render/render-chronicles-list.php:159
+#: includes/render/render-chronicles-list.php:167
 msgid "All countries"
 msgstr ""
 
-#: includes/render/render-chronicles-list.php:160
+#: includes/render/render-chronicles-list.php:168
 msgid "All game types"
 msgstr ""
 
-#: includes/render/render-chronicles-list.php:284
+#: includes/render/render-chronicles-list.php:171
+msgid "Language"
+msgstr ""
+
+#: includes/render/render-chronicles-list.php:171
+msgid "All languages"
+msgstr ""
+
+#. translators: %s: rough number of active players, e.g. 21-30
+#: includes/render/render-chronicles-list.php:270
+#, php-format
+msgid "%s players"
+msgstr ""
+
+#: includes/render/render-chronicles-list.php:300
 msgid "Full Member"
 msgstr ""
 
@@ -1745,6 +1763,32 @@ msgstr[1] ""
 
 #: includes/render/render-helpers.php:368
 msgid "Sign Up"
+msgstr ""
+
+#: includes/render/render-helpers.php:494
+msgid "English"
+msgstr ""
+
+#: includes/render/render-helpers.php:495
+msgid "Portuguese"
+msgstr ""
+
+#: includes/render/render-helpers.php:496
+msgid "Spanish"
+msgstr ""
+
+#: includes/render/render-helpers.php:497
+msgid "French"
+msgstr ""
+
+#: includes/render/render-helpers.php:498
+msgid "Other language"
+msgstr ""
+
+#. translators: 1: game type, e.g. Virtual; 2: platform, e.g. Discord
+#: includes/render/render-helpers.php:538
+#, php-format
+msgid "%1$s (%2$s)"
 msgstr ""
 
 #: includes/render/render-territory-box.php:36

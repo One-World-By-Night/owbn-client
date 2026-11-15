@@ -86,6 +86,7 @@
 .owc-chronicles-list .owc-col-city { flex: 1; min-width: 100px; }
 .owc-chronicles-list .owc-col-type { flex: 0.8; min-width: 70px; }
 .owc-chronicles-list .owc-col-status { flex: 1; min-width: 90px; }
+.owc-chronicles-list .owc-players { display: block; font-size: 0.85em; opacity: 0.8; }
 
 /* Column widths - Coordinators */
 .owc-coordinators-list .owc-col-office { flex: 2; min-width: 150px; }

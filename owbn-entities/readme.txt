@@ -35,6 +35,7 @@ Requires the OWBN Core plugin.
 * Council Votes: the open votes anyone may see, soonest closing first, each with its type in words and the day it closes, linked to the vote on the votes site, as an Elementor widget and `[owbn type="council-votes"]`. Members-only and restricted votes are never listed. If the votes site can't be read, or doesn't say who can see each vote, the box shows nothing rather than "nothing open". Cached 10 minutes; a failed read is cached 5 so the votes site isn't asked on every view. Needs owbn-core 1.13.0, and owbn-core 1.13.0 with owbn-gateway 1.7.0 on the votes site.
 * Bylaw Changes: clauses added or amended in the last N days, newest first, named as on the bylaws site ("Character 4.e") with the start of their wording, linked to the clause, as an Elementor widget and `[owbn type="bylaw-changes"]`. Cached an hour.
 * Days in both council boxes are written in the page's language by the page script; without JavaScript they stay as the server wrote them.
+* Find a Game: a Language dropdown once chronicles carry a language (`?language=Portuguese` deep links to it); the Type column names the platform of a Virtual or Hybrid game ("Virtual (Discord)") and shows the players. In Brief on a chronicle's page shows its language and platform too.
 * Portuguese (Brazil) for everything new in 1.1.0.
 * Releases 1.0.1 to 1.0.14 are in the repository's commit history.
 
