@@ -150,6 +150,22 @@ function owbn_www_listing_link_shortcode( $atts ) {
 add_shortcode( 'owbn_www_listing_link', 'owbn_www_listing_link_shortcode' );
 
 /**
+ * The chronicle detail page is drawn by owbn-entities' own template, not by the page's content, so the listing link goes
+ * in from the template's get_footer() call: below the chronicle, above the footer, in the same wrappers as the chronicle
+ * so it lines up with it.
+ */
+function owbn_www_listing_link_after_detail() {
+	if ( ! is_page( 'chronicle-detail' ) ) {
+		return;
+	}
+	$link = owbn_www_listing_link_shortcode( array() );
+	if ( '' !== $link ) {
+		echo '<div class="owc-template-wrapper"><div class="owc-chronicle-detail">' . $link . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts.
+	}
+}
+add_action( 'get_footer', 'owbn_www_listing_link_after_detail', 1 );
+
+/**
  * Choices for a pick-list: 'teams' (chronicles, then coordinator offices), 'chronicles', or 'genres'.
  *
  * @param string $source Which list.
