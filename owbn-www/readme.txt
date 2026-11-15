@@ -3,7 +3,7 @@ Contributors: oneWorldByNight
 Tags: owbn
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 License: GPL-2.0-or-later
 
 Pieces only the public OWBN website uses, kept in git rather than in its child theme.
@@ -13,6 +13,7 @@ Pieces only the public OWBN website uses, kept in git rather than in its child t
 * `[www_news count="3"]`: the latest published posts as cards, with a "News & Events" heading and an "All news & events" link.
 * `[www_member_bar]`: for signed-in members only, a link to submit a chronicle report on the Archivist site (`?auth=sso`).
 * /chronicles/ sends visitors to Find a Game for good (301), with any query string.
+* Signed-in members: no WordPress toolbar unless they can edit the site, and avatars are an image built into the page, never fetched from Gravatar.
 * Log In (the OAuth 2.0 Single Sign On Client plugin): a `?auth=sso` link only returns members to an address on this site, and the plugin no longer rebuilds WordPress's rewrite rules on every request.
 * The phone menu: tapping a caret opens or closes its submenu, tapping a label opens its page, and one submenu is open at a time (SmartMenus "accordion-link").
 * Four Gravity Forms, defined in `includes/forms-definitions.php` (each page carries its own introduction; the form's description isn't shown) and placed with `[owbn_www_form key="news|event|bad-first-game|listing-problem"]`. `wp eval 'var_dump( owbn_www_install_forms( <reviewer user id> ) );'` creates them or brings them up to date. Every field works with scripts blocked, and none of them uses AJAX.
@@ -23,6 +24,9 @@ Pieces only the public OWBN website uses, kept in git rather than in its child t
   * A hidden field that bots fill in (rendered by the server; Gravity Forms' own honeypot needs its scripts, so it is off), and one visitor can send a form at most five times an hour.
 
 == Changelog ==
+
+= 0.4.3 =
+* Signed-in members no longer get the WordPress toolbar (people who can edit the site still do), and every avatar is an image built into the page, so no page asks Gravatar for one. A member's IP address stays on the site, as the privacy policy says.
 
 = 0.4.2 =
 * The listing link shows on the chronicle detail page, which owbn-entities draws with its own template.
