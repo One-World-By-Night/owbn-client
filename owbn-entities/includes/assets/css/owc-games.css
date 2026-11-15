@@ -1,0 +1,90 @@
+/* Games this week */
+.owc-games__note {
+	margin: 0 0 0.75em;
+	font-size: 0.875em;
+	opacity: 0.8;
+}
+.owc-games__note--local,
+.owc-games--local .owc-games__note--chronicle,
+.owc-games--local .owc-games__tz {
+	display: none;
+}
+.owc-games--local .owc-games__note--local {
+	display: block;
+}
+.owc-games__day + .owc-games__day {
+	margin-top: 1em;
+}
+.owc-games__date {
+	margin: 0 0 0.4em;
+	font-size: 1.05em;
+}
+.owc-games__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.owc-games__item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.15em 0.6em;
+	padding: 0.45em 0;
+	border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+	overflow-wrap: anywhere;
+}
+.owc-games__time {
+	font-weight: 600;
+	min-width: 5.5em;
+}
+.owc-games__tz,
+.owc-games__where,
+.owc-games__what,
+.owc-games__title {
+	font-size: 0.875em;
+	opacity: 0.8;
+}
+.owc-games__name {
+	font-weight: 600;
+}
+.owc-games__what {
+	flex-basis: 100%;
+}
+.owc-games__empty {
+	margin: 0;
+}
+
+/* OWBN by the numbers */
+.owc-numbers {
+	margin-bottom: 1.5em;
+}
+.owc-numbers__figures,
+.owc-numbers__genres {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em 2em;
+}
+.owc-numbers__figure {
+	display: flex;
+	flex-direction: column;
+}
+.owc-numbers__value {
+	font-size: 2em;
+	font-weight: 700;
+	line-height: 1.1;
+}
+.owc-numbers__label {
+	font-size: 0.9em;
+	text-transform: lowercase;
+}
+.owc-numbers__genres {
+	margin-top: 1em;
+	gap: 0.4em 1.5em;
+	font-size: 0.95em;
+}
+.owc-numbers__genre-count {
+	font-weight: 600;
+}

@@ -60,6 +60,8 @@ class OWC_Entities_Elementor_Loader {
         require_once $dir . '/class-coordinator-field-widget.php';
         require_once $dir . '/class-territory-list-widget.php';
         require_once $dir . '/class-territory-detail-widget.php';
+        require_once $dir . '/class-games-this-week-widget.php';
+        require_once $dir . '/class-owbn-numbers-widget.php';
 
         $widgets_manager->register( new OWC_Chronicle_List_Widget() );
         $widgets_manager->register( new OWC_Chronicle_Detail_Widget() );
@@ -69,6 +71,8 @@ class OWC_Entities_Elementor_Loader {
         $widgets_manager->register( new OWC_Coordinator_Field_Widget() );
         $widgets_manager->register( new OWC_Territory_List_Widget() );
         $widgets_manager->register( new OWC_Territory_Detail_Widget() );
+        $widgets_manager->register( new OWC_Games_This_Week_Widget() );
+        $widgets_manager->register( new OWC_Owbn_Numbers_Widget() );
 
         // ── Chronicle section widgets (decomposed detail) ──────────────
         require_once $dir . '/class-chronicle-header-section-widget.php';

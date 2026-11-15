@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,11 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.0 =
+* Games This Week: every published chronicle's games in the next few days, grouped by day, as an Elementor widget and `[owbn type="games-this-week"]`, filtered by genre, OWBN region, country and game type. Times show in each visitor's own time zone and language; without JavaScript, in each chronicle's local time. Needs owbn-core 1.13.0.
+* OWBN by the Numbers: published chronicles, countries, OWBN regions and genres, optionally the chronicles per genre, as an Elementor widget and `[owbn type="owbn-numbers"]`.
+* Releases 1.0.1 to 1.0.14 are in the repository's commit history.
 
 = 1.0.0 =
 * Initial release — extracted from owbn-client 4.30.0

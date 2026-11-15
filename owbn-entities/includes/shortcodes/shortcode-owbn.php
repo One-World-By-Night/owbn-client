@@ -7,6 +7,8 @@
  *   [owbn type="chronicle" field="premise" slug="mckn"]
  *   [owbn type="coordinator" section="subcoords" slug="tremere"]
  *   [owbn type="coordinator" field="coord_info"]
+ *   [owbn type="games-this-week" days="7" genre="Camarilla, Sabbat" game_type="Virtual" country="BR" region="" limit="0"]
+ *   [owbn type="owbn-numbers" show_genres="true"]
  *
  * Slug defaults to $_GET['slug'] if omitted.
  */
@@ -24,6 +26,15 @@ function owbn_shortcode_handler( $atts ) {
         'id'      => '',
         'label'   => 'true',
         'link'    => '',
+        'days'        => '7',
+        'genre'       => '',
+        'region'      => '',
+        'country'     => '',
+        'game_type'   => '',
+        'limit'       => '0',
+        'detail_page' => '0',
+        'empty'       => '',
+        'show_genres' => 'false',
     ), $atts, 'owbn' );
 
     $type    = sanitize_text_field( $atts['type'] );
@@ -72,6 +83,23 @@ function owbn_shortcode_handler( $atts ) {
             if ( ! owc_territories_enabled() ) return '';
             $data = owc_fetch_list( 'territories' );
             return owc_render_territories_list( $data );
+
+        case 'games-this-week':
+            if ( ! owc_chronicles_enabled() ) return '';
+            return owc_render_games_this_week( array(
+                'days'        => absint( $atts['days'] ),
+                'genre'       => sanitize_text_field( $atts['genre'] ),
+                'region'      => sanitize_text_field( $atts['region'] ),
+                'country'     => sanitize_text_field( $atts['country'] ),
+                'game_type'   => sanitize_text_field( $atts['game_type'] ),
+                'limit'       => absint( $atts['limit'] ),
+                'detail_page' => absint( $atts['detail_page'] ),
+                'empty'       => sanitize_text_field( $atts['empty'] ),
+            ) );
+
+        case 'owbn-numbers':
+            if ( ! owc_chronicles_enabled() ) return '';
+            return owc_render_owbn_numbers( array( 'show_genres' => filter_var( $atts['show_genres'], FILTER_VALIDATE_BOOLEAN ) ) );
 
         case 'territory':
             if ( ! owc_territories_enabled() || empty( $id ) ) return '';
