@@ -88,3 +88,31 @@
 .owc-numbers__genre-count {
 	font-weight: 600;
 }
+
+/* Council boxes: votes and bylaw changes */
+.owc-council__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.owc-council__item {
+	padding: 0.4em 0;
+	border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+	overflow-wrap: anywhere;
+}
+.owc-council__title {
+	font-weight: 600;
+}
+.owc-council__excerpt {
+	display: block;
+	font-size: 0.9375em;
+}
+.owc-council__meta {
+	display: block;
+	font-size: 0.875em;
+	opacity: 0.8;
+}
+.owc-council__empty,
+.owc-council__all {
+	margin: 0.5em 0 0;
+}

@@ -2,39 +2,44 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: OWBN Entities 1.0.14\n"
+"Project-Id-Version: OWBN Entities 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/owbn-entities\n"
+"POT-Creation-Date: 2026-11-15T02:54:38+00:00\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Domain: owbn-entities\n"
 
 #. Plugin Name of the plugin
-#: owbn-entities.php
-#: includes/elementor/widgets-loader.php:39
+#: owbn-entities.php includes/elementor/widgets-loader.php:39
 msgid "OWBN Entities"
 msgstr "OWBN Entities"
 
 #. Plugin URI of the plugin
 #: owbn-entities.php
 msgid "https://github.com/One-World-By-Night/owbn-client"
-msgstr ""
+msgstr "https://github.com/One-World-By-Night/owbn-client"
 
 #. Description of the plugin
 #: owbn-entities.php
-msgid "Chronicles, coordinators, territories, and vote history for OWBN WordPress sites."
-msgstr "Crônicas, coordenadores, territórios e histórico de votações para os sites WordPress da OWBN."
+msgid ""
+"Chronicles, coordinators, territories, and vote history for OWBN WordPress "
+"sites."
+msgstr ""
+"Crônicas, coordenadores, territórios e histórico de votações para os sites "
+"WordPress da OWBN."
 
 #. Author of the plugin
 #: owbn-entities.php
 msgid "greghacke"
-msgstr ""
+msgstr "greghacke"
 
 #. Author URI of the plugin
 #: owbn-entities.php
 msgid "https://www.owbn.net"
-msgstr ""
+msgstr "https://www.owbn.net"
 
 #: includes/admin/settings-tabs/tab-chronicles.php:20
 msgid "Chronicles"
@@ -87,6 +92,7 @@ msgstr "Página da Lista de Crônicas"
 #: includes/admin/settings-tabs/tab-coordinators.php:90
 #: includes/elementor/class-chronicle-list-widget.php:740
 #: includes/elementor/class-coordinator-list-widget.php:583
+#: includes/elementor/class-games-this-week-widget.php:153
 msgid "— Select Page —"
 msgstr "— Selecione a Página —"
 
@@ -101,8 +107,8 @@ msgstr "Página de Detalhes da Crônica"
 #: includes/elementor/class-chronicle-list-widget.php:91
 #: includes/elementor/class-chronicle-list-widget.php:653
 #: includes/elementor/class-chronicle-list-widget.php:728
-#: includes/render/render-chronicles-list.php:57
-#: includes/render/render-chronicles-list.php:122
+#: includes/render/render-chronicles-list.php:55
+#: includes/render/render-chronicles-list.php:257
 #: includes/render/render-vote-history.php:53
 #: includes/render/render-vote-history.php:73
 msgid "Status"
@@ -169,8 +175,10 @@ msgid "Coordinators"
 msgstr "Coordenadores"
 
 #: includes/admin/settings-tabs/tab-coordinators.php:57
-msgid "Only set if coordinators come from a different gateway than the default."
-msgstr "Defina apenas se os coordenadores vierem de um gateway diferente do padrão."
+msgid ""
+"Only set if coordinators come from a different gateway than the default."
+msgstr ""
+"Defina apenas se os coordenadores vierem de um gateway diferente do padrão."
 
 #: includes/admin/settings-tabs/tab-coordinators.php:74
 msgid "Coordinators List Page"
@@ -196,7 +204,8 @@ msgstr "Local — Servir a partir dos CPTs do Territory Manager neste site"
 
 #: includes/admin/settings-tabs/tab-territories.php:55
 msgid "Only set if territories come from a different gateway than the default."
-msgstr "Defina apenas se os territórios vierem de um gateway diferente do padrão."
+msgstr ""
+"Defina apenas se os territórios vierem de um gateway diferente do padrão."
 
 #: includes/admin/settings-tabs/tab-territories.php:101
 msgid "Territory Manager"
@@ -218,15 +227,21 @@ msgstr "Histórico de Votações"
 
 #: includes/admin/settings-tabs/tab-vote-history.php:19
 msgid "Shows vote history on chronicle and coordinator detail pages."
-msgstr "Mostra o histórico de votações nas páginas de detalhes de crônicas e coordenadores."
+msgstr ""
+"Mostra o histórico de votações nas páginas de detalhes de crônicas e "
+"coordenadores."
 
 #: includes/admin/settings-tabs/tab-vote-history.php:34
 msgid "Local — Query wp-voting-plugin tables on this site"
 msgstr "Local — Consultar as tabelas do wp-voting-plugin neste site"
 
 #: includes/admin/settings-tabs/tab-vote-history.php:56
-msgid "Only set if vote data comes from a different gateway than the default remote URL."
-msgstr "Defina apenas se os dados de votação vierem de um gateway diferente da URL remota padrão."
+msgid ""
+"Only set if vote data comes from a different gateway than the default remote "
+"URL."
+msgstr ""
+"Defina apenas se os dados de votação vierem de um gateway diferente da URL "
+"remota padrão."
 
 #: includes/admin/settings-tabs/tab-vote-history.php:96
 msgid "Voting Plugin"
@@ -238,8 +253,7 @@ msgstr "Plugin de Votação"
 msgid "No chronicle specified."
 msgstr "Nenhuma crônica especificada."
 
-#: includes/core/data-singleton.php:36
-#: includes/core/data-singleton.php:65
+#: includes/core/data-singleton.php:36 includes/core/data-singleton.php:65
 msgid "Data fetch not available."
 msgstr "Busca de dados indisponível."
 
@@ -248,6 +262,60 @@ msgstr "Busca de dados indisponível."
 #: includes/templates/detail-owbn-coordinator.php:28
 msgid "No coordinator specified."
 msgstr "Nenhum coordenador especificado."
+
+#: includes/elementor/class-bylaw-changes-widget.php:18
+msgid "Bylaw Changes"
+msgstr "Mudanças no estatuto"
+
+#: includes/elementor/class-bylaw-changes-widget.php:41
+#: includes/elementor/class-chronicle-detail-widget.php:61
+#: includes/elementor/class-chronicle-field-widget.php:55
+#: includes/elementor/class-chronicle-list-widget.php:61
+#: includes/elementor/class-coordinator-detail-widget.php:59
+#: includes/elementor/class-coordinator-field-widget.php:55
+#: includes/elementor/class-coordinator-field-widget.php:237
+#: includes/elementor/class-coordinator-list-widget.php:61
+#: includes/elementor/class-council-votes-widget.php:41
+#: includes/elementor/class-games-this-week-widget.php:46
+#: includes/elementor/class-owbn-numbers-widget.php:42
+#: includes/elementor/class-territory-detail-widget.php:59
+#: includes/elementor/class-territory-list-widget.php:61
+#: includes/shortcodes/shortcodes-coordinator.php:153
+msgid "Content"
+msgstr "Conteúdo"
+
+#: includes/elementor/class-bylaw-changes-widget.php:48
+msgid "Days back"
+msgstr "Dias para trás"
+
+#: includes/elementor/class-bylaw-changes-widget.php:58
+msgid "Most clauses"
+msgstr "Máximo de cláusulas"
+
+#: includes/elementor/class-bylaw-changes-widget.php:68
+msgid "All bylaws address"
+msgstr "Endereço do link \"Estatuto completo\""
+
+#: includes/elementor/class-bylaw-changes-widget.php:71
+msgid "Address for an \"All bylaws\" link. Empty for none."
+msgstr "Endereço do link \"Estatuto completo\". Vazio para nenhum link."
+
+#: includes/elementor/class-bylaw-changes-widget.php:77
+#: includes/elementor/class-chronicle-list-widget.php:126
+#: includes/elementor/class-coordinator-list-widget.php:95
+#: includes/elementor/class-council-votes-widget.php:76
+#: includes/elementor/class-games-this-week-widget.php:124
+#: includes/elementor/class-territory-list-widget.php:69
+msgid "Empty Message"
+msgstr "Mensagem Vazia"
+
+#: includes/elementor/class-bylaw-changes-widget.php:80
+#, php-format
+msgid ""
+"Shown when nothing changed; %d is the number of days. Empty for the standard "
+"text."
+msgstr ""
+"Mostrado quando nada mudou; %d é o número de dias. Vazio para o texto padrão."
 
 #: includes/elementor/class-chronicle-about-section-widget.php:10
 msgid "Chronicle About"
@@ -323,19 +391,6 @@ msgstr "Deixe vazio para ler do parâmetro da URL."
 #: includes/elementor/class-chronicle-detail-widget.php:27
 msgid "Chronicle Detail"
 msgstr "Detalhes da Crônica"
-
-#: includes/elementor/class-chronicle-detail-widget.php:61
-#: includes/elementor/class-chronicle-field-widget.php:55
-#: includes/elementor/class-chronicle-list-widget.php:61
-#: includes/elementor/class-coordinator-detail-widget.php:59
-#: includes/elementor/class-coordinator-field-widget.php:55
-#: includes/elementor/class-coordinator-field-widget.php:237
-#: includes/elementor/class-coordinator-list-widget.php:61
-#: includes/elementor/class-territory-detail-widget.php:59
-#: includes/elementor/class-territory-list-widget.php:61
-#: includes/shortcodes/shortcodes-coordinator.php:153
-msgid "Content"
-msgstr "Conteúdo"
 
 #: includes/elementor/class-chronicle-detail-widget.php:69
 #: includes/elementor/class-chronicle-field-widget.php:63
@@ -423,15 +478,15 @@ msgstr "Cor do Texto"
 #: includes/elementor/class-chronicle-detail-widget.php:213
 #: includes/elementor/class-chronicle-field-widget.php:185
 #: includes/elementor/class-chronicle-list-widget.php:563
-#: includes/shortcodes/shortcodes.php:54
-#: includes/shortcodes/shortcodes.php:75
+#: includes/shortcodes/shortcodes.php:54 includes/shortcodes/shortcodes.php:75
 msgid "Chronicles are not enabled."
 msgstr "As crônicas não estão ativadas."
 
 #: includes/elementor/class-chronicle-detail-widget.php:228
 #: includes/elementor/class-chronicle-field-widget.php:200
 msgid "No chronicle selected. Set a fixed slug or use ?slug= parameter."
-msgstr "Nenhuma crônica selecionada. Defina um slug fixo ou use o parâmetro ?slug=."
+msgstr ""
+"Nenhuma crônica selecionada. Defina um slug fixo ou use o parâmetro ?slug=."
 
 #: includes/elementor/class-chronicle-detail-widget.php:240
 #: includes/elementor/class-chronicle-field-widget.php:214
@@ -517,8 +572,9 @@ msgstr "Slug"
 #: includes/elementor/class-chronicle-list-widget.php:86
 #: includes/elementor/class-chronicle-list-widget.php:638
 #: includes/elementor/class-chronicle-list-widget.php:703
-#: includes/render/render-chronicles-list.php:52
-#: includes/render/render-chronicles-list.php:107
+#: includes/elementor/class-games-this-week-widget.php:63
+#: includes/render/render-chronicles-list.php:50
+#: includes/render/render-chronicles-list.php:242
 #: includes/shortcodes/shortcodes-chronicle.php:163
 msgid "Genres"
 msgstr "Gêneros"
@@ -544,7 +600,7 @@ msgstr "Sobre/Conteúdo"
 #: includes/elementor/class-chronicle-field-widget.php:239
 #: includes/elementor/class-chronicle-narrative-section-widget.php:56
 #: includes/render/render-chronicle-detail.php:155
-#: includes/shortcodes/shortcode-owbn.php:109
+#: includes/shortcodes/shortcode-owbn.php:157
 #: includes/shortcodes/shortcodes-chronicle.php:171
 msgid "Premise"
 msgstr "Premissa"
@@ -617,8 +673,9 @@ msgstr "Listas de Jogadores"
 #: includes/elementor/class-chronicle-list-widget.php:87
 #: includes/elementor/class-chronicle-list-widget.php:641
 #: includes/elementor/class-chronicle-list-widget.php:708
-#: includes/render/render-chronicles-list.php:53
-#: includes/render/render-chronicles-list.php:110
+#: includes/render/render-chronicles-list.php:51
+#: includes/render/render-chronicles-list.php:158
+#: includes/render/render-chronicles-list.php:245
 #: includes/render/render-territory-detail.php:53
 #: includes/render/render-territory-list.php:217
 #: includes/shortcodes/shortcodes-chronicle.php:195
@@ -670,7 +727,7 @@ msgstr "Colunas a Exibir"
 
 #: includes/elementor/class-chronicle-list-widget.php:85
 #: includes/elementor/class-chronicle-list-widget.php:635
-#: includes/render/render-chronicles-list.php:51
+#: includes/render/render-chronicles-list.php:49
 #: includes/shortcodes/shortcodes-chronicle.php:160
 msgid "Chronicle"
 msgstr "Crônica"
@@ -678,16 +735,16 @@ msgstr "Crônica"
 #: includes/elementor/class-chronicle-list-widget.php:88
 #: includes/elementor/class-chronicle-list-widget.php:644
 #: includes/elementor/class-chronicle-list-widget.php:713
-#: includes/render/render-chronicles-list.php:54
-#: includes/render/render-chronicles-list.php:113
+#: includes/render/render-chronicles-list.php:52
+#: includes/render/render-chronicles-list.php:248
 msgid "State/Province"
 msgstr "Estado/Província"
 
 #: includes/elementor/class-chronicle-list-widget.php:89
 #: includes/elementor/class-chronicle-list-widget.php:647
 #: includes/elementor/class-chronicle-list-widget.php:718
-#: includes/render/render-chronicles-list.php:55
-#: includes/render/render-chronicles-list.php:116
+#: includes/render/render-chronicles-list.php:53
+#: includes/render/render-chronicles-list.php:251
 msgid "City"
 msgstr "Cidade"
 
@@ -695,8 +752,8 @@ msgstr "Cidade"
 #: includes/elementor/class-chronicle-list-widget.php:650
 #: includes/elementor/class-chronicle-list-widget.php:723
 #: includes/elementor/class-coordinator-field-widget.php:232
-#: includes/render/render-chronicles-list.php:56
-#: includes/render/render-chronicles-list.php:119
+#: includes/render/render-chronicles-list.php:54
+#: includes/render/render-chronicles-list.php:254
 #: includes/shortcodes/shortcodes-coordinator.php:148
 msgid "Type"
 msgstr "Tipo"
@@ -714,6 +771,7 @@ msgid "Decommissioned"
 msgstr "Desativada"
 
 #: includes/elementor/class-chronicle-list-widget.php:106
+#: includes/elementor/class-games-this-week-widget.php:76
 msgid "All"
 msgstr "Todas"
 
@@ -723,18 +781,13 @@ msgstr "Quais crônicas mostrar, conforme o status."
 
 #: includes/elementor/class-chronicle-list-widget.php:115
 #: includes/elementor/class-coordinator-list-widget.php:84
+#: includes/elementor/class-games-this-week-widget.php:114
 msgid "Detail Page"
 msgstr "Página de Detalhes"
 
 #: includes/elementor/class-chronicle-list-widget.php:119
 msgid "Page to link to for chronicle details (uses ?slug= parameter)"
 msgstr "Página para os detalhes da crônica (usa o parâmetro ?slug=)"
-
-#: includes/elementor/class-chronicle-list-widget.php:126
-#: includes/elementor/class-coordinator-list-widget.php:95
-#: includes/elementor/class-territory-list-widget.php:69
-msgid "Empty Message"
-msgstr "Mensagem Vazia"
 
 #: includes/elementor/class-chronicle-list-widget.php:128
 #: includes/elementor/class-chronicle-list-widget.php:129
@@ -830,38 +883,34 @@ msgid "Full Member Background"
 msgstr "Fundo de Membro Pleno"
 
 #: includes/elementor/class-chronicle-list-widget.php:617
-#: includes/render/render-chronicles-list.php:42
 msgid "Filter Genres..."
 msgstr "Filtrar gêneros..."
 
 #: includes/elementor/class-chronicle-list-widget.php:620
-#: includes/render/render-chronicles-list.php:43
 msgid "Filter Region..."
 msgstr "Filtrar região..."
 
 #: includes/elementor/class-chronicle-list-widget.php:623
-#: includes/render/render-chronicles-list.php:44
 msgid "Filter State..."
 msgstr "Filtrar estado..."
 
 #: includes/elementor/class-chronicle-list-widget.php:626
-#: includes/render/render-chronicles-list.php:45
 msgid "Filter Type..."
 msgstr "Filtrar tipo..."
 
 #: includes/elementor/class-chronicle-list-widget.php:628
-#: includes/render/render-chronicles-list.php:46
+#: includes/render/render-chronicles-list.php:44
 msgid "Clear"
 msgstr "Limpar"
 
 #: includes/elementor/class-chronicle-list-widget.php:662
-#: includes/render/render-chronicles-list.php:65
+#: includes/render/render-chronicles-list.php:63
 msgid "No chronicles match your filters."
 msgstr "Nenhuma crônica corresponde aos filtros."
 
 #: includes/elementor/class-chronicle-list-widget.php:673
 #: includes/elementor/class-coordinator-list-widget.php:553
-#: includes/render/render-chronicles-list.php:80
+#: includes/render/render-chronicles-list.php:212
 #: includes/render/render-coordinators-list.php:94
 msgid "Untitled"
 msgstr "Sem título"
@@ -880,7 +929,7 @@ msgstr "Mostrar Informações para Viajantes"
 
 #: includes/elementor/class-chronicle-narrative-section-widget.php:59
 #: includes/render/render-chronicle-detail.php:156
-#: includes/shortcodes/shortcode-owbn.php:110
+#: includes/shortcodes/shortcode-owbn.php:158
 msgid "Information for Travelers"
 msgstr "Informações para Viajantes"
 
@@ -954,15 +1003,16 @@ msgstr "Tipografia"
 #: includes/elementor/class-coordinator-detail-widget.php:182
 #: includes/elementor/class-coordinator-field-widget.php:185
 #: includes/elementor/class-coordinator-list-widget.php:458
-#: includes/shortcodes/shortcodes.php:61
-#: includes/shortcodes/shortcodes.php:85
+#: includes/shortcodes/shortcodes.php:61 includes/shortcodes/shortcodes.php:85
 msgid "Coordinators are not enabled."
 msgstr "Os coordenadores não estão ativados."
 
 #: includes/elementor/class-coordinator-detail-widget.php:197
 #: includes/elementor/class-coordinator-field-widget.php:200
 msgid "No coordinator selected. Set a fixed slug or use ?slug= parameter."
-msgstr "Nenhum coordenador selecionado. Defina um slug fixo ou use o parâmetro ?slug=."
+msgstr ""
+"Nenhum coordenador selecionado. Defina um slug fixo ou use o parâmetro ?"
+"slug=."
 
 #: includes/elementor/class-coordinator-detail-widget.php:209
 #: includes/elementor/class-coordinator-field-widget.php:214
@@ -1049,6 +1099,7 @@ msgid "Administrative"
 msgstr "Administrativo"
 
 #: includes/elementor/class-coordinator-list-widget.php:74
+#: includes/render/render-chronicles-list.php:138
 msgid "Genre"
 msgstr "Gênero"
 
@@ -1121,6 +1172,129 @@ msgstr "Territórios do Coordenador"
 msgid "Coordinator Vote History"
 msgstr "Histórico de Votações do Coordenador"
 
+#: includes/elementor/class-council-votes-widget.php:18
+msgid "Council Votes"
+msgstr "Votações do Conselho"
+
+#: includes/elementor/class-council-votes-widget.php:48
+msgid "Most votes"
+msgstr "Máximo de votações"
+
+#: includes/elementor/class-council-votes-widget.php:58
+msgid "Vote page address"
+msgstr "Endereço da página da votação"
+
+#: includes/elementor/class-council-votes-widget.php:61
+msgid ""
+"The votes site page that shows one vote; ?wpvp_vote= is added. Empty for the "
+"votes site's /en/voting-dashboard/cast-vote/."
+msgstr ""
+"A página do site de votações que mostra uma votação; ?wpvp_vote= é "
+"acrescentado. Vazio para /en/voting-dashboard/cast-vote/ do site de votações."
+
+#: includes/elementor/class-council-votes-widget.php:67
+msgid "All votes address"
+msgstr "Endereço do link \"Todas as votações\""
+
+#: includes/elementor/class-council-votes-widget.php:70
+msgid "Empty for the votes site's /en/voting-dashboard/."
+msgstr "Vazio para /en/voting-dashboard/ do site de votações."
+
+#: includes/elementor/class-council-votes-widget.php:79
+msgid ""
+"Shown when no public vote is open. Members-only and restricted votes are "
+"never listed. Empty for the standard text."
+msgstr ""
+"Mostrado quando nenhuma votação pública está aberta. Votações só para "
+"membros ou restritas nunca aparecem. Vazio para o texto padrão."
+
+#: includes/elementor/class-games-this-week-widget.php:19
+msgid "Games This Week"
+msgstr "Jogos desta semana"
+
+#: includes/elementor/class-games-this-week-widget.php:53
+msgid "Days ahead"
+msgstr "Dias à frente"
+
+#: includes/elementor/class-games-this-week-widget.php:66
+msgid ""
+"Only these genres, comma-separated (e.g. \"Camarilla, Sabbat\"). A name "
+"matches inside a longer one: \"Sabbat\" finds \"Vampire - Sabbat\". Empty "
+"for all."
+msgstr ""
+"Só estes gêneros, separados por vírgula (ex.: \"Camarilla, Sabbat\"). Um "
+"nome vale dentro de um maior: \"Sabbat\" encontra \"Vampire - Sabbat\". "
+"Vazio para todos."
+
+#: includes/elementor/class-games-this-week-widget.php:72
+#: includes/render/render-chronicles-list.php:160
+msgid "Game type"
+msgstr "Tipo de jogo"
+
+#: includes/elementor/class-games-this-week-widget.php:77
+msgid "In-Person"
+msgstr "Presencial"
+
+#: includes/elementor/class-games-this-week-widget.php:78
+msgid "Virtual"
+msgstr "Virtual"
+
+#: includes/elementor/class-games-this-week-widget.php:79
+msgid "Hybrid"
+msgstr "Híbrido"
+
+#: includes/elementor/class-games-this-week-widget.php:86
+msgid "OWBN region"
+msgstr "Região da OWBN"
+
+#: includes/elementor/class-games-this-week-widget.php:89
+msgid ""
+"Only this region, as the chronicle records name it (e.g. \"Great Lakes\"). "
+"Empty for all."
+msgstr ""
+"Só esta região, com o nome usado nos registros das crônicas (ex.: \"Great "
+"Lakes\"). Vazio para todas."
+
+#: includes/elementor/class-games-this-week-widget.php:95
+#: includes/render/render-chronicles-list.php:159
+#: includes/render/render-territory-detail.php:46
+#: includes/render/render-territory-list.php:211
+msgid "Country"
+msgstr "País"
+
+#: includes/elementor/class-games-this-week-widget.php:98
+msgid "Two-letter country code (e.g. \"BR\"). Empty for all."
+msgstr "Código do país com duas letras (ex.: \"BR\"). Vazio para todos."
+
+#: includes/elementor/class-games-this-week-widget.php:104
+msgid "Most games to show"
+msgstr "Máximo de jogos a mostrar"
+
+#: includes/elementor/class-games-this-week-widget.php:108
+msgid "0 shows them all."
+msgstr "0 mostra todos."
+
+#: includes/elementor/class-games-this-week-widget.php:118
+msgid "Page each chronicle links to (uses ?slug=)."
+msgstr "Página para onde cada crônica aponta (usa ?slug=)."
+
+#: includes/elementor/class-games-this-week-widget.php:127
+#, php-format
+msgid ""
+"Shown when no games fall in the window. %d is the number of days. Empty for "
+"the standard text."
+msgstr ""
+"Mostrado quando não há jogos no período. %d é o número de dias. Vazio para o "
+"texto padrão."
+
+#: includes/elementor/class-owbn-numbers-widget.php:19
+msgid "OWBN by the Numbers"
+msgstr "A OWBN em números"
+
+#: includes/elementor/class-owbn-numbers-widget.php:49
+msgid "Chronicles per genre"
+msgstr "Crônicas por gênero"
+
 #: includes/elementor/class-territory-detail-widget.php:25
 msgid "Territory Detail"
 msgstr "Detalhes do Território"
@@ -1143,14 +1317,14 @@ msgstr "ID do Território"
 
 #: includes/elementor/class-territory-detail-widget.php:182
 #: includes/elementor/class-territory-list-widget.php:369
-#: includes/shortcodes/shortcodes.php:68
-#: includes/shortcodes/shortcodes.php:95
+#: includes/shortcodes/shortcodes.php:68 includes/shortcodes/shortcodes.php:95
 msgid "Territories are not enabled."
 msgstr "Os territórios não estão ativados."
 
 #: includes/elementor/class-territory-detail-widget.php:197
 msgid "No territory selected. Set a fixed ID or use ?id= parameter."
-msgstr "Nenhum território selecionado. Defina um ID fixo ou use o parâmetro ?id=."
+msgstr ""
+"Nenhum território selecionado. Defina um ID fixo ou use o parâmetro ?id=."
 
 #: includes/elementor/class-territory-detail-widget.php:199
 msgid "No territory specified."
@@ -1339,13 +1513,13 @@ msgid "← Back to Chronicles"
 msgstr "← Voltar às Crônicas"
 
 #: includes/render/render-chronicle-detail.php:68
-#: includes/render/render-chronicles-list.php:141
+#: includes/render/render-chronicles-list.php:276
 #: includes/shortcodes/shortcodes-chronicle.php:197
 msgid "Probationary"
 msgstr "Probatória"
 
 #: includes/render/render-chronicle-detail.php:71
-#: includes/render/render-chronicles-list.php:145
+#: includes/render/render-chronicles-list.php:280
 #: includes/shortcodes/shortcodes-chronicle.php:198
 msgid "Satellite"
 msgstr "Satélite"
@@ -1407,7 +1581,33 @@ msgstr "Links e Recursos"
 msgid "Satellite Parent:"
 msgstr "Crônica-Mãe:"
 
+#: includes/render/render-chronicles-list.php:43
+msgid "Search name, state or city"
+msgstr "Buscar nome, estado ou cidade"
+
+#: includes/render/render-chronicles-list.php:139
+msgid "All genres"
+msgstr "Todos os gêneros"
+
+#. translators: %s: genre family, e.g. Vampire
 #: includes/render/render-chronicles-list.php:149
+#, php-format
+msgid "%s (all)"
+msgstr "%s (todos)"
+
+#: includes/render/render-chronicles-list.php:158
+msgid "All regions"
+msgstr "Todas as regiões"
+
+#: includes/render/render-chronicles-list.php:159
+msgid "All countries"
+msgstr "Todos os países"
+
+#: includes/render/render-chronicles-list.php:160
+msgid "All game types"
+msgstr "Todos os tipos de jogo"
+
+#: includes/render/render-chronicles-list.php:284
 msgid "Full Member"
 msgstr "Membro Pleno"
 
@@ -1464,6 +1664,120 @@ msgstr "Link"
 msgid "House Rules"
 msgstr "Regras da Casa"
 
+#: includes/render/render-council.php:32
+msgid "Single choice"
+msgstr "Escolha única"
+
+#: includes/render/render-council.php:33
+msgid "Ranked choice"
+msgstr "Votação ranqueada"
+
+#: includes/render/render-council.php:34
+msgid "Ranked choice, several seats"
+msgstr "Votação ranqueada, vários assentos"
+
+#: includes/render/render-council.php:35
+msgid "Single transferable vote"
+msgstr "Voto único transferível"
+
+#: includes/render/render-council.php:36
+msgid "Condorcet"
+msgstr "Condorcet"
+
+#: includes/render/render-council.php:37
+msgid "Disciplinary"
+msgstr "Disciplinar"
+
+#: includes/render/render-council.php:38
+msgid "Consent agenda"
+msgstr "Pauta de consentimento"
+
+#: includes/render/render-council.php:125
+msgid "No public votes are open right now."
+msgstr "Nenhuma votação pública está aberta agora."
+
+#. translators: %s: day and month the vote closes
+#: includes/render/render-council.php:139
+#, php-format
+msgid "closes %s"
+msgstr "encerra em %s"
+
+#: includes/render/render-council.php:146
+msgid "All votes"
+msgstr "Todas as votações"
+
+#. translators: %d: number of days
+#: includes/render/render-council.php:202
+#, php-format
+msgid "No bylaw changes in the last %d day."
+msgid_plural "No bylaw changes in the last %d days."
+msgstr[0] "Nenhuma mudança no estatuto no último %d dia."
+msgstr[1] "Nenhuma mudança no estatuto nos últimos %d dias."
+
+#: includes/render/render-council.php:214
+msgid "Added"
+msgstr "Incluída"
+
+#: includes/render/render-council.php:214
+msgid "Amended"
+msgstr "Alterada"
+
+#. translators: %s: day and month the clause was added
+#: includes/render/render-council.php:217
+#, php-format
+msgid "Added %s"
+msgstr "Incluída em %s"
+
+#. translators: %s: day and month the clause was amended
+#: includes/render/render-council.php:220
+#, php-format
+msgid "Amended %s"
+msgstr "Alterada em %s"
+
+#: includes/render/render-council.php:233
+msgid "All bylaws"
+msgstr "Estatuto completo"
+
+#. translators: %d: number of days
+#: includes/render/render-games.php:114
+#, php-format
+msgid "No games are scheduled in the next %d day."
+msgid_plural "No games are scheduled in the next %d days."
+msgstr[0] "Nenhum jogo marcado para o próximo %d dia."
+msgstr[1] "Nenhum jogo marcado para os próximos %d dias."
+
+#: includes/render/render-games.php:125
+msgid "Times are each chronicle's local time."
+msgstr "Os horários estão no fuso de cada crônica."
+
+#: includes/render/render-games.php:126
+msgid "Times are in your time zone."
+msgstr "Os horários estão no seu fuso horário."
+
+#: includes/render/render-games.php:176
+msgid "chronicle"
+msgid_plural "chronicles"
+msgstr[0] "crônica"
+msgstr[1] "crônicas"
+
+#: includes/render/render-games.php:177
+msgid "country"
+msgid_plural "countries"
+msgstr[0] "país"
+msgstr[1] "países"
+
+#: includes/render/render-games.php:178
+msgid "region"
+msgid_plural "regions"
+msgstr[0] "região"
+msgstr[1] "regiões"
+
+#: includes/render/render-games.php:179
+msgid "genre"
+msgid_plural "genres"
+msgstr[0] "gênero"
+msgstr[1] "gêneros"
+
 #: includes/render/render-helpers.php:368
 msgid "Sign Up"
 msgstr "Inscrever-se"
@@ -1518,11 +1832,6 @@ msgstr "Também reivindicado por:"
 #: includes/render/render-territory-box.php:173
 msgid "Description:"
 msgstr "Descrição:"
-
-#: includes/render/render-territory-detail.php:46
-#: includes/render/render-territory-list.php:211
-msgid "Country"
-msgstr "País"
 
 #: includes/render/render-territory-detail.php:60
 #: includes/render/render-territory-list.php:223

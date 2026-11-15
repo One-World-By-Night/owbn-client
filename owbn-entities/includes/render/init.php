@@ -28,3 +28,5 @@ require_once __DIR__ . '/render-territory-box.php';
 require_once __DIR__ . '/render-vote-history.php';
 // Games this week, OWBN by the numbers
 require_once __DIR__ . '/render-games.php';
+// Council votes, bylaw changes
+require_once __DIR__ . '/render-council.php';

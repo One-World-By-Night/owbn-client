@@ -1,6 +1,7 @@
 /**
  * Games this week: rewrites each game's day and time into the visitor's own timezone and the page's language, and
  * regroups the games by the visitor's day. Without this script the list shows each chronicle's local time.
+ * Council boxes: writes each day ([data-owc-day], Y-m-d) in the page's language.
  */
 (function () {
 	'use strict';
@@ -65,8 +66,28 @@
 		box.classList.add('owc-games--local');
 	}
 
+	function localiseDays() {
+		var spans = document.querySelectorAll('[data-owc-day]');
+		if (!spans.length) {
+			return;
+		}
+		var format;
+		try {
+			format = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { day: 'numeric', month: 'long', timeZone: 'UTC' });
+		} catch (e) {
+			return;
+		}
+		Array.prototype.forEach.call(spans, function (span) {
+			var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(span.getAttribute('data-owc-day') || '');
+			if (m) {
+				span.textContent = format.format(new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))));
+			}
+		});
+	}
+
 	function run() {
 		Array.prototype.forEach.call(document.querySelectorAll('[data-owc-games]'), localise);
+		localiseDays();
 	}
 
 	if (document.readyState === 'loading') {
