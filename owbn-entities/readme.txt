@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,10 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.1 =
+* The Elementor Chronicle List widget (dev's Find a Game page uses it) draws the same filter bar and rows as `[owbn type="chronicle-list"]`: the genre, region, country, game type and language dropdowns, one search box over name, state and city (wherever those columns sit), a Clear button that works (the old one was never wired), and the platform and players in the Type column. 1.1.0 had given these to the shortcode only. The widget's filter colours and border settings now style the dropdowns too.
+* Fixed: on a phone the list's header row stayed as a desktop row inside an Elementor widget, so the page scrolled sideways (700 px on a 375 px phone).
 
 = 1.1.0 =
 * Games This Week: every published chronicle's games in the next few days, grouped by day, as an Elementor widget and `[owbn type="games-this-week"]`, filtered by genre, OWBN region, country and game type. Times show in each visitor's own time zone and language; without JavaScript, in each chronicle's local time. Needs owbn-core 1.13.0.

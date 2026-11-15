@@ -456,7 +456,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 				'label'     => __('Input Background', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .owc-filter-input' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .owc-filter-input, {{WRAPPER}} .owc-filter-select' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -467,7 +467,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 				'label'     => __('Input Text Color', 'owbn-entities'),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .owc-filter-input' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .owc-filter-input, {{WRAPPER}} .owc-filter-select' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -476,7 +476,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 			Group_Control_Border::get_type(),
 			[
 				'name'     => 'filter_input_border',
-				'selector' => '{{WRAPPER}} .owc-filter-input',
+				'selector' => '{{WRAPPER}} .owc-filter-input, {{WRAPPER}} .owc-filter-select',
 			]
 		);
 
@@ -612,21 +612,11 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		?>
 		<div class="owc-chronicle-list-widget">
 			<?php if ($show_filters) : ?>
-				<div class="owc-chronicles-filters">
-					<?php if (in_array('genres', $columns, true)) : ?>
-						<input type="text" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Genres...', 'owbn-entities'); ?>" data-column="1">
-					<?php endif; ?>
-					<?php if (in_array('region', $columns, true)) : ?>
-						<input type="text" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Region...', 'owbn-entities'); ?>" data-column="2">
-					<?php endif; ?>
-					<?php if (in_array('state', $columns, true)) : ?>
-						<input type="text" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter State...', 'owbn-entities'); ?>" data-column="3">
-					<?php endif; ?>
-					<?php if (in_array('type', $columns, true)) : ?>
-						<input type="text" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Type...', 'owbn-entities'); ?>" data-column="5">
-					<?php endif; ?>
-					<button type="button" class="owc-clear-filters"><?php esc_html_e('Clear', 'owbn-entities'); ?></button>
-				</div>
+				<?php
+				$rendered = array_values(array_filter(['title', 'genres', 'region', 'state', 'city', 'type', 'status'], static fn($c) => in_array($c, $columns, true)));
+				$search   = array_keys(array_intersect($rendered, ['title', 'state', 'city']));
+				echo owc_render_chronicles_filter_bar($data, implode(',', $search)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built.
+				?>
 			<?php endif; ?>
 
 			<div class="owc-chronicles-list">
@@ -674,7 +664,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		$url = $base_url ? add_query_arg('slug', $slug, $base_url) : '#';
 
 		// Location fields
-		$ooc = $chronicle['ooc_locations'] ?? [];
+		$ooc = owc_chronicle_ooc($chronicle);
 		$state = $ooc['region'] ?? '';
 		$city = $ooc['city'] ?? '';
 
@@ -685,15 +675,15 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		$genres = $chronicle['genres'] ?? [];
 		$genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
 
-		// Type
-		$game_type = $chronicle['game_type'] ?? '';
+		// Type, with the platform and the players when known
+		$type_cell = owc_chronicle_type_cell_html($chronicle);
 
 		// Status flags
 		$status = owc_format_status($chronicle);
 
 		ob_start();
 		?>
-		<div class="owc-list-row">
+		<div class="owc-list-row" <?php echo owc_chronicle_row_data_attrs($chronicle); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>>
 			<?php if (in_array('title', $columns, true)) : ?>
 				<div class="owc-col-title">
 					<a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
@@ -720,8 +710,8 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 				</div>
 			<?php endif; ?>
 			<?php if (in_array('type', $columns, true)) : ?>
-				<div class="owc-col-type<?php echo $game_type ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
-					<?php echo esc_html($game_type); ?>
+				<div class="owc-col-type<?php echo '' !== $type_cell ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Type', 'owbn-entities'); ?>">
+					<?php echo $type_cell; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
 				</div>
 			<?php endif; ?>
 			<?php if (in_array('status', $columns, true)) : ?>
