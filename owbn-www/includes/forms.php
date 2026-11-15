@@ -468,14 +468,34 @@ add_action( 'gravityflow_step_complete', 'owbn_www_publish_on_approval', 10, 5 )
 
 /**
  * Clears SiteGround's page cache for the pages that list news and events (Home and News & Events, in both languages),
- * so an approved item shows at once. Does nothing without the SiteGround Speed Optimizer plugin.
+ * so an approved item shows at once. Each page is cleared on its own, never the pages below it. Sends SiteGround's own
+ * cache request to its Site Tools socket, so it works with or without the SiteGround Speed Optimizer plugin; does
+ * nothing where there is no socket (not on SiteGround).
  */
 function owbn_www_purge_listing_pages() {
-	if ( ! function_exists( 'sg_cachepress_purge_cache' ) ) {
+	$socket = (string) apply_filters( 'owbn_www_site_tools_socket', '/chroot/tmp/site-tools.sock' );
+	if ( '' === $socket || ! file_exists( $socket ) ) {
 		return;
 	}
+	$host = str_replace( 'www.', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
 	foreach ( (array) apply_filters( 'owbn_www_purge_paths', array( '/', '/news/', '/pt/', '/pt/news/' ) ) as $path ) {
-		sg_cachepress_purge_cache( home_url( $path ) );
+		$fp = @stream_socket_client( 'unix://' . $socket, $errno, $errstr );
+		if ( false === $fp ) {
+			return;
+		}
+		$request = array(
+			'api'      => 'domain-all',
+			'cmd'      => 'update',
+			'params'   => array(
+				'flush_cache' => '1',
+				'id'          => $host,
+				'path'        => (string) ( wp_parse_url( home_url( $path ), PHP_URL_PATH ) ?: '/' ),
+			),
+			'settings' => array( 'json' => 1 ),
+		);
+		fwrite( $fp, wp_json_encode( $request, JSON_FORCE_OBJECT ) . "\n" );
+		fgets( $fp, 32 * 1024 );
+		fclose( $fp );
 	}
 }
 
