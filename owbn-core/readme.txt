@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.12.9
+Stable tag: 1.13.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,10 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.0 =
+* Games in a window of time: `owc_get_sessions_in_window()` turns each published chronicle's schedule (1st to 5th weekday of the month, weekly, every other week from its start date) and one-off events into dated sessions, soonest first, filtered by genre, OWBN region, country, game type and kind. Rules that can't be put on a calendar ("Random", "Other", a day of "Week", every other week with no start date) are left out rather than guessed, as are chronicles whose timezone is unset or "UTC". Cached an hour.
+* Numbers for a stats box: `owc_get_chronicle_stats()` counts published chronicles, countries, OWBN regions and genres, the chronicles in each genre and game type, and how many have a schedule a calendar can place. Cached a day.
 
 = 1.12.9 =
 * Faster vote results on council: chronicle and coordinator titles come from the one cached registry list instead of one remote lookup per chronicle, and a chronicle the registry doesn't have costs no lookup at all. A council-sized results page went from 138 remote calls to 2 when its caches are cold, and none once they're warm.
