@@ -35,7 +35,7 @@ Qualquer pessoa com login.
 
 ## Bom saber
 
-- Ninguém recebe email quando um pedido chega à sua etapa, então esta aba é o único lugar onde o trabalho novo aparece. Confira-a.
+- Você recebe um email quando um pedido chega à sua etapa e quando um pedido que você acompanha anda ou termina. Para receber um email por dia, escolha isso no [Archivist Dashboard](dashboard.md).
 - Um pedido que você registra aparece em My Submissions na hora.
 - Para o Arquivista, Assigned to Me tem todos os pedidos em aberto, em qualquer etapa.
 - Acompanhar um pedido o coloca em Watching; clique em **Watching** na página dele para parar.

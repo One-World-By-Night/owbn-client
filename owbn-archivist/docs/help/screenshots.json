@@ -19,8 +19,8 @@
 				"path": "/oat-dashboard/",
 				"account": "josh",
 				"alt": {
-					"en": "The Archivist Dashboard for an HST: three requests waiting on him, four he filed, twelve he watches, and buttons for New Submission, View Inbox and Registry.",
-					"pt_BR": "O Archivist Dashboard de um HST: três pedidos esperando por ele, quatro que ele registrou, doze que acompanha, e os botões New Submission, View Inbox e Registry."
+					"en": "The Archivist Dashboard for an HST: three requests waiting on him, three he watches that changed this week, the Archivist emails choice set to one for each update, then the counts (three waiting, four he filed, twelve he watches) and buttons for New Submission, View Inbox and Registry.",
+					"pt_BR": "O Archivist Dashboard de um HST: três pedidos esperando por ele, três que ele acompanha e que mudaram nesta semana, a escolha de emails do Arquivista em um por atualização, depois as contagens (três esperando, quatro registrados por ele, doze acompanhados) e os botões New Submission, View Inbox e Registry."
 				}
 			}
 		],

@@ -35,7 +35,7 @@ Anyone signed in.
 
 ## Things to know
 
-- Nobody is emailed when a request reaches their step, so this tab is the only place new work shows up. Check it.
+- You get an email when a request reaches your step, and when a request you watch moves on or finishes. Choose one email a day instead on the [Archivist Dashboard](dashboard.md).
 - A request you file shows under My Submissions at once.
 - For the Archivist, Assigned to Me holds every open request, at any step.
 - Watching a request puts it under Watching; click **Watching** on its page to stop.

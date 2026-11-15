@@ -21,7 +21,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 
 ## The screen
 
-- **The header** - the request's form and number, its status (pending, held, approved, denied, cancelled, auto-approved or auto-denied) and **Step:**, the step it is at. **Watch** follows the request: it then shows in your inbox, and the button reads **Watching**.
+- **The header** - the request's form and number, its status (pending, held, approved, denied, cancelled, auto-approved or auto-denied) and **Step:**, the step it is at. **Watch** follows the request: it then shows in your inbox, you get an email when it moves on or finishes, and the button reads **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** and **Updated**.
 - **Details** - everything the form asked, as filed.
 - **Linked Regulation Rules** - the rules the request falls under, with each rule's **ID**, **Genre**, **Category**, **Condition**, **PC Level** and whether it is **Elevated**.

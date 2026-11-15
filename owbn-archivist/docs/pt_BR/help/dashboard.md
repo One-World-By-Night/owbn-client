@@ -1,6 +1,6 @@
 # Archivist Dashboard
 
-Onde as páginas do Arquivista começam: quantos pedidos esperam por você, quantos você registrou e quantos você acompanha, com um caminho para cada um.
+Onde as páginas do Arquivista começam: o que espera por você, o que mudou nos pedidos que você acompanha, quantos você registrou e como você quer receber os emails do Arquivista.
 
 ## Quem pode usar
 
@@ -13,6 +13,9 @@ Qualquer pessoa com login.
 
 ## A tela
 
+- **Waiting on you** - até cinco pedidos em uma etapa sua, cada um com link para o pedido.
+- **Changed this week on requests you watch** - até cinco pedidos que você acompanha e que andaram nos últimos sete dias, os mais recentes primeiro.
+- **Archivist emails** - no site do Arquivista, **One for each update** ou **One a day, as a summary**, depois **Save**. Nos outros sites da OWBN é um link, **Archivist email settings**, que leva a essa escolha no Arquivista.
 - **Pending Actions** - pedidos em uma etapa sua.
 - **My Submissions** - pedidos que você registrou.
 - **Watching** - pedidos que você acompanha.
@@ -28,9 +31,17 @@ Qualquer pessoa com login.
 
 1. Clique em **New Submission**.
 
+### Receber um email por dia
+
+1. Em **Archivist emails**, escolha **One a day, as a summary**.
+2. Clique em **Save**.
+
 ## Bom saber
 
 - Pending Actions conta só os pedidos na sua etapa; é o número para acompanhar. Você também recebe um email quando um pedido chega a você.
+- Você recebe um email quando um pedido que você acompanha passa para outra etapa, é devolvido, ou é aprovado, negado ou cancelado. Uma mesma ação nunca manda a mesma notícia duas vezes.
+- O resumo sai uma vez por dia, às 13:00 UTC, com todos os emails do Arquivista desde o anterior. Voltar para **One for each update** envia na hora o que estava esperando.
+- As mesmas listas formam o bloco **Archivist alerts** no My Dashboard (aba **Comms**).
 
 ## Solução de problemas
 
