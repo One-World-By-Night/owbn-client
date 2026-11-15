@@ -14,10 +14,10 @@
 				"heading": "The screen",
 				"path": "/wp-admin/admin.php?page=owbn-owc-settings&tab=general",
 				"account": "archie",
-				"height": 1300,
+				"height": 1400,
 				"alt": {
-					"en": "OWBN Core Settings on the General tab: the API Gateway section with Enable Gateway, Gateway Base URL, a masked API Key with Generate, Auth Methods, Domain Whitelist and Request Logging.",
-					"pt_BR": "OWBN Core Settings na aba General: a seção API Gateway com Enable Gateway, Gateway Base URL, uma API Key mascarada com Generate, Auth Methods, Domain Whitelist e Request Logging."
+					"en": "OWBN Core Settings on the General tab: the API Gateway section with Enable Gateway, Gateway Base URL, a masked API Key with Generate, Read-only Keys listing one key by label, fingerprint and date, Auth Methods, Domain Whitelist and Request Logging.",
+					"pt_BR": "OWBN Core Settings na aba General: a seção API Gateway com Enable Gateway, Gateway Base URL, uma API Key mascarada com Generate, Read-only Keys com uma chave pelo nome, impressão digital e data, Auth Methods, Domain Whitelist e Request Logging."
 				}
 			}
 		],
