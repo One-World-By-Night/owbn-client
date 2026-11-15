@@ -30,7 +30,7 @@ Archivist and each OWbN site with the registry (chronicles, council, players) sh
 - **Player Name** and **Player Email** (PCs only) - the person who plays the character, as text.
 - **Linked Account** (when you can change every field; on the website, PCs only) - the OWbN account the character belongs to. It decides whose My Characters the character shows under.
   - **Currently linked** names the account, with **Unlink**.
-  - The search box finds accounts by name, login, email or role path (two characters or more). Each choice shows the person's name and email. Choosing one fills in Player Name and Player Email when they are empty.
+  - The search box finds accounts by name, login or role path (two characters or more), or by a whole email address; part of an address finds nobody. Each choice shows the person's name with their login, or the role they were found by, and a search for a whole address shows that address. Choosing one fills in Player Name when it is empty, and Player Email too when you searched by address.
   - **Use the Player Email** finds the account whose email is exactly the one in Player Email.
 - **NPC Owner** (NPCs only) - the chronicle or Coordinator office that controls the NPC. wp-admin shows it as **NPC Coordinator** (the office) and **NPC Type** (chronicle or coordinator).
 - **Update Character** - saves the changes. A link or an unlink takes effect only when you save.
@@ -48,7 +48,7 @@ When only Status is yours to change, the record shows its details as text and a 
 ### Link a character to its player's account
 
 1. Open the record.
-2. In **Linked Account**, type part of the player's name or email, and choose them from the list by name and email. If **Player Email** already holds their address, click **Use the Player Email** instead.
+2. In **Linked Account**, type part of the player's name or login, or their whole email address, and choose them from the list. If **Player Email** already holds their address, click **Use the Player Email** instead.
 3. Click **Update Character**.
 
 ### Move a character to another account
@@ -94,7 +94,7 @@ When only Status is yours to change, the record shows its details as text and a 
 - **"You do not have permission to view this character."** The character isn't linked to your account and isn't granted to your chronicle or office. Ask its HST or the Archivist.
 - **"You do not have permission to edit this character."** Only Status is yours to change, or nothing is. See [Who can use this](#who-can-use-this).
 - **"Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate."** Pick Inactive, Dead or Shelved; an HST makes a character active again.
-- **"No account matches that."** Nobody has an OWbN account with that name or email yet, or you are a player and can't search accounts. Leave Player Email filled in: the character links itself when they first sign in.
+- **"No account matches that."** Nobody has an OWbN account with that name, login or email address yet, or you typed only part of an address (type all of it), or you are a player and can't search accounts. Leave Player Email filled in: the character links itself when they first sign in.
 - **The character isn't under the player's My Characters.** Its Linked Account is empty or someone else's. Link it as above.
 - **The Type reads "(Sect Defector)".** The character's clan isn't on its Sect's creation list. That's expected after an approved defection.
 

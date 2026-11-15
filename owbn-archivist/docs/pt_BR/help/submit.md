@@ -68,7 +68,7 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 
 - **"Please log in to submit a request."** Entre na sua conta primeiro.
 - **"Please select a domain."** Escolha um Domain antes de enviar.
-- **"Submission failed. Please check the form and try again."** Um campo obrigatório está vazio ou algo no formulário foi recusado; a mensagem abaixo do formulário diz o quê quando consegue.
+- **"Submission failed. Please check the form and try again."** Um campo obrigatório está vazio ou algo no formulário foi recusado; a mensagem abaixo do formulário diz o quê quando consegue. O pedido recusado fica em My Submissions como Cancelled: corrija o formulário e envie de novo.
 - **"A PC needs its player's name and email."** Preencha Player Name e Player Email, ou marque This is my character se o PC é seu.
 - **"That player email doesn't look right."** Confira se o email tem erro de digitação.
 - **"Choose a Home Chronicle, or select a Coordinator Office for an office NPC."** Escolha a crônica do personagem; um NPC de escritório precisa do seu escritório.

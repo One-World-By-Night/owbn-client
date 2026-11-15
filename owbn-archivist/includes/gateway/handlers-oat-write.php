@@ -161,6 +161,7 @@ function owbn_gateway_oat_submit( $request ) {
     ) );
 
     if ( is_wp_error( $result ) ) {
+        owc_oat_cancel_refused_submission( $entry_id, $user_id, $result );
         return owbn_gateway_respond( $result );
     }
 

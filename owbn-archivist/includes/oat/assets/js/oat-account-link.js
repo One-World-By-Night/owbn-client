@@ -69,9 +69,10 @@
 					event.preventDefault();
 				}
 			});
-			// Each choice shows the name and email, so two people with one name can be told apart.
+			// Each choice shows the name with the login or the role it was found by, so two people with one name can be
+			// told apart; a search for an exact email address shows that address.
 			$search.autocomplete('instance')._renderItem = function(ul, item) {
-				var label = item.display_name + (item.email ? ' — ' + item.email : '') + (item.type === 'role' ? ' (' + item.label.replace(/^[^(]*\(/, '').replace(/\)$/, '') + ')' : '');
+				var label = item.email ? item.display_name + ' — ' + item.email : item.label;
 				return $('<li>').append($('<div>').text(label)).appendTo(ul);
 			};
 		}

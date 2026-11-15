@@ -68,7 +68,7 @@ When the request is filed, its own page opens, where you can follow it. A form t
 
 - **"Please log in to submit a request."** Sign in first.
 - **"Please select a domain."** Pick a Domain before you submit.
-- **"Submission failed. Please check the form and try again."** A required field is empty or something in the form was refused; the message under the form says which when it can.
+- **"Submission failed. Please check the form and try again."** A required field is empty or something in the form was refused; the message under the form says which when it can. The refused request stays under My Submissions as Cancelled: fix the form and submit again.
 - **"A PC needs its player's name and email."** Fill in Player Name and Player Email, or tick This is my character if the PC is yours.
 - **"That player email doesn't look right."** Check the email for a typo.
 - **"Choose a Home Chronicle, or select a Coordinator Office for an office NPC."** Pick the character's chronicle; an office NPC needs your office instead.
