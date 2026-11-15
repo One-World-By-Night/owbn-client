@@ -1402,8 +1402,8 @@ function owc_oat_entry_access( $entry, $user_id ) {
         if ( 'exec/archivist/staff' === $role || preg_match( '#^exec/(archivist|web|head-coordinator|ahc1|ahc2|admin|membership)/coordinator$#', $role ) ) {
             return 'staff';
         }
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|ast)$#', $role, $m ) ) {
-            if ( ( '' !== $chronicle && $m[1] === $chronicle ) || ( $is_da && 'ast' !== $m[2] ) ) {
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|st|ast)$#', $role, $m ) ) {
+            if ( ( '' !== $chronicle && $m[1] === $chronicle ) || ( $is_da && ! in_array( $m[2], array( 'ast', 'st' ), true ) ) ) {
                 return 'staff';
             }
             continue;
@@ -2266,13 +2266,13 @@ function owc_oat_grant_access( $character_id, $grant_type, $grant_value, $expire
         // not character-scoped, so enforce here at the choke point. Fail closed.
         $character = OAT_Character::find( $character_id );
         if ( ! $character ) {
-            return new WP_Error( 'not_found', 'Character not found.' );
+            return new WP_Error( 'not_found', 'Character not found.', array( 'status' => 404 ) );
         }
         if ( ! class_exists( 'OAT_REST_Registry' )
             || ! method_exists( 'OAT_REST_Registry', 'can_manage_grants' )
             || ! OAT_REST_Registry::can_manage_grants( $character )
         ) {
-            return new WP_Error( 'forbidden', 'You do not have permission to manage grants for this character.' );
+            return new WP_Error( 'forbidden', 'You do not have permission to manage grants for this character.', array( 'status' => 403 ) );
         }
 
         $grant_id = OAT_Registry_Access::ensure_grant(
@@ -2432,14 +2432,14 @@ function owc_oat_revoke_access( $grant_id ) {
         // is not grant-scoped, so enforce here at the choke point. Fail closed.
         $grant = OAT_Registry_Access::find( $grant_id );
         if ( ! $grant ) {
-            return new WP_Error( 'not_found', 'Grant not found.' );
+            return new WP_Error( 'not_found', 'Grant not found.', array( 'status' => 404 ) );
         }
         $character = OAT_Character::find( (int) $grant->character_id );
         if ( ! class_exists( 'OAT_REST_Registry' )
             || ! method_exists( 'OAT_REST_Registry', 'can_manage_grants' )
             || ! OAT_REST_Registry::can_manage_grants( $character )
         ) {
-            return new WP_Error( 'forbidden', 'You do not have permission to revoke this grant.' );
+            return new WP_Error( 'forbidden', 'You do not have permission to revoke this grant.', array( 'status' => 403 ) );
         }
 
         OAT_Registry_Access::expire( $grant_id );

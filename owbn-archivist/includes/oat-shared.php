@@ -517,7 +517,7 @@ if ( ! function_exists( 'owc_oat_search_characters_for_user' ) ) :
 		if ( 'staff' === $scope ) {
 			$staff_slugs = array();
 			foreach ( (array) OAT_Authorization::get_user_roles() as $role ) {
-				if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast|sug)#i', (string) $role, $m ) ) {
+				if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast|sug|st(?=$|/))#i', (string) $role, $m ) ) {
 					$staff_slugs[] = strtolower( $m[1] );
 				}
 			}
