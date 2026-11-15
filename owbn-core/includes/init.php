@@ -69,6 +69,10 @@ require_once __DIR__ . '/feedback/init.php';
 // Help panel on the wp-admin screens of plugins that ship docs/help/site.json.
 require_once __DIR__ . '/help/help.php';
 
+// Log In safety around the Single Sign On Client plugin; no emoji script or Gravatar.
+require_once __DIR__ . '/sso-client-guard.php';
+require_once __DIR__ . '/privacy.php';
+
 /**
  * Allow child plugins to register settings tabs.
  *

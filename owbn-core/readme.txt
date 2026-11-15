@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.13.1
+Stable tag: 1.13.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,11 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.2 =
+* Log In: a `?auth=sso` link only returns a member to an address on this site (the Single Sign On Client plugin sent a signed-in member wherever `redirect_uri` said), and the plugin no longer rebuilds WordPress's rewrite rules on every request.
+* Privacy: no WordPress emoji script (it loads from s.w.org), and no avatar from Gravatar: a Gravatar address becomes a plain silhouette this plugin ships; uploaded avatars are left alone. Filters `owc_privacy_no_emoji` and `owc_privacy_local_avatars` turn either off.
+* The gateway's API Key hint says who the full key is for.
 
 = 1.13.1 =
 * Read-only gateway keys: a site that only shows public data (the new www) can hold a key that opens just the read routes (the chronicle, coordinator and territory lists, open votes, recent bylaw changes, upcoming events) and nothing else: no ballots, single votes, RSVPs, OAT or users. On open votes a read-only key always gets public votes only. Stored as a SHA-256 hash with a label (`owbn_gateway_read_keys`), made with `owbn_gateway_add_read_key()` (the key is returned once) and revoked with `owbn_gateway_revoke_read_key()`; listed under General > API Gateway. The full API key works as before.

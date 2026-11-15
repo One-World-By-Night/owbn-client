@@ -80,7 +80,7 @@ $anonymize_author = (bool) get_option( owc_option_name( 'anonymize_author' ), fa
                 <button type="button" id="owbn_gateway_generate_key" class="button button-secondary" style="margin-left: 8px;">
                     <?php esc_html_e( 'Generate', 'owbn-core' ); ?>
                 </button>
-                <p class="description"><?php esc_html_e( 'One key for all endpoints. Share this with consumer sites.', 'owbn-core' ); ?></p>
+                <p class="description"><?php esc_html_e( 'One key for every endpoint, reads and writes. Give it only to a site that acts for members; a site that only shows public lists gets a read-only key.', 'owbn-core' ); ?></p>
             </td>
         </tr>
         <tr class="owbn-gateway-options" <?php echo $gw_enabled ? '' : 'style="display:none;"'; ?>>

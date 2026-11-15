@@ -411,7 +411,7 @@ msgid "Generate"
 msgstr ""
 
 #: includes/admin/settings-tabs/tab-general.php:80
-msgid "One key for all endpoints. Share this with consumer sites."
+msgid "One key for every endpoint, reads and writes. Give it only to a site that acts for members; a site that only shows public lists gets a read-only key."
 msgstr ""
 
 #: includes/admin/settings-tabs/tab-general.php:84
