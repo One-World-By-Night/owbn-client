@@ -3,7 +3,7 @@ Contributors: oneWorldByNight
 Tags: owbn
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPL-2.0-or-later
 
 Pieces only the public OWBN website uses, kept in git rather than in its child theme.
@@ -15,8 +15,16 @@ Pieces only the public OWBN website uses, kept in git rather than in its child t
 * /chronicles/ sends visitors to Find a Game for good (301), with any query string.
 * Log In (the OAuth 2.0 Single Sign On Client plugin): a `?auth=sso` link only returns members to an address on this site, and the plugin no longer rebuilds WordPress's rewrite rules on every request.
 * The phone menu: tapping a caret opens or closes its submenu, tapping a label opens its page, and one submenu is open at a time (SmartMenus "accordion-link").
+* Four Gravity Forms, defined in `includes/forms-definitions.php` and placed with `[owbn_www_form key="news|event|bad-first-game|listing-problem"]`. `wp eval 'var_dump( owbn_www_install_forms( <reviewer user id> ) );'` creates them or brings them up to date. Every field works with scripts blocked, and none of them uses AJAX.
+  * Submit news and Submit an event go through a Gravity Flow "Marketing review" step. Approved news becomes a published post (featured image, submitter and team kept as post meta). An approved event becomes a published owbn-board event; this site must hold the events (`owbn_board_events_host` "1"). Its times are converted from the host chronicle's time zone. A rejection emails the submitter with the reviewer's note.
+  * A bad first game goes to the Executive Team (the HC, AHC1 and AHC2 office addresses). A listing problem goes to the chronicle's Head Storyteller, with the web team copied.
+  * The chronicle, office and genre pick-lists are filled from owbn-core each time a form is shown.
+  * A hidden field that bots fill in (rendered by the server; Gravity Forms' own honeypot needs its scripts, so it is off), and one visitor can send a form at most five times an hour.
 
 == Changelog ==
+
+= 0.4.0 =
+* The site's four forms: submit news, submit an event, a bad first game, a problem with a listing. Includes their review step, email routing and submission limit.
 
 = 0.3.0 =
 * Log In safety: an off-site `redirect_uri` on `?auth=sso` is dropped (the plugin would send a signed-in member anywhere), and the plugin's rewrite-rule rebuild on every request is taken off.
