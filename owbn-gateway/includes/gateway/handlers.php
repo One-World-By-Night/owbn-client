@@ -209,8 +209,9 @@ function owbn_gateway_wpvp_open_votes( $request ) {
     if ( ! function_exists( 'owc_wpvp_get_local_open_votes' ) || ! owc_wpvp_is_local() ) {
         return owbn_gateway_respond( new WP_Error( 'wpvp_unavailable', 'wp-voting-plugin not installed on this site.', array( 'status' => 404 ) ) );
     }
-    $limit = (int) $request->get_param( 'limit' );
-    return owbn_gateway_respond( owc_wpvp_get_local_open_votes( $limit ) );
+    $limit      = (int) $request->get_param( 'limit' );
+    $visibility = sanitize_key( (string) $request->get_param( 'visibility' ) );
+    return owbn_gateway_respond( owc_wpvp_get_local_open_votes( $limit, $visibility ) );
 }
 
 function owbn_gateway_wpvp_vote_detail( $request ) {

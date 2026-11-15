@@ -69,21 +69,34 @@ function owc_events_get_local_upcoming( $limit = 10 ) {
 }
 endif;
 
-if ( ! function_exists( 'owc_events_get_upcoming' ) ) :
-function owc_events_get_upcoming( $limit = 10 ) {
+if ( ! function_exists( 'owc_events_get_upcoming_or_error' ) ) :
+/**
+ * The approved events still to come, soonest first, or a WP_Error when no events site is set or it can't be read
+ * (unreachable, or refusing this site's key).
+ *
+ * @param int $limit Most events.
+ * @return array|WP_Error
+ */
+function owc_events_get_upcoming_or_error( $limit = 10 ) {
 	if ( owc_events_is_local() ) {
 		return owc_events_get_local_upcoming( $limit );
 	}
 	$base = owc_get_remote_base( 'events' );
 	if ( '' === $base ) {
-		return [];
+		return new WP_Error( 'owc_events_not_set', __( 'No events site is set.', 'owbn-core' ) );
 	}
-	$key  = owc_get_remote_key( 'events' );
-	$data = owc_remote_request( $base . 'events/upcoming', $key, [ 'limit' => (int) $limit ] );
-	if ( is_wp_error( $data ) || ! is_array( $data ) ) {
-		return [];
+	$data = owc_remote_request( $base . 'events/upcoming', owc_get_remote_key( 'events' ), [ 'limit' => (int) $limit ] );
+	if ( is_wp_error( $data ) ) {
+		return $data;
 	}
-	return $data;
+	return is_array( $data ) ? $data : new WP_Error( 'owc_events_bad_response', __( 'The events site sent something that isn\'t a list of events.', 'owbn-core' ) );
+}
+endif;
+
+if ( ! function_exists( 'owc_events_get_upcoming' ) ) :
+function owc_events_get_upcoming( $limit = 10 ) {
+	$data = owc_events_get_upcoming_or_error( $limit );
+	return is_wp_error( $data ) ? [] : $data;
 }
 endif;
 

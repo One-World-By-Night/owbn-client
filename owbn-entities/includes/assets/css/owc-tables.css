@@ -86,6 +86,7 @@
 .owc-chronicles-list .owc-col-city { flex: 1; min-width: 100px; }
 .owc-chronicles-list .owc-col-type { flex: 0.8; min-width: 70px; }
 .owc-chronicles-list .owc-col-status { flex: 1; min-width: 90px; }
+.owc-chronicles-list .owc-players { display: block; font-size: 0.85em; opacity: 0.8; }
 
 /* Column widths - Coordinators */
 .owc-coordinators-list .owc-col-office { flex: 2; min-width: 150px; }
@@ -161,7 +162,19 @@
     -webkit-appearance: none;
 }
 
-.owc-filter-input:focus {
+.owc-filter-select {
+    flex: 1;
+    min-width: 140px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    color: inherit;
+}
+
+.owc-filter-input:focus,
+.owc-filter-select:focus {
     outline: none;
     border-color: #2980b9;
     box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
@@ -189,7 +202,8 @@
         gap: 8px;
     }
     
-    .owc-filter-input {
+    .owc-filter-input,
+    .owc-filter-select {
         width: 100%;
         min-width: unset;
         padding: 12px;

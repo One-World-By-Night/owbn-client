@@ -27,6 +27,7 @@ function owc_wpvp_normalize_vote( $row ) {
 		'voting_options'       => owc_wpvp_decode_json( $row['voting_options'] ?? '' ),
 		'voting_roles'         => owc_wpvp_decode_json( $row['voting_roles'] ?? '' ),
 		'voting_stage'         => (string) ( $row['voting_stage'] ?? 'draft' ),
+		'visibility'           => (string) ( $row['visibility'] ?? '' ),
 		'opening_date'         => (string) ( $row['opening_date'] ?? '' ),
 		'closing_date'         => (string) ( $row['closing_date'] ?? '' ),
 		'classification'       => (string) ( $row['classification'] ?? '' ),
@@ -51,11 +52,23 @@ function owc_wpvp_decode_json( $value ) {
 endif;
 
 if ( ! function_exists( 'owc_wpvp_get_local_open_votes' ) ) :
-function owc_wpvp_get_local_open_votes( $limit = 0 ) {
+/**
+ * The open votes on this site, soonest closing first.
+ *
+ * @param int    $limit      Most votes, 0 for all.
+ * @param string $visibility Only votes with this visibility ('public', 'private', 'restricted'); '' for all.
+ * @return array
+ */
+function owc_wpvp_get_local_open_votes( $limit = 0, $visibility = '' ) {
 	global $wpdb;
-	$table = $wpdb->prefix . 'wpvp_votes';
-	$limit = max( 0, (int) $limit );
-	$sql   = "SELECT * FROM {$table} WHERE voting_stage = 'open' ORDER BY closing_date ASC, id ASC";
+	$table      = $wpdb->prefix . 'wpvp_votes';
+	$limit      = max( 0, (int) $limit );
+	$visibility = sanitize_key( (string) $visibility );
+	$sql        = "SELECT * FROM {$table} WHERE voting_stage = 'open'";
+	if ( '' !== $visibility ) {
+		$sql .= $wpdb->prepare( ' AND visibility = %s', $visibility );
+	}
+	$sql .= ' ORDER BY closing_date ASC, id ASC';
 	if ( $limit > 0 ) {
 		$sql .= $wpdb->prepare( ' LIMIT %d', $limit );
 	}
@@ -64,21 +77,57 @@ function owc_wpvp_get_local_open_votes( $limit = 0 ) {
 }
 endif;
 
-if ( ! function_exists( 'owc_wpvp_get_open_votes' ) ) :
-function owc_wpvp_get_open_votes( $limit = 0 ) {
+if ( ! function_exists( 'owc_wpvp_get_open_votes_or_error' ) ) :
+/**
+ * The open votes, soonest closing first, or a WP_Error when no votes site is set or it can't be read (unreachable,
+ * or refusing this site's key). Asked for one visibility, it returns only votes the votes site marks with it, and
+ * an error when the votes site doesn't say who can see each vote.
+ *
+ * @param int    $limit      Most votes, 0 for all.
+ * @param string $visibility Only votes with this visibility ('public', 'private', 'restricted'); '' for all.
+ * @return array|WP_Error
+ */
+function owc_wpvp_get_open_votes_or_error( $limit = 0, $visibility = '' ) {
+	$visibility = sanitize_key( (string) $visibility );
 	if ( owc_wpvp_is_local() ) {
-		return owc_wpvp_get_local_open_votes( $limit );
+		return owc_wpvp_get_local_open_votes( $limit, $visibility );
 	}
 	$base = owc_get_remote_base( 'votes' );
 	if ( '' === $base ) {
-		return [];
+		return new WP_Error( 'owc_votes_not_set', __( 'No votes site is set.', 'owbn-core' ) );
 	}
-	$key  = owc_get_remote_key( 'votes' );
-	$data = owc_remote_request( $base . 'wpvp/votes/open', $key, [ 'limit' => (int) $limit ] );
-	if ( is_wp_error( $data ) || ! is_array( $data ) ) {
-		return [];
+	$body = [ 'limit' => (int) $limit ];
+	if ( '' !== $visibility ) {
+		$body['visibility'] = $visibility;
 	}
-	return $data;
+	$data = owc_remote_request( $base . 'wpvp/votes/open', owc_get_remote_key( 'votes' ), $body );
+	if ( is_wp_error( $data ) ) {
+		return $data;
+	}
+	if ( ! is_array( $data ) ) {
+		return new WP_Error( 'owc_votes_bad_response', __( 'The votes site sent something that isn\'t a list of votes.', 'owbn-core' ) );
+	}
+	if ( '' === $visibility ) {
+		return $data;
+	}
+	$kept = [];
+	foreach ( $data as $vote ) {
+		$vote = (array) $vote;
+		if ( ! isset( $vote['visibility'] ) ) {
+			return new WP_Error( 'owc_votes_no_visibility', __( 'The votes site doesn\'t say who can see each vote, so none are shown. It needs owbn-core 1.13.0 or later.', 'owbn-core' ) );
+		}
+		if ( $visibility === $vote['visibility'] ) {
+			$kept[] = $vote;
+		}
+	}
+	return $kept;
+}
+endif;
+
+if ( ! function_exists( 'owc_wpvp_get_open_votes' ) ) :
+function owc_wpvp_get_open_votes( $limit = 0 ) {
+	$data = owc_wpvp_get_open_votes_or_error( $limit );
+	return is_wp_error( $data ) ? [] : $data;
 }
 endif;
 

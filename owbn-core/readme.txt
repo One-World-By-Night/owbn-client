@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.12.9
+Stable tag: 1.13.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,15 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.0 =
+* Games in a window of time: `owc_get_sessions_in_window()` turns each published chronicle's schedule (1st to 5th weekday of the month, weekly, every other week from its start date) and one-off events into dated sessions, soonest first, filtered by genre, OWBN region, country, game type and kind. Rules that can't be put on a calendar ("Random", "Other", a day of "Week", every other week with no start date) are left out rather than guessed, as are chronicles whose timezone is unset or "UTC". Cached an hour.
+* Numbers for a stats box: `owc_get_chronicle_stats()` counts published chronicles, countries, OWBN regions and genres, the chronicles in each genre and game type, and how many have a schedule a calendar can place. Cached a day.
+* Open votes and bylaw changes that can tell "nothing" from "couldn't read": `owc_wpvp_get_open_votes_or_error()` and `owc_bylaws_get_recent_or_error()` return a WP_Error when no votes or bylaws site is set, it can't be reached, or it refuses this site's key. The old `owc_wpvp_get_open_votes()` and `owc_bylaws_get_recent()` still return an empty list then.
+* Upcoming events the same way: `owc_events_get_upcoming_or_error()` returns a WP_Error when no events site is set, it can't be reached, or it refuses this site's key; `owc_events_get_upcoming()` still returns an empty list then.
+* Open votes by visibility: each vote now says who can see it (`visibility`: public, private or restricted), and the open-votes functions take an optional visibility. Asked for public votes, owbn-core asks the votes site for them and keeps only the votes it marks public; a votes site that doesn't say (owbn-core before 1.13.0 there) is an error, so a members-only or restricted vote is never shown on a public page. Without a visibility the answer is every open vote, as before. The votes site's gateway passes it through from owbn-gateway 1.7.0.
+* Bylaw clauses now carry their group's label (`bylaw_group_label`, e.g. "Character") and the first 20 words of their wording as plain text (`excerpt`).
+* Chronicles carry their language (`primary_language`, C&C 2.18.0's Language field) and the online platform their games run on (`virtual_platform`: discord, zoom, google-meet, teams, roll20, foundry or other), read from the chronicle's online game sites; only the platform's name leaves the chronicles site, never a game site's address. The chronicle list also carries `active_player_count`. Other sites see them once the chronicles site runs owbn-core 1.13.0.
 
 = 1.12.9 =
 * Faster vote results on council: chronicle and coordinator titles come from the one cached registry list instead of one remote lookup per chronicle, and a chronicle the registry doesn't have costs no lookup at all. A council-sized results page went from 138 remote calls to 2 when its caches are cold, and none once they're warm.

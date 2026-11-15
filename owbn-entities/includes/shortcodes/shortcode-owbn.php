@@ -7,6 +7,11 @@
  *   [owbn type="chronicle" field="premise" slug="mckn"]
  *   [owbn type="coordinator" section="subcoords" slug="tremere"]
  *   [owbn type="coordinator" field="coord_info"]
+ *   [owbn type="games-this-week" days="7" genre="Camarilla, Sabbat" game_type="Virtual" country="BR" region="" limit="0"]
+ *   [owbn type="owbn-numbers" show_genres="true"]
+ *   [owbn type="council-votes" limit="5"]
+ *   [owbn type="bylaw-changes" days="30" limit="5" all_url="https://council.owbn.net/..."]
+ *   [owbn type="upcoming-events" limit="5" all_url=""]
  *
  * Slug defaults to $_GET['slug'] if omitted.
  */
@@ -24,6 +29,17 @@ function owbn_shortcode_handler( $atts ) {
         'id'      => '',
         'label'   => 'true',
         'link'    => '',
+        'days'        => '',
+        'genre'       => '',
+        'region'      => '',
+        'country'     => '',
+        'game_type'   => '',
+        'limit'       => '0',
+        'detail_page' => '0',
+        'empty'       => '',
+        'show_genres' => 'false',
+        'vote_page'   => '',
+        'all_url'     => '',
     ), $atts, 'owbn' );
 
     $type    = sanitize_text_field( $atts['type'] );
@@ -72,6 +88,46 @@ function owbn_shortcode_handler( $atts ) {
             if ( ! owc_territories_enabled() ) return '';
             $data = owc_fetch_list( 'territories' );
             return owc_render_territories_list( $data );
+
+        case 'games-this-week':
+            if ( ! owc_chronicles_enabled() ) return '';
+            return owc_render_games_this_week( array(
+                'days'        => absint( $atts['days'] ) ? absint( $atts['days'] ) : 7,
+                'genre'       => sanitize_text_field( $atts['genre'] ),
+                'region'      => sanitize_text_field( $atts['region'] ),
+                'country'     => sanitize_text_field( $atts['country'] ),
+                'game_type'   => sanitize_text_field( $atts['game_type'] ),
+                'limit'       => absint( $atts['limit'] ),
+                'detail_page' => absint( $atts['detail_page'] ),
+                'empty'       => sanitize_text_field( $atts['empty'] ),
+            ) );
+
+        case 'owbn-numbers':
+            if ( ! owc_chronicles_enabled() ) return '';
+            return owc_render_owbn_numbers( array( 'show_genres' => filter_var( $atts['show_genres'], FILTER_VALIDATE_BOOLEAN ) ) );
+
+        case 'council-votes':
+            return owc_render_council_votes( array_filter( array(
+                'limit'     => absint( $atts['limit'] ) ? absint( $atts['limit'] ) : 5,
+                'vote_page' => esc_url_raw( $atts['vote_page'] ),
+                'all_url'   => esc_url_raw( $atts['all_url'] ),
+                'empty'     => sanitize_text_field( $atts['empty'] ),
+            ), static fn( $v ) => '' !== $v ) );
+
+        case 'bylaw-changes':
+            return owc_render_bylaw_changes( array(
+                'days'    => absint( $atts['days'] ) ? absint( $atts['days'] ) : 30,
+                'limit'   => absint( $atts['limit'] ) ? absint( $atts['limit'] ) : 5,
+                'all_url' => esc_url_raw( $atts['all_url'] ),
+                'empty'   => sanitize_text_field( $atts['empty'] ),
+            ) );
+
+        case 'upcoming-events':
+            return owc_render_upcoming_events( array(
+                'limit'   => absint( $atts['limit'] ) ? absint( $atts['limit'] ) : 5,
+                'all_url' => esc_url_raw( $atts['all_url'] ),
+                'empty'   => sanitize_text_field( $atts['empty'] ),
+            ) );
 
         case 'territory':
             if ( ! owc_territories_enabled() || empty( $id ) ) return '';
