@@ -39,10 +39,8 @@ function owc_render_chronicles_list(array $chronicles): string
     ob_start();
 ?>
     <div class="owc-chronicles-filters">
-        <input type="text" id="owc-filter-genres" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Genres...', 'owbn-entities'); ?>" data-column="1">
-        <input type="text" id="owc-filter-region" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Region...', 'owbn-entities'); ?>" data-column="2">
-        <input type="text" id="owc-filter-state" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter State...', 'owbn-entities'); ?>" data-column="3">
-        <input type="text" id="owc-filter-type" class="owc-filter-input" placeholder="<?php esc_attr_e('Filter Type...', 'owbn-entities'); ?>" data-column="5">
+        <?php echo owc_render_chronicles_filters($chronicles); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
+        <input type="search" id="owc-filter-search" class="owc-filter-input" placeholder="<?php esc_attr_e('Search name, state or city', 'owbn-entities'); ?>" aria-label="<?php esc_attr_e('Search name, state or city', 'owbn-entities'); ?>" data-column="0,3,4">
         <button type="button" id="owc-clear-filters" class="owc-clear-filters"><?php esc_html_e('Clear', 'owbn-entities'); ?></button>
     </div>
 
@@ -68,6 +66,140 @@ function owc_render_chronicles_list(array $chronicles): string
 }
 
 /**
+ * A chronicle's genres as filter tokens: "f:<family>" for each genre family and "g:<family> - <genre>" for each named
+ * genre within one, lowercase, so "Camarilla" and "Vampire - Camarilla" give the same two tokens.
+ *
+ * @param array $genres The chronicle's genres.
+ * @return array<string,string> token => the genre's own label ("Camarilla"), or the family's for a family token.
+ */
+function owc_list_genre_tokens(array $genres): array
+{
+    $tokens = [];
+    foreach ($genres as $genre) {
+        $genre = trim((string) $genre);
+        if ('' === $genre) {
+            continue;
+        }
+        $family = function_exists('owc_genre_family') ? owc_genre_family($genre) : $genre;
+        $tokens['f:' . strtolower($family)] = $family;
+        $sub = false !== strpos($genre, ' - ') ? trim(substr($genre, strpos($genre, ' - ') + 3)) : (0 !== strcasecmp($family, $genre) ? $genre : '');
+        if ('' !== $sub) {
+            $key = 'g:' . strtolower($family) . ' - ' . trim(preg_replace('/[\s-]+/', ' ', strtolower($sub)));
+            if (!isset($tokens[$key])) {
+                $tokens[$key] = str_replace('-', ' ', $sub);
+            }
+        }
+    }
+    return $tokens;
+}
+
+/**
+ * The filter bar's dropdowns for a list of chronicles: genres grouped by family, OWBN regions, countries and game
+ * types, each holding only values the list has.
+ *
+ * @param array $chronicles Published chronicles.
+ * @return string HTML.
+ */
+function owc_render_chronicles_filters(array $chronicles): string
+{
+    $families = [];
+    $regions  = [];
+    $countries = [];
+    $types    = [];
+    foreach ($chronicles as $chronicle) {
+        foreach (owc_list_genre_tokens((array) ($chronicle['genres'] ?? [])) as $token => $label) {
+            $family = strtolower(owc_list_token_family($token));
+            if (0 === strpos($token, 'f:')) {
+                $families[$family]['label'] = $families[$family]['label'] ?? $label;
+            } else {
+                $families[$family]['subs'][$token] = $families[$family]['subs'][$token] ?? $label;
+            }
+        }
+        $region = trim((string) ($chronicle['chronicle_region'] ?? ''));
+        if ('' !== $region) {
+            $regions[strtolower($region)] = $region;
+        }
+        $country = owc_list_country($chronicle);
+        if ('' !== $country) {
+            $countries[strtolower($country)] = $country;
+        }
+        $type = trim((string) ($chronicle['game_type'] ?? ''));
+        if ('' !== $type) {
+            $types[strtolower($type)] = $type;
+        }
+    }
+    uksort($families, static function ($a, $b) {
+        return [('other' === $a), $a] <=> [('other' === $b), $b];
+    });
+    ksort($regions);
+    ksort($countries);
+    ksort($types);
+
+    $html  = '<select id="owc-filter-genre" class="owc-filter-select" data-attr="genres" aria-label="' . esc_attr__('Genre', 'owbn-entities') . '">';
+    $html .= '<option value="">' . esc_html__('All genres', 'owbn-entities') . '</option>';
+    foreach ($families as $key => $family) {
+        $label = (string) ($family['label'] ?? $key);
+        if (empty($family['subs'])) {
+            $html .= '<option value="' . esc_attr('f:' . $key) . '">' . esc_html($label) . '</option>';
+            continue;
+        }
+        asort($family['subs'], SORT_NATURAL | SORT_FLAG_CASE);
+        $html .= '<optgroup label="' . esc_attr($label) . '">';
+        /* translators: %s: genre family, e.g. Vampire */
+        $html .= '<option value="' . esc_attr('f:' . $key) . '">' . esc_html(sprintf(__('%s (all)', 'owbn-entities'), $label)) . '</option>';
+        foreach ($family['subs'] as $token => $sub) {
+            $html .= '<option value="' . esc_attr($token) . '">' . esc_html($sub) . '</option>';
+        }
+        $html .= '</optgroup>';
+    }
+    $html .= '</select>';
+
+    $simple = [
+        ['region', __('Region', 'owbn-entities'), __('All regions', 'owbn-entities'), $regions],
+        ['country', __('Country', 'owbn-entities'), __('All countries', 'owbn-entities'), $countries],
+        ['type', __('Game type', 'owbn-entities'), __('All game types', 'owbn-entities'), $types],
+    ];
+    foreach ($simple as $select) {
+        $html .= '<select id="owc-filter-' . esc_attr($select[0]) . '" class="owc-filter-select" data-attr="' . esc_attr($select[0]) . '" aria-label="' . esc_attr($select[1]) . '">';
+        $html .= '<option value="">' . esc_html($select[2]) . '</option>';
+        foreach ($select[3] as $value => $label) {
+            $html .= '<option value="' . esc_attr($value) . '"' . ('country' === $select[0] ? ' data-country="' . esc_attr($label) . '"' : '') . '>' . esc_html($label) . '</option>';
+        }
+        $html .= '</select>';
+    }
+    return $html;
+}
+
+/**
+ * The family part of a genre token: "Vampire" for "f:vampire" or "g:vampire - camarilla".
+ *
+ * @param string $token A token from owc_list_genre_tokens().
+ * @return string
+ */
+function owc_list_token_family(string $token): string
+{
+    $body = substr($token, 2);
+    return 0 === strpos($token, 'g:') ? (string) strstr($body, ' - ', true) : $body;
+}
+
+/**
+ * A chronicle's country code from its first out-of-character location, '' when it has none or the value isn't one.
+ *
+ * @param array $chronicle Chronicle data.
+ * @return string
+ */
+function owc_list_country(array $chronicle): string
+{
+    $loc = $chronicle['ooc_locations'] ?? [];
+    if (is_array($loc) && isset($loc[0]) && is_array($loc[0])) {
+        $loc = $loc[0];
+    }
+    $country = strtoupper(trim((string) (is_array($loc) ? ($loc['country'] ?? '') : '')));
+    $valid   = function_exists('owc_is_country_code') ? owc_is_country_code($country) : (bool) preg_match('/^[A-Z]{2}$/', $country);
+    return $valid ? $country : '';
+}
+
+/**
  * Render single chronicle row.
  *
  * @param array  $chronicle Chronicle data
@@ -82,8 +214,11 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
 
     // Location fields
     $ooc = $chronicle['ooc_locations'] ?? [];
-    $state = $ooc['region'] ?? '';
-    $city = $ooc['city'] ?? '';
+    if (is_array($ooc) && isset($ooc[0]) && is_array($ooc[0])) {
+        $ooc = $ooc[0];
+    }
+    $state = is_array($ooc) ? ($ooc['region'] ?? '') : '';
+    $city = is_array($ooc) ? ($ooc['city'] ?? '') : '';
 
     // Region
     $region = $chronicle['chronicle_region'] ?? '';
@@ -100,7 +235,7 @@ function owc_render_chronicle_row(array $chronicle, string $base_url): string
 
     ob_start();
 ?>
-    <div class="owc-list-row">
+    <div class="owc-list-row" data-genres="<?php echo esc_attr('|' . implode('|', array_keys(owc_list_genre_tokens(is_array($genres) ? $genres : [$genres]))) . '|'); ?>" data-region="<?php echo esc_attr(strtolower(trim((string) $region))); ?>" data-country="<?php echo esc_attr(strtolower(owc_list_country($chronicle))); ?>" data-type="<?php echo esc_attr(strtolower(trim((string) $game_type))); ?>">
         <div class="owc-col-title">
             <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
         </div>

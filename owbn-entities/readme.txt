@@ -31,6 +31,7 @@ Requires the OWBN Core plugin.
 = 1.1.0 =
 * Games This Week: every published chronicle's games in the next few days, grouped by day, as an Elementor widget and `[owbn type="games-this-week"]`, filtered by genre, OWBN region, country and game type. Times show in each visitor's own time zone and language; without JavaScript, in each chronicle's local time. Needs owbn-core 1.13.0.
 * OWBN by the Numbers: published chronicles, countries, OWBN regions and genres, optionally the chronicles per genre, as an Elementor widget and `[owbn type="owbn-numbers"]`.
+* Find a Game's filter bar (`[owbn type="chronicle-list"]`): dropdowns for genre (grouped by family, with each family's "(all)"; old names such as "Camarilla" and new ones such as "Vampire - Camarilla" share one option), OWBN region, country (named in the page's language) and game type, built from the list itself, plus one search box for name, state and city. Deep links such as `?genre=Sabbat`, `?genre=Vampire`, `?country=BR&type=Virtual` still pick and filter. The Elementor list widget's own filter boxes work as before.
 * Releases 1.0.1 to 1.0.14 are in the repository's commit history.
 
 = 1.0.0 =

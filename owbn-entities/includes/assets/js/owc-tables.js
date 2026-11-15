@@ -14,6 +14,34 @@
         if (!window.location.search) return;
         var params;
         try { params = new URLSearchParams(window.location.search); } catch (e) { return; }
+        var applied = false;
+
+        // Dropdowns: ?genre=Sabbat picks "Sabbat" under Vampire, ?genre=Vampire the whole family; region, country and
+        // type match a value or its label.
+        var selects = { genre: 'genres', genres: 'genres', region: 'region', country: 'country', type: 'type' };
+        Object.keys(selects).forEach(function(key) {
+            var val = params.get(key);
+            if (val === null || val === '') return;
+            var want = val.trim().toLowerCase();
+            var spaced = want.replace(/-/g, ' ');
+            document.querySelectorAll('.owc-filter-select[data-attr="' + selects[key] + '"]').forEach(function(select) {
+                var match = Array.prototype.filter.call(select.options, function(o) {
+                    if (!o.value) return false;
+                    if (selects[key] !== 'genres') {
+                        return o.value === want || o.textContent.trim().toLowerCase() === want;
+                    }
+                    return o.value === 'f:' + want || [want, spaced].some(function(w) {
+                        return o.value.slice(-(' - ' + w).length) === ' - ' + w;
+                    });
+                })[0];
+                if (match) {
+                    select.value = match.value;
+                    applied = true;
+                }
+            });
+        });
+
+        // Text boxes: the Elementor list widget's column filters, and the search box.
         var map = {
             genre:  '1',
             genres: '1',
@@ -21,7 +49,6 @@
             state:  '3',
             type:   '5'
         };
-        var applied = false;
         Object.keys(map).forEach(function(key) {
             var val = params.get(key);
             if (val === null || val === '') return;
@@ -29,6 +56,14 @@
                 input.value = val;
                 applied = true;
             });
+        });
+        ['search', 'state'].forEach(function(key) {
+            var val = params.get(key);
+            var box = document.getElementById('owc-filter-search');
+            if (val && box && !box.value) {
+                box.value = val;
+                applied = true;
+            }
         });
         if (applied) applyFilters();
     }
@@ -88,12 +123,16 @@
 
     function initFilters() {
         const filterInputs = document.querySelectorAll('.owc-filter-input');
+        const filterSelects = document.querySelectorAll('.owc-filter-select');
         const clearBtn = document.getElementById('owc-clear-filters');
-        
-        if (filterInputs.length === 0) return;
+
+        if (filterInputs.length === 0 && filterSelects.length === 0) return;
 
         filterInputs.forEach(function(input) {
             input.addEventListener('input', debounce(applyFilters, 200));
+        });
+        filterSelects.forEach(function(select) {
+            select.addEventListener('change', applyFilters);
         });
 
         if (clearBtn) {
@@ -101,9 +140,31 @@
                 filterInputs.forEach(function(input) {
                     input.value = '';
                 });
+                filterSelects.forEach(function(select) {
+                    select.value = '';
+                });
                 applyFilters();
             });
         }
+
+        nameCountries();
+    }
+
+    // Country options carry a code; show the country's name in the page's language where the browser knows it.
+    function nameCountries() {
+        if (typeof Intl === 'undefined' || !Intl.DisplayNames) return;
+        var names;
+        try {
+            names = new Intl.DisplayNames([document.documentElement.lang || 'en'], { type: 'region' });
+        } catch (e) {
+            return;
+        }
+        document.querySelectorAll('.owc-filter-select option[data-country]').forEach(function(option) {
+            try {
+                var name = names.of(option.getAttribute('data-country'));
+                if (name) option.textContent = name;
+            } catch (e) {}
+        });
     }
 
     function applyFilters() {
@@ -111,31 +172,39 @@
         if (!list) return;
 
         const rows = list.querySelectorAll('.owc-list-row');
-        const filters = {};
-        
+
+        // Text boxes: the row passes when any of the box's columns holds the text.
+        const textFilters = [];
         document.querySelectorAll('.owc-filter-input').forEach(function(input) {
-            const col = parseInt(input.getAttribute('data-column'), 10);
             const val = input.value.trim().toLowerCase();
-            if (val) {
-                filters[col] = val;
-            }
+            if (!val) return;
+            const cols = String(input.getAttribute('data-column') || '').split(',').map(function(c) {
+                return parseInt(c, 10);
+            }).filter(function(c) {
+                return !isNaN(c);
+            });
+            if (cols.length) textFilters.push({ cols: cols, val: val });
+        });
+
+        // Dropdowns: the row's data attribute holds the chosen genre token, or equals the chosen value.
+        const selectFilters = [];
+        document.querySelectorAll('.owc-filter-select').forEach(function(select) {
+            if (select.value) selectFilters.push({ attr: select.getAttribute('data-attr'), val: select.value });
         });
 
         let visibleCount = 0;
 
         rows.forEach(function(row) {
-            let show = true;
-
-            for (const col in filters) {
-                const cell = row.children[col];
-                if (!cell) continue;
-
-                const text = (cell.textContent || '').trim().toLowerCase();
-                if (text.indexOf(filters[col]) === -1) {
-                    show = false;
-                    break;
-                }
-            }
+            const show = textFilters.every(function(f) {
+                const cells = f.cols.map(function(col) { return row.children[col]; }).filter(Boolean);
+                if (!cells.length) return true;
+                return cells.some(function(cell) {
+                    return (cell.textContent || '').trim().toLowerCase().indexOf(f.val) !== -1;
+                });
+            }) && selectFilters.every(function(f) {
+                const have = row.getAttribute('data-' + f.attr) || '';
+                return f.attr === 'genres' ? have.indexOf('|' + f.val + '|') !== -1 : have === f.val;
+            });
 
             row.style.display = show ? '' : 'none';
             if (show) visibleCount++;

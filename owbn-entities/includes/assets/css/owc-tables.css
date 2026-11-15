@@ -161,7 +161,19 @@
     -webkit-appearance: none;
 }
 
-.owc-filter-input:focus {
+.owc-filter-select {
+    flex: 1;
+    min-width: 140px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    color: inherit;
+}
+
+.owc-filter-input:focus,
+.owc-filter-select:focus {
     outline: none;
     border-color: #2980b9;
     box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
@@ -189,7 +201,8 @@
         gap: 8px;
     }
     
-    .owc-filter-input {
+    .owc-filter-input,
+    .owc-filter-select {
         width: 100%;
         min-width: unset;
         padding: 12px;
