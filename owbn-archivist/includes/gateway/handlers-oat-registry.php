@@ -171,8 +171,7 @@ function owbn_gateway_oat_registry_public( $request ) {
  * @return WP_REST_Response
  */
 function owbn_gateway_oat_registry_grant( $request ) {
-    $user_id = (int) $request->get_param( '_oat_user_id' );
-    $body    = $request->get_json_params();
+    $body = $request->get_json_params();
 
     $character_id = isset( $body['character_id'] ) ? (int) $body['character_id'] : 0;
     $grant_type   = isset( $body['grant_type'] ) ? sanitize_text_field( $body['grant_type'] ) : '';
@@ -193,20 +192,12 @@ function owbn_gateway_oat_registry_grant( $request ) {
         ) );
     }
 
-    $grant_id = OAT_Registry_Access::ensure_grant( $character_id, $grant_type, $grant_value, $user_id );
-
-    if ( $expires_at && $grant_id ) {
-        global $wpdb;
-        $wpdb->update(
-            $wpdb->prefix . 'oat_registry_access',
-            array( 'expires_at' => $expires_at ),
-            array( 'id' => $grant_id ),
-            array( '%d' ),
-            array( '%d' )
-        );
+    if ( ! function_exists( 'owc_oat_grant_access' ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_disabled', 'OAT is not enabled on this site.', array( 'status' => 503 ) ) );
     }
 
-    return owbn_gateway_respond( array( 'success' => true, 'grant_id' => $grant_id ) );
+    // The same rule as on archivist: only someone who manages this character's grants may add one.
+    return owbn_gateway_respond( owc_oat_grant_access( $character_id, $grant_type, $grant_value, $expires_at ? $expires_at : null ) );
 }
 
 
@@ -217,11 +208,12 @@ function owbn_gateway_oat_registry_grant( $request ) {
  * @return WP_REST_Response
  */
 function owbn_gateway_oat_registry_revoke( $request ) {
-    $grant_id = (int) $request->get_param( 'id' );
+    if ( ! function_exists( 'owc_oat_revoke_access' ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_disabled', 'OAT is not enabled on this site.', array( 'status' => 503 ) ) );
+    }
 
-    OAT_Registry_Access::expire( $grant_id );
-
-    return owbn_gateway_respond( array( 'success' => true ) );
+    // The same rule as on archivist: only someone who manages the grant's character may revoke it.
+    return owbn_gateway_respond( owc_oat_revoke_access( (int) $request->get_param( 'id' ) ) );
 }
 
 

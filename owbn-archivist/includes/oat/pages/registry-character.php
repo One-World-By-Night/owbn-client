@@ -255,8 +255,8 @@ function owc_oat_can_manage_grants() {
     }
 
     foreach ( $roles as $role ) {
-        // Staff roles (HST, CM, staff, AST).
-        if ( preg_match( '#^chronicle/[^/]+/(hst|staff|cm|ast)#i', $role ) ) {
+        // Staff roles (HST, CM, staff, ST, AST).
+        if ( preg_match( '#^chronicle/[^/]+/(hst|staff|cm|ast|st(?=$|/))#i', $role ) ) {
             return true;
         }
         // Exec archivist roles.
@@ -294,7 +294,7 @@ function owc_oat_can_edit_character( $character, $active_grants = array() ) {
  *
  *   1. Site admin (`manage_options`) → full
  *   2. Exec role in {archivist, ahc1, ahc2, web} → full
- *   3. PC or chronicle NPC in chronicle X + user holds chronicle/X/(hst|staff|cm|ast) → full
+ *   3. PC or chronicle NPC in chronicle X + user holds chronicle/X/(hst|staff|st|cm|ast) → full
  *   4. Coord NPC (npc_type=coordinator) + user holds coordinator/{npc_coordinator}/(coordinator|sub-coordinator) → full
  *   5. PC + wp_user_id === current user → status (player self-retire)
  *   6. Otherwise → none
@@ -396,8 +396,8 @@ function owc_oat_get_npc_role_options() {
     $seen    = array();
 
     foreach ( $roles as $role ) {
-        // Chronicle staff: chronicle/<slug>/(hst|staff|cm|ast)
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast)#i', $role, $m ) ) {
+        // Chronicle staff: chronicle/<slug>/(hst|staff|cm|ast|st)
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|staff|cm|ast|st(?=$|/))#i', $role, $m ) ) {
             $slug = strtolower( $m[1] );
             $key  = 'chronicle:' . $slug;
             if ( ! isset( $seen[ $key ] ) ) {

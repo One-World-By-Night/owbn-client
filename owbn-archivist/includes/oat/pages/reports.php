@@ -26,7 +26,7 @@ function owc_oat_reports_has_access() {
     }
     $roles = owc_oat_get_user_asc_roles( get_current_user_id() );
     foreach ( $roles as $role ) {
-        if ( preg_match( '#^chronicle/[^/]+/(hst|cm|staff)$#', $role ) ) {
+        if ( preg_match( '#^chronicle/[^/]+/(hst|cm|staff|st)$#', $role ) ) {
             return true;
         }
         if ( preg_match( '#^coordinator/[^/]+/(coordinator|sub-coordinator)$#', $role ) ) {
@@ -62,7 +62,7 @@ function owc_oat_reports_user_scope() {
             $is_global = true;
             break;
         }
-        if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff)$#', $role, $m ) ) {
+        if ( preg_match( '#^chronicle/([^/]+)/(hst|cm|staff|st)$#', $role, $m ) ) {
             $chronicles[] = $m[1];
         }
         if ( preg_match( '#^coordinator/([^/]+)/(coordinator|sub-coordinator)$#', $role, $m ) ) {
