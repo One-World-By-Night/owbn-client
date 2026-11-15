@@ -1,0 +1,6 @@
+/* Phone menu: a tap on the caret's icon counts as a tap on the caret, so it toggles the submenu. */
+.elementor-nav-menu--dropdown .sub-arrow > *,
+.elementor-nav-menu--dropdown .sub-arrow svg,
+.elementor-nav-menu--dropdown .sub-arrow i {
+	pointer-events: none;
+}
