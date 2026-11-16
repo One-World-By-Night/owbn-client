@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.4 =
+* OWBN by the numbers: each figure is centered over its label.
 
 = 1.1.3 =
 * Council Votes leaves out demo votes, the ones council classifies "Demo" so people can try the voting, and a demo vote no longer takes a real vote's place in a short box.

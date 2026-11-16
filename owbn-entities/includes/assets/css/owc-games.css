@@ -70,6 +70,8 @@
 .owc-numbers__figure {
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+	text-align: center;
 }
 .owc-numbers__value {
 	font-size: 2em;
