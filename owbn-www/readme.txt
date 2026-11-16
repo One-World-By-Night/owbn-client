@@ -3,7 +3,7 @@ Contributors: oneWorldByNight
 Tags: owbn
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 License: GPL-2.0-or-later
 
 Pieces only the public OWBN website uses, kept in git rather than in its child theme.
@@ -24,6 +24,9 @@ Pieces only the public OWBN website uses, kept in git rather than in its child t
   * A hidden field that bots fill in (rendered by the server; Gravity Forms' own honeypot needs its scripts, so it is off), and one visitor can send a form at most five times an hour.
 
 == Changelog ==
+
+= 0.4.4 =
+* Equal-width buttons: on each page, every button in the content is as wide as the widest one, and never wider than its column on a phone.
 
 = 0.4.3 =
 * Signed-in members no longer get the WordPress toolbar (people who can edit the site still do), and every avatar is an image built into the page, so no page asks Gravatar for one. A member's IP address stays on the site, as the privacy policy says.
