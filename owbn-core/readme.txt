@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.13.2
+Stable tag: 1.13.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.3 =
+* Elementor stylesheets: a minute after Elementor deletes its page CSS files (it does on every plugin update, activation or deactivation), the missing ones are rebuilt, so pages served from the host's cache keep their styles.
 
 = 1.13.2 =
 * Log In: a `?auth=sso` link only returns a member to an address on this site (the Single Sign On Client plugin sent a signed-in member wherever `redirect_uri` said), and the plugin no longer rebuilds WordPress's rewrite rules on every request.
