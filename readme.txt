@@ -42,7 +42,6 @@ Deployed to: support.owbn.net
 | chronicles.owbn.net | yes | yes | - | yes | - |
 | council.owbn.net | yes | yes | - | yes | - |
 | archivist.owbn.net | yes | - | yes | - | - |
-| players.owbn.net | yes | - | - | - | - |
 | support.owbn.net | yes | - | - | - | yes |
 
 ## Requirements

@@ -1370,10 +1370,6 @@ msgstr ""
 msgid "Archivist Base URL"
 msgstr ""
 
-#: includes/oat/elementor/class-oat-workspace-widget.php:98
-msgid "Players Base URL"
-msgstr ""
-
 #: includes/oat/elementor/class-oat-workspace-widget.php:107
 #: includes/oat/elementor/class-oat-workspace-widget.php:151
 msgid "Custom Cards"

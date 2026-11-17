@@ -94,12 +94,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			'default' => 'https://archivist.owbn.net',
 		) );
 
-		$this->add_control( 'players_base_url', array(
-			'label'   => __( 'Players Base URL', 'owbn-archivist' ),
-			'type'    => Controls_Manager::TEXT,
-			'default' => 'https://players.owbn.net',
-		) );
-
 		$this->end_controls_section();
 
 		// Custom cards.
@@ -268,7 +262,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 		$council_url    = rtrim( $settings['council_base_url'] ?? 'https://council.owbn.net', '/' );
 		$chronicles_url = rtrim( $settings['chronicles_base_url'] ?? 'https://chronicles.owbn.net', '/' );
 		$archivist_url  = rtrim( $settings['archivist_base_url'] ?? 'https://archivist.owbn.net', '/' );
-		$players_url    = rtrim( $settings['players_base_url'] ?? 'https://players.owbn.net', '/' );
 		$show_inbox     = ( $settings['show_inbox_count'] ?? 'yes' ) === 'yes';
 
 		$sso_link = function( $base_url, $path = '/' ) {
@@ -344,7 +337,6 @@ class OWC_OAT_Workspace_Widget extends Widget_Base {
 			<div class="owc-ws-section">
 				<?php if ( $heading ) : ?><h3><?php echo esc_html( $heading ); ?></h3><?php endif; ?>
 				<div style="display:flex;gap:10px;flex-wrap:wrap;">
-					<a href="<?php echo esc_url( $players_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Players</a>
 					<a href="<?php echo esc_url( $chronicles_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Chronicles</a>
 					<a href="<?php echo esc_url( $council_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Council</a>
 					<a href="<?php echo esc_url( $archivist_url . '/?auth=sso' ); ?>" target="_blank" class="owc-ws-connect-btn">Archivist</a>

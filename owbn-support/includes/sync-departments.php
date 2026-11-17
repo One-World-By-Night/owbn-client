@@ -96,7 +96,6 @@ function owbn_support_seed_products() {
         'council'      => __( 'Council (council.owbn.net)', 'owbn-support' ),
         'chronicles'   => __( 'Chronicles (chronicles.owbn.net)', 'owbn-support' ),
         'archivist'    => __( 'Archivist Toolkit (archivist.owbn.net)', 'owbn-support' ),
-        'players'      => __( 'Players (players.owbn.net)', 'owbn-support' ),
         'support'      => __( 'Support (support.owbn.net)', 'owbn-support' ),
         'voting'       => __( 'Voting System', 'owbn-support' ),
         'access-roles' => __( 'Access / Roles (AccessSchema)', 'owbn-support' ),
