@@ -411,7 +411,7 @@ function owc_oat_render_field( $field, $value = '' ) {
 			if ( function_exists( 'owc_asc_render_chronicle_picker' ) ) {
 				// Get user's restricted entries for non-wildcard scopes.
 				if ( $filter_by_chron && function_exists( '_owc_asc_get_user_entity_entries' ) ) {
-					$user_entries = _owc_asc_get_user_entity_entries( 'chronicle', array( 'HST', 'Staff', 'CM', 'Player' ) );
+					$user_entries = _owc_asc_get_user_entity_entries( 'chronicle', array( 'HST', 'Staff', 'CM', 'Player', 'AST', 'ST' ) );
 					$user_slugs   = array();
 					foreach ( $user_entries as $ue ) {
 						$user_slugs[] = $ue['slug'];
