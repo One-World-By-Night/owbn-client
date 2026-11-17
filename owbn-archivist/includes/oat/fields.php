@@ -380,6 +380,11 @@ function owc_oat_render_field( $field, $value = '' ) {
 			$filter_by_chron   = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
 			$role_scopes_chron = isset( $attrs['role_scopes'] ) ? $attrs['role_scopes'] : array();
 			$chron_roles       = isset( $attrs['roles'] ) ? $attrs['roles'] : array();
+			// A storyteller is offered the chronicles an assistant storyteller is.
+			$chron_roles_lc = array_map( 'strtolower', (array) $chron_roles );
+			if ( in_array( 'ast', $chron_roles_lc, true ) && ! in_array( 'st', $chron_roles_lc, true ) ) {
+				$chron_roles[] = 'ST';
+			}
 
 			// Super users see all chronicles and don't need required (character picker auto-fills).
 			$is_super_chron = function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( get_current_user_id() );
@@ -610,7 +615,10 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<div class="oat-field-label"><label for="' . $id . '_search">' . esc_html( $label ) . $req_star . '</label></div>';
 			echo '<div class="oat-field-content">';
 			$filter_by = isset( $attrs['filter_by'] ) ? $attrs['filter_by'] : '';
-			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . '>';
+			$create_choices = ( ! function_exists( 'owc_oat_can_create_character' ) || owc_oat_can_create_character() ) && function_exists( 'owc_oat_create_chronicle_choices' )
+				? owc_oat_create_chronicle_choices()
+				: array();
+			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . ( $create_choices ? ' data-create-chronicles="' . esc_attr( wp_json_encode( $create_choices ) ) . '"' : '' ) . '>';
 			// Search input.
 			printf(
 				'<input type="text" id="%s_search" class="oat-character-search regular-text" placeholder="%s" autocomplete="off" />',

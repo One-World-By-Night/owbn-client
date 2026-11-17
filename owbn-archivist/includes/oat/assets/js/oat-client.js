@@ -512,11 +512,15 @@
             // ── Chronicle search in create panel ──
             var $ccChronicle = $wrap.find('.oat-cc-chronicle');
             var $ccChronSlug = $wrap.find('.oat-cc-chronicle-slug');
-            // The chronicles to search: the inline list of a searchable chronicle picker on the page, else the
-            // options of the form's chronicle dropdown (shown instead of the search to anyone with 20 or fewer).
+            // The chronicles to search: the ones the user may create in, sent with the picker; else the inline list of a
+            // searchable chronicle picker on the page; else the options of the form's chronicle dropdown.
             var chronEntries = [];
+            var createChoices = $wrap.data('create-chronicles');
+            if ($.isArray(createChoices) && createChoices.length) {
+                chronEntries = createChoices;
+            }
             var $existingChronWrap = $('.oat-chronicle-autocomplete-wrap').first();
-            if ($existingChronWrap.length) {
+            if (!chronEntries.length && $existingChronWrap.length) {
                 chronEntries = $existingChronWrap.data('entries') || [];
             }
             if (!chronEntries.length) {

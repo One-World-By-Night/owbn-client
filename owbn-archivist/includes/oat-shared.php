@@ -315,6 +315,38 @@ if ( ! function_exists( 'owc_oat_creates_own_pc_only' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_create_chronicle_choices' ) ) :
+	/**
+	 * The chronicles the create panel searches for the current user: every chronicle for site admins, exec offices and
+	 * Coordinators, otherwise the chronicles where they hold HST, CM, staff, ST, AST or player (the roles
+	 * owc_oat_create_scope() accepts). The chosen chronicle is checked again when the character is created.
+	 *
+	 * @return array[] Each: value (chronicle slug), label (title).
+	 */
+	function owc_oat_create_chronicle_choices() {
+		$titles = array();
+		if ( 'any' === owc_oat_create_scope( '' ) ) {
+			$chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
+			foreach ( is_array( $chronicles ) ? $chronicles : array() as $c ) {
+				$slug = isset( $c['slug'] ) ? (string) $c['slug'] : '';
+				if ( '' !== $slug ) {
+					$titles[ $slug ] = ! empty( $c['title'] ) ? (string) $c['title'] : $slug;
+				}
+			}
+		} elseif ( function_exists( '_owc_asc_get_user_entity_entries' ) ) {
+			foreach ( _owc_asc_get_user_entity_entries( 'chronicle', array( 'HST', 'CM', 'Staff', 'ST', 'AST', 'Player' ) ) as $e ) {
+				$titles[ $e['slug'] ] = ! empty( $e['title'] ) ? (string) $e['title'] : (string) $e['slug'];
+			}
+		}
+		asort( $titles, SORT_NATURAL | SORT_FLAG_CASE );
+		$choices = array();
+		foreach ( $titles as $slug => $title ) {
+			$choices[] = array( 'value' => (string) $slug, 'label' => $title );
+		}
+		return $choices;
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 	/**
 	 * Creates a character for the current user from the create panel's fields.
