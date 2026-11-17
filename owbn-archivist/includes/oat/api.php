@@ -1266,32 +1266,44 @@ function owc_oat_get_user_asc_roles( $user_id ) {
  * Resolve a step's assignee_role pattern against entry data.
  *
  * Replaces {chronicle_slug} and {coordinator_genre} placeholders
- * with actual entry values.
+ * with actual entry values. A request owned by several coordinator offices
+ * resolves to one role per office, joined with "|".
  *
  * @param object $entry       Entry row object.
  * @param array  $step_config Step configuration array.
- * @return string Resolved lowercase role path, or empty string.
+ * @return string Resolved lowercase role path (or "|"-joined role paths), or empty string.
  */
 function owc_oat_resolve_step_role( $entry, $step_config ) {
     $pattern = isset( $step_config['assignee_role'] ) ? $step_config['assignee_role'] : '';
     if ( empty( $pattern ) ) {
         return '';
     }
-    $resolved = str_replace(
-        array( '{chronicle_slug}', '{coordinator_genre}' ),
-        array(
-            isset( $entry->chronicle_slug ) ? $entry->chronicle_slug : '',
-            isset( $entry->coordinator_genre ) ? $entry->coordinator_genre : '',
-        ),
-        $pattern
-    );
-    // Any other {field} token takes the value of that field on the request, as the workflow engine resolves it.
-    if ( ! empty( $entry->id ) && class_exists( 'OAT_Entry_Meta' ) && preg_match_all( '/\{([a-z_]+)\}/', $resolved, $tokens ) ) {
-        foreach ( array_unique( $tokens[1] ) as $key ) {
-            $resolved = str_replace( '{' . $key . '}', (string) OAT_Entry_Meta::get( (int) $entry->id, $key ), $resolved );
-        }
+    $offices = array();
+    if ( false !== strpos( $pattern, '{coordinator_genre}' ) && class_exists( 'OAT_Workflow_Engine' ) && method_exists( 'OAT_Workflow_Engine', 'coordinator_offices' ) ) {
+        $offices = OAT_Workflow_Engine::coordinator_offices( $entry );
     }
-    return strtolower( $resolved );
+    if ( ! $offices ) {
+        $offices = array( isset( $entry->coordinator_genre ) ? $entry->coordinator_genre : '' );
+    }
+    $roles = array();
+    foreach ( $offices as $office ) {
+        $resolved = str_replace(
+            array( '{chronicle_slug}', '{coordinator_genre}' ),
+            array(
+                isset( $entry->chronicle_slug ) ? $entry->chronicle_slug : '',
+                $office,
+            ),
+            $pattern
+        );
+        // Any other {field} token takes the value of that field on the request, as the workflow engine resolves it.
+        if ( ! empty( $entry->id ) && class_exists( 'OAT_Entry_Meta' ) && preg_match_all( '/\{([a-z_]+)\}/', $resolved, $tokens ) ) {
+            foreach ( array_unique( $tokens[1] ) as $key ) {
+                $resolved = str_replace( '{' . $key . '}', (string) OAT_Entry_Meta::get( (int) $entry->id, $key ), $resolved );
+            }
+        }
+        $roles[] = strtolower( $resolved );
+    }
+    return implode( '|', array_unique( $roles ) );
 }
 
 /**
@@ -1642,14 +1654,19 @@ function owc_oat_get_create_role_patterns() {
  * Check if a user holds the resolved step role.
  *
  * @param array  $user_roles    Lowercase-normalized role paths.
- * @param string $resolved_role Resolved lowercase role path.
+ * @param string $resolved_role Resolved lowercase role path, or several joined with "|".
  * @return bool
  */
 function owc_oat_user_has_step_role( $user_roles, $resolved_role ) {
     if ( empty( $resolved_role ) ) {
         return false;
     }
-    return in_array( $resolved_role, $user_roles, true );
+    foreach ( explode( '|', $resolved_role ) as $role ) {
+        if ( '' !== $role && in_array( $role, $user_roles, true ) ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
