@@ -488,6 +488,9 @@
                             $chronWrap.find('.oat-chronicle-search').hide();
                             $chronWrap.find('.oat-chronicle-selected-name').text(chronicleSlug);
                             $chronWrap.find('.oat-chronicle-selected').show();
+                        } else {
+                            // The field had no chronicle to offer: show the character's own in its place.
+                            $chronHidden.siblings('p.description').text(chronicleSlug);
                         }
                     }
                 }

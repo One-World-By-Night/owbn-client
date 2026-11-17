@@ -565,7 +565,7 @@ endif;
 if ( ! function_exists( 'owc_oat_search_characters_for_user' ) ) :
 	/**
 	 * The characters whose name matches a term, within what the current user may search: their own as a player,
-	 * their chronicles' as staff, everyone's as a Coordinator or the Archivist.
+	 * their chronicles' and their own as staff, everyone's as a Coordinator or the Archivist.
 	 *
 	 * @param string $term           At least two characters of the name.
 	 * @param string $scope          The scope asked for; capped to the scopes the user holds.
@@ -603,12 +603,22 @@ if ( ! function_exists( 'owc_oat_search_characters_for_user' ) ) :
 				}
 			}
 			$staff_slugs = array_values( array_unique( $staff_slugs ) );
-			if ( '' !== $chronicle_slug && in_array( $chronicle_slug, $staff_slugs, true ) ) {
+			$narrowed = '' !== $chronicle_slug && in_array( $chronicle_slug, $staff_slugs, true );
+			if ( $narrowed ) {
 				$staff_slugs = array( $chronicle_slug );
 			}
 			if ( $staff_slugs ) {
-				$where_extra  = ' AND chronicle_slug IN (' . implode( ',', array_fill( 0, count( $staff_slugs ), '%s' ) ) . ')';
-				$prepare_args = array_merge( $prepare_args, $staff_slugs );
+				$in_chronicles = 'chronicle_slug IN (' . implode( ',', array_fill( 0, count( $staff_slugs ), '%s' ) ) . ')';
+				$prepare_args  = array_merge( $prepare_args, $staff_slugs );
+				$me            = wp_get_current_user();
+				if ( ! $narrowed && $me && $me->ID && $me->user_email ) {
+					// Their own characters too, in whatever chronicle they are.
+					$where_extra    = ' AND ( ' . $in_chronicles . ' OR player_email = %s OR wp_user_id = %d )';
+					$prepare_args[] = $me->user_email;
+					$prepare_args[] = $me->ID;
+				} else {
+					$where_extra = ' AND ' . $in_chronicles;
+				}
 			} else {
 				$scope = 'player';
 			}
