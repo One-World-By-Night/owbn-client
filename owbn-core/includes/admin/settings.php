@@ -424,7 +424,7 @@ add_action('admin_init', function () {
     ]);
     register_setting($g, owc_option_name('asc_cache_ttl'), [
         'type'              => 'integer',
-        'default'           => 3600,
+        'default'           => 86400,
         'sanitize_callback' => 'absint',
     ]);
 });

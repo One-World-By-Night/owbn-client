@@ -40,7 +40,7 @@ add_action( 'wp_login', function( $user_login, $user ) {
 
 // Invalidate user-meta cache the moment accessSchema (local/host site) mutates a user's roles.
 // Without this, direct admin-UI or webhook grants/revokes only clear accessSchema's own object
-// cache, leaving owc_asc_cache_* stale until the 900s TTL expires.
+// cache, leaving owc_asc_cache_* stale until the TTL expires.
 add_action( 'accessSchema_role_added',   function( $user_id ) { owc_asc_cache_delete( (int) $user_id ); }, 10, 1 );
 add_action( 'accessSchema_role_removed', function( $user_id ) { owc_asc_cache_delete( (int) $user_id ); }, 10, 1 );
 

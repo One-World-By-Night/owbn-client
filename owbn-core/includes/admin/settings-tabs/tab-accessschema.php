@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 $mode       = get_option( owc_option_name( 'asc_mode' ), 'remote' );
 $remote_url = get_option( owc_option_name( 'asc_remote_url' ), '' );
 $remote_key = get_option( owc_option_name( 'asc_remote_api_key' ), '' );
-$cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
+$cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), OWC_ASC_CACHE_TTL );
 ?>
 
 <h2><?php esc_html_e( 'accessSchema', 'owbn-core' ); ?></h2>
@@ -77,7 +77,7 @@ $cache_ttl  = get_option( owc_option_name( 'asc_cache_ttl' ), 3600 );
                     value="<?php echo esc_attr( $cache_ttl ); ?>"
                     class="small-text"
                     min="0" />
-                <p class="description"><?php esc_html_e( 'How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)', 'owbn-core' ); ?></p>
+                <p class="description"><?php esc_html_e( 'How long to cache user roles. 0 = no caching. Default: 86400 (24 hours)', 'owbn-core' ); ?></p>
             </td>
         </tr>
     </table>

@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, sso, accessschema
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.13.4
+Stable tag: 1.13.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Provides shared functionality across all One World by Night sites:
 == Changelog ==
 
 Releases 1.10.0 to 1.12.7 are in the repository's commit history.
+
+= 1.13.5 =
+* Role cache: a member's roles are kept 24 hours instead of 15 minutes. Role changes still reach every site within 15 minutes through the change feed, and signing in or Refresh my Roles fetches them at once. Member sites had been asking the role server about 34,000 times a day.
 
 = 1.13.4 =
 * Role-change feed: the host now serves `/owc/v1/role-changes` whichever plugin loads first. It was never registered when owbn-core loaded before accessSchema, so member sites only learned of role changes through the 15-minute rolling refresh.

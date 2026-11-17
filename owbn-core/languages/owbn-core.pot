@@ -339,7 +339,7 @@ msgid "Role Cache TTL (seconds)"
 msgstr ""
 
 #: includes/admin/settings-tabs/tab-accessschema.php:80
-msgid "How long to cache user roles. 0 = no caching. Default: 3600 (1 hour)"
+msgid "How long to cache user roles. 0 = no caching. Default: 86400 (24 hours)"
 msgstr ""
 
 #: includes/admin/settings-tabs/tab-accessschema.php:92
