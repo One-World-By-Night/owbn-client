@@ -250,8 +250,12 @@ if ( ! function_exists( 'owc_asc_pull_role_changes' ) ) {
  *  3b. Change feed — HOST side (record changes + expose delta)
  * ============================================================= */
 
-// The host is the site where roles actually mutate (the accessSchema server).
-if ( function_exists( 'accessSchema_add_role' ) ) {
+// The host is the site where roles actually mutate (the accessSchema server). Checked on init, after every
+// plugin has loaded, so it works whether owbn-core or accessSchema loads first.
+add_action( 'init', static function () {
+	if ( ! function_exists( 'accessSchema_add_role' ) ) {
+		return;
+	}
 
 	/**
 	 * Record a changed user's email in a rolling log (kept ~48h). Cheap option
@@ -313,4 +317,4 @@ if ( function_exists( 'accessSchema_add_role' ) ) {
 			)
 		);
 	} );
-}
+}, 0 );
