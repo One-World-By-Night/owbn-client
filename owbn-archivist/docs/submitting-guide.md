@@ -26,7 +26,7 @@ How to file a request with the Archivist and see it through, for players and chr
 
 ## When a request seems stuck
 
-Reviewers aren't emailed when a request reaches them, so a request can sit until someone checks their Inbox. Open it, look at **Assignees**, and ask that person, or the Archivist. [How a Request Moves](help/approval-flow.md) shows every step.
+Reviewers are emailed when a request reaches them, but an email can be missed, so a request can still sit until someone checks their Inbox. Open it, look at **Assignees**, and ask that person, or the Archivist. [How a Request Moves](help/approval-flow.md) shows every step.
 
 ## Registering a PC for a player
 

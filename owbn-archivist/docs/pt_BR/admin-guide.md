@@ -32,7 +32,7 @@ Uma configuração que cita um campo, um valor ou uma etapa que não existe falh
 ## Acompanhando o trabalho
 
 - Os [Relatórios](help/reports.md) e o Details mostram as contagens e as listas.
-- Ninguém recebe email quando um pedido chega à sua etapa, então uma etapa silenciosa pode ser um pedido que ninguém viu. Pending Reports e All Entries mostram o que está esperando.
+- Todos os atribuídos a uma etapa recebem email quando um pedido chega a ela. Uma etapa sem ninguém atribuído não manda email, então uma etapa silenciosa pode ser um pedido que ninguém recebeu. Pending Reports e All Entries mostram o que está esperando.
 
 ## As páginas de ajuda
 

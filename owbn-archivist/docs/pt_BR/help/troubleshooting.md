@@ -18,7 +18,7 @@ Esta é uma página de referência. Cada página de ajuda do OAT também termina
 | Um personagem que registrei aparece como de outra pessoa | A Linked Account dele está errada. Mude-a na [Ficha do Personagem](registry-detail.md#tarefas-comuns) |
 | "You do not have permission to view this character." | Ele não é seu nem da sua crônica. Veja [Quem Pode Fazer o Quê](roles.md) |
 | Não consigo mudar a Seita de um personagem sem perder o clã | Escolha a nova Faction; o clã continua, marcado "(Sect Defector)". Veja [Ficha do Personagem](registry-detail.md#tarefas-comuns) |
-| O meu pedido está parado em uma etapa há dias | Ninguém recebe email quando um pedido chega a ele. Veja [Como um Pedido Anda](approval-flow.md#solução-de-problemas) |
+| O meu pedido está parado em uma etapa há dias | Quem está atribuído recebe email quando ele chega, mas um email pode se perder, e uma etapa sem ninguém atribuído não manda nenhum. Veja [Como um Pedido Anda](approval-flow.md#solução-de-problemas) |
 | Não tenho botões em um pedido | A etapa atual não é sua. Veja [A Página de um Pedido](entry.md#solução-de-problemas) |
 | "You do not have access to this request." | O pedido não faz parte do seu trabalho. Veja [A Página de um Pedido](entry.md#quem-pode-usar) |
 | "You do not have permission to create characters." | Jogadores, a staff das crônicas, Coordenadores e os escritórios executivos criam personagens: a staff nas próprias crônicas, um jogador só o próprio PC. Veja [Fazer um Pedido](submit.md#solução-de-problemas) |

@@ -18,7 +18,7 @@ This is a reference page. Each OAT help page also ends with its own troubleshoot
 | A character I registered shows as someone else's | Its Linked Account is wrong. Change it on its [Character Record](registry-detail.md#common-tasks) |
 | "You do not have permission to view this character." | It isn't yours or your chronicle's. See [Who Can Do What](roles.md) |
 | I can't change a character's Sect without losing the clan | Pick the new Faction; the clan stays, marked "(Sect Defector)". See [Character Record](registry-detail.md#common-tasks) |
-| My request has sat at a step for days | Nobody is emailed when a request reaches them. See [How a Request Moves](approval-flow.md#troubleshooting) |
+| My request has sat at a step for days | The people assigned are emailed when it reaches them, but an email can be missed, and a step with nobody assigned sends none. See [How a Request Moves](approval-flow.md#troubleshooting) |
 | I have no buttons on a request | The current step isn't yours. See [A Request's Page](entry.md#troubleshooting) |
 | "You do not have access to this request." | The request isn't part of your work. See [A Request's Page](entry.md#who-can-use-this) |
 | "You do not have permission to create characters." | Players, chronicle staff, Coordinators and the exec offices create them: staff in their own chronicles, a player only their own PC. See [Submit a Request](submit.md#troubleshooting) |

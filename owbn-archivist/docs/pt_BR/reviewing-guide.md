@@ -4,7 +4,7 @@ Como encontrar e agir nos pedidos que chegam a você, para HSTs, a staff das cr�
 
 ## Encontrando o seu trabalho
 
-Ninguém recebe email quando um pedido chega à sua etapa. O seu trabalho está em **Assigned to Me** no seu [Archivist Inbox](help/inbox.md), e **Pending Actions** no Dashboard o conta. Confira com frequência.
+Quando um pedido chega à sua etapa, você recebe um email com um link que o abre já com você conectado. O seu trabalho também está em **Assigned to Me** no seu [Archivist Inbox](help/inbox.md), e **Pending Actions** no Dashboard o conta. Confira com frequência; um email pode se perder.
 
 Uma etapa chega a você pelo nome ou pelo cargo: Staff Review vai para o HST da crônica (para o CM quando ela não tem HST, para a staff quando não tem CM), Coordinator Review para o Coordenador do escritório, e Archivist Review para o Arquivista. [Como um Pedido Anda](help/approval-flow.md) lista todas as etapas de todos os domínios.
 

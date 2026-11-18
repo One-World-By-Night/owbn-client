@@ -4,7 +4,7 @@ How to find and act on the requests that reach you, for HSTs, chronicle staff, C
 
 ## Finding your work
 
-Nobody is emailed when a request reaches their step. Your work is under **Assigned to Me** in your [Archivist Inbox](help/inbox.md), and **Pending Actions** on the Dashboard counts it. Check it often.
+When a request reaches your step you get an email with a link that signs you in and opens it. Your work is also under **Assigned to Me** in your [Archivist Inbox](help/inbox.md), and **Pending Actions** on the Dashboard counts it. Check it often; an email can be missed.
 
 A step comes to you by name or by role: Staff Review goes to the chronicle's HST (its CM when it has no HST, its Staff when it has no CM), Coordinator Review to the office's Coordinator, and Archivist Review to the Archivist. [How a Request Moves](help/approval-flow.md) lists every step for every domain.
 

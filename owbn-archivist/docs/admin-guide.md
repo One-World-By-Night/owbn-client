@@ -32,7 +32,7 @@ A setting that names a field, a value or a step that doesn't exist fails silentl
 ## Watching the work
 
 - [Reports](help/reports.md) and Details show the counts and the lists.
-- Nobody is emailed when a request reaches their step, so a quiet step can mean a request nobody has seen. Pending Reports and All Entries show what is waiting.
+- Everyone assigned to a step is emailed when a request reaches it. A step with nobody assigned sends no email, so a quiet step can mean a request nobody was assigned. Pending Reports and All Entries show what is waiting.
 
 ## The help pages
 

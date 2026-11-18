@@ -26,7 +26,7 @@ Como registrar um pedido com o Arquivista e acompanhá-lo até o fim, para jogad
 
 ## Quando um pedido parece parado
 
-Os revisores não recebem email quando um pedido chega a eles, então um pedido pode ficar parado até alguém conferir o Inbox. Abra-o, olhe **Assignees**, e fale com essa pessoa, ou com o Arquivista. [Como um Pedido Anda](help/approval-flow.md) mostra todas as etapas.
+Os revisores recebem email quando um pedido chega a eles, mas um email pode se perder, então um pedido ainda pode ficar parado até alguém conferir o Inbox. Abra-o, olhe **Assignees**, e fale com essa pessoa, ou com o Arquivista. [Como um Pedido Anda](help/approval-flow.md) mostra todas as etapas.
 
 ## Registrando um PC para um jogador
 
