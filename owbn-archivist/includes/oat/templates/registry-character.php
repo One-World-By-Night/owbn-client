@@ -206,7 +206,12 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
                     </td>
                 </tr>
             </table>
-            <?php submit_button( 'Update Status', 'primary', 'owc_oat_update_character' ); ?>
+            <p>
+                <label for="player_email"><strong><?php esc_html_e( 'Player Email', 'owbn-archivist' ); ?></strong></label><br>
+                <input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text" />
+                <br><span class="description"><?php esc_html_e( "The contact email staff see for this character. It doesn't change your account, and the character stays yours.", 'owbn-archivist' ); ?></span>
+            </p>
+            <?php submit_button( 'Update Character', 'primary', 'owc_oat_update_character' ); ?>
         </form>
     <?php else : ?>
         <!-- ── Read-Only Character Info ──────────────────────────────── -->

@@ -13,7 +13,7 @@ What you can change is the same on every OWbN site, in wp-admin and on the front
 | Site admins; the Archivist, AHC1, AHC2 and the Web Coordinator | Every field |
 | The HST, staff, CM or AST of the character's own chronicle | Every field, on the chronicle's PCs and NPCs |
 | A Coordinator or Sub-Coordinator | Every field, on their own office's NPCs |
-| The character's linked player | Status only, to retire it |
+| The character's linked player | Status, to retire it, and the Player Email |
 | Anyone else who can open it | Nothing; the record is read-only |
 
 ## How to get there
@@ -41,7 +41,7 @@ Archivist and each OWbN site with the registry (chronicles, council, players) sh
 - **Registry Entries** - every approved request on the character. Each opens to its Entry ID, Domain, Form, Approving Authority, Regulation Level, the item, Status and date.
 - **Show All** (Coordinators) - Registry Entries starts with the R&U items your office owns; tick Show All to include items other Coordinators own.
 
-When only Status is yours to change, the record shows its details as text and a Status list of Inactive, Dead and Shelved.
+When only Status and Player Email are yours to change, the record shows its other details as text, a Status list of Inactive, Dead and Shelved, and a Player Email box.
 
 ## Common tasks
 
@@ -69,6 +69,12 @@ When only Status is yours to change, the record shows its details as text and a 
 2. Pick **Inactive**, **Dead** or **Shelved** in **Status**.
 3. Click **Update Character**.
 
+### Give your character its own contact email (player)
+
+1. Open your character from My Characters on the Archivist Registry page.
+2. Type the address in **Player Email**. It is the contact email staff see for this character; your account is not changed and the character stays yours.
+3. Click **Update Character**.
+
 ### Let a chronicle or Coordinator office see a character
 
 1. In **Add Grant**, search for the chronicle or Coordinator office.
@@ -82,6 +88,7 @@ When only Status is yours to change, the record shows its details as text and a 
 ## Things to know
 
 - A character shows under a person's My Characters only when its Linked Account is their account. Player Name and Player Email are text and don't link anything by themselves.
+- A player can give their own character any contact email except another member's login email: an email is how characters are matched to accounts. The character stays linked to the player's account whatever address it carries.
 - A PC whose Player Email has no OWbN account yet links itself to that person once their account reaches the Archivist site: the first time they sign in there, or use the Archivist pages on any OWbN site.
 - The account search and the saved link always use the Archivist site's accounts, whichever OWbN site you are on.
 - Only staff, Coordinators, the Archivist and site admins can search accounts; a player sees no matches.
@@ -92,7 +99,8 @@ When only Status is yours to change, the record shows its details as text and a 
 ## Troubleshooting
 
 - **"You do not have permission to view this character."** The character isn't linked to your account and isn't granted to your chronicle or office. Ask its HST or the Archivist.
-- **"You do not have permission to edit this character."** Only Status is yours to change, or nothing is. See [Who can use this](#who-can-use-this).
+- **"You do not have permission to edit this character."** Only Status and Player Email are yours to change, or nothing is. See [Who can use this](#who-can-use-this).
+- **"That address is another member's login email."** Use an address that isn't a member's login email, or ask the Archivist to link the character differently.
 - **"Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate."** Pick Inactive, Dead or Shelved; an HST makes a character active again.
 - **"No account matches that."** Nobody has an OWbN account with that name, login or email address yet, or you typed only part of an address (type all of it), or you are a player and can't search accounts. Leave Player Email filled in: the character links itself when they first sign in.
 - **The character isn't under the player's My Characters.** Its Linked Account is empty or someone else's. Link it as above.

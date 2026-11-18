@@ -13,7 +13,7 @@ O que você pode alterar é o mesmo em todos os sites da OWbN, no wp-admin e no 
 | Administradores do site; o Arquivista, AHC1, AHC2 e o Coordenador de Web | Todos os campos |
 | O HST, a staff, o CM ou o AST da própria crônica do personagem | Todos os campos, nos PCs e NPCs da crônica |
 | Um Coordenador ou Subcoordenador | Todos os campos, nos NPCs do próprio escritório |
-| O jogador vinculado ao personagem | Só o Status, para aposentá-lo |
+| O jogador vinculado ao personagem | O Status, para aposentá-lo, e o Player Email |
 | Qualquer outra pessoa que possa abri-la | Nada; a ficha é só leitura |
 
 ## Como chegar
@@ -41,7 +41,7 @@ O Arquivista e cada site da OWbN com o registro (chronicles, council, players) m
 - **Registry Entries** - todos os pedidos aprovados no personagem. Cada um abre com Entry ID, Domain, Form, Approving Authority, Regulation Level, o item, Status e data.
 - **Show All** (Coordenadores) - Registry Entries começa com os itens de R&U que o seu escritório controla; marque Show All para incluir os itens de outros Coordenadores.
 
-Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista de Status com Inactive, Dead e Shelved.
+Quando só o Status e o Player Email cabem a você, a ficha mostra os outros dados como texto, uma lista de Status com Inactive, Dead e Shelved, e uma caixa de Player Email.
 
 ## Tarefas comuns
 
@@ -69,6 +69,12 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 2. Escolha **Inactive**, **Dead** ou **Shelved** em **Status**.
 3. Clique em **Update Character**.
 
+### Dar ao seu personagem um email de contato próprio (jogador)
+
+1. Abra o seu personagem em My Characters na página Archivist Registry.
+2. Digite o endereço em **Player Email**. É o email de contato que a staff vê para este personagem; a sua conta não muda e o personagem continua seu.
+3. Clique em **Update Character**.
+
 ### Deixar uma crônica ou escritório de Coordenador ver um personagem
 
 1. Em **Add Grant**, procure a crônica ou o escritório de Coordenador.
@@ -82,6 +88,7 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 ## Bom saber
 
 - Um personagem aparece em My Characters de uma pessoa só quando a Linked Account dele é a conta dela. Player Name e Player Email são texto e não vinculam nada sozinhos.
+- Um jogador pode dar ao próprio personagem qualquer email de contato, exceto o email de login de outro membro: o email é como os personagens são ligados às contas. O personagem continua vinculado à conta do jogador, seja qual for o endereço.
 - Um PC cujo Player Email ainda não tem conta na OWbN se vincula a essa pessoa quando a conta dela chega ao site do Arquivista: na primeira vez que ela entra lá, ou usa as páginas do Arquivista em qualquer site da OWbN.
 - A busca de contas e o vínculo gravado usam sempre as contas do site do Arquivista, em qualquer site da OWbN onde você esteja.
 - Só staff, Coordenadores, o Arquivista e administradores do site podem buscar contas; um jogador não vê resultados.
@@ -92,7 +99,8 @@ Quando só o Status cabe a você, a ficha mostra os dados como texto e uma lista
 ## Solução de problemas
 
 - **"You do not have permission to view this character."** O personagem não está vinculado à sua conta nem tem acesso concedido à sua crônica ou escritório. Fale com o HST dele ou com o Arquivista.
-- **"You do not have permission to edit this character."** Só o Status cabe a você, ou nada. Veja [Quem pode usar](#quem-pode-usar).
+- **"You do not have permission to edit this character."** Só o Status e o Player Email cabem a você, ou nada. Veja [Quem pode usar](#quem-pode-usar).
+- **"That address is another member's login email."** Use um endereço que não seja o email de login de um membro, ou peça ao Arquivista para vincular o personagem de outro jeito.
 - **"Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate."** Escolha Inactive, Dead ou Shelved; um HST é quem volta um personagem a ativo.
 - **"No account matches that."** Ninguém tem uma conta da OWbN com esse nome, login ou endereço de email ainda, ou você digitou só parte de um endereço (digite-o inteiro), ou você é jogador e não pode buscar contas. Deixe o Player Email preenchido: o personagem se vincula sozinho quando a pessoa entrar pela primeira vez.
 - **O personagem não aparece em My Characters do jogador.** A Linked Account dele está vazia ou é de outra pessoa. Vincule-o como acima.

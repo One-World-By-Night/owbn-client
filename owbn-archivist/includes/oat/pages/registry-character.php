@@ -144,7 +144,7 @@ function owc_oat_handle_grant_actions( $character_id ) {
 
         // Field whitelist switches on mode: status-only mode drops everything but `status`.
         if ( 'status' === $edit_mode ) {
-            $fields = array( 'status' );
+            $fields = array( 'status', 'player_email' );
         } else {
             $fields = array(
                 'character_name', 'player_email', 'player_name',
@@ -176,6 +176,17 @@ function owc_oat_handle_grant_actions( $character_id ) {
             if ( isset( $_POST[ $f ] ) ) {
                 $update[ $f ] = sanitize_text_field( $_POST[ $f ] );
             }
+        }
+
+        // The owning player's Player Email: kept apart from every account, and the PC is linked to theirs.
+        if ( 'status' === $edit_mode && isset( $update['player_email'] ) ) {
+            $change = owc_oat_prepare_player_email_change( $current_char, $update['player_email'] );
+            if ( is_wp_error( $change ) ) {
+                add_settings_error( 'owc_oat_registry', 'player_email_error', $change->get_error_message(), 'error' );
+                return 'error';
+            }
+            unset( $update['player_email'] );
+            $update = array_merge( $update, $change );
         }
 
         // Status-only mode: players may only self-mark inactive/dead/shelved.
@@ -284,10 +295,37 @@ function owc_oat_can_edit_character( $character, $active_grants = array() ) {
 }
 
 /**
+ * What changes when the player who owns a PC sets its Player Email: the address, and the PC's Linked Account, so the PC stays
+ * theirs whatever address it carries. An address that is another member's account email is refused, because an email is how a
+ * character is matched to an account. The player's own account is never changed.
+ *
+ * @param array  $character The character row.
+ * @param string $new_email The address entered.
+ * @return array|WP_Error Fields to save (empty when nothing changes), or an error.
+ */
+function owc_oat_prepare_player_email_change( $character, $new_email ) {
+    $me  = wp_get_current_user();
+    $new = sanitize_email( trim( (string) $new_email ) );
+    if ( '' === $new || ! is_email( $new ) ) {
+        return new WP_Error( 'invalid_email', __( "That email doesn't look right.", 'owbn-archivist' ) );
+    }
+    $old    = isset( $character['player_email'] ) ? (string) $character['player_email'] : '';
+    $linked = isset( $character['wp_user_id'] ) ? (int) $character['wp_user_id'] : 0;
+    if ( 0 === strcasecmp( $new, $old ) ) {
+        return (int) $me->ID === $linked ? array() : array( 'wp_user_id' => (int) $me->ID );
+    }
+    $holder = get_user_by( 'email', $new );
+    if ( $holder && (int) $holder->ID !== (int) $me->ID ) {
+        return new WP_Error( 'email_in_use', __( "That address is another member's login email. Use an address that isn't a member's login email.", 'owbn-archivist' ) );
+    }
+    return array( 'player_email' => $new, 'wp_user_id' => (int) $me->ID );
+}
+
+/**
  * Resolve the current user's edit mode for a character. Ownership-wide model:
  *
  *   full   — can edit every field on the character
- *   status — can only change the `status` field; everything else is read-only
+ *   status — the player who owns a PC: can change its `status` and its Player Email; everything else is read-only
  *   none   — read-only view
  *
  * Resolution order (first match wins):
@@ -296,7 +334,7 @@ function owc_oat_can_edit_character( $character, $active_grants = array() ) {
  *   2. Exec role in {archivist, ahc1, ahc2, web} → full
  *   3. PC or chronicle NPC in chronicle X + user holds chronicle/X/(hst|staff|st|cm|ast) → full
  *   4. Coord NPC (npc_type=coordinator) + user holds coordinator/{npc_coordinator}/(coordinator|sub-coordinator) → full
- *   5. PC + wp_user_id === current user → status (player self-retire)
+ *   5. PC + wp_user_id === current user → status (the player's own status and Player Email)
  *   6. Otherwise → none
  *
  * Coordinator grants no longer confer edit access to chronicle-owned characters;
@@ -359,7 +397,7 @@ function owc_oat_get_character_edit_mode( $character ) {
         }
     }
 
-    // 5. Status-only: player owns a PC via wp_user_id link.
+    // 5. The player who owns a PC through its Linked Account: its status and its Player Email.
     if ( $is_pc && $linked_user_id && (int) $current_user->ID === $linked_user_id ) {
         return 'status';
     }

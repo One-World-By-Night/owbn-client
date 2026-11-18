@@ -247,9 +247,9 @@ function owbn_gateway_oat_registry_update_character( $request ) {
         ) );
     }
 
-    // Sanitize update data. The linked player may change Status alone.
+    // Sanitize update data. The player who owns the PC may change Status and Player Email.
     $data = array();
-    $allowed = 'status' === $edit_mode ? array( 'status' ) : array(
+    $allowed = 'status' === $edit_mode ? array( 'status', 'player_email' ) : array(
         'character_name', 'chronicle_slug', 'player_name', 'player_email',
         'pc_npc', 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant',
         'status', 'npc_coordinator', 'npc_type', 'wp_user_id',
@@ -258,6 +258,16 @@ function owbn_gateway_oat_registry_update_character( $request ) {
         if ( isset( $body[ $field ] ) ) {
             $data[ $field ] = sanitize_text_field( $body[ $field ] );
         }
+    }
+
+    // The owning player's Player Email: kept apart from every account, and the PC is linked to theirs.
+    if ( 'status' === $edit_mode && isset( $data['player_email'] ) ) {
+        $change = owc_oat_prepare_player_email_change( (array) $character, $data['player_email'] );
+        if ( is_wp_error( $change ) ) {
+            return owbn_gateway_respond( new WP_Error( $change->get_error_code(), $change->get_error_message(), array( 'status' => 400 ) ) );
+        }
+        unset( $data['player_email'] );
+        $data = array_merge( $data, $change );
     }
 
     // The linked player may only mark the character inactive, dead or shelved.
