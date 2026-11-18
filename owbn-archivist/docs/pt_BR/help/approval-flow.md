@@ -54,6 +54,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 ## Bom saber
 
 - **Quando um pedido chega a uma etapa, todos os designados para ela recebem um email** com um link que faz o login e abre o pedido. Quem o levou até lá não recebe. O seu Inbox continua listando tudo o que espera por você.
+- **O email de uma posição vai para a posição.** Quando a etapa é exercida como escritório de Coordenador, CM de uma crônica, ou HST que tem um endereço @owbn.net no registro da crônica, o email vai para o endereço dessa posição (por exemplo, tremere@owbn.net), e não para o email da conta da pessoa, de modo que a caixa guarda o histórico quando a pessoa muda. O assunto cita a posição. Uma posição sem endereço no registro recebe no email da conta da pessoa.
 - Quando um pedido é aprovado ou negado, quem o registrou recebe um email; uma negação traz o motivo. Quando ele é devolvido, quem fica com ele em seguida recebe um email.
 - Um pedido aprovado aparece em **Registry Entries** na [Ficha do Personagem](registry-detail.md). Quando o item pertence a um escritório de Coordenador, o escritório ganha acesso ao personagem.
 - **Hold** para um pedido e o prazo dele; **Resume** retoma o prazo de onde parou.
