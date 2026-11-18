@@ -210,9 +210,6 @@ if ( ! function_exists( 'owc_oat_search_link_users' ) ) :
 				foreach ( $holders as $holder ) {
 					$holder = (array) $holder;
 					$user   = ! empty( $holder['email'] ) ? get_user_by( 'email', $holder['email'] ) : false;
-					if ( ! $user && ! empty( $holder['user_login'] ) ) {
-						$user = get_user_by( 'login', $holder['user_login'] );
-					}
 					$add( $user, 'role', $term );
 				}
 			} else {
