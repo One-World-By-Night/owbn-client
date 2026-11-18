@@ -13,7 +13,7 @@ O que você pode alterar é o mesmo em todos os sites da OWbN, no wp-admin e no 
 | Administradores do site; o Arquivista, AHC1, AHC2 e o Coordenador de Web | Todos os campos |
 | O HST, a staff, o CM ou o AST da própria crônica do personagem | Todos os campos, nos PCs e NPCs da crônica |
 | Um Coordenador ou Subcoordenador | Todos os campos, nos NPCs do próprio escritório |
-| O jogador vinculado ao personagem | O Status, para aposentá-lo, e o Player Email |
+| O jogador vinculado ao personagem | O Status, para aposentá-lo, e o Player Email e o Character Email |
 | Qualquer outra pessoa que possa abri-la | Nada; a ficha é só leitura |
 
 ## Como chegar
@@ -28,6 +28,7 @@ O Arquivista e cada site da OWbN com o registro (chronicles, council, players) m
 - **Character Name**, **Chronicle** (procure uma crônica; para um NPC de escritório, um escritório de Coordenador), **PC/NPC** e **Status** (Active, Inactive, Dead, Shelved).
 - **Creature** - quatro listas que se filtram: **Genre**, **Faction**, **Type** e, quando o tipo tem, **Variant**. Mudar a Faction mantém o Type. Um Type de Vampiro que não está na lista da nova Faction continua selecionado e aparece como "(Sect Defector)"; qualquer outro valor fora da sua lista aparece como "(not on this list)". A ficha grava o nome simples.
 - **Player Name** e **Player Email** (só PCs) - a pessoa que joga o personagem, como texto.
+- **Character Email** (opcional) - um email do próprio personagem, guardado com ele. É separado do Player Email e de qualquer conta.
 - **Linked Account** (quando você pode alterar todos os campos; no site, só PCs) - a conta da OWbN à qual o personagem pertence. É ela que decide em qual My Characters o personagem aparece.
   - **Currently linked** mostra a conta, com **Unlink**.
   - A caixa de busca encontra contas por nome, login ou caminho de cargo (dois caracteres ou mais), ou por um endereço de email inteiro; parte de um endereço não encontra ninguém. Cada opção mostra o nome da pessoa com o login dela, ou o cargo pelo qual ela foi encontrada, e uma busca pelo endereço inteiro mostra esse endereço. Escolher uma preenche Player Name quando está vazio, e também Player Email quando você buscou pelo endereço.
@@ -41,7 +42,7 @@ O Arquivista e cada site da OWbN com o registro (chronicles, council, players) m
 - **Registry Entries** - todos os pedidos aprovados no personagem. Cada um abre com Entry ID, Domain, Form, Approving Authority, Regulation Level, o item, Status e data.
 - **Show All** (Coordenadores) - Registry Entries começa com os itens de R&U que o seu escritório controla; marque Show All para incluir os itens de outros Coordenadores.
 
-Quando só o Status e o Player Email cabem a você, a ficha mostra os outros dados como texto, uma lista de Status com Inactive, Dead e Shelved, e uma caixa de Player Email.
+Quando só o Status e as duas caixas de email cabem a você, a ficha mostra os outros dados como texto, uma lista de Status com Inactive, Dead e Shelved, uma caixa de Player Email e uma caixa de Character Email.
 
 ## Tarefas comuns
 
@@ -73,7 +74,8 @@ Quando só o Status e o Player Email cabem a você, a ficha mostra os outros dad
 
 1. Abra o seu personagem em My Characters na página Archivist Registry.
 2. Digite o endereço em **Player Email**. É o email de contato que a staff vê para este personagem; a sua conta não muda e o personagem continua seu.
-3. Clique em **Update Character**.
+3. Para dar ao personagem um email próprio, digite-o em **Character Email**. É opcional, e você pode apagá-lo.
+4. Clique em **Update Character**.
 
 ### Deixar uma crônica ou escritório de Coordenador ver um personagem
 
@@ -100,7 +102,8 @@ Quando só o Status e o Player Email cabem a você, a ficha mostra os outros dad
 
 - **"You do not have permission to view this character."** O personagem não está vinculado à sua conta nem tem acesso concedido à sua crônica ou escritório. Fale com o HST dele ou com o Arquivista.
 - **"You do not have permission to edit this character."** Só o Status e o Player Email cabem a você, ou nada. Veja [Quem pode usar](#quem-pode-usar).
-- **"That address is another member's login email."** Use um endereço que não seja o email de login de um membro, ou peça ao Arquivista para vincular o personagem de outro jeito.
+- **"That address is another member's login email."** Isso vale para o Player Email. Use um endereço que não seja o email de login de um membro, ou peça ao Arquivista para vincular o personagem de outro jeito.
+- **"This character's extra data can't take a Character Email. Ask the Archivist."** O personagem já guarda outros dados de um jeito em que a caixa não consegue acrescentar. O Arquivista resolve.
 - **"Players can only mark their own character as inactive, dead, or shelved. Contact an HST to reactivate."** Escolha Inactive, Dead ou Shelved; um HST é quem volta um personagem a ativo.
 - **"No account matches that."** Ninguém tem uma conta da OWbN com esse nome, login ou endereço de email ainda, ou você digitou só parte de um endereço (digite-o inteiro), ou você é jogador e não pode buscar contas. Deixe o Player Email preenchido: o personagem se vincula sozinho quando a pessoa entrar pela primeira vez.
 - **O personagem não aparece em My Characters do jogador.** A Linked Account dele está vazia ou é de outra pessoa. Vincule-o como acima.

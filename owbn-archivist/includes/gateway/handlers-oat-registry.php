@@ -270,6 +270,17 @@ function owbn_gateway_oat_registry_update_character( $request ) {
         $data = array_merge( $data, $change );
     }
 
+    // The Character Email (an optional element of the character's JSON): the owning player and full editors may set or clear it.
+    if ( isset( $body['character_email'] ) ) {
+        $ce = owc_oat_prepare_character_email( (array) $character, (string) $body['character_email'] );
+        if ( is_wp_error( $ce ) ) {
+            return owbn_gateway_respond( new WP_Error( $ce->get_error_code(), $ce->get_error_message(), array( 'status' => 400 ) ) );
+        }
+        if ( $ce['connections_json'] !== (string) ( $character->connections_json ?? '' ) ) {
+            $data = array_merge( $data, $ce );
+        }
+    }
+
     // The linked player may only mark the character inactive, dead or shelved.
     if ( 'status' === $edit_mode && isset( $data['status'] ) && ! in_array( $data['status'], array( 'inactive', 'dead', 'shelved' ), true ) ) {
         return owbn_gateway_respond( new WP_Error(

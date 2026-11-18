@@ -161,6 +161,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 			'character_name'    => $full,
 			'player_name'       => $full,
 			'player_email'      => $full || $status_only,
+			'character_email'   => $full || $status_only,
 			'chronicle_slug'    => $full,
 			'creature_type'     => $full,
 			'creature_sub_type' => $full,
@@ -319,6 +320,10 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 				$field_row( __( 'Player Email', 'owbn-archivist' ), 'player_email', $player_email, 'email' );
 				if ( $status_only ) {
 					echo '<tr><td></td><td style="padding:0 8px 6px;font-size:0.9em;opacity:0.8;">' . esc_html__( "The contact email staff see for this character. It doesn't change your account, and the character stays yours.", 'owbn-archivist' ) . '</td></tr>';
+				}
+				$field_row( __( 'Character Email', 'owbn-archivist' ), 'character_email', owc_oat_character_email( $character ), 'email' );
+				if ( $status_only ) {
+					echo '<tr><td></td><td style="padding:0 8px 6px;font-size:0.9em;opacity:0.8;">' . esc_html__( 'Optional: an email for the character itself. It is separate from your Player Email and your account.', 'owbn-archivist' ) . '</td></tr>';
 				}
 				?>
 				<?php if ( $full ) : ?>

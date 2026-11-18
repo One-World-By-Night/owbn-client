@@ -189,6 +189,18 @@ function owc_oat_handle_grant_actions( $character_id ) {
             $update = array_merge( $update, $change );
         }
 
+        // The Character Email (an optional element of the character's JSON): the owning player and full editors may set or clear it.
+        if ( isset( $_POST['character_email'] ) && in_array( $edit_mode, array( 'full', 'status' ), true ) ) {
+            $ce = owc_oat_prepare_character_email( $current_char, wp_unslash( $_POST['character_email'] ) );
+            if ( is_wp_error( $ce ) ) {
+                add_settings_error( 'owc_oat_registry', 'character_email_error', $ce->get_error_message(), 'error' );
+                return 'error';
+            }
+            if ( $ce['connections_json'] !== ( isset( $current_char['connections_json'] ) ? (string) $current_char['connections_json'] : '' ) ) {
+                $update = array_merge( $update, $ce );
+            }
+        }
+
         // Status-only mode: players may only self-mark inactive/dead/shelved.
         // `active` requires an HST (full mode). Silently drop other values.
         if ( 'status' === $edit_mode && isset( $update['status'] ) ) {
@@ -292,6 +304,48 @@ function owc_oat_can_manage_grants() {
  */
 function owc_oat_can_edit_character( $character, $active_grants = array() ) {
     return 'none' !== owc_oat_get_character_edit_mode( $character );
+}
+
+/**
+ * The Character Email: an optional email for the character itself, kept as the element character_email in the character's
+ * connections_json. It is not a login email and not the Player Email.
+ *
+ * @param array $character The character row.
+ * @return string The address, or ''.
+ */
+function owc_oat_character_email( $character ) {
+    $raw  = isset( $character['connections_json'] ) ? $character['connections_json'] : '';
+    $data = ( is_string( $raw ) && '' !== trim( $raw ) ) ? json_decode( $raw, true ) : array();
+    return ( is_array( $data ) && isset( $data['character_email'] ) && is_string( $data['character_email'] ) ) ? $data['character_email'] : '';
+}
+
+/**
+ * The connections_json to save when a character's Character Email is set (or cleared with ''): the new element, with every
+ * other element kept. A field that holds a list, or text that is not JSON, is never overwritten.
+ *
+ * @param array  $character The character row.
+ * @param string $new_email The address entered; '' removes the element.
+ * @return array|WP_Error array( 'connections_json' => ... ), or an error.
+ */
+function owc_oat_prepare_character_email( $character, $new_email ) {
+    $new = trim( (string) $new_email );
+    if ( '' !== $new ) {
+        $new = sanitize_email( $new );
+        if ( '' === $new || ! is_email( $new ) ) {
+            return new WP_Error( 'invalid_character_email', __( "That Character Email doesn't look right.", 'owbn-archivist' ) );
+        }
+    }
+    $raw  = isset( $character['connections_json'] ) ? $character['connections_json'] : '';
+    $data = ( is_string( $raw ) && '' !== trim( $raw ) ) ? json_decode( $raw, true ) : array();
+    if ( ! is_array( $data ) || ( $data && array_keys( $data ) === range( 0, count( $data ) - 1 ) ) ) {
+        return new WP_Error( 'character_email_blocked', __( "This character's extra data can't take a Character Email. Ask the Archivist.", 'owbn-archivist' ) );
+    }
+    if ( '' === $new ) {
+        unset( $data['character_email'] );
+    } else {
+        $data['character_email'] = $new;
+    }
+    return array( 'connections_json' => $data ? wp_json_encode( $data ) : '' );
 }
 
 /**

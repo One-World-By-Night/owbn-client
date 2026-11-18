@@ -70,6 +70,10 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
                     <td><input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text"></td>
                 </tr>
                 <tr>
+                    <th><label for="character_email"><?php esc_html_e( 'Character Email', 'owbn-archivist' ); ?></label></th>
+                    <td><input type="email" name="character_email" id="character_email" value="<?php echo esc_attr( owc_oat_character_email( $character ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'Optional: an email for the character itself.', 'owbn-archivist' ); ?></span></td>
+                </tr>
+                <tr>
                     <th><?php esc_html_e( 'Linked Account', 'owbn-archivist' ); ?></th>
                     <td><?php owc_oat_render_account_link( $wp_user_id, $wp_user_display ); ?></td>
                 </tr>
@@ -210,6 +214,11 @@ if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
                 <label for="player_email"><strong><?php esc_html_e( 'Player Email', 'owbn-archivist' ); ?></strong></label><br>
                 <input type="email" name="player_email" id="player_email" value="<?php echo esc_attr( $player_email ); ?>" class="regular-text" />
                 <br><span class="description"><?php esc_html_e( "The contact email staff see for this character. It doesn't change your account, and the character stays yours.", 'owbn-archivist' ); ?></span>
+            </p>
+            <p>
+                <label for="character_email"><strong><?php esc_html_e( 'Character Email', 'owbn-archivist' ); ?></strong></label><br>
+                <input type="email" name="character_email" id="character_email" value="<?php echo esc_attr( owc_oat_character_email( $character ) ); ?>" class="regular-text" />
+                <br><span class="description"><?php esc_html_e( 'Optional: an email for the character itself. It is separate from your Player Email and your account.', 'owbn-archivist' ); ?></span>
             </p>
             <?php submit_button( 'Update Character', 'primary', 'owc_oat_update_character' ); ?>
         </form>
