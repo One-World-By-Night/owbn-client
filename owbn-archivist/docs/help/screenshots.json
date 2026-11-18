@@ -426,6 +426,17 @@
 					"pt_BR": "O formulário Player Actions na aba New Submission, pronto para preencher."
 				}
 			}
+		],
+		"admin-account-sync": [
+			{
+				"heading": "Account Sync",
+				"path": "/wp-admin/admin.php?page=oat-account-sync",
+				"account": "archie",
+				"alt": {
+					"en": "Account Sync: the last run's counts, including how many characters it linked to an account, the one account it could not create, and the Run it now button and recent runs.",
+					"pt_BR": "Account Sync: os números da última execução, incluindo quantos personagens ela ligou a uma conta, a conta que não pôde criar, o botão Run it now e as execuções recentes."
+				}
+			}
 		]
 	}
 }
