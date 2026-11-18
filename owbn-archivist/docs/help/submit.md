@@ -76,6 +76,7 @@ When the request is filed, its own page opens, where you can follow it. A form t
 - **"You do not have permission to create characters."** Players, chronicle staff, Coordinators, the exec offices and site admins create characters. If your role hasn't reached OAT yet, sign out and back in.
 - **"You can only create characters in a chronicle you belong to."** Your account holds no player role and no role on that chronicle's staff. Players create their own PC in any chronicle; staff create in their own. If your role hasn't reached OAT yet, sign out and back in.
 - **"Only staff can create NPCs."** Players create their own PCs; ask your HST for an NPC.
+- **"You can't file this for that character. Pick one of your own, or one in a chronicle you are staff of."** The request named a character you may not file for: a player files for their own characters, staff for their chronicle's, and Coordinators and the Archivist for any. Pick the character from the search.
 - **The character I need isn't in the search.** It isn't one you can file for: a player only sees their own characters and staff only their chronicle's. Its HST or a Coordinator can file for it.
 
 ## Related

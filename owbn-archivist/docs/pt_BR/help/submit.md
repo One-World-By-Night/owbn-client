@@ -76,6 +76,7 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 - **"You do not have permission to create characters."** Jogadores, a staff das crônicas, Coordenadores, os escritórios executivos e administradores do site criam personagens. Se o seu cargo ainda não chegou ao OAT, saia e entre de novo.
 - **"You can only create characters in a chronicle you belong to."** A sua conta não tem cargo de jogador nem de staff nessa crônica. Jogadores criam o próprio PC em qualquer crônica; a staff cria na própria. Se o seu cargo ainda não chegou ao OAT, saia e entre de novo.
 - **"Only staff can create NPCs."** Jogadores criam os próprios PCs; peça um NPC ao seu HST.
+- **"You can't file this for that character. Pick one of your own, or one in a chronicle you are staff of."** O pedido citou um personagem para o qual você não pode registrar: um jogador registra para os próprios personagens, a staff para os da sua crônica, e os Coordenadores e o Arquivista para qualquer um. Escolha o personagem na busca.
 - **O personagem de que preciso não aparece na busca.** Não é um personagem para o qual você pode registrar pedidos: um jogador só vê os próprios personagens e a staff só os da sua crônica. O HST dele ou um Coordenador pode registrar.
 
 ## Relacionados
