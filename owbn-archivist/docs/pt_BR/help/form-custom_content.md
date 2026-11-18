@@ -34,7 +34,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Commen
 
 ### Para onde vai
 
-Submission → Staff Review (o HST da crônica) → Coordinator Review (todos os Coordenadores necessários) → Archivist Review.
+Submission → Staff Review (o HST da crônica) → Coordinator Review (todos os Coordenadores necessários) → Archivist Review. Quando você é o Coordenador de um escritório a que o conteúdo pertence, a Staff Review é pulada e o pedido vai direto para a Coordinator Review.
 
 ## Tarefas comuns
 

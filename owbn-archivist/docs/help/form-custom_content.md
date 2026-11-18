@@ -34,7 +34,7 @@ Reviewers fill in their own fields on the request's page: **Review Comments**, *
 
 ### Where it goes
 
-Submission → Staff Review (the chronicle's HST) → Coordinator Review (every Coordinator it needs) → Archivist Review.
+Submission → Staff Review (the chronicle's HST) → Coordinator Review (every Coordinator it needs) → Archivist Review. When you are the Coordinator of an office the content belongs to, Staff Review is skipped and it goes straight to Coordinator Review.
 
 ## Common tasks
 

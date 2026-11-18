@@ -4,7 +4,7 @@ Um acordo vinculante entre um jogador e uma crônica ou um escritório de Coorde
 
 ## Quem pode usar
 
-Quem registra: O jogador, a staff da crônica ou um Coordenador; **Your Role** diz qual.
+Quem registra: O jogador, a staff da crônica ou um Coordenador; **Your Role** diz qual. Qualquer jogador pode registrar um para qualquer escritório de Coordenador.
 
 ## Como chegar
 
@@ -31,7 +31,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Commen
 
 ### Para onde vai
 
-Submission → Staff Comment & Signature (quando um Coordenador registra) → Player Comment & Signature (quando a staff ou um Coordenador registra) → Staff Review → Coordinator Review → Archivist Review.
+Submission → Staff Comment & Signature (quando um Coordenador registra) → Player Comment & Signature (quando a staff ou um Coordenador registra) → Staff Review → Coordinator Review → Archivist Review. O jogador registra como Player: o acordo vai para o HST da crônica, depois para o escritório de Coordenador que o jogador escolheu, depois para o Archivist.
 
 ## Tarefas comuns
 
@@ -44,6 +44,7 @@ Submission → Staff Comment & Signature (quando um Coordenador registra) → Pl
 ## Bom saber
 
 - O outro lado comenta e assina na página do pedido antes de ele ir para revisão.
+- **Coordinator Genre** lista todos os escritórios de Coordenador, seja você quem for. **Your Role** continua oferecendo só os lados que você tem: Staff para a staff de crônica, Coordinator para Coordenadores.
 
 ## Solução de problemas
 

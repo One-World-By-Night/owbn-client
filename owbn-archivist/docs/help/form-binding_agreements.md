@@ -4,7 +4,7 @@ A binding agreement between a player and a chronicle or a Coordinator office, wi
 
 ## Who can use this
 
-Filed by: The player, the chronicle's staff, or a Coordinator; **Your Role** says which.
+Filed by: The player, the chronicle's staff, or a Coordinator; **Your Role** says which. Any player can file one to any Coordinator office.
 
 ## How to get there
 
@@ -31,7 +31,7 @@ Reviewers fill in their own fields on the request's page: **Review Comments**, *
 
 ### Where it goes
 
-Submission → Staff Comment & Signature (when a Coordinator files it) → Player Comment & Signature (when staff or a Coordinator files it) → Staff Review → Coordinator Review → Archivist Review.
+Submission → Staff Comment & Signature (when a Coordinator files it) → Player Comment & Signature (when staff or a Coordinator files it) → Staff Review → Coordinator Review → Archivist Review. A player files it as Player: it goes to the chronicle's HST, then to the Coordinator office the player picked, then to the Archivist.
 
 ## Common tasks
 
@@ -44,6 +44,7 @@ Submission → Staff Comment & Signature (when a Coordinator files it) → Playe
 ## Things to know
 
 - The other side comments and signs on the request's page before it goes to review.
+- **Coordinator Genre** lists every Coordinator office, whoever you are. **Your Role** still offers only the sides you hold: Staff for chronicle staff, Coordinator for Coordinators.
 
 ## Troubleshooting
 

@@ -26,7 +26,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Note**
 
 ### Para onde vai
 
-Submission → Staff Review (o HST da crônica) → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review.
+Submission → Staff Review (o HST da crônica) → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review. Quando você é o Coordenador de um escritório a que o pedido pertence, a Staff Review é pulada e o pedido vai direto para a Coordinator Review.
 
 ## Tarefas comuns
 

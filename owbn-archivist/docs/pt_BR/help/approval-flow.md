@@ -15,7 +15,7 @@ Esta é uma página de referência. A página de cada pedido mostra a etapa em q
 | Etapa | Com quem fica | Quando |
 | --- | --- | --- |
 | Submission | Você, quem registrou | Onde todo pedido começa, e para onde ele volta quando é devolvido a você |
-| Staff Review | O HST da crônica do personagem; sem HST, o CM dela, e sem CM, a staff dela (em Player Actions, o HST ou o CM) | Na maioria dos pedidos |
+| Staff Review | O HST da crônica do personagem; sem HST, o CM dela, e sem CM, a staff dela (em Player Actions, o HST ou o CM) | Na maioria dos pedidos; pulado em Custom Content e R&U Requests registrados pelo Coordenador do escritório a que pertencem |
 | Coordinator Review | O Coordenador do escritório a que o item pertence | Quando o item precisa da aprovação de um Coordenador; conteúdo personalizado pode precisar de vários, e cada um aprova |
 | Gaining Chronicle Review | O HST da crônica para onde o personagem vai | Transferências |
 | Gaining Coordinator Review | O Coordenador do escritório para onde o personagem vai | Transferências para um escritório de Coordenador |

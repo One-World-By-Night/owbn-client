@@ -26,7 +26,7 @@ Reviewers fill in their own fields on the request's page: **Review Note**, **Coo
 
 ### Where it goes
 
-Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a rule needs a Coordinator → Archivist Review.
+Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a rule needs a Coordinator → Archivist Review. When you are the Coordinator of an office the request belongs to, Staff Review is skipped and it goes straight to Coordinator Review.
 
 ## Common tasks
 
