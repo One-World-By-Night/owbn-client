@@ -147,6 +147,7 @@ function owc_oat_admin_help_key() {
 		'oat-rules'                  => 'admin-regulation-rules',
 		'oat-taxonomy'               => 'admin-taxonomy',
 		'oat-submission-rules'       => 'admin-submission-rules',
+		'oat-account-sync'           => 'admin-account-sync',
 	);
 	if ( isset( $by_tab[ $page ] ) ) {
 		$key = isset( $by_tab[ $page ][ $tab ] ) ? $by_tab[ $page ][ $tab ] : $by_tab[ $page ][''];

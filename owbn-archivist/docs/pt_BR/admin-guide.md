@@ -4,7 +4,7 @@ Como administrar o OAT, para a equipe do Arquivista e os administradores do site
 
 ## Onde as coisas estão
 
-Em archivist.owbn.net, o wp-admin tem um menu **Archivist**. Todos que entram encontram ali o **Workspace** (Inbox, New Submission, Registry), **Reports** e **Details**; a equipe do Arquivista também encontra **All Entries**, **Settings**, **Toolbox**, **Rules** e **Untagged R&U**. Nos outros sites da OWbN, o menu Archivist abre o Workspace.
+Em archivist.owbn.net, o wp-admin tem um menu **Archivist**. Todos que entram encontram ali o **Workspace** (Inbox, New Submission, Registry), **Reports** e **Details**; a equipe do Arquivista também encontra **All Entries**, **Settings**, **Toolbox**, **Rules**, **Account Sync** e **Untagged R&U**. Nos outros sites da OWbN, o menu Archivist abre o Workspace.
 
 ## Configurando os pedidos
 
@@ -20,6 +20,10 @@ Uma configuração que cita um campo, um valor ou uma etapa que não existe falh
 - Um PC criado para um jogador ainda sem conta se vincula sozinho na primeira vez que a conta da pessoa chega ao site do Arquivista.
 - Um clã que não está na lista da sua Seita é um Sect Defector; a ficha o mantém e o marca. As listas são a [Creature Taxonomy](help/admin-taxonomy.md).
 - Os acessos decidem quais crônicas e escritórios de Coordenador veem um personagem. Aprovar um item que um escritório controla concede o acesso a esse escritório.
+
+## Contas
+
+- [Account Sync](help/admin-account-sync.md) dá a cada conta do www uma conta aqui, uma vez por dia, casada pelo email, para que quem tem um papel e nunca entrou aqui ainda possa receber um pedido. Mostra o que cada execução fez e lista as contas que não conseguiu criar.
 
 ## Quem pode criar personagens
 

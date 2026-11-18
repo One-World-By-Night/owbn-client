@@ -4,7 +4,7 @@ How to run OAT, for the Archivist's team and the site admins on archivist.owbn.n
 
 ## Where things are
 
-On archivist.owbn.net, wp-admin has one **Archivist** menu. Everyone signed in finds the **Workspace** (Inbox, New Submission, Registry), **Reports** and **Details** there; the Archivist's team also finds **All Entries**, **Settings**, **Toolbox**, **Rules** and **Untagged R&U**. On the other OWbN sites, the Archivist menu opens the Workspace.
+On archivist.owbn.net, wp-admin has one **Archivist** menu. Everyone signed in finds the **Workspace** (Inbox, New Submission, Registry), **Reports** and **Details** there; the Archivist's team also finds **All Entries**, **Settings**, **Toolbox**, **Rules**, **Account Sync** and **Untagged R&U**. On the other OWbN sites, the Archivist menu opens the Workspace.
 
 ## Setting up requests
 
@@ -20,6 +20,10 @@ A setting that names a field, a value or a step that doesn't exist fails silentl
 - A PC created for a player with no account yet links itself the first time that person's account reaches the Archivist site.
 - A clan that isn't on its Sect's list is a Sect Defector; the record keeps it and marks it. The lists are the [Creature Taxonomy](help/admin-taxonomy.md).
 - Grants decide which chronicles and Coordinator offices see a character. Approving an item an office owns grants that office.
+
+## Accounts
+
+- [Account Sync](help/admin-account-sync.md) gives every account on www an account here once a day, matched by email, so a role holder who has never signed in here can still be assigned a request. It shows what each run did and lists any account it could not create.
 
 ## Who may create characters
 
