@@ -11,7 +11,7 @@ How to file a request with the Archivist and see it through, for players and chr
 
 1. Open the Archivist Submit page, or New Submission in wp-admin.
 2. Pick the **Domain**, then the **Form**.
-3. Pick the character. If the registry doesn't have it yet and you are its HST, click **Create New Character** and fill in its name, chronicle, creature and, for a PC, the player's name and email.
+3. Pick the character. If the registry doesn't have it yet, click **Create New Character** (a player creates their own PC, in any chronicle; an HST creates the PCs of their chronicle) and fill in its name, chronicle, creature and, for a PC, the player's name and email.
 4. Fill in the form. Starred fields are required. On R&U forms, pick every regulation rule the item falls under; the Controlling Coordinator fills in from them.
 5. Click **Submit Request**. The request's own page opens.
 

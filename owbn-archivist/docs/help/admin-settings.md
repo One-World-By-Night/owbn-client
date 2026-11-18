@@ -14,7 +14,7 @@ On archivist.owbn.net, wp-admin → **Archivist** → **Settings**.
 
 Three tabs:
 
-- **General** - **Character Creation — Allowed Roles**: one role pattern per line, with `*` for any slug, such as `chronicle/*/hst`, `coordinator/*/coordinator` and `exec/*/coordinator`. Anyone holding a matching role can create characters on Submit a Request; leave it empty to let everyone signed in create them. **Save Settings** saves.
+- **General** - **Character Creation — Allowed Roles**: one role pattern per line, with `*` for any slug, such as `chronicle/*/hst`, `coordinator/*/coordinator` and `exec/*/coordinator`. Anyone holding a matching role can create characters on Submit a Request; leave it empty to let everyone signed in create them. Players (a player/approved role, or a Player role in a chronicle) can always create their own PC, whatever the list says. **Save Settings** saves.
 - **Regulation Rules** - see [Regulation Rules](admin-regulation-rules.md).
 - **Creature Taxonomy** - see [Creature Taxonomy](admin-taxonomy.md).
 
@@ -27,8 +27,8 @@ Three tabs:
 
 ## Things to know
 
-- Site admins can always create characters, whatever the list says.
-- The list says who may create at all. Where: staff only in chronicles they're staff of, and a player only their own PC in their own chronicle; Coordinators and the exec offices anywhere.
+- Site admins can always create characters, whatever the list says. So can players, for their own PC.
+- The list says who may create at all. Where: staff only in chronicles they're staff of, and a player only their own PC, in any chronicle, where that chronicle's HST approves it; Coordinators and the exec offices anywhere.
 - Other OWbN sites read this list through the Archivist site and keep a copy for five minutes. If they can't reach it, nobody but site admins can create characters there until they can.
 
 ## Troubleshooting

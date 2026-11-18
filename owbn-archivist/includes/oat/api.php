@@ -1563,8 +1563,8 @@ function owc_oat_can_self_approve( $user_id ) {
 /**
  * Check if the current user can create characters.
  *
- * Reads the oat_character_create_roles option (locally or via gateway).
- * If empty, all authenticated users are allowed.
+ * Players (player/approved, or a Player role in a chronicle) are always allowed. For everyone else it reads the
+ * oat_character_create_roles option (locally or via gateway). If empty, all authenticated users are allowed.
  * Patterns support * as wildcard for a slug segment.
  *
  * @return bool
@@ -1576,6 +1576,11 @@ function owc_oat_can_create_character() {
 
     // WP admin always allowed.
     if ( current_user_can( 'manage_options' ) ) {
+        return true;
+    }
+
+    // A player may always register their own PC; the chronicle's staff approve it.
+    if ( function_exists( 'owc_oat_user_is_player' ) && owc_oat_user_is_player() ) {
         return true;
     }
 
@@ -2420,6 +2425,8 @@ function owc_oat_js_i18n() {
         'creating'        => __( 'Creating...', 'owbn-archivist' ),
         'createCharacter' => __( 'Create Character', 'owbn-archivist' ),
         'charRequired'    => __( 'Character name is required.', 'owbn-archivist' ),
+        'chronRequired'   => __( 'Choose a Home Chronicle, or select a Coordinator Office for an office NPC.', 'owbn-archivist' ),
+        'chronNotPicked'  => __( '"%s" is not one of the chronicles in your list. Type a few letters, then click the chronicle in the list that opens. If it never appears, ask that chronicle\'s HST or staff to add you.', 'owbn-archivist' ),
         'playerRequired'  => __( "A PC needs its player's name and email.", 'owbn-archivist' ),
         'emailInvalid'    => __( "That player email doesn't look right.", 'owbn-archivist' ),
         'requestFailed'   => __( 'Request failed.', 'owbn-archivist' ),

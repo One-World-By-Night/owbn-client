@@ -4,7 +4,7 @@ Where you file a request with the Archivist: R&U, custom content, a character's 
 
 ## Who can use this
 
-Anyone signed in. Which characters you can pick depends on who you are: a player picks their own characters, staff pick their chronicle's, and Coordinators and the Archivist pick from every character. Players, chronicle staff (HST, ST, CM and AST), Coordinators, the exec offices and site admins can create a character here: staff in their own chronicles, a player only their own PC in their chronicle. See [Who Can Do What](roles.md).
+Anyone signed in. Which characters you can pick depends on who you are: a player picks their own characters, staff pick their chronicle's, and Coordinators and the Archivist pick from every character. Players, chronicle staff (HST, ST, CM and AST), Coordinators, the exec offices and site admins can create a character here: staff in their own chronicles, a player only their own PC, in any chronicle. See [Who Can Do What](roles.md).
 
 ## How to get there
 
@@ -18,7 +18,7 @@ Anyone signed in. Which characters you can pick depends on who you are: a player
 - **The form's fields** - they differ from form to form; each form has its own help page, listed in [Related](#related).
 - **Character Name** (on forms about a character) - search for the character by name; **(clear)** starts over.
 - **Create New Character** (players, chronicle staff, Coordinators, the exec offices and site admins) - for a character the registry doesn't have yet. It opens a panel:
-  - **Character Name**, **Home Chronicle** and **PC / NPC**, all required. **Home Chronicle** offers the chronicles you belong to. A player's panel has no PC / NPC choice: it makes their own PC, under their name and email.
+  - **Character Name**, **Home Chronicle** and **PC / NPC**, all required. **Home Chronicle** is a search box: type a few letters, then click the chronicle in the list. Players are offered every chronicle; staff who aren't players, their own. A player's panel has no PC / NPC choice: it makes their own PC, under their name and email. In a chronicle you aren't staff of you can only create your own PC, and its HST approves it when you file the Registration.
   - **Coordinator Office (owns this NPC)** - Coordinators only; pick your office to register an NPC it owns, with no chronicle.
   - **Genre**, **Faction**, **Creature Type** and **Variant**.
   - **Player Name** and **Player Email** - required for a PC: the player who plays it, and the email of their OWbN account. **This is my character** fills in your own name and email.
@@ -49,7 +49,7 @@ When the request is filed, its own page opens, where you can follow it. A form t
 
 1. Pick the Domain and the Form.
 2. Click **Create New Character**.
-3. Fill in Character Name, pick your chronicle in Home Chronicle, and fill in the creature lists.
+3. Fill in Character Name, pick the chronicle you play in (or want to join) in Home Chronicle, and fill in the creature lists.
 4. Click **Create Character**, then finish the form and click **Submit Request**.
 
 ### Register an NPC your office owns (Coordinator)
@@ -72,8 +72,9 @@ When the request is filed, its own page opens, where you can follow it. A form t
 - **"A PC needs its player's name and email."** Fill in Player Name and Player Email, or tick This is my character if the PC is yours.
 - **"That player email doesn't look right."** Check the email for a typo.
 - **"Choose a Home Chronicle, or select a Coordinator Office for an office NPC."** Pick the character's chronicle; an office NPC needs your office instead.
+- **"..." is not one of the chronicles in your list.** You typed a chronicle but didn't click it. Type a few letters and click the chronicle in the list that opens. If it never appears, ask that chronicle's HST or staff to add you.
 - **"You do not have permission to create characters."** Players, chronicle staff, Coordinators, the exec offices and site admins create characters. If your role hasn't reached OAT yet, sign out and back in.
-- **"You can only create characters in a chronicle you belong to."** Pick a chronicle where you are a player or on staff; for another chronicle, ask its HST.
+- **"You can only create characters in a chronicle you belong to."** Your account holds no player role and no role on that chronicle's staff. Players create their own PC in any chronicle; staff create in their own. If your role hasn't reached OAT yet, sign out and back in.
 - **"Only staff can create NPCs."** Players create their own PCs; ask your HST for an NPC.
 - **The character I need isn't in the search.** It isn't one you can file for: a player only sees their own characters and staff only their chronicle's. Its HST or a Coordinator can file for it.
 

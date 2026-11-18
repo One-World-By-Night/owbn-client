@@ -14,7 +14,7 @@ This is a reference page; the other OAT help pages link here. Your roles are set
 
 | Role | In OAT |
 | --- | --- |
-| Player (any signed-in member) | Submit requests for your own characters, and create your own PC in your chronicle while submitting. See your linked characters under My Characters. Retire your own PC by changing its Status |
+| Player (any signed-in member) | Submit requests for your own characters, and create your own PC in any chronicle while submitting; that chronicle's HST approves it. See your linked characters under My Characters. Retire your own PC by changing its Status |
 | HST | Everything a player can. Submit requests as staff for your chronicle's characters, and create a character in your chronicle while submitting. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Review the requests a workflow step gives your chronicle's staff. See your chronicle's reports |
 | Staff (ST) or CM | The same as the HST, except reviews: workflow steps go to the HST, and to the CM on Player Actions |
 | AST | Everything a player can. Submit requests as staff for your chronicle's characters. See your chronicle's characters and change every field on them, the linked account and the Sect included. Add grants. Create characters in your chronicle. No reviews and no reports |

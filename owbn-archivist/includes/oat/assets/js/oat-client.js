@@ -682,7 +682,13 @@
 
                 if (!name) { alert(ccText('charRequired', 'Character name is required.')); return; }
                 if (!pcNpc) { alert('PC/NPC designation is required.'); return; }
-                if (!chronSlug && !npcCoord) { alert('Choose a Home Chronicle, or select a Coordinator Office for an office NPC.'); return; }
+                if (!chronSlug && !npcCoord) {
+                    var typedChron = $.trim($ccChronicle.val() || '');
+                    alert(typedChron
+                        ? ccText('chronNotPicked', '"%s" is not one of the chronicles in your list. Type a few letters, then click the chronicle in the list that opens. If it never appears, ask that chronicle\'s HST or staff to add you.').replace('%s', function() { return typedChron; })
+                        : ccText('chronRequired', 'Choose a Home Chronicle, or select a Coordinator Office for an office NPC.'));
+                    return;
+                }
                 if (pcNpc === 'pc' && !npcCoord) {
                     if (!playerName || !playerEmail) { alert(ccText('playerRequired', "A PC needs its player's name and email.")); return; }
                     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(playerEmail)) { alert(ccText('emailInvalid', "That player email doesn't look right.")); return; }

@@ -258,10 +258,55 @@ if ( ! function_exists( 'owc_oat_cancel_refused_submission' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_user_is_player' ) ) :
+	/**
+	 * Whether a user is a player: they hold player/approved, or a Player role in any chronicle.
+	 *
+	 * @param int $user_id User id; 0 is the current user.
+	 * @return bool
+	 */
+	function owc_oat_user_is_player( $user_id = 0 ) {
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		if ( ! $user_id ) {
+			return false;
+		}
+		$roles = function_exists( 'owc_oat_get_user_asc_roles' ) ? owc_oat_get_user_asc_roles( $user_id ) : array();
+		foreach ( (array) $roles as $role ) {
+			$role = strtolower( (string) $role );
+			if ( 'player/approved' === $role || preg_match( '#^chronicle/[^/]+/player$#', $role ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_chronicle_exists' ) ) :
+	/**
+	 * Whether a slug is one of the chronicles.
+	 *
+	 * @param string $slug Chronicle slug.
+	 * @return bool
+	 */
+	function owc_oat_chronicle_exists( $slug ) {
+		$slug = (string) $slug;
+		if ( '' === $slug || ! function_exists( 'owc_get_chronicles' ) ) {
+			return false;
+		}
+		foreach ( (array) owc_get_chronicles() as $c ) {
+			if ( isset( $c['slug'] ) && (string) $c['slug'] === $slug ) {
+				return true;
+			}
+		}
+		return false;
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_create_scope' ) ) :
 	/**
 	 * How far the current user may create characters in a chronicle: 'any' for site admins, exec offices and
-	 * Coordinators; 'staff' for the chronicle's HST, CM, staff or AST; 'player' for a player there (their own PC only);
+	 * Coordinators; 'staff' for the chronicle's HST, CM, staff or AST; 'player' for a player there, and for any other
+	 * player in a chronicle that exists, who registers their own PC for its staff to approve (their own PC only);
 	 * '' for anyone else.
 	 *
 	 * @param string $chronicle_slug Chronicle slug.
@@ -288,6 +333,9 @@ if ( ! function_exists( 'owc_oat_create_scope' ) ) :
 			} elseif ( '' === $scope && 'chronicle/' . $slug . '/player' === $role ) {
 				$scope = 'player';
 			}
+		}
+		if ( '' === $scope && '' !== $slug && owc_oat_user_is_player( $user_id ) && owc_oat_chronicle_exists( $slug ) ) {
+			$scope = 'player';
 		}
 		return $scope;
 	}
@@ -317,15 +365,15 @@ endif;
 
 if ( ! function_exists( 'owc_oat_create_chronicle_choices' ) ) :
 	/**
-	 * The chronicles the create panel searches for the current user: every chronicle for site admins, exec offices and
-	 * Coordinators, otherwise the chronicles where they hold HST, CM, staff, ST, AST or player (the roles
+	 * The chronicles the create panel searches for the current user: every chronicle for site admins, exec offices,
+	 * Coordinators and players, otherwise the chronicles where they hold HST, CM, staff, ST or AST (the roles
 	 * owc_oat_create_scope() accepts). The chosen chronicle is checked again when the character is created.
 	 *
 	 * @return array[] Each: value (chronicle slug), label (title).
 	 */
 	function owc_oat_create_chronicle_choices() {
 		$titles = array();
-		if ( 'any' === owc_oat_create_scope( '' ) ) {
+		if ( 'any' === owc_oat_create_scope( '' ) || owc_oat_user_is_player() ) {
 			$chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
 			foreach ( is_array( $chronicles ) ? $chronicles : array() as $c ) {
 				$slug = isset( $c['slug'] ) ? (string) $c['slug'] : '';
@@ -354,8 +402,8 @@ if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 	 * A PC needs its player's name and email; it is linked to the archivist account with that
 	 * email when one exists and left unlinked otherwise. An NPC has no player. A Coordinator
 	 * office NPC needs the user to hold that office. A chronicle character needs the user to
-	 * belong to that chronicle (owc_oat_create_scope()); a player there creates only their own
-	 * PC, under their own name and email.
+	 * belong to that chronicle or to be a player (owc_oat_create_scope()); a player creates only
+	 * their own PC, under their own name and email, and the chronicle's staff approve it.
 	 *
 	 * @param array $input character_name, chronicle_slug, pc_npc, npc_coordinator, player_name,
 	 *                     player_email, creature_genre, creature_sub_type, creature_type, creature_variant.
@@ -383,7 +431,7 @@ if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 		}
 
 		$pc_npc          = ( 'npc' === ( $input['pc_npc'] ?? 'pc' ) ) ? 'npc' : 'pc';
-		$chronicle_slug  = sanitize_text_field( (string) ( $input['chronicle_slug'] ?? '' ) );
+		$chronicle_slug  = strtolower( sanitize_text_field( (string) ( $input['chronicle_slug'] ?? '' ) ) );
 		$npc_coordinator = strtolower( sanitize_text_field( (string) ( $input['npc_coordinator'] ?? '' ) ) );
 
 		$data = array(

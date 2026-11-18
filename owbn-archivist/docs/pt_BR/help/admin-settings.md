@@ -14,7 +14,7 @@ Em archivist.owbn.net, wp-admin → menu **Archivist** → **Settings**.
 
 Três abas:
 
-- **General** - **Character Creation — Allowed Roles**: um padrão de cargo por linha, com `*` para qualquer slug, como `chronicle/*/hst`, `coordinator/*/coordinator` e `exec/*/coordinator`. Quem tem um cargo que corresponde pode criar personagens em Fazer um Pedido; deixe vazio para que todos com login possam criar. **Save Settings** grava.
+- **General** - **Character Creation — Allowed Roles**: um padrão de cargo por linha, com `*` para qualquer slug, como `chronicle/*/hst`, `coordinator/*/coordinator` e `exec/*/coordinator`. Quem tem um cargo que corresponde pode criar personagens em Fazer um Pedido; deixe vazio para que todos com login possam criar. Os jogadores (um cargo player/approved, ou um cargo de Player em uma crônica) sempre podem criar o próprio PC, diga a lista o que disser. **Save Settings** grava.
 - **Regulation Rules** - veja [Regulation Rules](admin-regulation-rules.md).
 - **Creature Taxonomy** - veja [Creature Taxonomy](admin-taxonomy.md).
 
@@ -27,8 +27,8 @@ Três abas:
 
 ## Bom saber
 
-- Administradores do site sempre podem criar personagens, diga a lista o que disser.
-- A lista diz quem pode criar. Onde: a staff só nas crônicas em que é staff, e um jogador só o próprio PC na própria crônica; Coordenadores e os escritórios executivos em qualquer uma.
+- Administradores do site sempre podem criar personagens, diga a lista o que disser. Os jogadores também, para o próprio PC.
+- A lista diz quem pode criar. Onde: a staff só nas crônicas em que é staff, e um jogador só o próprio PC, em qualquer crônica, onde o HST dela o aprova; Coordenadores e os escritórios executivos em qualquer uma.
 - Os outros sites da OWbN leem esta lista pelo site do Arquivista e guardam uma cópia por cinco minutos. Se não conseguem lê-la, ninguém além dos administradores do site cria personagens ali até conseguirem.
 
 ## Solução de problemas

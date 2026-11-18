@@ -11,7 +11,7 @@ Como registrar um pedido com o Arquivista e acompanhá-lo até o fim, para jogad
 
 1. Abra a página Archivist Submit, ou New Submission no wp-admin.
 2. Escolha o **Domain** e depois o **Form**.
-3. Escolha o personagem. Se o registro ainda não o tem e você é o HST dele, clique em **Create New Character** e preencha o nome, a crônica, a criatura e, para um PC, o nome e o email do jogador.
+3. Escolha o personagem. Se o registro ainda não o tem, clique em **Create New Character** (um jogador cria o próprio PC, em qualquer crônica; um HST cria os PCs da sua crônica) e preencha o nome, a crônica, a criatura e, para um PC, o nome e o email do jogador.
 4. Preencha o formulário. Os campos com estrela são obrigatórios. Nos formulários de R&U, escolha todas as regras de regulamentação em que o item se encaixa; o Controlling Coordinator se preenche a partir delas.
 5. Clique em **Submit Request**. A página do pedido abre.
 
