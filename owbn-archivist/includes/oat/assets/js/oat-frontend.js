@@ -190,6 +190,10 @@
 					note: $form.find('[name="note"]').val() || ''
 				};
 
+				// Add a Coordinator: the ticked offices go as one comma-separated value.
+				var addPicked = $form.find('.oat-add-coordinator-box:checked:not(:disabled)').map(function () { return this.value; }).get();
+				if (addPicked.length) { data.coordinators = addPicked.join(','); }
+
 				// Include optional fields (reassign target, timer days, etc.)
 				$form.find('[name]').each(function () {
 					var name = $(this).attr('name');

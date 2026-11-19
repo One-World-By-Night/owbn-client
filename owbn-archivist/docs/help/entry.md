@@ -9,6 +9,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 | You are | You can |
 | --- | --- |
 | Given the current step (by name or by role) | Approve, Deny, Request Changes, Reassign, Delegate |
+| Given a Coordinator Review step, or on the Archivist's team before the Archivist step | Add a Coordinator, as well |
 | The person who filed it | Cancel / Withdraw, Bump; Resubmit when it is sent back to you |
 | Given the current step and on the Archivist's team | Log, as well |
 | A site admin on the Archivist site | Hold, Extend Timer; Council Override on a denied request |
@@ -49,6 +50,13 @@ The person who filed the request; anyone it has been given to; whoever holds the
 1. Write a note.
 2. **Reassign** gives the step to someone else for good. **Delegate** asks someone else to look, then it comes back to you.
 3. Search for the person and pick them.
+
+### Bring in another Coordinator
+
+1. Open the request while it is at Coordinator Review. The Archivist can also do this at any step before Archivist Review.
+2. In the **Add a Coordinator** box, tick the offices whose power, rule or item this request uses. Offices already on the request are ticked and locked.
+3. Write a note saying why, and click **Add a Coordinator**.
+4. Each office you add has its Coordinators emailed right away, and the request waits for every office to approve. Your note shows on the Timeline.
 
 ### Withdraw your own request
 

@@ -1216,6 +1216,15 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
         $actions[] = 'delegate';
     }
 
+    // Asking more coordinators to approve: whoever is reviewing at a Coordinator step, and the Archivist before the Archivist's own step.
+    $step_cfg = class_exists( 'OAT_Workflow_Engine' ) ? OAT_Workflow_Engine::get_step_config( $entry ) : null;
+    $on_coord = $step_cfg && ! empty( $step_cfg['assignee_role'] ) && false !== strpos( $step_cfg['assignee_role'], '{coordinator_genre}' );
+    if ( $is_assignee && $on_coord ) {
+        $actions[] = 'add_coordinator';
+    } elseif ( ! in_array( $entry->current_step, array( 'submit', 'archivist' ), true ) && function_exists( 'owc_oat_is_archivist_oversight' ) && owc_oat_is_archivist_oversight( owc_oat_get_user_asc_roles( $user_id ) ) ) {
+        $actions[] = 'add_coordinator';
+    }
+
     if ( (int) $entry->originator_id === $user_id ) {
         $actions[] = 'cancel';
         $actions[] = 'bump';
@@ -1840,6 +1849,49 @@ function owc_oat_apply_involved_coordinators( $entry_id, array &$meta, $form_slu
         return new WP_Error( 'oat_coordinator_required', __( 'Tick the coordinator(s) who must approve this under "Coordinators Who Must Approve". The rules you chose do not say which coordinator, and there is no character to take a clan or sect coordinator from.', 'owbn-archivist' ) );
     }
     return true;
+}
+
+/**
+ * The checklist for the "Add a Coordinator" action: every coordinator office, those already on the request ticked and fixed. The boxes
+ * have no name; the page script sends the ticked ones as one comma-separated value.
+ *
+ * @param array $meta The request's values.
+ */
+function owc_oat_render_add_coordinator_picker( $meta ) {
+    $already = array();
+    if ( ! empty( $meta['involved_coordinators'] ) ) {
+        $decoded = is_string( $meta['involved_coordinators'] ) ? json_decode( $meta['involved_coordinators'], true ) : $meta['involved_coordinators'];
+        $already = is_array( $decoded ) ? array_map( 'strtolower', $decoded ) : array();
+    }
+    $opts = array();
+    if ( function_exists( 'owc_get_coordinators' ) ) {
+        $coords = owc_get_coordinators();
+        if ( ! is_wp_error( $coords ) && is_array( $coords ) ) {
+            foreach ( $coords as $c ) {
+                $c  = is_object( $c ) ? (array) $c : $c;
+                $cs = isset( $c['slug'] ) ? (string) $c['slug'] : '';
+                if ( '' !== $cs ) {
+                    $opts[ $cs ] = isset( $c['title'] ) && $c['title'] ? (string) $c['title'] : $cs;
+                }
+            }
+            asort( $opts );
+        }
+    }
+    if ( ! $opts ) {
+        echo '<em>' . esc_html__( 'Coordinator list is unavailable right now.', 'owbn-archivist' ) . '</em>';
+        return;
+    }
+    echo '<fieldset class="oat-add-coordinator-list" style="max-height:200px;overflow:auto;border:1px solid #ccd0d4;padding:8px;border-radius:4px;margin-bottom:6px;">';
+    foreach ( $opts as $slug => $title ) {
+        $on = in_array( strtolower( $slug ), $already, true );
+        printf(
+            '<label style="display:block;padding:2px 0;"><input type="checkbox" class="oat-add-coordinator-box" value="%s"%s /> %s</label>',
+            esc_attr( $slug ),
+            $on ? ' checked="checked" disabled="disabled"' : '',
+            esc_html( $title ) . ( $on ? ' ' . esc_html__( '(already asked)', 'owbn-archivist' ) : '' )
+        );
+    }
+    echo '</fieldset>';
 }
 
 /**

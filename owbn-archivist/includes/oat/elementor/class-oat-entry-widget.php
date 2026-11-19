@@ -796,6 +796,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'bump'             => __( 'Bump', 'owbn-archivist' ),
 			'reassign'         => __( 'Reassign', 'owbn-archivist' ),
 			'delegate'         => __( 'Delegate', 'owbn-archivist' ),
+			'add_coordinator'  => __( 'Add a Coordinator', 'owbn-archivist' ),
 			'hold'             => __( 'Hold', 'owbn-archivist' ),
 			'resume'           => __( 'Resume', 'owbn-archivist' ),
 			'record'           => __( 'Log', 'owbn-archivist' ),
@@ -916,6 +917,11 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 									<input type="hidden" name="new_user_id" value="" required>
 									<span class="oat-user-picked"></span>
 								</div>
+							<?php endif; ?>
+
+							<?php if ( 'add_coordinator' === $action_type && function_exists( 'owc_oat_render_add_coordinator_picker' ) ) : ?>
+								<p style="margin:0 0 6px;font-size:13px;color:#646970;"><?php esc_html_e( "Tick the coordinators whose genre this reaches into. Each one you add must approve too. Say why in the note.", 'owbn-archivist' ); ?></p>
+								<?php owc_oat_render_add_coordinator_picker( isset( $meta ) && is_array( $meta ) ? $meta : array() ); ?>
 							<?php endif; ?>
 
 							<?php if ( 'delegate' === $action_type ) : ?>

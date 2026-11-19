@@ -25,6 +25,7 @@ Toda ação, menos Bump, precisa de uma nota.
 - **Deny** o encerra; quem registrou recebe a sua nota por email como motivo.
 - **Request Changes** o devolve; quem fica com ele em seguida recebe email.
 - **Reassign** passa a etapa para outra pessoa; **Delegate** pede que alguém olhe e o traz de volta para você.
+- **Add a Coordinator** (em Coordinator Review) pede que outro escritório aprove também. Marque o escritório e diga o motivo na nota.
 
 [A Página de um Pedido](help/entry.md) cobre todos os botões, e quem recebe cada um.
 

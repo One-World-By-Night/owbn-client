@@ -182,6 +182,7 @@ function owc_oat_user_name( $uid, $map ) {
                 'bump'             => 'Bump',
                 'reassign'         => 'Reassign',
                 'delegate'         => 'Delegate',
+                'add_coordinator'  => 'Add a Coordinator',
                 'hold'             => 'Hold',
                 'resume'           => 'Resume',
                 'record'           => 'Record',
@@ -241,6 +242,11 @@ function owc_oat_user_name( $uid, $map ) {
                                 <input type="hidden" name="new_user_id" value="" required>
                                 <span class="oat-user-picked"></span>
                             </div>
+                        <?php endif; ?>
+
+                        <?php if ( $action_type === 'add_coordinator' && function_exists( 'owc_oat_render_add_coordinator_picker' ) ) : ?>
+                            <p class="description">Tick the coordinators whose genre this reaches into. Each one you add must approve too. Say why in the note.</p>
+                            <?php owc_oat_render_add_coordinator_picker( isset( $meta ) && is_array( $meta ) ? $meta : array() ); ?>
                         <?php endif; ?>
 
                         <?php if ( $action_type === 'delegate' ) : ?>

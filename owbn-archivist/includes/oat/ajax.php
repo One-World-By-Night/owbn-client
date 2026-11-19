@@ -131,6 +131,9 @@ function owc_oat_ajax_process_action() {
     if ( ! empty( $_POST['delegate_user_id'] ) ) {
         $extra_data['target_user_id'] = absint( $_POST['delegate_user_id'] );
     }
+    if ( ! empty( $_POST['coordinators'] ) ) {
+        $extra_data['coordinators'] = sanitize_text_field( wp_unslash( $_POST['coordinators'] ) );
+    }
 
     $result = owc_oat_execute_action( $entry_id, $action_type, $note, $extra_data );
 

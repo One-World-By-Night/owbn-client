@@ -101,6 +101,9 @@
         var delUid = $form.find('[name="delegate_user_id"]').val();
         if (delUid) postData.delegate_user_id = delUid;
 
+        var addPicked = $form.find('.oat-add-coordinator-box:checked:not(:disabled)').map(function () { return this.value; }).get();
+        if (addPicked.length) postData.coordinators = addPicked.join(',');
+
         $.post(owc_oat_ajax.url, postData, function(response) {
             if (response.success) {
                 window.location.reload();

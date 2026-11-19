@@ -25,6 +25,7 @@ Every action except Bump needs a note.
 - **Deny** closes it; the filer is emailed your note as the reason.
 - **Request Changes** sends it back; whoever gets it next is emailed.
 - **Reassign** hands the step to someone else; **Delegate** asks someone to look and brings it back to you.
+- **Add a Coordinator** (at Coordinator Review) asks another office to approve too. Tick the office and say why in the note.
 
 [A Request's Page](help/entry.md) covers every button, and who gets which.
 

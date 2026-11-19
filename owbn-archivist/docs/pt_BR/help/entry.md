@@ -9,6 +9,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 | Você é | Você pode |
 | --- | --- |
 | Responsável pela etapa atual (pelo nome ou pelo cargo) | Approve, Deny, Request Changes, Reassign, Delegate |
+| Responsável por uma etapa Coordinator Review, ou da equipe do Arquivista antes da etapa do Arquivista | Add a Coordinator, também |
 | Quem o registrou | Cancel / Withdraw, Bump; Resubmit quando ele volta para você |
 | Responsável pela etapa atual e da equipe do Arquivista | Log, também |
 | Administrador do site do Arquivista | Hold, Extend Timer; Council Override em um pedido negado |
@@ -49,6 +50,13 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 1. Escreva uma nota.
 2. **Reassign** entrega a etapa a outra pessoa de vez. **Delegate** pede que outra pessoa olhe, e depois o pedido volta para você.
 3. Procure a pessoa e escolha-a.
+
+### Chamar outro Coordenador
+
+1. Abra o pedido enquanto ele está em Coordinator Review. O Arquivista também pode fazer isso em qualquer etapa antes de Archivist Review.
+2. Na caixa **Add a Coordinator**, marque os escritórios cujo poder, regra ou item o pedido usa. Os escritórios que já estão no pedido aparecem marcados e travados.
+3. Escreva uma nota dizendo o motivo e clique em **Add a Coordinator**.
+4. Os Coordenadores de cada escritório que você adicionar recebem email na hora, e o pedido espera a aprovação de todos os escritórios. Sua nota aparece na Timeline.
 
 ### Retirar o seu próprio pedido
 

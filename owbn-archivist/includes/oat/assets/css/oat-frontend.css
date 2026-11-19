@@ -347,9 +347,11 @@
 .oat-action-btn-resume:hover { background: #135e96; }
 
 .oat-action-btn-reassign,
-.oat-action-btn-delegate { background: #50575e; color: #fff; }
+.oat-action-btn-delegate,
+.oat-action-btn-add_coordinator { background: #50575e; color: #fff; }
 .oat-action-btn-reassign:hover,
-.oat-action-btn-delegate:hover { background: #3c4043; }
+.oat-action-btn-delegate:hover,
+.oat-action-btn-add_coordinator:hover { background: #3c4043; }
 
 /* ── Entry Detail Meta Grid ───────────────────────────────────────────────── */
 
