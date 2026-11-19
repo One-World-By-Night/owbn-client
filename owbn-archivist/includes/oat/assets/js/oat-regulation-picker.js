@@ -143,6 +143,15 @@
         });
     });
 
+    // A block added to the form (R&U: another character) brings its own rule picker.
+    $(document).on('oat-block-added', function(e, $block) {
+        $block.find('.oat-rule-picker-wrap').each(function() {
+            if (!$(this).data('rulePicker')) {
+                initPicker($(this));
+            }
+        });
+    });
+
     // Initialize pickers loaded via AJAX (dynamic domain forms).
     $(document).on('oat-fields-loaded', function() {
         $('.oat-rule-picker-wrap').each(function() {

@@ -26,7 +26,7 @@ Qualquer pessoa com login. Quais personagens você pode escolher depende de quem
 - **Submitting As** ou **Your Role** (alguns formulários) - se você registra como jogador, staff, Coordenador ou Arquivista. Decide de quem são os personagens que a busca oferece.
 - **Submit Request** - registra o pedido. Mostra "Submitting…" enquanto envia.
 
-Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Ela começa com uma caixa verde, **Request #N submitted**, e um botão, **Submit another** com o nome do formulário (por exemplo **Submit another R&U Request**), que abre esta página de novo no mesmo formulário. Quando você escolhe várias regras num R&U Request, cada regra é registrada como uma linha: as linhas com os mesmos aprovadores abrem juntas como uma só página de pedido, e uma linha que vai para outra pessoa aparece separada.
+Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Ela começa com uma caixa verde, **Request #N submitted**, e um botão, **Submit another** com o nome do formulário (por exemplo **Submit another R&U Request**), que abre esta página de novo no mesmo formulário. Quando você escolhe várias regras num R&U Request, cada regra é registrada como uma linha: as linhas com os mesmos aprovadores abrem juntas como uma só página de pedido, e uma linha que vai para outra pessoa aparece separada. Num R&U Request, **Add another character** registra para vários personagens de uma vez.
 
 ## Tarefas comuns
 

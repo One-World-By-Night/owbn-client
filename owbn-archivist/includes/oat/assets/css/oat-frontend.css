@@ -941,3 +941,10 @@
 .oat-batch-veto summary { cursor: pointer; font-size: 13px; color: #8b0000; }
 .oat-action-btn-approve_all { background: #006505; color: #fff; }
 .oat-action-btn-approve_all:hover { background: #004d04; }
+
+/* R&U: extra characters on one request */
+.oat-extra-characters { margin: 16px 0; }
+.oat-extra-character { border: 1px solid #dcdcde; border-radius: 4px; padding: 12px 14px; margin: 12px 0; background: #fafafa; }
+.oat-extra-character-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.oat-extra-remove { color: #8b0000; cursor: pointer; }
+

@@ -468,6 +468,8 @@
                 $selName.text(name);
                 $search.hide().val('');
                 $selected.show();
+                // An extra character's block keeps its own chronicle (the form's own is left alone for it).
+                $wrap.trigger('oat-character-selected', [chronicleSlug || '', uuid, name]);
                 // Set pc_npc hidden meta field.
                 var $pcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
                 if ($pcNpcVal.length) $pcNpcVal.val(pcNpc || '');
@@ -506,6 +508,7 @@
                 $selected.hide();
                 $search.show().val('').focus();
                 $wrap.find('.oat-cc-pc-npc-val').val('');
+                $wrap.trigger('oat-character-selected', ['', '', '']);
             });
 
             // ── Create-new toggle ──
@@ -869,6 +872,36 @@
         });
     }
     initPlayerUserAutoSet();
+
+    // R&U Request: "Add another character" adds one more block (character, status, rules); each block is filed with its own lines.
+    function renumberExtraBlocks($area) {
+        $area.find('.oat-extra-character').each(function(i) {
+            $(this).find('.oat-extra-character-title').first().text('Character ' + (i + 2));
+        });
+    }
+    $(document).on('click', '.oat-extra-add', function() {
+        var $area = $(this).closest('.oat-extra-characters');
+        var max = parseInt($area.data('max'), 10) || 9;
+        if ($area.find('.oat-extra-character').length >= max) { return; }
+        var n = parseInt($area.data('next'), 10) || 1;
+        var html = $area.find('script.oat-extra-template').html().replace(/x999_/g, 'x' + n + '_');
+        var $block = $($.trim(html)).attr('data-block', n);
+        $area.find('.oat-extra-list').append($block);
+        $area.data('next', n + 1);
+        renumberExtraBlocks($area);
+        initCharacterPickers();
+        $(document).trigger('oat-block-added', [$block]);
+        if ($area.find('.oat-extra-character').length >= max) { $area.find('.oat-extra-add').prop('disabled', true); }
+    });
+    $(document).on('click', '.oat-extra-remove', function() {
+        var $area = $(this).closest('.oat-extra-characters');
+        $(this).closest('.oat-extra-character').remove();
+        renumberExtraBlocks($area);
+        $area.find('.oat-extra-add').prop('disabled', false);
+    });
+    $(document).on('oat-character-selected', '.oat-extra-character .oat-character-picker-wrap', function(e, chronicleSlug) {
+        $(this).closest('.oat-extra-character').find('.oat-extra-chronicle').val(chronicleSlug || '');
+    });
 
     // Re-init after AJAX field load.
     $(document).on('oat-fields-loaded', function() {

@@ -76,6 +76,53 @@ function owc_oat_render_fields( $fields, $values = array() ) {
 }
 
 /**
+ * The "Add another character" area of the R&U form: a list for the blocks added so far, the button, and a template of one block
+ * (its character, status and rules, rendered by the real field renderers under keys x999_<field>; the page script swaps 999
+ * for the block's number). The first character stays the form's own fields.
+ *
+ * @param array $fields The form's field definitions.
+ * @return void Outputs HTML directly.
+ */
+function owc_oat_render_extra_characters_area( $fields ) {
+	$defs = array();
+	foreach ( (array) $fields as $f ) {
+		if ( isset( $f['key'] ) && in_array( $f['key'], array( 'character_name', 'ru_sub_status', 'regulation_rules' ), true ) ) {
+			$defs[ $f['key'] ] = $f;
+		}
+	}
+	if ( empty( $defs['character_name'] ) ) {
+		return;
+	}
+	ob_start();
+	echo '<div class="oat-extra-character" data-block="999">';
+	echo '<div class="oat-extra-character-head"><strong class="oat-extra-character-title">' . esc_html__( 'Another character', 'owbn-archivist' ) . '</strong> ';
+	echo '<button type="button" class="button-link oat-extra-remove">' . esc_html__( 'Remove', 'owbn-archivist' ) . '</button></div>';
+	foreach ( array( 'character_name', 'ru_sub_status', 'regulation_rules' ) as $k ) {
+		if ( empty( $defs[ $k ] ) ) {
+			continue;
+		}
+		$f        = $defs[ $k ];
+		$f['key'] = 'x999_' . $k;
+		if ( 'character_name' === $k ) {
+			// Picking the character fills this block's own chronicle, never the form's.
+			$f['attributes']                    = isset( $f['attributes'] ) && is_array( $f['attributes'] ) ? $f['attributes'] : array();
+			$f['attributes']['fill_chronicle']  = 0;
+		}
+		owc_oat_render_field( $f, '' );
+	}
+	echo '<input type="hidden" class="oat-extra-chronicle" name="oat_meta_x999_chronicle_slug" value="" />';
+	echo '</div>';
+	$block = ob_get_clean();
+
+	echo '<div class="oat-extra-characters" data-max="9" data-next="1">';
+	echo '<div class="oat-extra-list"></div>';
+	echo '<p class="oat-extra-add-row"><button type="button" class="button button-secondary oat-extra-add">' . esc_html__( 'Add another character', 'owbn-archivist' ) . '</button> ';
+	echo '<span class="description">' . esc_html__( 'File the same kind of request for another character in the same go.', 'owbn-archivist' ) . '</span></p>';
+	echo '<script type="text/html" class="oat-extra-template">' . $block . '</script>';
+	echo '</div>';
+}
+
+/**
  * Render a single field in form mode.
  *
  * @param array  $field Field definition array.
@@ -697,12 +744,13 @@ function owc_oat_render_field( $field, $value = '' ) {
 			echo '<span class="description">' . esc_html__( 'The email the player uses for their OWbN account. The character is linked to that account now, or the first time they sign in with that email.', 'owbn-archivist' ) . '</span></p>';
 			echo '<p><label><input type="checkbox" class="oat-cc-player-mine" /> ' . esc_html__( 'This is my character', 'owbn-archivist' ) . '</label></p>';
 			echo '</div>';
-			// Hidden inputs for storing values as entry meta.
-			echo '<input type="hidden" name="oat_meta_creature_genre" class="oat-cc-genre-val" />';
-			echo '<input type="hidden" name="oat_meta_creature_type" class="oat-cc-creature-type-val" />';
-			echo '<input type="hidden" name="oat_meta_creature_sub_type" class="oat-cc-sub-type-val" />';
-			echo '<input type="hidden" name="oat_meta_creature_variant" class="oat-cc-variant-val" />';
-			echo '<input type="hidden" name="oat_meta_pc_npc" class="oat-cc-pc-npc-val" />';
+			// Hidden inputs for storing values as entry meta. An extra character's block (field x<n>_character_name) has its own.
+			$block_prefix = preg_match( '/^(x\d+_)character_name$/', (string) $key, $bm ) ? $bm[1] : '';
+			echo '<input type="hidden" name="oat_meta_' . $block_prefix . 'creature_genre" class="oat-cc-genre-val" />';
+			echo '<input type="hidden" name="oat_meta_' . $block_prefix . 'creature_type" class="oat-cc-creature-type-val" />';
+			echo '<input type="hidden" name="oat_meta_' . $block_prefix . 'creature_sub_type" class="oat-cc-sub-type-val" />';
+			echo '<input type="hidden" name="oat_meta_' . $block_prefix . 'creature_variant" class="oat-cc-variant-val" />';
+			echo '<input type="hidden" name="oat_meta_' . $block_prefix . 'pc_npc" class="oat-cc-pc-npc-val" />';
 			echo '<p><button type="button" class="button button-primary oat-character-create-save">' . esc_html__( 'Create Character', 'owbn-archivist' ) . '</button>';
 			echo ' <button type="button" class="button oat-character-create-cancel">' . esc_html__( 'Cancel', 'owbn-archivist' ) . '</button></p>';
 			echo '</div>'; // .oat-character-create-panel

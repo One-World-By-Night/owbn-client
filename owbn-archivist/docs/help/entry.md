@@ -24,7 +24,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 ## The screen
 
 - **Request submitted** (only right after you file the request) - a green box with a **Submit another** button for the same form.
-- **Lines in this request** (only when several lines were filed together) - a row for each line, with what it is about and where it stands. A vetoed line says **Vetoed** and gives the reason, when there is one. Reviewers get a **Veto** box on each open line.
+- **Lines in this request** (only when several lines were filed together) - a row for each line, with what it is about and where it stands. A vetoed line says **Vetoed** and gives the reason, when there is one. Reviewers get a **Veto** box on each open line. When the lines are about more than one character, a **Character** column says which.
 - **The header** - the request's form and number, its status (pending, held, approved, denied, cancelled, auto-approved or auto-denied) and **Step:**, the step it is at. **Watch** follows the request: it then shows in your inbox, you get an email when it moves on or finishes, and the button reads **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** and **Updated**.
 - **Details** - everything the form asked, as filed.

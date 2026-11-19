@@ -340,6 +340,57 @@ function owc_oat_submit_another_link( $entry, $submit_page_url ) {
 }
 
 /**
+ * Ties a new request to the character it is about: the character's uuid (from the form's character field) becomes the entry's
+ * character_id and, unless set already, its coordinator_genre (the explicit one, else the character's creature type), and the id
+ * is kept in the meta too. The character's Registry Entries are found by that id, so both submit paths (the local one and the
+ * gateway's) must do this.
+ *
+ * @param int   $entry_id   The new request.
+ * @param array $meta       The request's meta; character_id is added when missing.
+ * @param array $entry_data What the entry was created with (character_id and coordinator_genre when the caller gave them).
+ * @return void
+ */
+function owc_oat_attach_character_to_entry( $entry_id, array &$meta, array $entry_data ) {
+    if ( ! class_exists( 'OAT_Character' ) ) {
+        return;
+    }
+    $char_uuid = '';
+    // Check common character field keys.
+    foreach ( array( 'character_name', 'character' ) as $ck ) {
+        if ( ! empty( $meta[ $ck ] ) ) {
+            $char_uuid = $meta[ $ck ];
+            break;
+        }
+    }
+    if ( ! $char_uuid ) {
+        return;
+    }
+    $char = OAT_Character::find_by_uuid( $char_uuid );
+    if ( ! $char ) {
+        return;
+    }
+    $update_entry = array();
+    if ( empty( $entry_data['character_id'] ) ) {
+        $update_entry['character_id'] = (int) $char->id;
+    }
+    if ( empty( $entry_data['coordinator_genre'] ) ) {
+        // Use explicit coordinator_genre from meta if set, otherwise derive from creature type.
+        if ( ! empty( $meta['coordinator_genre'] ) ) {
+            $update_entry['coordinator_genre'] = strtolower( $meta['coordinator_genre'] );
+        } elseif ( ! empty( $char->creature_type ) ) {
+            $update_entry['coordinator_genre'] = strtolower( $char->creature_type );
+        }
+    }
+    if ( ! empty( $update_entry ) ) {
+        OAT_Entry::update( (int) $entry_id, $update_entry );
+    }
+    // Also store character_id in meta for downstream use.
+    if ( empty( $meta['character_id'] ) ) {
+        $meta['character_id'] = (string) $char->id;
+    }
+}
+
+/**
  * Files one line of a submission that has several lines (one request per regulation rule). The first line is filed as
  * usual. Later lines are filed with the "waiting for you" email held back; once filed, a line whose approvers are the
  * same as an earlier line's joins that line's group and stays silent (the group's one email was sent with the first
@@ -395,8 +446,10 @@ function owc_oat_entry_batch_card( $entry, $user_id ) {
         }
         $cfg      = OAT_Workflow_Engine::get_step_config( $line );
         $denied   = OAT_Constants::STATUS_DENIED === $line->status;
+        $char     = ! empty( $line->character_id ) && class_exists( 'OAT_Character' ) ? OAT_Character::find( (int) $line->character_id ) : null;
         $lines[]  = array(
             'id'          => (int) $line->id,
+            'character'   => $char ? (string) $char->character_name : '',
             'status'      => (string) $line->status,
             'step'        => (string) $line->current_step,
             'step_label'  => is_array( $cfg ) && ! empty( $cfg['label'] ) ? (string) $cfg['label'] : (string) $line->current_step,
@@ -879,40 +932,7 @@ function owc_oat_submit( $data ) {
         }
 
         // Resolve character UUID → character_id and coordinator_genre on the entry.
-        if ( class_exists( 'OAT_Character' ) ) {
-            $char_uuid = '';
-            // Check common character field keys.
-            foreach ( array( 'character_name', 'character' ) as $ck ) {
-                if ( ! empty( $meta[ $ck ] ) ) {
-                    $char_uuid = $meta[ $ck ];
-                    break;
-                }
-            }
-            if ( $char_uuid ) {
-                $char = OAT_Character::find_by_uuid( $char_uuid );
-                if ( $char ) {
-                    $update_entry = array();
-                    if ( empty( $entry_data['character_id'] ) ) {
-                        $update_entry['character_id'] = (int) $char->id;
-                    }
-                    if ( empty( $entry_data['coordinator_genre'] ) ) {
-                        // Use explicit coordinator_genre from meta if set, otherwise derive from creature type.
-                        if ( ! empty( $meta['coordinator_genre'] ) ) {
-                            $update_entry['coordinator_genre'] = strtolower( $meta['coordinator_genre'] );
-                        } elseif ( ! empty( $char->creature_type ) ) {
-                            $update_entry['coordinator_genre'] = strtolower( $char->creature_type );
-                        }
-                    }
-                    if ( ! empty( $update_entry ) ) {
-                        OAT_Entry::update( $entry_id, $update_entry );
-                    }
-                    // Also store character_id in meta for downstream use.
-                    if ( empty( $meta['character_id'] ) ) {
-                        $meta['character_id'] = (string) $char->id;
-                    }
-                }
-            }
-        }
+        owc_oat_attach_character_to_entry( $entry_id, $meta, $entry_data );
 
         // Resolve coordinator_genre and item_description from linked custom content (Learn CC).
         if ( ! empty( $meta['learned_content'] ) && class_exists( 'OAT_Entry' ) ) {

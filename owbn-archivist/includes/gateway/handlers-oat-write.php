@@ -140,6 +140,9 @@ function owbn_gateway_oat_submit( $request ) {
         $meta['description'] = wp_kses_post( $body['description'] );
     }
 
+    // Tie the request to its character (the id the Character Record's Registry Entries are found by), as the local submit does.
+    owc_oat_attach_character_to_entry( $entry_id, $meta, $entry_data );
+
     // Attach regulation rules.
     if ( isset( $body['rules'] ) && is_array( $body['rules'] ) ) {
         foreach ( $body['rules'] as $rule_id ) {

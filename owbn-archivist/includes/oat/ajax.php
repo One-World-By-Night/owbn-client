@@ -199,6 +199,10 @@ function owc_oat_ajax_get_domain_fields() {
 
     ob_start();
     owc_oat_render_fields( $fields );
+    // The R&U Request can be filed for several characters at once.
+    if ( 'cl_ru_request' === $slug && function_exists( 'owc_oat_render_extra_characters_area' ) ) {
+        owc_oat_render_extra_characters_area( $fields );
+    }
     if ( class_exists( '_WP_Editors', false ) ) {
         _WP_Editors::editor_js();
     }
@@ -438,6 +442,106 @@ function owc_oat_ajax_get_coordinators_for_rules() {
 }
 
 /**
+ * Whether a set of regulation rules needs a coordinator for a character: the highest level among them, for a PC or an NPC,
+ * is coordinator approval or higher (the same test the form's script applies to the rules of its first character).
+ *
+ * @param array  $rule_ids Rule ids (free-text rules are ignored).
+ * @param string $pc_npc   'pc' or 'npc'.
+ * @return bool
+ */
+function owc_oat_rules_require_coordinator( $rule_ids, $pc_npc ) {
+    $priority = array( 'council_vote' => 4, 'disallowed' => 3, 'coordinator_approval' => 2, 'coordinator_notify' => 1 );
+    $highest  = 0;
+    foreach ( (array) $rule_ids as $rid ) {
+        $rid = is_numeric( $rid ) ? absint( $rid ) : 0;
+        if ( ! $rid ) {
+            continue;
+        }
+        $pc_level  = '';
+        $npc_level = '';
+        if ( class_exists( 'OAT_Regulation_Rule' ) ) {
+            $rule = OAT_Regulation_Rule::find( $rid );
+            if ( ! $rule || empty( $rule->genre ) ) {
+                continue;
+            }
+            $pc_level  = $rule->pc_level;
+            $npc_level = $rule->npc_level;
+        } elseif ( function_exists( 'owc_oat_find_cached_rule' ) ) {
+            $rule = owc_oat_find_cached_rule( $rid );
+            if ( ! $rule || empty( $rule['coordinator'] ) ) {
+                continue;
+            }
+            $pc_level  = isset( $rule['pc_level'] ) ? $rule['pc_level'] : '';
+            $npc_level = isset( $rule['npc_level'] ) ? $rule['npc_level'] : '';
+        }
+        $level = ( 'npc' === $pc_npc && ! empty( $npc_level ) ) ? $npc_level : $pc_level;
+        if ( $level && isset( $priority[ $level ] ) && $priority[ $level ] > $highest ) {
+            $highest = $priority[ $level ];
+        }
+    }
+    return $highest >= 2;
+}
+
+/**
+ * Takes the extra characters of an R&U submission (the fields named x1_..., x2_... that the form's "Add another character"
+ * blocks post) out of the submitted values.
+ *
+ * @param array $meta Submitted values, by field key; the x<n>_ fields are removed from it.
+ * @return array Blocks by number: array( n => array( field => value ) ), at most 9, numbers 1 to 9.
+ */
+function owc_oat_extract_extra_blocks( array &$meta ) {
+    $blocks = array();
+    foreach ( array_keys( $meta ) as $key ) {
+        if ( ! preg_match( '/^x(\d+)_(.+)$/', (string) $key, $m ) ) {
+            continue;
+        }
+        $n = (int) $m[1];
+        if ( $n >= 1 && $n <= 9 ) {
+            $blocks[ $n ][ $m[2] ] = $meta[ $key ];
+        }
+        unset( $meta[ $key ] );
+    }
+    ksort( $blocks );
+    return $blocks;
+}
+
+/**
+ * The lines one character's block of the R&U form files: one per regulation rule picked (each with what it is about), or a
+ * single line when there is one rule or none.
+ *
+ * @param string $domain       Domain slug.
+ * @param array  $meta         The block's values (character, status, rules, and the shared ones).
+ * @param array  $parsed_rules The block's rules (ids, or free-text arrays).
+ * @return array[] Lines: array( 'meta' => ..., 'rules' => ... ).
+ */
+function owc_oat_lines_for_block( $domain, array $meta, array $parsed_rules ) {
+    if ( 'character_lifecycle' !== $domain || count( $parsed_rules ) < 2 ) {
+        return array( array( 'meta' => $meta, 'rules' => $parsed_rules ) );
+    }
+    $lines = array();
+    foreach ( $parsed_rules as $rule ) {
+        $entry_meta = $meta;
+        foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
+            if ( isset( $entry_meta[ $rk ] ) ) {
+                $entry_meta[ $rk ] = wp_json_encode( array( $rule ) );
+            }
+        }
+        // Build item_description from the rule.
+        if ( is_array( $rule ) && isset( $rule['text'] ) ) {
+            $entry_meta['item_description'] = sanitize_text_field( $rule['text'] );
+        } elseif ( is_numeric( $rule ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+            $rule_obj = OAT_Regulation_Rule::find( (int) $rule );
+            if ( $rule_obj ) {
+                $parts = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
+                $entry_meta['item_description'] = implode( ': ', $parts );
+            }
+        }
+        $lines[] = array( 'meta' => $entry_meta, 'rules' => array( $rule ) );
+    }
+    return $lines;
+}
+
+/**
  * AJAX: Frontend entry submission from Elementor Submit Form widget.
  *
  * Collects POST data, strips framework fields, passes meta to owc_oat_submit().
@@ -480,6 +584,12 @@ function owc_oat_ajax_submit_entry_frontend() {
         }
     }
 
+    // The extra characters of an R&U request (the form's "Add another character" blocks), taken out of the values.
+    $extra_blocks = owc_oat_extract_extra_blocks( $meta );
+    if ( 'cl_ru_request' !== $form_slug ) {
+        $extra_blocks = array();
+    }
+
     // Parse rules from meta.
     $parsed_rules = array();
     foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
@@ -493,32 +603,40 @@ function owc_oat_ajax_submit_entry_frontend() {
     }
 
     // Batch split: character_lifecycle with multiple rules → one entry per rule.
-    $is_cl    = ( 'character_lifecycle' === $domain );
-    $do_split = $is_cl && count( $parsed_rules ) > 1;
+    $batches = owc_oat_lines_for_block( $domain, $meta, $parsed_rules );
 
-    $batches = array();
-    if ( $do_split ) {
-        foreach ( $parsed_rules as $rule ) {
-            $entry_meta = $meta;
-            foreach ( array( 'regulation_rules', 'ru_rules' ) as $rk ) {
-                if ( isset( $entry_meta[ $rk ] ) ) {
-                    $entry_meta[ $rk ] = wp_json_encode( array( $rule ) );
-                }
-            }
-            // Build item_description from the rule.
-            if ( is_array( $rule ) && isset( $rule['text'] ) ) {
-                $entry_meta['item_description'] = sanitize_text_field( $rule['text'] );
-            } elseif ( is_numeric( $rule ) && class_exists( 'OAT_Regulation_Rule' ) ) {
-                $rule_obj = OAT_Regulation_Rule::find( (int) $rule );
-                if ( $rule_obj ) {
-                    $parts = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
-                    $entry_meta['item_description'] = implode( ': ', $parts );
-                }
-            }
-            $batches[] = array( 'meta' => $entry_meta, 'rules' => array( $rule ) );
+    // Each extra character files its own lines: its character, status, rules and chronicle, over the values the whole form shares.
+    foreach ( $extra_blocks as $n => $block ) {
+        $uuid = isset( $block['character_name'] ) ? (string) $block['character_name'] : '';
+        if ( '' === $uuid ) {
+            wp_send_json_error( __( 'Choose a character in each extra character block, or remove the block.', 'owbn-archivist' ) );
         }
-    } else {
-        $batches[] = array( 'meta' => $meta, 'rules' => $parsed_rules );
+        $block_rules = array();
+        if ( ! empty( $block['regulation_rules'] ) ) {
+            $decoded = is_string( $block['regulation_rules'] ) ? json_decode( $block['regulation_rules'], true ) : $block['regulation_rules'];
+            if ( is_array( $decoded ) ) {
+                $block_rules = $decoded;
+            }
+        }
+        $block_meta = $meta;
+        unset( $block_meta['item_description'], $block_meta['character_id'], $block_meta['creature_genre'], $block_meta['creature_type'], $block_meta['creature_sub_type'], $block_meta['creature_variant'] );
+        $block_meta['character_name'] = $uuid;
+        $block_meta['ru_sub_status']  = isset( $block['ru_sub_status'] ) ? (string) $block['ru_sub_status'] : '';
+        $pc_npc                       = isset( $block['pc_npc'] ) && 'npc' === $block['pc_npc'] ? 'npc' : 'pc';
+        $block_meta['pc_npc']         = $pc_npc;
+        foreach ( array( 'creature_genre', 'creature_type', 'creature_sub_type', 'creature_variant' ) as $ck ) {
+            if ( ! empty( $block[ $ck ] ) ) {
+                $block_meta[ $ck ] = (string) $block[ $ck ];
+            }
+        }
+        // The character's own chronicle (picked with the character), else the form's.
+        if ( ! empty( $block['chronicle_slug'] ) ) {
+            $block_meta['chronicle_slug'] = (string) $block['chronicle_slug'];
+        }
+        $block_meta['regulation_rules'] = wp_json_encode( $block_rules );
+        // The form's own value comes from the first character's rules; this character's rules decide for its lines.
+        $block_meta['requires_coord'] = owc_oat_rules_require_coordinator( $block_rules, $pc_npc ) ? '1' : '0';
+        $batches = array_merge( $batches, owc_oat_lines_for_block( $domain, $block_meta, $block_rules ) );
     }
 
     $created_ids = array();

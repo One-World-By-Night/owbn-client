@@ -510,6 +510,14 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		}
 		$param    = ! empty( $settings['url_param_name'] ) ? $settings['url_param_name'] : 'oat_entry';
 		$base_url = remove_query_arg( array( $param, 'created' ) );
+		// A Character column only when the lines are about more than one character.
+		$characters = array();
+		foreach ( $batch['lines'] as $line ) {
+			if ( ! empty( $line['character'] ) ) {
+				$characters[ $line['character'] ] = true;
+			}
+		}
+		$show_char = count( $characters ) > 1;
 		$terminal = array( 'approved' => __( 'Approved', 'owbn-archivist' ), 'auto_approved' => __( 'Approved', 'owbn-archivist' ), 'denied' => __( 'Not accepted', 'owbn-archivist' ), 'auto_denied' => __( 'Not accepted', 'owbn-archivist' ), 'cancelled' => __( 'Cancelled', 'owbn-archivist' ) );
 
 		ob_start();
@@ -521,6 +529,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Line', 'owbn-archivist' ); ?></th>
+						<?php if ( $show_char ) : ?>
+							<th><?php esc_html_e( 'Character', 'owbn-archivist' ); ?></th>
+						<?php endif; ?>
 						<th><?php esc_html_e( 'About', 'owbn-archivist' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'owbn-archivist' ); ?></th>
 					</tr>
@@ -546,6 +557,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 								<span class="oat-batch-here"><?php esc_html_e( '(this page)', 'owbn-archivist' ); ?></span>
 							<?php endif; ?>
 						</td>
+						<?php if ( $show_char ) : ?>
+							<td><?php echo esc_html( isset( $line['character'] ) ? $line['character'] : '' ); ?></td>
+						<?php endif; ?>
 						<td><?php echo esc_html( isset( $line['item'] ) ? $line['item'] : '' ); ?></td>
 						<td>
 							<span class="oat-batch-state"><?php echo esc_html( $state ); ?></span>
