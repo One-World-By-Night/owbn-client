@@ -20,7 +20,8 @@ No site: a página Archivist Submit → Domain **Character Lifecycle** → Form 
 | Custom Content to Learn | Sim | Procure conteúdo personalizado aprovado no ccHub. |
 | Regulation Rules | - | Escolha as regras de regulamentação que se aplicam. |
 | Controlling Coordinator(s) | - | Preenchido sozinho a partir das regras escolhidas. |
-| Teacher Name | Sim | Procure o personagem. |
+| Teacher Name | Sim | Digite o nome do personagem que ensinou. Não há busca, então nada mostra quem tem um poder. |
+| Teacher's Home Chronicle | Sim | Escolha a crônica de origem do professor. O HST dela confirma que o personagem pode ensinar isso e permite. |
 | Teaching Lineage | - | Digite. |
 
 O formulário preenche **Submitted By** e o seu email a partir da sua conta.
@@ -29,7 +30,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Note**
 
 ### Para onde vai
 
-Submission → Staff Review (o HST da crônica) → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review.
+Submission → Staff Review (o HST da crônica) → Teacher Chronicle Review (o HST da crônica de origem do professor, quando é outra crônica) → Coordinator Review, quando uma regra pede um Coordenador → Archivist Review.
 
 ## Tarefas comuns
 
@@ -41,6 +42,7 @@ Submission → Staff Review (o HST da crônica) → Coordinator Review, quando u
 
 ## Bom saber
 
+- Você digita o nome do professor e escolhe a crônica de origem dele. O HST dessa crônica então confirma que o personagem pode ensinar isso e permite. Quando o professor é da sua própria crônica, a revisão do seu HST já cobre isso e não há etapa extra.
 - Só conteúdo personalizado aprovado pode ser aprendido; encontre-o no [ccHub](cchub.md) primeiro.
 
 ## Solução de problemas

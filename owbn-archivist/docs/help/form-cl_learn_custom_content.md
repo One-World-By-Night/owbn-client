@@ -20,7 +20,8 @@ On the website: the Archivist Submit page → Domain **Character Lifecycle** →
 | Custom Content to Learn | Yes | Search for approved custom content from the ccHub. |
 | Regulation Rules | - | Select applicable regulation rules. |
 | Controlling Coordinator(s) | - | Automatically populated from selected regulation rules. |
-| Teacher Name | Yes | Search for the character. |
+| Teacher Name | Yes | Type the name of the character who taught it. There is no search, so nothing shows who holds a power. |
+| Teacher's Home Chronicle | Yes | Choose the teacher's home chronicle. Its HST confirms the character can teach this and permits it. |
 | Teaching Lineage | - | Type it in. |
 
 The form fills in **Submitted By** and your email from your account.
@@ -29,7 +30,7 @@ Reviewers fill in their own fields on the request's page: **Review Note**, **Coo
 
 ### Where it goes
 
-Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a rule needs a Coordinator → Archivist Review.
+Submission → Staff Review (the chronicle's HST) → Teacher Chronicle Review (the HST of the teacher's home chronicle, when it is a different chronicle) → Coordinator Review, when a rule needs a Coordinator → Archivist Review.
 
 ## Common tasks
 
@@ -42,6 +43,7 @@ Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a
 ## Things to know
 
 - Only approved custom content can be learned; find it on the [ccHub](cchub.md) first.
+- You type the teacher's name and pick their home chronicle yourself. The teacher's chronicle HST then confirms the character can teach it and permits it. When the teacher is from your own chronicle, your HST's review covers it and there is no extra step.
 
 ## Troubleshooting
 

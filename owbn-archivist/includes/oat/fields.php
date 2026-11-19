@@ -918,6 +918,10 @@ function owc_oat_render_fields_readonly( $fields, $values = array() ) {
  */
 function owc_oat_render_field_readonly( $field, $value = '' ) {
 	$type    = isset( $field['type'] ) ? $field['type'] : 'text';
+	// A request filed while the teacher was picked from the character search holds a character id: show that character.
+	if ( 'text' === $type && 'teacher_name' === ( isset( $field['key'] ) ? $field['key'] : '' ) && is_string( $value ) && preg_match( '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value ) ) {
+		$type = 'character_picker';
+	}
 	$label   = isset( $field['label'] ) ? $field['label'] : '';
 	$options = isset( $field['options'] ) && is_array( $field['options'] ) ? $field['options'] : array();
 
