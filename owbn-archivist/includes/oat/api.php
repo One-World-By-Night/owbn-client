@@ -855,6 +855,13 @@ function owc_oat_submit( $data ) {
             owc_oat_set_regulation_meta( $entry_id, $data['rules'] );
         }
 
+        // Coordinators named on the form, and someone to ask when the request needs a coordinator.
+        $named_result = owc_oat_apply_involved_coordinators( $entry_id, $meta, isset( $data['form_slug'] ) ? $data['form_slug'] : '' );
+        if ( is_wp_error( $named_result ) ) {
+            owc_oat_cancel_refused_submission( $entry_id, $user_id, $named_result );
+            return $named_result;
+        }
+
         // Fire submit action through workflow engine.
         $result = OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
             'note' => isset( $data['note'] ) ? sanitize_textarea_field( $data['note'] ) : '',
@@ -1777,6 +1784,81 @@ function owc_oat_capability_inbox_entries( $user_id, $domain_filter = '' ) {
     }
 
     return $result;
+}
+
+/**
+ * The coordinators named on a form under "Coordinators Who Must Approve" make the request need a coordinator, and a request that
+ * needs one must have someone to ask: the offices named, the offices of the rules chosen, or the character's clan or sect
+ * coordinator. When none can be found and the form offers the list, the filer is asked to tick one. The form's own values are
+ * saved by the submit action later, so what it will save (requires_coord, the named offices) is set in $meta here as well.
+ *
+ * @param int    $entry_id  The new entry.
+ * @param array  $meta      The values being submitted, changed here.
+ * @param string $form_slug The form.
+ * @return true|WP_Error
+ */
+function owc_oat_apply_involved_coordinators( $entry_id, array &$meta, $form_slug ) {
+    if ( ! class_exists( 'OAT_Workflow_Engine' ) || ! class_exists( 'OAT_Entry_Meta' ) ) {
+        return true;
+    }
+    $named = array();
+    if ( ! empty( $meta['involved_coordinators'] ) ) {
+        $raw_named = is_string( $meta['involved_coordinators'] ) ? json_decode( $meta['involved_coordinators'], true ) : $meta['involved_coordinators'];
+        $known     = OAT_Workflow_Engine::coordinator_slugs();
+        foreach ( is_array( $raw_named ) ? $raw_named : array() as $slug ) {
+            $slug = strtolower( trim( (string) $slug ) );
+            if ( isset( $known[ $slug ] ) ) {
+                $named[ $slug ] = $slug;
+            }
+        }
+        $named = array_values( $named );
+    }
+    if ( $named ) {
+        $meta['involved_coordinators'] = wp_json_encode( $named );
+        $meta['requires_coord']        = '1';
+        OAT_Entry_Meta::set( $entry_id, 'involved_coordinators', $meta['involved_coordinators'] );
+        OAT_Entry_Meta::set( $entry_id, 'requires_coord', '1' );
+        if ( '' === (string) OAT_Entry_Meta::get( $entry_id, 'regulation_level' ) && empty( $meta['regulation_level'] ) ) {
+            $meta['regulation_level'] = 'coordinator_approval';
+            OAT_Entry_Meta::set( $entry_id, 'regulation_level', 'coordinator_approval' );
+        }
+    } elseif ( isset( $meta['involved_coordinators'] ) ) {
+        unset( $meta['involved_coordinators'] );
+    }
+    $needs = '1' === (string) OAT_Entry_Meta::get( $entry_id, 'requires_coord' ) || '1' === (string) ( isset( $meta['requires_coord'] ) ? $meta['requires_coord'] : '' );
+    if ( ! $needs || ! owc_oat_form_offers_field( $form_slug, 'involved_coordinators' ) ) {
+        return true;
+    }
+    // The character the request is about, so its clan or sect coordinator can be found before the form's values are saved.
+    foreach ( array( 'character_name', 'character' ) as $ck ) {
+        if ( ! empty( $meta[ $ck ] ) && '' === (string) OAT_Entry_Meta::get( $entry_id, $ck ) ) {
+            OAT_Entry_Meta::set( $entry_id, $ck, $meta[ $ck ] );
+        }
+    }
+    $entry = OAT_Entry::find( $entry_id );
+    if ( $entry && ! OAT_Workflow_Engine::coordinator_offices( $entry ) ) {
+        return new WP_Error( 'oat_coordinator_required', __( 'Tick the coordinator(s) who must approve this under "Coordinators Who Must Approve". The rules you chose do not say which coordinator, and there is no character to take a clan or sect coordinator from.', 'owbn-archivist' ) );
+    }
+    return true;
+}
+
+/**
+ * Whether a form's submit fields include a field.
+ *
+ * @param string $form_slug Form slug.
+ * @param string $field_key Field key.
+ * @return bool
+ */
+function owc_oat_form_offers_field( $form_slug, $field_key ) {
+    if ( '' === (string) $form_slug || ! class_exists( 'OAT_Form_Field' ) ) {
+        return false;
+    }
+    foreach ( (array) OAT_Form_Field::get_fields( $form_slug, 'submit' ) as $field ) {
+        if ( isset( $field['key'] ) && $field_key === $field['key'] ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**

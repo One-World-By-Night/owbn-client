@@ -153,6 +153,13 @@ function owbn_gateway_oat_submit( $request ) {
         }
     }
 
+    // Coordinators named on the form, and someone to ask when the request needs a coordinator.
+    $named_result = owc_oat_apply_involved_coordinators( $entry_id, $meta, isset( $body['form_slug'] ) ? sanitize_text_field( $body['form_slug'] ) : '' );
+    if ( is_wp_error( $named_result ) ) {
+        owc_oat_cancel_refused_submission( $entry_id, $user_id, $named_result );
+        return owbn_gateway_respond( $named_result );
+    }
+
     // Fire the submit action through the workflow engine.
     // Meta is passed via $data so the action handler can validate and persist it.
     $result = OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(

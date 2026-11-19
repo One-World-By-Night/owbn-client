@@ -20,6 +20,7 @@ No site: a página Archivist Submit → Domain **Character Lifecycle** → Form 
 | Custom Content to Learn | Sim | Procure conteúdo personalizado aprovado no ccHub. |
 | Regulation Rules | - | Escolha as regras de regulamentação que se aplicam. |
 | Controlling Coordinator(s) | - | Preenchido sozinho a partir das regras escolhidas. |
+| Coordinators Who Must Approve | - | Marque cada coordenador cujo poder, regra ou item isto usa (por exemplo, necromancia: o Coordenador Giovanni). Cada um que você marcar precisa aprovar. Uma regra que não diz qual coordenador também precisa disso; sem nada marcado, vai para o coordenador do clã ou da seita do personagem. |
 | Teacher Name | Sim | Digite o nome do personagem que ensinou. Não há busca, então nada mostra quem tem um poder. |
 | Teacher's Home Chronicle | Sim | Escolha a crônica de origem do professor. O HST dela confirma que o personagem pode ensinar isso e permite. |
 | Teaching Lineage | - | Digite. |

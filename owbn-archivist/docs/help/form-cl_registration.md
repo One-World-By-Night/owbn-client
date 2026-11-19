@@ -19,6 +19,7 @@ On the website: the Archivist Submit page → Domain **Character Lifecycle** →
 | Character Status | - | Pick one. Choices: Active, Dead, Inactive, Removed IC, Removed OOC. |
 | Regulation Rules | - | Select applicable regulation rules. |
 | Controlling Coordinator(s) | - | Automatically populated from selected regulation rules. |
+| Coordinators Who Must Approve | - | Tick every coordinator whose power, rule or item this uses (for example necromancy: the Giovanni Coordinator). Each one you tick must approve. A rule that doesn't say which coordinator also needs this; with nothing ticked it goes to the character's clan or sect coordinator. |
 
 The form fills in **Submitted By** and your email from your account.
 

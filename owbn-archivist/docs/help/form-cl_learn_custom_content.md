@@ -20,6 +20,7 @@ On the website: the Archivist Submit page → Domain **Character Lifecycle** →
 | Custom Content to Learn | Yes | Search for approved custom content from the ccHub. |
 | Regulation Rules | - | Select applicable regulation rules. |
 | Controlling Coordinator(s) | - | Automatically populated from selected regulation rules. |
+| Coordinators Who Must Approve | - | Tick every coordinator whose power, rule or item this uses (for example necromancy: the Giovanni Coordinator). Each one you tick must approve. A rule that doesn't say which coordinator also needs this; with nothing ticked it goes to the character's clan or sect coordinator. |
 | Teacher Name | Yes | Type the name of the character who taught it. There is no search, so nothing shows who holds a power. |
 | Teacher's Home Chronicle | Yes | Choose the teacher's home chronicle. Its HST confirms the character can teach this and permits it. |
 | Teaching Lineage | - | Type it in. |

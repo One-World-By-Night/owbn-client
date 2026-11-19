@@ -17,6 +17,7 @@ On the website: the Archivist Submit page → Domain **Custom Content** → Form
 | Submitting As | Yes | Pick one. Choices: As Player, As Staff, As Coordinator, As Archivist. |
 | Character | Yes | Search for an existing character or create a new one. |
 | Coordinator Office | - | Optional. Leave blank to auto-assign from character creature type. |
+| Coordinators Who Must Approve | - | Tick every coordinator whose power, rule or item this uses (for example necromancy: the Giovanni Coordinator). Each one you tick must approve. |
 | Name of Custom Content | Yes | Type it in. |
 | Content Type | Yes | Options depend on creature type selected above. Choices: Combination Discipline / Technique, Blood Magic: Ritual, Blood Magic: Path, Discipline, Inceptor Discipline, Merit, Path of Enlightenment, Sabbat Ritae, Kuei-jin: Ritual, Fallen Rituals, …. |
 | Blood Magic Category | - | Blood magic category (e.g. Thaumaturgy, Necromancy). Choices: Thaumaturgy - Hermetic, Thaumaturgy - Sielanic, Dark Thaumaturgy, Akhu, Assamite Sorcery - Dur-An-Ki, Koldunic Sorcery, Abyssal Mysticism, Natib Athirat, Sadhana, Black Hand Aljusuri, …. |

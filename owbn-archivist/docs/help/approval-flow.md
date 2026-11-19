@@ -16,7 +16,7 @@ This is a reference page. Each request's own page shows the step it is at, who h
 | --- | --- | --- |
 | Submission | You, the filer | Where every request starts, and where it comes back when it is sent back to you |
 | Staff Review | The HST of the character's chronicle; when it has no HST, its CM, and when it has no CM, its Staff (for Player Actions, the HST or the CM) | On most requests; skipped on Custom Content and R&U Requests filed by the Coordinator of the office they belong to |
-| Coordinator Review | The Coordinator of the office the item belongs to | When the item needs a Coordinator's approval; custom content can need several, and each one approves |
+| Coordinator Review | The Coordinator of the office the item belongs to | When the item needs a Coordinator's approval; a request can need several, and each one approves before it moves on |
 | Gaining Chronicle Review | The HST of the chronicle a character is moving to | Transfers |
 | Gaining Coordinator Review | The Coordinator of the office a character is moving to | Transfers to a Coordinator office |
 | Membership Review | The Membership Coordinator and their staff | Creating, decommissioning or changing the standing of a chronicle |

@@ -19,6 +19,7 @@ No site: a página Archivist Submit → Domain **Character Lifecycle** → Form 
 | Character Status | - | Escolha um. Opções: Active, Dead, Inactive, Removed IC, Removed OOC. |
 | Regulation Rules | - | Escolha as regras de regulamentação que se aplicam. |
 | Controlling Coordinator(s) | - | Preenchido sozinho a partir das regras escolhidas. |
+| Coordinators Who Must Approve | - | Marque cada coordenador cujo poder, regra ou item isto usa (por exemplo, necromancia: o Coordenador Giovanni). Cada um que você marcar precisa aprovar. Uma regra que não diz qual coordenador também precisa disso; sem nada marcado, vai para o coordenador do clã ou da seita do personagem. |
 
 O formulário preenche **Submitted By** e o seu email a partir da sua conta.
 
@@ -40,6 +41,7 @@ Submission → Staff Review (o HST da crônica) → Coordinator Review, quando u
 
 - Escolha todas as regras em que o item se encaixa; **Controlling Coordinator(s)** se preenche a partir delas e decide quem revisa.
 - Uma regra marcada como Elevated quer dizer que um Coordenador precisa agir; o pedido não se aprova sozinho.
+- Marque em **Coordinators Who Must Approve** todo coordenador cujo poder, regra ou item o pedido usa; cada um precisa aprovar antes de o pedido seguir. Uma regra que não diz qual coordenador (como "Appropriate Coordinator") vai para o coordenador do clã ou da seita do personagem, a menos que você marque um.
 
 ## Solução de problemas
 
