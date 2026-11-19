@@ -179,25 +179,36 @@ function owc_oat_handle_grant_actions( $character_id ) {
         }
 
         // The owning player's Player Email: kept apart from every account, and the PC is linked to theirs.
+        // On a remote site the gateway applies the account rules, because the accounts are archivist's.
         if ( 'status' === $edit_mode && isset( $update['player_email'] ) ) {
-            $change = owc_oat_prepare_player_email_change( $current_char, $update['player_email'] );
-            if ( is_wp_error( $change ) ) {
-                add_settings_error( 'owc_oat_registry', 'player_email_error', $change->get_error_message(), 'error' );
+            if ( owc_oat_is_local() ) {
+                $change = owc_oat_prepare_player_email_change( $current_char, $update['player_email'] );
+                if ( is_wp_error( $change ) ) {
+                    add_settings_error( 'owc_oat_registry', 'player_email_error', $change->get_error_message(), 'error' );
+                    return 'error';
+                }
+                unset( $update['player_email'] );
+                $update = array_merge( $update, $change );
+            } elseif ( ! is_email( sanitize_email( $update['player_email'] ) ) ) {
+                add_settings_error( 'owc_oat_registry', 'player_email_error', __( "That email doesn't look right.", 'owbn-archivist' ), 'error' );
                 return 'error';
             }
-            unset( $update['player_email'] );
-            $update = array_merge( $update, $change );
         }
 
         // The Character Email (an optional element of the character's JSON): the owning player and full editors may set or clear it.
+        // On a remote site the gateway builds the stored JSON from the address.
         if ( isset( $_POST['character_email'] ) && in_array( $edit_mode, array( 'full', 'status' ), true ) ) {
-            $ce = owc_oat_prepare_character_email( $current_char, wp_unslash( $_POST['character_email'] ) );
-            if ( is_wp_error( $ce ) ) {
-                add_settings_error( 'owc_oat_registry', 'character_email_error', $ce->get_error_message(), 'error' );
-                return 'error';
-            }
-            if ( $ce['connections_json'] !== ( isset( $current_char['connections_json'] ) ? (string) $current_char['connections_json'] : '' ) ) {
-                $update = array_merge( $update, $ce );
+            if ( owc_oat_is_local() ) {
+                $ce = owc_oat_prepare_character_email( $current_char, wp_unslash( $_POST['character_email'] ) );
+                if ( is_wp_error( $ce ) ) {
+                    add_settings_error( 'owc_oat_registry', 'character_email_error', $ce->get_error_message(), 'error' );
+                    return 'error';
+                }
+                if ( $ce['connections_json'] !== ( isset( $current_char['connections_json'] ) ? (string) $current_char['connections_json'] : '' ) ) {
+                    $update = array_merge( $update, $ce );
+                }
+            } else {
+                $update['character_email'] = sanitize_text_field( wp_unslash( $_POST['character_email'] ) );
             }
         }
 
@@ -452,8 +463,12 @@ function owc_oat_get_character_edit_mode( $character ) {
     }
 
     // 5. The player who owns a PC through its Linked Account: its status and its Player Email.
-    if ( $is_pc && $linked_user_id && (int) $current_user->ID === $linked_user_id ) {
-        return 'status';
+    //    On archivist the link is this site's user; on a remote site the gateway says whether the viewer is that account.
+    if ( $is_pc && $linked_user_id ) {
+        $is_owner = owc_oat_is_local() ? ( (int) $current_user->ID === $linked_user_id ) : ! empty( $character['viewer_is_owner'] );
+        if ( $is_owner ) {
+            return 'status';
+        }
     }
 
     return 'none';

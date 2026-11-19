@@ -126,6 +126,9 @@ function owbn_gateway_oat_registry_character( $request ) {
 
     $character_data                  = (array) $character;
     $character_data['wp_user_label'] = owc_oat_linked_user_label( $character->wp_user_id );
+    $character_data['viewer_is_owner'] = 'pc' === strtolower( (string) $character->pc_npc )
+        && (int) $character->wp_user_id > 0
+        && (int) get_current_user_id() === (int) $character->wp_user_id;
 
     return owbn_gateway_respond( array(
         'character'    => $character_data,
