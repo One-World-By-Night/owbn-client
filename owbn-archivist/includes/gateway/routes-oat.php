@@ -105,7 +105,7 @@ function owbn_gateway_register_oat_routes() {
     register_rest_route( $namespace, '/oat/domain-forms', array(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'owbn_gateway_oat_domain_forms',
-        'permission_callback' => 'owbn_gateway_authenticate',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
     ) );
 
     register_rest_route( $namespace, '/oat/form-fields', array(

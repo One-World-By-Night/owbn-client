@@ -477,6 +477,10 @@ function owbn_gateway_oat_domain_forms( $request ) {
     $forms = OAT_Domain_Registry::get_forms( $domain );
     $out   = array();
     foreach ( $forms as $form ) {
+        // The same per-form access rule archivist applies to its own users (the route has signed the requester in).
+        if ( function_exists( 'owc_oat_user_can_access_form' ) && ! owc_oat_user_can_access_form( $form->slug ) ) {
+            continue;
+        }
         $out[] = array(
             'id'    => (int) $form->id,
             'slug'  => $form->slug,
