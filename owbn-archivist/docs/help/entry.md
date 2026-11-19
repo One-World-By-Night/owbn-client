@@ -22,6 +22,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 
 ## The screen
 
+- **Request submitted** (only right after you file the request) - a green box with a **Submit another** button for the same form.
 - **The header** - the request's form and number, its status (pending, held, approved, denied, cancelled, auto-approved or auto-denied) and **Step:**, the step it is at. **Watch** follows the request: it then shows in your inbox, you get an email when it moves on or finishes, and the button reads **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** and **Updated**.
 - **Details** - everything the form asked, as filed.

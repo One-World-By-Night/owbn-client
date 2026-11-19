@@ -194,6 +194,13 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		$domain_fields  = array();
 		$selected_slug  = '';
 
+		// A link such as the "Submit another" button can name the domain and form to open (?oat_domain=...&oat_form=...).
+		// The page script only uses them when the lists it loads offer them.
+		$preselect = array(
+			'domain' => isset( $_GET['oat_domain'] ) ? sanitize_key( wp_unslash( $_GET['oat_domain'] ) ) : '',
+			'form'   => isset( $_GET['oat_form'] ) ? sanitize_key( wp_unslash( $_GET['oat_form'] ) ) : '',
+		);
+
 		if ( 'fixed' === $domain_mode && $fixed_slug ) {
 			$selected_slug = $fixed_slug;
 			// Only pre-load fields if domain has a single form (multi-form domains use JS picker)
@@ -260,6 +267,8 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		(function($) {
 			'use strict';
 
+			var preselect = <?php echo wp_json_encode( $preselect ); ?>;
+
 			function loadFields(params) {
 				var $container = $('#oat-domain-fields-container');
 				$container.html('<p style="color:#646970;padding:10px 0;"><?php echo esc_js( __( 'Loading fields…', 'owbn-archivist' ) ); ?></p>');
@@ -298,6 +307,10 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 							$sel.append('<option value="' + f.slug + '">' + f.label + '</option>');
 						});
 						$('#oat-form-picker-row').show();
+						if (preselect.form && domain === preselect.domain && $sel.find('option').filter(function() { return this.value === preselect.form; }).length) {
+							$sel.val(preselect.form).trigger('change');
+						}
+						preselect.form = '';
 					} else if (forms.length === 1) {
 						$('#oat-form-select').html('<option value="' + forms[0].slug + '">' + forms[0].label + '</option>');
 						$('#oat-form-picker-row').hide();
@@ -375,9 +388,21 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 						});
 						$('#oat-form-picker-row').show();
 						$('#oat-domain-fields-container').empty();
+						if (preselect.form && (!preselect.domain || preselect.domain === fixedDomain) && $sel.find('option').filter(function() { return this.value === preselect.form; }).length) {
+							$sel.val(preselect.form).trigger('change');
+						}
+						preselect.form = '';
 					}
 				});
 			}
+
+			// A link can name the domain to open (the form is chosen once that domain's forms have loaded). The page's ajax
+			// settings are printed with the footer scripts, so this waits for the page to be ready.
+			$(function() {
+				if (preselect.domain && $('#oat-domain-select option').filter(function() { return this.value === preselect.domain; }).length) {
+					$('#oat-domain-select').val(preselect.domain).trigger('change');
+				}
+			});
 
 		})(jQuery);
 		</script>

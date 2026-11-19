@@ -22,6 +22,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 
 ## A tela
 
+- **Request submitted** (só logo depois de você registrar o pedido) - uma caixa verde com um botão **Submit another** para o mesmo formulário.
 - **O cabeçalho** - o formulário e o número do pedido, o status (pending, held, approved, denied, cancelled, auto-approved ou auto-denied) e **Step:**, a etapa em que ele está. **Watch** acompanha o pedido: ele passa a aparecer no seu inbox, você recebe um email quando ele anda ou termina, e o botão mostra **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** e **Updated**.
 - **Details** - tudo o que o formulário perguntou, como foi registrado.

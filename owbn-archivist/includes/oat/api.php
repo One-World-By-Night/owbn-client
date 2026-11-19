@@ -304,6 +304,42 @@ function owc_oat_get_forms_for_domain( $domain_slug ) {
 }
 
 /**
+ * The "Submit another" link for a request that was just filed: the form's name and the submit page's address with that
+ * form already chosen. Nothing when the current user's own form list no longer offers the form.
+ *
+ * @param array  $entry           The entry (needs domain, and form_slug when its domain has several forms).
+ * @param string $submit_page_url Address of the page that holds the submit form.
+ * @return array|null array( 'label' => string, 'url' => string ), or null.
+ */
+function owc_oat_submit_another_link( $entry, $submit_page_url ) {
+    $domain = isset( $entry['domain'] ) ? sanitize_key( $entry['domain'] ) : '';
+    if ( '' === $domain || '' === (string) $submit_page_url ) {
+        return null;
+    }
+    $form  = isset( $entry['form_slug'] ) ? sanitize_key( $entry['form_slug'] ) : '';
+    $forms = owc_oat_get_forms_for_domain( $domain );
+    $label = '';
+    foreach ( (array) $forms as $f ) {
+        if ( is_array( $f ) && '' !== $form && isset( $f['slug'], $f['label'] ) && $f['slug'] === $form ) {
+            $label = (string) $f['label'];
+            break;
+        }
+    }
+    if ( '' === $label ) {
+        // A request with no form of its own was filed in a domain that has one form: offer that one.
+        if ( '' !== $form || 1 !== count( (array) $forms ) || empty( $forms[0]['slug'] ) || empty( $forms[0]['label'] ) ) {
+            return null;
+        }
+        $form  = sanitize_key( $forms[0]['slug'] );
+        $label = (string) $forms[0]['label'];
+    }
+    return array(
+        'label' => $label,
+        'url'   => add_query_arg( array( 'oat_domain' => $domain, 'oat_form' => $form ), $submit_page_url ),
+    );
+}
+
+/**
  * Check if the current user can access a specific form.
  *
  * Forms can define access rules via the owc_oat_form_access_rules filter.

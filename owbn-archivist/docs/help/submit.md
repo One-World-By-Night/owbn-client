@@ -26,7 +26,7 @@ Anyone signed in. Which characters you can pick depends on who you are: a player
 - **Submitting As** or **Your Role** (some forms) - whether you file as a player, staff, Coordinator or the Archivist. It decides whose characters the character search offers.
 - **Submit Request** - files the request. It reads "Submitting…" while it sends.
 
-When the request is filed, its own page opens, where you can follow it. A form that files several requests at once lists each new request instead.
+When the request is filed, its own page opens, where you can follow it. It starts with a green box, **Request #N submitted**, and a button, **Submit another** with the form's name (for example **Submit another R&U Request**), that opens this page again on the same form. A form that files several requests at once lists each new request instead.
 
 ## Common tasks
 
@@ -36,6 +36,12 @@ When the request is filed, its own page opens, where you can follow it. A form t
 2. In **Character Name**, type part of the name and pick the character.
 3. Fill in the form's fields.
 4. Click **Submit Request**.
+
+### File several requests of the same kind in a row
+
+1. File the first one with **Submit Request**.
+2. On the page that opens, click **Submit another R&U Request** (the button carries the name of the form you just used).
+3. The submit page opens with the Domain and the Form already chosen. Fill in the next request and click **Submit Request**.
 
 ### File a request for a character the registry doesn't have (staff)
 
@@ -63,6 +69,7 @@ When the request is filed, its own page opens, where you can follow it. A form t
 - A new PC is linked to its player's account, never to the person who created it, unless you tick **This is my character**.
 - Search before you create: creating a character that already exists makes a second record. If that happens, tell the Archivist.
 - A filed request goes through its form's review steps; see [How a Request Moves](approval-flow.md).
+- The green **Request submitted** box shows only to the person who filed the request, right after they file it. Opening the request later doesn't show it.
 
 ## Troubleshooting
 

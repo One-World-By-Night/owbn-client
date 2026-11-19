@@ -87,6 +87,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'condition' => array( 'entry_source' => 'fixed' ),
 		) );
 
+		$this->add_control( 'submit_page_url', array(
+			'label'       => __( 'Submit Page URL', 'owbn-archivist' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => '/oat-submit/',
+			'description' => __( 'The page the "Submit another" button after a new request opens.', 'owbn-archivist' ),
+		) );
+
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'content_sections', array(
@@ -350,6 +357,8 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees, $viewer_id ); ?>
 
+			<?php echo $this->render_submitted_banner( $entry, $viewer_id, $settings ); ?>
+
 			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note ); ?>
 
 			<?php echo $this->render_meta_grid( $entry, $user_map ); ?>
@@ -487,6 +496,45 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	 * Shows the most recent request_changes note prominently at the top: the request's send-back note when the
 	 * bundle carries one, else the latest request_changes event in the timeline.
 	 */
+	/**
+	 * The confirmation shown to the person who has just filed this request (the submit form sends them here with
+	 * created=1): it says the request is in, and offers to file another of the same kind.
+	 */
+	private function render_submitted_banner( $entry, $viewer_id, $settings )
+	{
+		$created = isset( $_GET['created'] ) ? sanitize_text_field( wp_unslash( $_GET['created'] ) ) : '';
+		if ( '1' !== $created || ! $viewer_id || (int) ( isset( $entry['originator_id'] ) ? $entry['originator_id'] : 0 ) !== (int) $viewer_id ) {
+			return '';
+		}
+		$entry_id = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
+		$another  = function_exists( 'owc_oat_submit_another_link' )
+			? owc_oat_submit_another_link( $entry, ! empty( $settings['submit_page_url'] ) ? $settings['submit_page_url'] : '/oat-submit/' )
+			: null;
+
+		ob_start();
+		?>
+		<div class="oat-entry-section oat-submitted-banner" style="background:#d7f0d7;border:1px solid #006505;border-radius:4px;padding:16px;margin-bottom:16px;">
+			<strong style="display:block;color:#006505;">
+				<?php
+				/* translators: %d: request number */
+				echo esc_html( sprintf( __( 'Request #%d submitted.', 'owbn-archivist' ), $entry_id ) );
+				?>
+			</strong>
+			<?php if ( $another ) : ?>
+				<p style="margin:10px 0 0;">
+					<a class="oat-btn oat-btn-primary oat-submit-another" href="<?php echo esc_url( $another['url'] ); ?>">
+						<?php
+						/* translators: %s: the form's name, such as "R&U Request" */
+						echo esc_html( sprintf( __( 'Submit another %s', 'owbn-archivist' ), $another['label'] ) );
+						?>
+					</a>
+				</p>
+			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	private function render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note = null )
 	{
 		// Only show when entry is back at submit step (sent back for changes).

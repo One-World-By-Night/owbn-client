@@ -26,7 +26,7 @@ Qualquer pessoa com login. Quais personagens você pode escolher depende de quem
 - **Submitting As** ou **Your Role** (alguns formulários) - se você registra como jogador, staff, Coordenador ou Arquivista. Decide de quem são os personagens que a busca oferece.
 - **Submit Request** - registra o pedido. Mostra "Submitting…" enquanto envia.
 
-Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um formulário que registra vários pedidos de uma vez lista cada pedido novo.
+Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Ela começa com uma caixa verde, **Request #N submitted**, e um botão, **Submit another** com o nome do formulário (por exemplo **Submit another R&U Request**), que abre esta página de novo no mesmo formulário. Um formulário que registra vários pedidos de uma vez lista cada pedido novo.
 
 ## Tarefas comuns
 
@@ -36,6 +36,12 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 2. Em **Character Name**, digite parte do nome e escolha o personagem.
 3. Preencha os campos do formulário.
 4. Clique em **Submit Request**.
+
+### Registrar vários pedidos do mesmo tipo em sequência
+
+1. Registre o primeiro com **Submit Request**.
+2. Na página que abre, clique em **Submit another R&U Request** (o botão traz o nome do formulário que você acabou de usar).
+3. A página de envio abre com o Domain e o Form já escolhidos. Preencha o próximo pedido e clique em **Submit Request**.
 
 ### Registrar um pedido para um personagem que o registro não tem (staff)
 
@@ -63,6 +69,7 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Um 
 - Um PC novo é vinculado à conta do jogador, nunca a quem o criou, a não ser que você marque **This is my character**.
 - Procure antes de criar: criar um personagem que já existe gera uma segunda ficha. Se isso acontecer, avise o Arquivista.
 - Um pedido registrado passa pelas etapas de revisão do formulário; veja [Como um Pedido Anda](approval-flow.md).
+- A caixa verde **Request submitted** aparece só para quem registrou o pedido, logo depois de registrar. Abrir o pedido mais tarde não a mostra.
 
 ## Solução de problemas
 
