@@ -29,7 +29,7 @@ Reviewers fill in their own fields on the request's page: **Review Comments**, *
 
 ### Where it goes
 
-Submission → Membership Review, for creating, decommissioning or changing a chronicle's standing → Archivist Review.
+Submission → Membership Review, for creating, decommissioning or changing a chronicle's standing → Archivist Review → Web Team Setup, where the web team builds or changes the chronicle's record and the ST's account and approves to finish.
 
 ## Common tasks
 

@@ -29,7 +29,7 @@ Os revisores preenchem os próprios campos na página do pedido: **Review Commen
 
 ### Para onde vai
 
-Submission → Membership Review, para criar, encerrar ou mudar a condição de uma crônica → Archivist Review.
+Submission → Membership Review, para criar, encerrar ou mudar a condição de uma crônica → Archivist Review → Web Team Setup, em que a equipe web cria ou altera o registro da crônica e a conta do ST e aprova para concluir.
 
 ## Tarefas comuns
 
