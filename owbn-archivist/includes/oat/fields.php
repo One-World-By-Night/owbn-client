@@ -618,7 +618,9 @@ function owc_oat_render_field( $field, $value = '' ) {
 			$create_choices = ( ! function_exists( 'owc_oat_can_create_character' ) || owc_oat_can_create_character() ) && function_exists( 'owc_oat_create_chronicle_choices' )
 				? owc_oat_create_chronicle_choices()
 				: array();
-			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . ( $create_choices ? ' data-create-chronicles="' . esc_attr( wp_json_encode( $create_choices ) ) . '"' : '' ) . '>';
+			// The teacher on Learn Custom Content never sets the form's own Chronicle; every other picker fills it from the character picked.
+			$fill_chronicle = 'teacher_name' !== $key && ( ! array_key_exists( 'fill_chronicle', $attrs ) || ! empty( $attrs['fill_chronicle'] ) );
+			echo '<div class="oat-character-picker-wrap" data-field-id="' . esc_attr( $id ) . '" data-taxonomy="' . esc_attr( $taxonomy_json ) . '"' . ( $fill_chronicle ? '' : ' data-fill-chronicle="0"' ) . ( $filter_by ? ' data-filter-by="' . esc_attr( $filter_by ) . '"' : '' ) . ( $create_choices ? ' data-create-chronicles="' . esc_attr( wp_json_encode( $create_choices ) ) . '"' : '' ) . '>';
 			// Search input.
 			printf(
 				'<input type="text" id="%s_search" class="oat-character-search regular-text" placeholder="%s" autocomplete="off" />',

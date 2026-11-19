@@ -404,6 +404,7 @@
             var fieldId   = $wrap.data('field-id');
             var taxonomy  = $wrap.data('taxonomy') || {};
             var filterBy  = $wrap.data('filter-by') || '';
+            var fillChronicle = String($wrap.data('fill-chronicle')) !== '0';
             var $search   = $wrap.find('.oat-character-search');
             var $results  = $wrap.find('.oat-character-results');
             var $selected = $wrap.find('.oat-character-selected');
@@ -468,7 +469,7 @@
                 var $pcNpcVal = $wrap.find('.oat-cc-pc-npc-val');
                 if ($pcNpcVal.length) $pcNpcVal.val(pcNpc || '');
                 // Auto-fill chronicle from character's home chronicle.
-                if (chronicleSlug) {
+                if (chronicleSlug && fillChronicle) {
                     var $chronHidden = $('input[type="hidden"][name="oat_meta_chronicle_slug"]');
                     var $chronSelect = $('select[name="oat_meta_chronicle_slug"]');
                     if ($chronSelect.length) {
