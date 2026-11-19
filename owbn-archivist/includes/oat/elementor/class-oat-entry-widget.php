@@ -331,6 +331,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$step_label        = isset( $bundle['step_label'] ) ? $bundle['step_label'] : '';
 		$user_map          = isset( $bundle['user_map'] ) ? $bundle['user_map'] : array();
 		$relationships     = isset( $bundle['relationships'] ) ? $bundle['relationships'] : array( 'children' => array(), 'parents' => array() );
+		$batch             = isset( $bundle['batch'] ) && is_array( $bundle['batch'] ) ? $bundle['batch'] : null;
 
 		// Hydrate meta from entry-level fields so form rendering finds them.
 		$meta = $this->hydrate_meta_from_entry( $meta, $entry, $rules );
@@ -357,11 +358,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees, $viewer_id ); ?>
 
-			<?php echo $this->render_submitted_banner( $entry, $viewer_id, $settings ); ?>
+			<?php echo $this->render_submitted_banner( $entry, $viewer_id, $settings, $batch ); ?>
 
 			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note ); ?>
 
 			<?php echo $this->render_meta_grid( $entry, $user_map ); ?>
+
+			<?php echo $this->render_batch_card( $batch, $settings ); ?>
 
 			<?php if ( $show_meta ) : ?>
 				<?php echo $this->render_details( $meta, $domain_fields ); ?>
@@ -497,10 +500,89 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	 * bundle carries one, else the latest request_changes event in the timeline.
 	 */
 	/**
+	 * The lines of the group of requests filed together: what each is about, where it stands, a vetoed line's reason,
+	 * and a Veto box (with an optional reason) on each line the viewer can reject.
+	 */
+	private function render_batch_card( $batch, $settings )
+	{
+		if ( empty( $batch['lines'] ) ) {
+			return '';
+		}
+		$param    = ! empty( $settings['url_param_name'] ) ? $settings['url_param_name'] : 'oat_entry';
+		$base_url = remove_query_arg( array( $param, 'created' ) );
+		$terminal = array( 'approved' => __( 'Approved', 'owbn-archivist' ), 'auto_approved' => __( 'Approved', 'owbn-archivist' ), 'denied' => __( 'Not accepted', 'owbn-archivist' ), 'auto_denied' => __( 'Not accepted', 'owbn-archivist' ), 'cancelled' => __( 'Cancelled', 'owbn-archivist' ) );
+
+		ob_start();
+		?>
+		<div class="oat-entry-section oat-batch-card">
+			<div class="oat-entry-section-header"><?php esc_html_e( 'Lines in this request', 'owbn-archivist' ); ?></div>
+			<p class="oat-batch-note"><?php esc_html_e( 'These were filed together and have the same approvers. A reviewer can approve every line at once, or veto a single line and let the others go on.', 'owbn-archivist' ); ?></p>
+			<table class="oat-batch-lines">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Line', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'About', 'owbn-archivist' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'owbn-archivist' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+				<?php foreach ( $batch['lines'] as $line ) :
+					$status  = isset( $line['status'] ) ? (string) $line['status'] : '';
+					$vetoed  = ! empty( $line['vetoed'] );
+					if ( $vetoed ) {
+						$state = __( 'Vetoed', 'owbn-archivist' );
+					} elseif ( isset( $terminal[ $status ] ) ) {
+						$state = $terminal[ $status ];
+					} else {
+						/* translators: %s: the step a line is waiting at */
+						$state = sprintf( __( 'At %s', 'owbn-archivist' ), isset( $line['step_label'] ) ? $line['step_label'] : '' );
+					}
+					$open = ! isset( $terminal[ $status ] );
+					?>
+					<tr class="oat-batch-line<?php echo ! empty( $line['current'] ) ? ' oat-batch-line-current' : ''; ?><?php echo $vetoed ? ' oat-batch-line-vetoed' : ''; ?>">
+						<td>
+							<a href="<?php echo esc_url( add_query_arg( $param, (int) $line['id'], $base_url ) ); ?>">#<?php echo esc_html( (int) $line['id'] ); ?></a>
+							<?php if ( ! empty( $line['current'] ) ) : ?>
+								<span class="oat-batch-here"><?php esc_html_e( '(this page)', 'owbn-archivist' ); ?></span>
+							<?php endif; ?>
+						</td>
+						<td><?php echo esc_html( isset( $line['item'] ) ? $line['item'] : '' ); ?></td>
+						<td>
+							<span class="oat-batch-state"><?php echo esc_html( $state ); ?></span>
+							<?php if ( $vetoed && '' !== (string) $line['veto_reason'] ) : ?>
+								<div class="oat-batch-reason">
+									<?php
+									/* translators: %s: the reviewer's reason for vetoing a line */
+									echo esc_html( sprintf( __( 'Reason: %s', 'owbn-archivist' ), $line['veto_reason'] ) );
+									?>
+								</div>
+							<?php endif; ?>
+							<?php if ( $open && ! empty( $line['can_veto'] ) ) : ?>
+								<details class="oat-batch-veto">
+									<summary><?php esc_html_e( 'Veto', 'owbn-archivist' ); ?></summary>
+									<form class="oat-action-form">
+										<input type="hidden" name="entry_id" value="<?php echo esc_attr( (int) $line['id'] ); ?>">
+										<input type="hidden" name="action_type" value="veto_line">
+										<textarea name="note" rows="2" placeholder="<?php esc_attr_e( 'Reason (optional)', 'owbn-archivist' ); ?>" style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
+										<button type="submit" class="oat-action-btn oat-action-btn-deny"><?php esc_html_e( 'Veto this line', 'owbn-archivist' ); ?></button>
+									</form>
+								</details>
+							<?php endif; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * The confirmation shown to the person who has just filed this request (the submit form sends them here with
 	 * created=1): it says the request is in, and offers to file another of the same kind.
 	 */
-	private function render_submitted_banner( $entry, $viewer_id, $settings )
+	private function render_submitted_banner( $entry, $viewer_id, $settings, $batch = null )
 	{
 		$created = isset( $_GET['created'] ) ? sanitize_text_field( wp_unslash( $_GET['created'] ) ) : '';
 		if ( '1' !== $created || ! $viewer_id || (int) ( isset( $entry['originator_id'] ) ? $entry['originator_id'] : 0 ) !== (int) $viewer_id ) {
@@ -516,8 +598,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		<div class="oat-entry-section oat-submitted-banner" style="background:#d7f0d7;border:1px solid #006505;border-radius:4px;padding:16px;margin-bottom:16px;">
 			<strong style="display:block;color:#006505;">
 				<?php
-				/* translators: %d: request number */
-				echo esc_html( sprintf( __( 'Request #%d submitted.', 'owbn-archivist' ), $entry_id ) );
+				if ( ! empty( $batch['lines'] ) ) {
+					/* translators: 1: request number, 2: how many lines */
+					echo esc_html( sprintf( __( 'Request #%1$d submitted with %2$d lines.', 'owbn-archivist' ), $entry_id, count( $batch['lines'] ) ) );
+				} else {
+					/* translators: %d: request number */
+					echo esc_html( sprintf( __( 'Request #%d submitted.', 'owbn-archivist' ), $entry_id ) );
+				}
 				?>
 			</strong>
 			<?php if ( $another ) : ?>
@@ -845,6 +932,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'reassign'         => __( 'Reassign', 'owbn-archivist' ),
 			'delegate'         => __( 'Delegate', 'owbn-archivist' ),
 			'add_coordinator'  => __( 'Add a Coordinator', 'owbn-archivist' ),
+			'approve_all'      => __( 'Approve All Lines', 'owbn-archivist' ),
 			'hold'             => __( 'Hold', 'owbn-archivist' ),
 			'resume'           => __( 'Resume', 'owbn-archivist' ),
 			'record'           => __( 'Log', 'owbn-archivist' ),
@@ -875,7 +963,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 				<?php endif; ?>
 
 				<?php foreach ( $available_actions as $action_type ) :
-					if ( 'auto_approve' === $action_type ) {
+					if ( 'auto_approve' === $action_type || 'veto_line' === $action_type ) {
 						continue;
 					}
 					$label       = isset( $action_labels[ $action_type ] ) ? $action_labels[ $action_type ] : ucfirst( $action_type );
@@ -965,6 +1053,10 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 									<input type="hidden" name="new_user_id" value="" required>
 									<span class="oat-user-picked"></span>
 								</div>
+							<?php endif; ?>
+
+							<?php if ( 'approve_all' === $action_type ) : ?>
+								<p style="margin:0 0 6px;font-size:13px;color:#646970;"><?php esc_html_e( 'Approves every line of this request that is waiting at this step and that you can approve. Use Veto on a line first to leave it out.', 'owbn-archivist' ); ?></p>
 							<?php endif; ?>
 
 							<?php if ( 'add_coordinator' === $action_type && function_exists( 'owc_oat_render_add_coordinator_picker' ) ) : ?>
@@ -1102,6 +1194,14 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	 */
 	private function render_relationships( $relationships, $entry, $settings )
 	{
+		// Requests filed together are shown on their own card, not here.
+		foreach ( array( 'children', 'parents' ) as $side ) {
+			if ( ! empty( $relationships[ $side ] ) ) {
+				$relationships[ $side ] = array_values( array_filter( $relationships[ $side ], function ( $rel ) {
+					return 'ru_batch' !== ( isset( $rel['type'] ) ? $rel['type'] : '' );
+				} ) );
+			}
+		}
 		$has_children = ! empty( $relationships['children'] );
 		$has_parents  = ! empty( $relationships['parents'] );
 

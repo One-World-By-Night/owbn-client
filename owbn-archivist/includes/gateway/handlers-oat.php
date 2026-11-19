@@ -391,6 +391,7 @@ function owbn_gateway_oat_entry( $request ) {
         'domain_label'      => $domain_label,
         'step_label'        => $step_label,
         'user_map'          => $user_map,
+        'batch'             => owc_oat_entry_batch_card( $entry, $user_id ),
     ) );
 }
 

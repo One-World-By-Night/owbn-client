@@ -149,6 +149,15 @@ function owbn_gateway_oat_submit( $request ) {
             $rule_id = (int) $rule_id;
             if ( $rule_id > 0 ) {
                 OAT_Entry_Rule::create( $entry_id, $rule_id );
+                // What the request is about, from its first rule (the local submit does the same).
+                if ( empty( $meta['item_description'] ) && class_exists( 'OAT_Regulation_Rule' ) ) {
+                    $rule_obj = OAT_Regulation_Rule::find( $rule_id );
+                    if ( $rule_obj ) {
+                        $parts                    = array_filter( array( $rule_obj->category, $rule_obj->subcategory, $rule_obj->condition_name ) );
+                        $meta['item_description'] = implode( ': ', $parts );
+                        OAT_Entry_Meta::set( $entry_id, 'item_description', $meta['item_description'] );
+                    }
+                }
             }
         }
     }
@@ -162,10 +171,12 @@ function owbn_gateway_oat_submit( $request ) {
 
     // Fire the submit action through the workflow engine.
     // Meta is passed via $data so the action handler can validate and persist it.
-    $result = OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
-        'note' => isset( $body['note'] ) ? sanitize_textarea_field( $body['note'] ) : '',
-        'meta' => $meta,
-    ) );
+    $result = owc_oat_run_batch_line( $entry_id, $user_id, isset( $body['batch'] ) ? $body['batch'] : array(), function () use ( $entry_id, $user_id, $body, $meta ) {
+        return OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
+            'note' => isset( $body['note'] ) ? sanitize_textarea_field( $body['note'] ) : '',
+            'meta' => $meta,
+        ) );
+    } );
 
     if ( is_wp_error( $result ) ) {
         owc_oat_cancel_refused_submission( $entry_id, $user_id, $result );

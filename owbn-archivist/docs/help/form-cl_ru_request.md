@@ -41,6 +41,7 @@ Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a
 
 - Pick every rule the item falls under; **Controlling Coordinator(s)** fills in from them and decides who reviews it.
 - A rule marked Elevated means a Coordinator must act; the request won't approve itself.
+- **Several rules, one request page.** Each rule you pick becomes its own line: its own request and, once approved, its own entry on the character. Lines that have the same approvers open together on one page, where a reviewer can approve every line at once or veto a single line. A line that goes to a different Coordinator is filed as a separate request.
 - Tick every coordinator whose power, rule or item the request uses under **Coordinators Who Must Approve**; each one must approve before it moves on. A rule that doesn't say which coordinator (such as "Appropriate Coordinator") goes to the character's clan or sect coordinator unless you tick one.
 
 ## Troubleshooting

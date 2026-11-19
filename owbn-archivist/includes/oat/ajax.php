@@ -537,6 +537,10 @@ function owc_oat_ajax_submit_entry_frontend() {
         if ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
             $data['coordinator_genre'] = $batch['meta']['coordinator_genre'];
         }
+        // Later lines are told which lines came before, so those with the same approvers join one group.
+        if ( $created_ids ) {
+            $data['batch'] = array( 'prior' => $created_ids );
+        }
 
         $result = owc_oat_submit( $data );
 
@@ -548,7 +552,11 @@ function owc_oat_ajax_submit_entry_frontend() {
         $created_ids[] = $eid;
     }
 
-    if ( count( $created_ids ) === 1 ) {
+    // Lines that all joined one group open as that group, on its first line.
+    $first_bundle = count( $created_ids ) > 1 && function_exists( 'owc_oat_get_entry' ) ? owc_oat_get_entry( $created_ids[0] ) : null;
+    $grouped      = is_array( $first_bundle ) && ! empty( $first_bundle['batch']['lines'] ) ? count( $first_bundle['batch']['lines'] ) : 0;
+
+    if ( count( $created_ids ) === 1 || ( $grouped && $grouped === count( $created_ids ) ) ) {
         wp_send_json_success( array( 'entry_id' => $created_ids[0] ) );
     } else {
         wp_send_json_success( array(

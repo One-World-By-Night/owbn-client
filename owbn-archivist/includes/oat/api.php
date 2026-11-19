@@ -340,6 +340,77 @@ function owc_oat_submit_another_link( $entry, $submit_page_url ) {
 }
 
 /**
+ * Files one line of a submission that has several lines (one request per regulation rule). The first line is filed as
+ * usual. Later lines are filed with the "waiting for you" email held back; once filed, a line whose approvers are the
+ * same as an earlier line's joins that line's group and stays silent (the group's one email was sent with the first
+ * line), and a line that joins no group sends its usual email now.
+ *
+ * @param int      $entry_id The line's request id.
+ * @param int      $user_id  Who is filing it.
+ * @param array    $batch    array( 'prior' => ids of the lines already filed in this submission ).
+ * @param callable $run      Does the filing (the engine's submit action); returns true or a WP_Error.
+ * @return true|WP_Error What $run returned.
+ */
+function owc_oat_run_batch_line( $entry_id, $user_id, $batch, $run ) {
+    $prior = array();
+    if ( is_array( $batch ) && ! empty( $batch['prior'] ) ) {
+        $prior = array_values( array_filter( array_map( 'absint', (array) $batch['prior'] ) ) );
+    }
+    if ( ! $prior || ! class_exists( 'OAT_Batch' ) ) {
+        return $run();
+    }
+    OAT_Batch::mute();
+    try {
+        $result = $run();
+    } finally {
+        OAT_Batch::unmute();
+    }
+    if ( ! is_wp_error( $result ) && ! OAT_Batch::attach( (int) $entry_id, (int) $user_id, $prior ) ) {
+        OAT_Batch::mail_assignment( (int) $entry_id );
+    }
+    return $result;
+}
+
+/**
+ * The lines of the group a request belongs to, for its page: each line's status, what it is about, the reason when it
+ * was vetoed, and whether the viewer can veto it.
+ *
+ * @param object $entry   The request.
+ * @param int    $user_id The viewer.
+ * @return array|null array( 'lines' => array of line rows ), or null when the request is in no group.
+ */
+function owc_oat_entry_batch_card( $entry, $user_id ) {
+    if ( ! class_exists( 'OAT_Batch' ) || ! class_exists( 'OAT_Entry_Meta' ) ) {
+        return null;
+    }
+    $ids = OAT_Batch::line_ids( (int) $entry->id );
+    if ( count( $ids ) < 2 ) {
+        return null;
+    }
+    $lines = array();
+    foreach ( $ids as $line_id ) {
+        $line = (int) $line_id === (int) $entry->id ? $entry : OAT_Entry::find( (int) $line_id );
+        if ( ! $line || ! owc_oat_user_can_view_entry( $line, $user_id ) ) {
+            continue;
+        }
+        $cfg      = OAT_Workflow_Engine::get_step_config( $line );
+        $denied   = OAT_Constants::STATUS_DENIED === $line->status;
+        $lines[]  = array(
+            'id'          => (int) $line->id,
+            'status'      => (string) $line->status,
+            'step'        => (string) $line->current_step,
+            'step_label'  => is_array( $cfg ) && ! empty( $cfg['label'] ) ? (string) $cfg['label'] : (string) $line->current_step,
+            'item'        => trim( wp_strip_all_tags( (string) OAT_Entry_Meta::get( (int) $line->id, 'item_description' ) ) ),
+            'current'     => (int) $line->id === (int) $entry->id,
+            'vetoed'      => $denied && '' !== (string) OAT_Entry_Meta::get( (int) $line->id, 'vetoed_by' ),
+            'veto_reason' => $denied ? trim( wp_strip_all_tags( (string) OAT_Entry_Meta::get( (int) $line->id, 'veto_reason' ) ) ) : '',
+            'can_veto'    => in_array( 'deny', owc_oat_compute_available_actions( $line, (int) $user_id, OAT_Assignee::for_entry( (int) $line->id ), true ), true ),
+        );
+    }
+    return count( $lines ) > 1 ? array( 'lines' => $lines ) : null;
+}
+
+/**
  * Check if the current user can access a specific form.
  *
  * Forms can define access rules via the owc_oat_form_access_rules filter.
@@ -736,6 +807,7 @@ function owc_oat_get_entry( $entry_id ) {
             'step_label'        => $step_label,
             'user_map'          => $user_map,
             'relationships'     => $relationships,
+            'batch'             => owc_oat_entry_batch_card( $entry, $user_id ),
         );
     }
 
@@ -899,10 +971,12 @@ function owc_oat_submit( $data ) {
         }
 
         // Fire submit action through workflow engine.
-        $result = OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
-            'note' => isset( $data['note'] ) ? sanitize_textarea_field( $data['note'] ) : '',
-            'meta' => $meta,
-        ) );
+        $result = owc_oat_run_batch_line( $entry_id, $user_id, isset( $data['batch'] ) ? $data['batch'] : array(), function () use ( $entry_id, $user_id, $data, $meta ) {
+            return OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
+                'note' => isset( $data['note'] ) ? sanitize_textarea_field( $data['note'] ) : '',
+                'meta' => $meta,
+            ) );
+        } );
 
         if ( is_wp_error( $result ) ) {
             owc_oat_cancel_refused_submission( $entry_id, $user_id, $result );
@@ -1211,9 +1285,10 @@ function owc_oat_get_domain_fields( $domain_slug ) {
  * @param object $entry
  * @param int    $user_id
  * @param array  $assignees Raw assignee objects.
+ * @param bool   $skip_group True to leave out the group actions (approve all, veto a line), which look at the other lines.
  * @return array
  */
-function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
+function owc_oat_compute_available_actions( $entry, $user_id, $assignees, $skip_group = false ) {
     $actions = array();
 
     if ( OAT_Constants::is_terminal_status( $entry->status ) ) {
@@ -1273,6 +1348,34 @@ function owc_oat_compute_available_actions( $entry, $user_id, $assignees ) {
             $actions[] = 'approve';
             $actions[] = 'deny';
             $actions[] = 'request_changes';
+        }
+    }
+
+    // Requests filed together as a group: veto one line, or approve every line waiting at this step at once.
+    static $checking_group = false;
+    if ( ! $checking_group && ! $skip_group && class_exists( 'OAT_Batch' ) && ( in_array( 'approve', $actions, true ) || in_array( 'deny', $actions, true ) ) ) {
+        $line_ids = OAT_Batch::line_ids( (int) $entry->id );
+        if ( count( $line_ids ) > 1 ) {
+            if ( in_array( 'deny', $actions, true ) ) {
+                $actions[] = 'veto_line';
+            }
+            if ( in_array( 'approve', $actions, true ) ) {
+                $checking_group = true;
+                $others         = 0;
+                foreach ( $line_ids as $line_id ) {
+                    if ( (int) $line_id === (int) $entry->id ) {
+                        continue;
+                    }
+                    $line = OAT_Entry::find( (int) $line_id );
+                    if ( $line && ! OAT_Constants::is_terminal_status( $line->status ) && $line->current_step === $entry->current_step && owc_oat_user_can_take_action( $line, $user_id, 'approve' ) ) {
+                        $others++;
+                    }
+                }
+                $checking_group = false;
+                if ( $others > 0 ) {
+                    $actions[] = 'approve_all';
+                }
+            }
         }
     }
 

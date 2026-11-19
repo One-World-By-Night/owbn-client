@@ -10,6 +10,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 | --- | --- |
 | Responsável pela etapa atual (pelo nome ou pelo cargo) | Approve, Deny, Request Changes, Reassign, Delegate |
 | Responsável por uma etapa Coordinator Review, ou da equipe do Arquivista antes da etapa do Arquivista | Add a Coordinator, também |
+| Responsável pela etapa atual de um pedido registrado com outras linhas | Approve All Lines, e Veto em cada linha |
 | Quem o registrou | Cancel / Withdraw, Bump; Resubmit quando ele volta para você |
 | Responsável pela etapa atual e da equipe do Arquivista | Log, também |
 | Administrador do site do Arquivista | Hold, Extend Timer; Council Override em um pedido negado |
@@ -23,6 +24,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 ## A tela
 
 - **Request submitted** (só logo depois de você registrar o pedido) - uma caixa verde com um botão **Submit another** para o mesmo formulário.
+- **Lines in this request** (só quando várias linhas foram registradas juntas) - uma linha para cada uma, com o assunto e em que etapa está. Uma linha vetada diz **Vetoed** e traz o motivo, quando há. Quem revisa ganha uma caixa **Veto** em cada linha aberta.
 - **O cabeçalho** - o formulário e o número do pedido, o status (pending, held, approved, denied, cancelled, auto-approved ou auto-denied) e **Step:**, a etapa em que ele está. **Watch** acompanha o pedido: ele passa a aparecer no seu inbox, você recebe um email quando ele anda ou termina, e o botão mostra **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** e **Updated**.
 - **Details** - tudo o que o formulário perguntou, como foi registrado.
@@ -51,6 +53,12 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 1. Escreva uma nota.
 2. **Reassign** entrega a etapa a outra pessoa de vez. **Delegate** pede que outra pessoa olhe, e depois o pedido volta para você.
 3. Procure a pessoa e escolha-a.
+
+### Aprovar várias linhas de uma vez, ou vetar uma
+
+1. Abra qualquer linha do pedido. **Lines in this request** lista todas.
+2. Para deixar uma linha de fora, clique em **Veto** na linha dela, escreva um motivo se quiser (é opcional, e quem registrou o pedido o vê ao lado da linha) e clique em **Veto this line**. Só essa linha é encerrada; as outras seguem.
+3. Em **Approve All Lines**, escreva uma nota e clique no botão. Todas as linhas que esperam nesta etapa e que você pode aprovar seguem juntas.
 
 ### Chamar outro Coordenador
 

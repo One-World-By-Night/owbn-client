@@ -26,7 +26,7 @@ Anyone signed in. Which characters you can pick depends on who you are: a player
 - **Submitting As** or **Your Role** (some forms) - whether you file as a player, staff, Coordinator or the Archivist. It decides whose characters the character search offers.
 - **Submit Request** - files the request. It reads "Submitting…" while it sends.
 
-When the request is filed, its own page opens, where you can follow it. It starts with a green box, **Request #N submitted**, and a button, **Submit another** with the form's name (for example **Submit another R&U Request**), that opens this page again on the same form. A form that files several requests at once lists each new request instead.
+When the request is filed, its own page opens, where you can follow it. It starts with a green box, **Request #N submitted**, and a button, **Submit another** with the form's name (for example **Submit another R&U Request**), that opens this page again on the same form. When you pick several rules on an R&U Request, each rule is filed as its own line: lines with the same approvers open together as one request page, and any line that goes to someone else is listed separately.
 
 ## Common tasks
 

@@ -41,6 +41,7 @@ Submission → Staff Review (o HST da crônica) → Coordinator Review, quando u
 
 - Escolha todas as regras em que o item se encaixa; **Controlling Coordinator(s)** se preenche a partir delas e decide quem revisa.
 - Uma regra marcada como Elevated quer dizer que um Coordenador precisa agir; o pedido não se aprova sozinho.
+- **Várias regras, uma página de pedido.** Cada regra que você escolhe vira uma linha: o próprio pedido e, depois de aprovado, a própria entrada no personagem. As linhas que têm os mesmos aprovadores abrem juntas numa só página, onde quem revisa pode aprovar todas de uma vez ou vetar uma linha. Uma linha que vai para outro Coordenador é registrada como um pedido separado.
 - Marque em **Coordinators Who Must Approve** todo coordenador cujo poder, regra ou item o pedido usa; cada um precisa aprovar antes de o pedido seguir. Uma regra que não diz qual coordenador (como "Appropriate Coordinator") vai para o coordenador do clã ou da seita do personagem, a menos que você marque um.
 
 ## Solução de problemas

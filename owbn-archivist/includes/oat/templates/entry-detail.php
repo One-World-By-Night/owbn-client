@@ -192,7 +192,8 @@ function owc_oat_user_name( $uid, $map ) {
             ?>
 
             <?php foreach ( $available_actions as $action_type ) :
-                if ( $action_type === 'auto_approve' ) continue;
+                // Approve all and a line veto belong to the request page's lines card, which this screen does not have.
+                if ( $action_type === 'auto_approve' || $action_type === 'approve_all' || $action_type === 'veto_line' ) continue;
 
                 // Admin Edit: render all domain fields as editable inputs.
                 if ( $action_type === 'admin_edit' ) : ?>

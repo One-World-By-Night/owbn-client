@@ -10,6 +10,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 | --- | --- |
 | Given the current step (by name or by role) | Approve, Deny, Request Changes, Reassign, Delegate |
 | Given a Coordinator Review step, or on the Archivist's team before the Archivist step | Add a Coordinator, as well |
+| Given the current step of a request filed with other lines | Approve All Lines, and Veto on each line |
 | The person who filed it | Cancel / Withdraw, Bump; Resubmit when it is sent back to you |
 | Given the current step and on the Archivist's team | Log, as well |
 | A site admin on the Archivist site | Hold, Extend Timer; Council Override on a denied request |
@@ -23,6 +24,7 @@ The person who filed the request; anyone it has been given to; whoever holds the
 ## The screen
 
 - **Request submitted** (only right after you file the request) - a green box with a **Submit another** button for the same form.
+- **Lines in this request** (only when several lines were filed together) - a row for each line, with what it is about and where it stands. A vetoed line says **Vetoed** and gives the reason, when there is one. Reviewers get a **Veto** box on each open line.
 - **The header** - the request's form and number, its status (pending, held, approved, denied, cancelled, auto-approved or auto-denied) and **Step:**, the step it is at. **Watch** follows the request: it then shows in your inbox, you get an email when it moves on or finishes, and the button reads **Watching**.
 - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** and **Updated**.
 - **Details** - everything the form asked, as filed.
@@ -51,6 +53,12 @@ The person who filed the request; anyone it has been given to; whoever holds the
 1. Write a note.
 2. **Reassign** gives the step to someone else for good. **Delegate** asks someone else to look, then it comes back to you.
 3. Search for the person and pick them.
+
+### Approve several lines at once, or veto one
+
+1. Open any line of the request. **Lines in this request** lists every line.
+2. To leave a line out, click **Veto** on its row, add a reason if you want to (it is optional, and the person who filed the request sees it beside the line), and click **Veto this line**. Only that line is closed; the others carry on.
+3. In **Approve All Lines**, write a note and click the button. Every line waiting at this step that you can approve moves on together.
 
 ### Bring in another Coordinator
 

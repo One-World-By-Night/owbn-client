@@ -927,3 +927,17 @@
 	display: inline-block;
 	margin-right: 1em;
 }
+
+/* Lines of requests filed together */
+.oat-batch-note { margin: 0 0 10px; font-size: 13px; color: #646970; }
+.oat-batch-lines { width: 100%; border-collapse: collapse; }
+.oat-batch-lines th, .oat-batch-lines td { padding: 8px 10px; border-bottom: 1px solid #dcdcde; text-align: left; vertical-align: top; }
+.oat-batch-lines th { font-size: 12px; text-transform: uppercase; letter-spacing: .03em; color: #50575e; background: #f6f7f7; }
+.oat-batch-line-current { background: #f0f6fc; }
+.oat-batch-line-vetoed .oat-batch-state { color: #8b0000; font-weight: 600; }
+.oat-batch-here { margin-left: 4px; font-size: 12px; color: #646970; }
+.oat-batch-reason { margin-top: 4px; font-size: 13px; color: #3c434a; }
+.oat-batch-veto { margin-top: 6px; }
+.oat-batch-veto summary { cursor: pointer; font-size: 13px; color: #8b0000; }
+.oat-action-btn-approve_all { background: #006505; color: #fff; }
+.oat-action-btn-approve_all:hover { background: #004d04; }
