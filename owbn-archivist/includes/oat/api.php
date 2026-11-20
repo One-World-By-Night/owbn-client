@@ -2430,6 +2430,42 @@ function owc_oat_get_registry( $args = array() ) {
 }
 
 /**
+ * Characters the signed-in player can connect to their account, found by name: unlinked player characters whose sheet email no
+ * account holds. Never includes the player's name or email.
+ *
+ * @param string $term Part of the character's name.
+ * @return array[]|WP_Error Rows of id, name, chronicle, status.
+ */
+function owc_oat_claim_search( $term ) {
+    $term = sanitize_text_field( (string) $term );
+    if ( owc_oat_is_local() ) {
+        if ( ! class_exists( 'OAT_Character_Claim' ) ) {
+            return new WP_Error( 'oat_claim_unavailable', 'Connecting a character is not available on this site.' );
+        }
+        return OAT_Character_Claim::search( get_current_user_id(), $term );
+    }
+    $result = owc_oat_request( 'claim/search', array( 'term' => $term ) );
+    return is_wp_error( $result ) ? $result : array_values( $result );
+}
+
+/**
+ * Emails the player a link, at the address on the character's sheet, that connects the character to their account.
+ *
+ * @param int $character_id The character.
+ * @return array|WP_Error array( 'sent' => true ).
+ */
+function owc_oat_claim_request( $character_id ) {
+    $character_id = (int) $character_id;
+    if ( owc_oat_is_local() ) {
+        if ( ! class_exists( 'OAT_Character_Claim' ) ) {
+            return new WP_Error( 'oat_claim_unavailable', 'Connecting a character is not available on this site.' );
+        }
+        return OAT_Character_Claim::request( get_current_user_id(), $character_id );
+    }
+    return owc_oat_request( 'claim/request', array( 'character_id' => $character_id ) );
+}
+
+/**
  * Fetch registry section headers with counts for a scope.
  *
  * @param string $scope mine|chronicles|coordinators|decommissioned

@@ -14,7 +14,7 @@ Esta é uma página de referência. Cada página de ajuda do OAT também termina
 
 | Problema | Resposta |
 | --- | --- |
-| O meu personagem não aparece em My Characters | Ele não está vinculado à sua conta. Veja [Ficha do Personagem](registry-detail.md#solução-de-problemas) |
+| O meu personagem não aparece em My Characters | Ele não está vinculado à sua conta. Use Connect a character no [Registry](registry.md), ou veja [Ficha do Personagem](registry-detail.md#solução-de-problemas) |
 | Um personagem que registrei aparece como de outra pessoa | A Linked Account dele está errada. Mude-a na [Ficha do Personagem](registry-detail.md#tarefas-comuns) |
 | "You do not have permission to view this character." | Ele não é seu nem da sua crônica. Veja [Quem Pode Fazer o Quê](roles.md) |
 | Não consigo mudar a Seita de um personagem sem perder o clã | Escolha a nova Faction; o clã continua, marcado "(Sect Defector)". Veja [Ficha do Personagem](registry-detail.md#tarefas-comuns) |

@@ -203,6 +203,19 @@ function owbn_gateway_register_oat_routes() {
         'permission_callback' => 'owbn_gateway_oat_authenticate_user',
     ) );
 
+    // Characters a player can connect to their account by email link, and the request that sends the link.
+    register_rest_route( $namespace, '/oat/claim/search', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_claim_search',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
+    register_rest_route( $namespace, '/oat/claim/request', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'owbn_gateway_oat_claim_request',
+        'permission_callback' => 'owbn_gateway_oat_authenticate_user',
+    ) );
+
     // Account search for a remote site's account pickers (returns archivist ids).
     register_rest_route( $namespace, '/oat/users/search', array(
         'methods'             => WP_REST_Server::CREATABLE,

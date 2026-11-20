@@ -101,7 +101,10 @@ function owc_render_oat_my_characters_widget() {
     }
 
     if ( empty( $my_chars ) ) {
+        $empty_base = ( function_exists( 'owc_oat_is_local' ) && ! owc_oat_is_local() ) ? owc_cc_widget_site_url( 'oat' ) : '';
+        $registry   = '' !== $empty_base ? $empty_base . 'oat-registry/' : home_url( '/oat-registry/' );
         echo '<p style="color:#646970;">' . esc_html__( 'No characters linked to your account.', 'owbn-archivist' ) . '</p>';
+        echo '<p><a href="' . esc_url( $registry ) . '" target="_blank">' . esc_html__( 'Missing one? Open the Registry and use Connect a character.', 'owbn-archivist' ) . '</a></p>';
         return;
     }
 

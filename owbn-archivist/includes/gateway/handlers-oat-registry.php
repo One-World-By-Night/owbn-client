@@ -357,6 +357,24 @@ function owbn_gateway_oat_users_search( $request ) {
     $term = isset( $body['term'] ) ? sanitize_text_field( (string) $body['term'] ) : '';
     return owbn_gateway_respond( array_values( owc_oat_search_link_users( $term ) ) );
 }
+
+function owbn_gateway_oat_claim_search( $request ) {
+    $body = $request->get_json_params();
+    if ( ! class_exists( 'OAT_Character_Claim' ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_claim_unavailable', 'Connecting a character is not available.', array( 'status' => 503 ) ) );
+    }
+    $rows = OAT_Character_Claim::search( (int) $request->get_param( '_oat_user_id' ), isset( $body['term'] ) ? sanitize_text_field( (string) $body['term'] ) : '' );
+    return owbn_gateway_respond( is_wp_error( $rows ) ? $rows : array_values( $rows ) );
+}
+
+function owbn_gateway_oat_claim_request( $request ) {
+    $body = $request->get_json_params();
+    if ( ! class_exists( 'OAT_Character_Claim' ) ) {
+        return owbn_gateway_respond( new WP_Error( 'oat_claim_unavailable', 'Connecting a character is not available.', array( 'status' => 503 ) ) );
+    }
+    return owbn_gateway_respond( OAT_Character_Claim::request( (int) $request->get_param( '_oat_user_id' ), isset( $body['character_id'] ) ? (int) $body['character_id'] : 0 ) );
+}
+
 // ── Character formatting helper ──────────────────────────────────────
 
 

@@ -14,7 +14,7 @@ This is a reference page. Each OAT help page also ends with its own troubleshoot
 
 | Problem | Answer |
 | --- | --- |
-| My character isn't under My Characters | It isn't linked to your account. See [Character Record](registry-detail.md#troubleshooting) |
+| My character isn't under My Characters | It isn't linked to your account. Use Connect a character on the [Registry](registry.md), or see [Character Record](registry-detail.md#troubleshooting) |
 | A character I registered shows as someone else's | Its Linked Account is wrong. Change it on its [Character Record](registry-detail.md#common-tasks) |
 | "You do not have permission to view this character." | It isn't yours or your chronicle's. See [Who Can Do What](roles.md) |
 | I can't change a character's Sect without losing the clan | Pick the new Faction; the clan stays, marked "(Sect Defector)". See [Character Record](registry-detail.md#common-tasks) |

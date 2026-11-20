@@ -23,6 +23,7 @@ Qualquer pessoa com login. O que cada aba traz depende de quem você é:
 - **Display Options** - marque as colunas que você quer: Player, Type, PC/NPC, Entries, My Entries e Last Activity. Character, Chronicle e Status aparecem sempre. A sua escolha fica guardada na sua conta.
 - **As abas** - My Characters, Chronicles, Coordinators e Decommissioned.
 - **Search characters...** - encontra personagens pelo nome ou pela crônica em tudo o que você pode ver, a partir de dois caracteres. **Clear** limpa a busca e todos os filtros de coluna.
+- **Connect a character** - um painel recolhido abaixo da busca. Abra-o para achar um personagem seu que não está em My Characters e pedir que um link seja enviado ao email que consta na ficha dele.
 - **As seções** - uma por crônica ou escritório de Coordenador, cada uma com a sua contagem. Clique em uma seção para abri-la.
 - **A tabela**, em cada seção aberta:
 
@@ -57,9 +58,20 @@ Qualquer pessoa com login. O que cada aba traz depende de quem você é:
 1. Abra **Display Options**.
 2. Marque ou desmarque as colunas.
 
+### Conectar um personagem à sua conta
+
+Use quando um dos seus personagens não aparece em My Characters porque a ficha dele traz um email que não está em nenhuma conta da OWbN, como um endereço antigo.
+
+1. Abra **Connect a character**.
+2. Digite pelo menos três letras do nome do personagem e clique em **Find**.
+3. Clique em **Email me the link** ao lado do personagem certo. O link vai para o email que consta na ficha do personagem, não para o email com que você entrou.
+4. Abra esse email em até 48 horas e siga o link. Na página que abrir, clique em **Yes, connect it**.
+5. Recarregue o Registry. O personagem aparece em My Characters.
+
 ## Bom saber
 
 - Um personagem aparece em My Characters só quando a ficha dele está vinculada à sua conta. Um PC registrado com o seu email se vincula sozinho na primeira vez que a sua conta chega ao site do Arquivista.
+- Você só consegue conectar um personagem por conta própria se puder ler o email que consta na ficha dele. Só aparecem PCs com um email na ficha e sem nenhuma conta com esse email. Abrir o link do email não conecta nada até o botão da página ser clicado, e cada link vale uma vez.
 - Um Coordenador passa a ver um personagem quando um item que o escritório dele controla é aprovado nele, o que concede acesso ao escritório.
 - As contagens e o Last Activity contam só pedidos aprovados.
 
@@ -68,7 +80,9 @@ Qualquer pessoa com login. O que cada aba traz depende de quem você é:
 - **"No sections found."** Você não tem crônica nem escritório para esta aba. Jogadores só têm My Characters.
 - **"No characters."** A seção está vazia.
 - **"No characters found."** Nada do que você pode ver corresponde à busca. Confira a grafia, ou tente o nome da crônica.
-- **O meu personagem não aparece em My Characters.** Ele não está vinculado à sua conta. Peça ao HST dele para vinculá-lo na [Ficha do Personagem](registry-detail.md).
+- **O meu personagem não aparece em My Characters.** Ele não está vinculado à sua conta. Use **Connect a character**, ou peça ao HST dele para vinculá-lo na [Ficha do Personagem](registry-detail.md).
+- **O meu personagem não aparece em Connect a character.** A ficha não tem email, ou uma conta já tem esse email (o personagem se vincula a essa conta quando ela entra), ou ele já está vinculado. Fale com a equipe web.
+- **Não consigo mais ler o email da ficha.** Peça à equipe web ou ao HST do personagem para vinculá-lo.
 
 ## Relacionados
 

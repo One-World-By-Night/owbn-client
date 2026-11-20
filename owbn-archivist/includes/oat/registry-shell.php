@@ -56,6 +56,7 @@ function owc_oat_render_registry_shell( $args = array() ) {
     $js_url = defined( 'OWC_ARCHIVIST_URL' ) ? OWC_ARCHIVIST_URL . 'includes/oat/assets/js/' : '';
     $version = defined( 'OWC_ARCHIVIST_VERSION' ) ? OWC_ARCHIVIST_VERSION : '1.0.0';
     wp_enqueue_script( 'oat-registry', $js_url . 'oat-registry.js', array(), $version, true );
+    wp_enqueue_script( 'oat-claim', $js_url . 'oat-claim.js', array(), $version, true );
 
     ?>
     <style>
@@ -75,6 +76,16 @@ function owc_oat_render_registry_shell( $args = array() ) {
     .oat-display-opts summary { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
     .oat-display-opts-inner { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; }
     .oat-col-mandatory { opacity: 0.6; }
+    .oat-claim { border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; }
+    .oat-claim summary { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .oat-claim-body { padding: 8px 12px 12px; font-size: 13px; }
+    .oat-claim-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; align-items: center; }
+    .oat-claim-form input[type="text"] { flex: 1; min-width: 200px; max-width: 320px; }
+    .oat-claim-results { list-style: none; margin: 0; padding: 0; }
+    .oat-claim-results li { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
+    .oat-claim-message { margin: 8px 0 0; }
+    .oat-claim-message.oat-claim-error { color: #b32d2e; }
+    .oat-claim-message.oat-claim-ok { color: #1a7f37; }
     </style>
 
     <div class="oat-registry-widget">
@@ -101,10 +112,35 @@ function owc_oat_render_registry_shell( $args = array() ) {
                 <button type="button" class="oat-registry-clear" style="padding:4px 12px;cursor:pointer;border:1px solid #ccc;border-radius:4px;background:#fff;"><?php esc_html_e( 'Clear', 'owbn-archivist' ); ?></button>
             </div>
         </div>
+        <details class="oat-claim">
+            <summary><?php esc_html_e( 'Connect a character', 'owbn-archivist' ); ?></summary>
+            <div class="oat-claim-body">
+                <p><?php esc_html_e( "Missing one of your characters? Type part of its name. We email a link to the address on that character's sheet. Open it within 48 hours and press the button on the page to connect the character to your account.", 'owbn-archivist' ); ?></p>
+                <div class="oat-claim-form">
+                    <input type="text" class="oat-claim-term" autocomplete="off" aria-label="<?php esc_attr_e( 'Character name', 'owbn-archivist' ); ?>" placeholder="<?php esc_attr_e( 'Character name', 'owbn-archivist' ); ?>">
+                    <button type="button" class="oat-claim-search button"><?php esc_html_e( 'Find', 'owbn-archivist' ); ?></button>
+                </div>
+                <ul class="oat-claim-results"></ul>
+                <p class="oat-claim-message" aria-live="polite"></p>
+            </div>
+        </details>
         <div class="oat-registry-content"></div>
     </div>
 
     <script>
+    window.oatClaimConfig = <?php echo wp_json_encode( array(
+        'ajaxUrl' => $ajax_url,
+        'nonce'   => $nonce,
+        'i18n'    => array(
+            'tooShort' => __( "Type at least 3 letters of the character's name.", 'owbn-archivist' ),
+            'searching' => __( 'Searching...', 'owbn-archivist' ),
+            'none'     => __( 'No character matches that name that can be connected this way. A character with no email on its sheet, or one whose email already belongs to an account, cannot be. Ask the Web Team.', 'owbn-archivist' ),
+            'send'     => __( 'Email me the link', 'owbn-archivist' ),
+            'sending'  => __( 'Sending...', 'owbn-archivist' ),
+            'sent'     => __( "A link was sent to the email on that character's sheet. Open it within 48 hours and press the button. If you no longer have that email, ask the Web Team.", 'owbn-archivist' ),
+            'failed'   => __( 'Something went wrong. Try again in a moment.', 'owbn-archivist' ),
+        ),
+    ) ); ?>;
     window.oatRegistryConfig = <?php echo wp_json_encode( array(
         'ajaxUrl'    => $ajax_url,
         'nonce'      => $nonce,

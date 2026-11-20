@@ -28,6 +28,8 @@ add_action( 'wp_ajax_owc_oat_registry_sections', 'owc_oat_ajax_registry_sections
 add_action( 'wp_ajax_owc_oat_registry_section', 'owc_oat_ajax_registry_section' );
 add_action( 'wp_ajax_owc_oat_registry_search', 'owc_oat_ajax_registry_search' );
 add_action( 'wp_ajax_owc_oat_save_registry_columns', 'owc_oat_ajax_save_registry_columns' );
+add_action( 'wp_ajax_owc_oat_claim_search', 'owc_oat_ajax_claim_search' );
+add_action( 'wp_ajax_owc_oat_claim_request', 'owc_oat_ajax_claim_request' );
 add_action( 'wp_ajax_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 add_action( 'wp_ajax_nopriv_owc_cchub_get_entry', 'owc_cchub_ajax_get_entry' );
 
@@ -821,6 +823,36 @@ function owc_oat_ajax_registry_search() {
     }
 
     wp_send_json_success( $data );
+}
+
+/**
+ * AJAX: Find characters the player can connect to their account by name.
+ *
+ * POST params: term
+ */
+function owc_oat_ajax_claim_search() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $results = owc_oat_claim_search( isset( $_POST['term'] ) ? sanitize_text_field( wp_unslash( $_POST['term'] ) ) : '' );
+    if ( is_wp_error( $results ) ) {
+        wp_send_json_error( $results->get_error_message() );
+    }
+    wp_send_json_success( $results );
+}
+
+/**
+ * AJAX: Email the player the link that connects a character to their account.
+ *
+ * POST params: character_id
+ */
+function owc_oat_ajax_claim_request() {
+    check_ajax_referer( 'owc_oat_nonce', 'nonce' );
+
+    $result = owc_oat_claim_request( isset( $_POST['character_id'] ) ? (int) $_POST['character_id'] : 0 );
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
+    }
+    wp_send_json_success( $result );
 }
 
 /**
