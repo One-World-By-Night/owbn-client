@@ -395,7 +395,7 @@ function owbn_gateway_oat_domains( $request ) {
         );
     }
 
-    return owbn_gateway_respond( function_exists( 'owc_oat_domains_for_user' ) ? owc_oat_domains_for_user( $domains ) : $domains );
+    return owbn_gateway_respond( $domains );
 }
 
 

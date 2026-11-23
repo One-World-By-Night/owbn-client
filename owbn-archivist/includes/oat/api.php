@@ -272,7 +272,9 @@ function owc_oat_get_domains() {
         return function_exists( 'owc_oat_domains_for_user' ) ? owc_oat_domains_for_user( $out ) : $out;
     }
 
-    return owc_oat_request( 'domains' );
+    // The gateway answers this one for the site, not for the person, so the person's own view is applied here.
+    $domains = owc_oat_request( 'domains' );
+    return ( is_array( $domains ) && function_exists( 'owc_oat_domains_for_user' ) ) ? owc_oat_domains_for_user( $domains ) : $domains;
 }
 
 function owc_oat_get_forms_for_domain( $domain_slug ) {
