@@ -563,7 +563,7 @@ if ( ! function_exists( 'owc_oat_linked_rule_row' ) ) :
 	 * One regulation rule linked to a request, in the shape the request's page shows it.
 	 *
 	 * @param object $rule A regulation rule row, or an entry-rule row carrying rule_id.
-	 * @return array rule_id, genre, category, subcategory, condition, pc_level, coordinator, elevation.
+	 * @return array rule_id, genre, category, subcategory, condition, section_ref, pc_level, npc_level, coordinator, elevation.
 	 */
 	function owc_oat_linked_rule_row( $rule ) {
 		if ( ! isset( $rule->condition_name ) && isset( $rule->rule_id ) && class_exists( 'OAT_Regulation_Rule' ) ) {
@@ -576,9 +576,51 @@ if ( ! function_exists( 'owc_oat_linked_rule_row' ) ) :
 			'category'    => (string) ( $rule->category ?? '' ),
 			'subcategory' => (string) ( $rule->subcategory ?? '' ),
 			'condition'   => (string) ( $rule->condition_name ?? '' ),
+			'section_ref' => (string) ( $rule->section_ref ?? '' ),
 			'pc_level'    => (string) ( $rule->pc_level ?? '' ),
+			'npc_level'   => (string) ( $rule->npc_level ?? '' ),
 			'coordinator' => (string) ( $rule->controlling_coordinator ?? '' ),
 			'elevation'   => (int) ( $rule->elevation ?? 0 ),
+		);
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_entry_character' ) ) :
+	/**
+	 * The character a request is about, with the player's name, for the summary at the top of its page.
+	 *
+	 * @param object $entry The request row.
+	 * @param array  $meta  The request's fields, key => value.
+	 * @return array|null id, uuid, name, player_name, chronicle_slug, pc_npc, status, creature_type; null when none is linked.
+	 */
+	function owc_oat_entry_character( $entry, $meta ) {
+		if ( ! class_exists( 'OAT_Character' ) ) {
+			return null;
+		}
+		$character = ! empty( $entry->character_id ) ? OAT_Character::find( (int) $entry->character_id ) : null;
+		if ( ! $character ) {
+			foreach ( array( 'character_name', 'character' ) as $key ) {
+				$uuid = isset( $meta[ $key ] ) ? trim( (string) $meta[ $key ] ) : '';
+				if ( '' !== $uuid ) {
+					$character = OAT_Character::find_by_uuid( $uuid );
+					if ( $character ) {
+						break;
+					}
+				}
+			}
+		}
+		if ( ! $character ) {
+			return null;
+		}
+		return array(
+			'id'             => (int) $character->id,
+			'uuid'           => (string) ( $character->uuid ?? '' ),
+			'name'           => (string) $character->character_name,
+			'player_name'    => (string) ( $character->player_name ?? '' ),
+			'chronicle_slug' => (string) ( $character->chronicle_slug ?? '' ),
+			'pc_npc'         => (string) ( $character->pc_npc ?? '' ),
+			'status'         => (string) ( $character->status ?? '' ),
+			'creature_type'  => (string) ( $character->creature_type ?? '' ),
 		);
 	}
 endif;

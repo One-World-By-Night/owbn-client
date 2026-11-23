@@ -379,6 +379,7 @@ function owbn_gateway_oat_entry( $request ) {
         'entry'             => $entry_data,
         'meta'              => $meta,
         'characters'        => owc_oat_entry_character_map( $meta ),
+        'character'         => owc_oat_entry_character( $entry, $meta ),
         'viewer_id'         => $user_id,
         'assignees'         => $assignees,
         'timeline'          => $timeline,

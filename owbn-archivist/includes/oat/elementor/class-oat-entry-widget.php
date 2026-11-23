@@ -358,21 +358,13 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 
 			<?php echo $this->render_header( $entry, $domain_label, $step_label, $is_watching, $assignees, $viewer_id ); ?>
 
+			<?php echo $this->render_summary( $bundle ); ?>
+
 			<?php echo $this->render_submitted_banner( $entry, $viewer_id, $settings, $batch ); ?>
 
 			<?php echo $this->render_changes_requested_banner( $entry, $timeline, $user_map, $changes_note ); ?>
 
-			<?php echo $this->render_meta_grid( $entry, $user_map ); ?>
-
 			<?php echo $this->render_batch_card( $batch, $settings ); ?>
-
-			<?php if ( $show_meta ) : ?>
-				<?php echo $this->render_details( $meta, $domain_fields ); ?>
-			<?php endif; ?>
-
-			<?php if ( $show_rules && ! empty( $rules ) ) : ?>
-				<?php echo $this->render_rules( $rules ); ?>
-			<?php endif; ?>
 
 			<?php if ( $timer ) : ?>
 				<?php echo $this->render_timer( $timer ); ?>
@@ -382,15 +374,26 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 				<?php echo $this->render_actions( $entry, $available_actions, $bbp_eligible, $review_fields, $meta, $current_step, $domain_fields ); ?>
 			<?php endif; ?>
 
+			<?php if ( $show_timeline && ! empty( $timeline ) ) : ?>
+				<?php echo $this->render_timeline( $timeline, $user_map, $tl_collapsed ); ?>
+			<?php endif; ?>
+
+			<?php $grid = $this->render_meta_grid( $entry, $user_map, $show_meta ); ?>
+			<?php if ( $show_meta ) : ?>
+				<?php echo $this->render_details( $meta, $domain_fields, $grid ); ?>
+			<?php else : ?>
+				<?php echo $grid; ?>
+			<?php endif; ?>
+
+			<?php if ( $show_rules && ! empty( $rules ) ) : ?>
+				<?php echo $this->render_rules( $rules ); ?>
+			<?php endif; ?>
+
 			<?php if ( $show_assignees && ! empty( $assignees ) ) : ?>
 				<?php echo $this->render_assignees( $assignees, $user_map ); ?>
 			<?php endif; ?>
 
 			<?php echo $this->render_relationships( $relationships, $entry, $settings ); ?>
-
-			<?php if ( $show_timeline && ! empty( $timeline ) ) : ?>
-				<?php echo $this->render_timeline( $timeline, $user_map, $tl_collapsed ); ?>
-			<?php endif; ?>
 
 		</div>
 		<?php
@@ -685,6 +688,119 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	}
 
 	/**
+	 * The summary under the header: who is asking for what, the bylaw it rests on, and where it stands. The character is a
+	 * link that opens its record in a new tab.
+	 *
+	 * @param array $bundle The request's bundle.
+	 * @return string
+	 */
+	private function render_summary( $bundle )
+	{
+		if ( ! function_exists( 'owc_oat_entry_summary' ) ) {
+			return '';
+		}
+		$s = owc_oat_entry_summary( $bundle );
+
+		$request = '<strong class="oat-summary-ask">' . esc_html( $s['request'] ) . '</strong>';
+		if ( $s['with_character'] ) {
+			$c         = $s['character'];
+			$char_html = esc_html( $c['name'] );
+			if ( ! empty( $c['id'] ) ) {
+				$base = function_exists( 'owc_oat_localize_url' ) ? owc_oat_localize_url( '/oat-registry-detail/' ) : '/oat-registry-detail/';
+				$url  = $base . '?character_id=' . (int) $c['id'];
+				$char_html = '<a class="oat-summary-char" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $c['name'] )
+					. ' <span aria-hidden="true">&#x29C9;</span><span class="screen-reader-text"> ' . esc_html__( '(opens in a new tab)', 'owbn-archivist' ) . '</span></a>';
+			} else {
+				$char_html = '<span class="oat-summary-char">' . $char_html . '</span>';
+			}
+			$who = array();
+			if ( '' !== $c['player_name'] ) {
+				/* translators: %s: the player's name */
+				$who[] = sprintf( esc_html__( 'player: %s', 'owbn-archivist' ), '<span class="oat-summary-player">' . esc_html( $c['player_name'] ) . '</span>' );
+			}
+			if ( '' !== $s['chronicle'] ) {
+				$who[] = esc_html( $s['chronicle'] );
+			}
+			$paren = $who ? '<span class="oat-summary-who">(' . implode( ' &middot; ', $who ) . ')</span>' : '';
+			/* translators: 1: the character (a link), 2: the player and chronicle in brackets, 3: what is asked for */
+			$sentence = sprintf( esc_html__( '%1$s %2$s is requesting %3$s.', 'owbn-archivist' ), $char_html, $paren, $request );
+		} else {
+			$filer = '' !== $s['filer'] ? '<span class="oat-summary-char">' . esc_html( $s['filer'] ) . '</span>' : esc_html__( 'Someone', 'owbn-archivist' );
+			$at    = '' !== $s['chronicle'] && false === strpos( $s['request'], $s['chronicle'] ) ? ' <span class="oat-summary-who">(' . esc_html( $s['chronicle'] ) . ')</span>' : '';
+			/* translators: 1: who filed it, 2: their chronicle in brackets, 3: what they filed */
+			$sentence = sprintf( esc_html__( '%1$s%2$s is submitting %3$s.', 'owbn-archivist' ), $filer, $at, $request );
+		}
+
+		ob_start();
+		?>
+		<div class="oat-entry-section oat-summary">
+			<p class="oat-summary-sentence"><?php echo $sentence; ?></p>
+			<?php if ( ! empty( $s['rules'] ) ) : ?>
+				<div class="oat-summary-bylaw">
+					<span class="oat-summary-label"><?php echo esc_html( _n( 'The bylaw in question is:', 'The bylaws in question are:', count( $s['rules'] ), 'owbn-archivist' ) ); ?></span>
+					<ul class="oat-summary-rules">
+						<?php foreach ( array_slice( $s['rules'], 0, 6 ) as $r ) : ?>
+							<li>
+								<?php if ( '' !== $r['ref'] ) : ?><span class="oat-summary-ref"><?php echo esc_html( $r['ref'] ); ?></span><?php endif; ?>
+								<span class="oat-summary-rule-text"><?php echo esc_html( $r['wording'] ); ?></span>
+								<?php
+								$bits = array();
+								if ( '' !== $r['needs'] ) {
+									/* translators: %s: the approval the bylaw asks for, such as "Coordinator Approval" */
+									$bits[] = sprintf( __( 'Needs: %s', 'owbn-archivist' ), $r['needs'] );
+								}
+								if ( '' !== $r['coordinator'] ) {
+									/* translators: %s: the coordinator office that decides */
+									$bits[] = sprintf( __( 'Coordinator: %s', 'owbn-archivist' ), $r['coordinator'] );
+								}
+								if ( $r['elevated'] ) {
+									$bits[] = __( 'Elevated', 'owbn-archivist' );
+								}
+								?>
+								<?php if ( $bits ) : ?><span class="oat-summary-rule-meta"><?php echo esc_html( implode( ' · ', $bits ) ); ?></span><?php endif; ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+					<?php if ( count( $s['rules'] ) > 6 ) : ?>
+						<p class="oat-summary-more"><?php echo esc_html( sprintf( /* translators: %d: how many more bylaws are listed under Details */ __( 'and %d more, listed under Details below', 'owbn-archivist' ), count( $s['rules'] ) - 6 ) ); ?></p>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+			<?php if ( $s['waiting'] && 'pending' === $s['status_slug'] ) : ?>
+				<p class="oat-summary-standing">
+					<?php
+					if ( '' !== $s['step'] ) {
+						/* translators: 1: the step it is at, such as "Coordinator Review", 2: names of the people it waits on */
+						echo esc_html( sprintf( __( 'At %1$s, waiting on %2$s.', 'owbn-archivist' ), $s['step'], implode( ', ', $s['waiting'] ) ) );
+					} else {
+						/* translators: %s: names of the people it waits on */
+						echo esc_html( sprintf( __( 'Waiting on %s.', 'owbn-archivist' ), implode( ', ', $s['waiting'] ) ) );
+					}
+					?>
+				</p>
+			<?php endif; ?>
+			<?php if ( '' !== $s['filer'] || '' !== $s['filed_on'] ) : ?>
+				<p class="oat-summary-filed">
+					<?php
+					if ( '' !== $s['filer'] && '' !== $s['filed_on'] ) {
+						/* translators: 1: who filed the request, 2: the date */
+						echo esc_html( sprintf( __( 'Filed by %1$s on %2$s', 'owbn-archivist' ), $s['filer'], $s['filed_on'] ) );
+					} elseif ( '' !== $s['filer'] ) {
+						/* translators: %s: who filed the request */
+						echo esc_html( sprintf( __( 'Filed by %s', 'owbn-archivist' ), $s['filer'] ) );
+					} else {
+						/* translators: %s: the date */
+						echo esc_html( sprintf( __( 'Filed on %s', 'owbn-archivist' ), $s['filed_on'] ) );
+					}
+					?>
+				</p>
+			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * Render entry header: title, status badge, watch toggle.
 	 */
 	private function render_header( $entry, $domain_label, $step_label, $is_watching, $assignees = array(), $viewer_id = 0 )
@@ -739,7 +855,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	/**
 	 * Render meta grid: originator, chronicle, coordinator genre, dates.
 	 */
-	private function render_meta_grid( $entry, $user_map )
+	private function render_meta_grid( $entry, $user_map, $inside_details = false )
 	{
 		ob_start();
 		$originator    = $this->resolve_user( isset( $entry['originator_id'] ) ? $entry['originator_id'] : 0, $user_map );
@@ -748,7 +864,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$created_at    = isset( $entry['created_at'] ) ? $entry['created_at'] : '';
 		$updated_at    = isset( $entry['updated_at'] ) ? $entry['updated_at'] : '';
 		?>
-		<div class="oat-entry-meta-grid oat-entry-section">
+		<div class="oat-entry-meta-grid<?php echo $inside_details ? '' : ' oat-entry-section'; ?>">
 			<div class="oat-entry-meta-item">
 				<span class="oat-entry-meta-label"><?php esc_html_e( 'Originator', 'owbn-archivist' ); ?></span>
 				<span class="oat-entry-meta-value"><?php echo esc_html( $originator ); ?></span>
@@ -785,10 +901,10 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	/**
 	 * Render domain form fields in read-only mode.
 	 */
-	private function render_details( $meta, $domain_fields )
+	private function render_details( $meta, $domain_fields, $grid = '' )
 	{
 		ob_start();
-		if ( ! empty( $meta ) ) :
+		if ( ! empty( $meta ) || '' !== $grid ) :
 
 		// Keys to suppress from extra meta display.
 		$hidden_keys = array(
@@ -815,7 +931,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		?>
 		<div class="oat-entry-section">
 			<div class="oat-entry-section-header"><?php esc_html_e( 'Details', 'owbn-archivist' ); ?></div>
-			<?php if ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields_readonly' ) ) : ?>
+			<?php echo $grid; ?>
+			<?php if ( empty( $meta ) ) : ?>
+			<?php elseif ( ! empty( $domain_fields ) && function_exists( 'owc_oat_render_fields_readonly' ) ) : ?>
 				<div class="oat-frontend-form">
 					<?php owc_oat_render_fields_readonly( $domain_fields, $meta ); ?>
 				</div>
@@ -1270,9 +1388,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$collapsed_class = $tl_collapsed ? ' collapsed' : '';
 		?>
 		<div class="oat-entry-section">
-			<div class="oat-entry-section-header"><?php esc_html_e( 'Timeline', 'owbn-archivist' ); ?></div>
+			<div class="oat-entry-section-header"><?php esc_html_e( 'History', 'owbn-archivist' ); ?></div>
 			<button type="button" class="oat-timeline-toggle">
-				<?php echo $tl_collapsed ? esc_html__( 'Show Timeline', 'owbn-archivist' ) : esc_html__( 'Hide Timeline', 'owbn-archivist' ); ?>
+				<?php echo $tl_collapsed ? esc_html__( 'Show History', 'owbn-archivist' ) : esc_html__( 'Hide History', 'owbn-archivist' ); ?>
 			</button>
 			<div class="oat-timeline<?php echo esc_attr( $collapsed_class ); ?>">
 				<?php foreach ( $timeline as $event ) :

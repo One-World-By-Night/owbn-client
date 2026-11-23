@@ -20,13 +20,17 @@
 		 * Initialize all frontend behaviors.
 		 */
 		init: function () {
-			this.initTabs();
-			this.initFilters();
-			this.initSorting();
-			this.initPagination();
-			this.initActionForms();
-			this.initWatchToggle();
-			this.initTimelineToggle();
+			// The click and submit handlers sit on the document, so they are bound once however many times init runs.
+			if (!this.handlersBound) {
+				this.handlersBound = true;
+				this.initTabs();
+				this.initFilters();
+				this.initSorting();
+				this.initPagination();
+				this.initActionForms();
+				this.initWatchToggle();
+				this.initTimelineToggle();
+			}
 			this.initAutoRefresh();
 		},
 
@@ -271,7 +275,8 @@
 				var $widget = $(this);
 				var interval = parseInt($widget.data('refresh'), 10);
 
-				if (interval > 0) {
+				if (interval > 0 && !$widget.data('oatRefreshing')) {
+					$widget.data('oatRefreshing', true);
 					setInterval(function () {
 						OATFrontend.refreshActivity($widget);
 					}, interval * 1000);

@@ -21,6 +21,9 @@ require_once __DIR__ . '/api.php';
 // Form field renderer (render, sanitize, validate).
 require_once __DIR__ . '/fields.php';
 
+// The summary at the top of a request's page.
+require_once __DIR__ . '/entry-summary.php';
+
 // Admin menu and asset enqueue.
 require_once __DIR__ . '/admin.php';
 
