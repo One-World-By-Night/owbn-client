@@ -43,6 +43,7 @@ Esta é uma página de referência; as outras páginas de ajuda do OAT apontam p
 - Buscar contas da OWbN (para vincular um personagem, reatribuir ou delegar um pedido, ou preencher um campo de jogador em um formulário) é permitido a staff, Coordenadores, ao Arquivista e a administradores do site, não a jogadores.
 - O escritório de um Coordenador ganha acesso a um personagem quando um item que o escritório controla é aprovado nele.
 - A página de um pedido só abre para as pessoas envolvidas nele: quem o registrou, quem já o recebeu, a staff da crônica dele, os escritórios de Coordenador dele, o jogador do personagem e o Arquivista. Ações disciplinares ficam abertas a todo HST, CM, membro da staff, Coordenador e executivo. Veja [A Página de um Pedido](entry.md#quem-pode-usar).
+- Uma conta sem nenhum cargo de jogador, staff ou escritório pode registrar só uma Registration para o seu próprio personagem novo. Quando o HST, o CM ou a staff da crônica a aprovar, a conta recebe o cargo de jogador nessa crônica e os outros formulários se abrem.
 - Uma mudança nos seus cargos chega ao OAT em cerca de quinze minutos, ou na hora quando você entra de novo.
 
 ## Solução de problemas

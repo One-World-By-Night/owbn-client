@@ -4,7 +4,7 @@ Puts a character into the registry: its chronicle, its status, and the regulatio
 
 ## Who can use this
 
-Filed by: Players for their own characters, in any chronicle, and staff for their chronicle's.
+Filed by: Players for their own characters, in any chronicle; people who are not a player anywhere yet, for their own new character; and staff for their chronicle's.
 
 ## How to get there
 
@@ -40,6 +40,7 @@ Submission → Staff Review (the chronicle's HST) → Coordinator Review, when a
 ## Things to know
 
 - For a character the registry doesn't have yet, click **Create New Character** under Character Name. A player creates their own PC, in any chronicle, and that chronicle's HST approves it at Staff Review; staff create characters for their own chronicle. A PC needs its player's name and email.
+- Not a player anywhere yet? Registration is the only form open to you. Click **Create New Character**, make your own PC in the chronicle you are joining, and file it. When that chronicle's HST, CM or staff approve it at Staff Review, you become a player there and the other forms open to you. You can have three Registrations open at a time.
 
 ## Troubleshooting
 

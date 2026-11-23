@@ -43,6 +43,7 @@ This is a reference page; the other OAT help pages link here. Your roles are set
 - Searching OWbN accounts (to link a character, reassign or delegate a request, or fill a player field on a form) is open to staff, Coordinators, the Archivist and site admins, not to players.
 - A Coordinator's office gets access to a character when an item the office owns is approved on it.
 - A request's page opens only for the people it involves: who filed it, who has had it, its chronicle's staff, its Coordinator offices, its character's player and the Archivist. Disciplinary Actions are open to every HST, CM, staff member, Coordinator and exec officer. See [A Request's Page](entry.md#who-can-use-this).
+- An account with no player, staff or office role anywhere can file a Registration for its own new character and nothing else. When the chronicle's HST, CM or staff approve it, the account gets the player role in that chronicle and the other forms open.
 - A change to your roles reaches OAT within about fifteen minutes, or at once when you sign in again.
 
 ## Troubleshooting

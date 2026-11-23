@@ -4,7 +4,7 @@ Where you file a request with the Archivist: R&U, custom content, a character's 
 
 ## Who can use this
 
-Anyone signed in. Which characters you can pick depends on who you are: a player picks their own characters, staff pick their chronicle's, and Coordinators and the Archivist pick from every character. Players, chronicle staff (HST, ST, CM and AST), Coordinators, the exec offices and site admins can create a character here: staff in their own chronicles, a player only their own PC, in any chronicle. See [Who Can Do What](roles.md).
+Anyone signed in. Which characters you can pick depends on who you are: a player picks their own characters, staff pick their chronicle's, and Coordinators and the Archivist pick from every character. Players, chronicle staff (HST, ST, CM and AST), Coordinators, the exec offices and site admins can create a character here: staff in their own chronicles, a player only their own PC, in any chronicle. Someone who is not a player anywhere yet is offered only Character Lifecycle and, in it, only Registration; see [Registration](form-cl_registration.md). See [Who Can Do What](roles.md).
 
 ## How to get there
 

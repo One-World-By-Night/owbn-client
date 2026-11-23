@@ -269,7 +269,7 @@ function owc_oat_get_domains() {
                 'label' => $domain['label'],
             );
         }
-        return $out;
+        return function_exists( 'owc_oat_domains_for_user' ) ? owc_oat_domains_for_user( $out ) : $out;
     }
 
     return owc_oat_request( 'domains' );
@@ -473,6 +473,11 @@ function owc_oat_entry_batch_card( $entry, $user_id ) {
  * @return bool
  */
 function owc_oat_user_can_access_form( $form_slug ) {
+    // A newcomer, a player nowhere yet, starts with a Registration and nothing else.
+    if ( function_exists( 'owc_oat_user_is_newcomer' ) && owc_oat_user_is_newcomer() ) {
+        return 'cl_registration' === $form_slug;
+    }
+
     // ca_manage_satellites: only HST/CM of non-probationary, non-satellite chronicles
     if ( $form_slug === 'ca_manage_satellites' ) {
         if ( current_user_can( 'manage_options' ) ) {
@@ -1758,6 +1763,11 @@ function owc_oat_can_create_character() {
 
     // A player may always register their own PC; the chronicle's staff approve it.
     if ( function_exists( 'owc_oat_user_is_player' ) && owc_oat_user_is_player() ) {
+        return true;
+    }
+
+    // So may a newcomer, who is a player nowhere yet: it is how they become one.
+    if ( function_exists( 'owc_oat_user_is_newcomer' ) && owc_oat_user_is_newcomer() ) {
         return true;
     }
 

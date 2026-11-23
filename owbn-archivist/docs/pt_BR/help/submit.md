@@ -4,7 +4,7 @@ Onde você registra um pedido com o Arquivista: R&U, conteúdo personalizado, o 
 
 ## Quem pode usar
 
-Qualquer pessoa com login. Quais personagens você pode escolher depende de quem você é: um jogador escolhe os próprios personagens, a staff escolhe os da sua crônica, e os Coordenadores e o Arquivista escolhem entre todos. Jogadores, a staff das crônicas (HST, ST, CM e AST), Coordenadores, os escritórios executivos e administradores do site podem criar um personagem aqui: a staff nas próprias crônicas, um jogador só o próprio PC, em qualquer crônica. Veja [Quem Pode Fazer o Quê](roles.md).
+Qualquer pessoa com login. Quais personagens você pode escolher depende de quem você é: um jogador escolhe os próprios personagens, a staff escolhe os da sua crônica, e os Coordenadores e o Arquivista escolhem entre todos. Jogadores, a staff das crônicas (HST, ST, CM e AST), Coordenadores, os escritórios executivos e administradores do site podem criar um personagem aqui: a staff nas próprias crônicas, um jogador só o próprio PC, em qualquer crônica. Quem ainda não é jogador em lugar nenhum só vê Character Lifecycle e, nele, só a Registration; veja [Registration](form-cl_registration.md). Veja [Quem Pode Fazer o Quê](roles.md).
 
 ## Como chegar
 

@@ -278,6 +278,48 @@ if ( ! function_exists( 'owc_oat_user_is_player' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_user_is_newcomer' ) ) :
+	/**
+	 * Whether a user is a newcomer: signed in, but a player nowhere and holding no office. A newcomer may create their own
+	 * character in any running chronicle and file a Registration for it; when the chronicle's staff accept it they are a
+	 * player there.
+	 *
+	 * @param int $user_id User id; 0 is the current user.
+	 * @return bool
+	 */
+	function owc_oat_user_is_newcomer( $user_id = 0 ) {
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		if ( ! $user_id || ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) || owc_oat_user_is_player( $user_id ) ) {
+			return false;
+		}
+		$roles = function_exists( 'owc_oat_get_user_asc_roles' ) ? owc_oat_get_user_asc_roles( $user_id ) : array();
+		foreach ( (array) $roles as $role ) {
+			if ( preg_match( '#^(exec/[^/]+/coordinator|coordinator/[^/]+/(coordinator|sub-coordinator)|chronicle/[^/]+/(hst|cm|staff|st|ast))$#', strtolower( (string) $role ) ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_domains_for_user' ) ) :
+	/**
+	 * The kinds of request offered to the current user: all of them, but a newcomer is offered only Character Lifecycle,
+	 * where the Registration is.
+	 *
+	 * @param array[] $domains Each: slug, label.
+	 * @return array[]
+	 */
+	function owc_oat_domains_for_user( array $domains ) {
+		if ( ! owc_oat_user_is_newcomer() ) {
+			return $domains;
+		}
+		return array_values( array_filter( $domains, function ( $d ) {
+			return isset( $d['slug'] ) && 'character_lifecycle' === $d['slug'];
+		} ) );
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_chronicle_is_active' ) ) :
 	/**
 	 * Whether a slug is a chronicle that is still running: one of the chronicles and not decommissioned.
@@ -305,7 +347,8 @@ if ( ! function_exists( 'owc_oat_create_scope' ) ) :
 	 * How far the current user may create characters in a chronicle: 'any' for site admins, exec offices and
 	 * Coordinators; 'staff' for the chronicle's HST, CM, staff or AST; 'player' for a player there, and for any other
 	 * player in a chronicle that is still running, who registers their own PC for its staff to approve (their own PC
-	 * only); '' for anyone else.
+	 * only); 'newcomer' for a signed-in account that is a player nowhere, on the same terms in a running chronicle;
+	 * '' for anyone else.
 	 *
 	 * @param string $chronicle_slug Chronicle slug.
 	 * @return string
@@ -334,6 +377,9 @@ if ( ! function_exists( 'owc_oat_create_scope' ) ) :
 		}
 		if ( '' === $scope && '' !== $slug && owc_oat_user_is_player( $user_id ) && owc_oat_chronicle_is_active( $slug ) ) {
 			$scope = 'player';
+		}
+		if ( '' === $scope && '' !== $slug && owc_oat_user_is_newcomer( $user_id ) && owc_oat_chronicle_is_active( $slug ) ) {
+			$scope = 'newcomer';
 		}
 		return $scope;
 	}
@@ -373,7 +419,7 @@ if ( ! function_exists( 'owc_oat_create_chronicle_choices' ) ) :
 	function owc_oat_create_chronicle_choices() {
 		$titles = array();
 		$is_any = 'any' === owc_oat_create_scope( '' );
-		if ( $is_any || owc_oat_user_is_player() ) {
+		if ( $is_any || owc_oat_user_is_player() || owc_oat_user_is_newcomer() ) {
 			$chronicles = function_exists( 'owc_get_chronicles' ) ? owc_get_chronicles() : array();
 			foreach ( is_array( $chronicles ) ? $chronicles : array() as $c ) {
 				$slug = isset( $c['slug'] ) ? (string) $c['slug'] : '';
@@ -457,7 +503,7 @@ if ( ! function_exists( 'owc_oat_create_character_record' ) ) :
 			if ( '' === $scope ) {
 				return new WP_Error( 'forbidden', __( 'You can only create characters in a chronicle you belong to.', 'owbn-archivist' ) );
 			}
-			if ( 'player' === $scope ) {
+			if ( 'player' === $scope || 'newcomer' === $scope ) {
 				if ( 'npc' === $pc_npc ) {
 					return new WP_Error( 'forbidden', __( 'Only staff can create NPCs.', 'owbn-archivist' ) );
 				}

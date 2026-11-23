@@ -4,7 +4,7 @@ Coloca um personagem no registro: a crônica, o status e as regras de regulament
 
 ## Quem pode usar
 
-Quem registra: Jogadores para os próprios personagens, em qualquer crônica, e a staff para os da sua crônica.
+Quem registra: Jogadores para os próprios personagens, em qualquer crônica; quem ainda não é jogador em lugar nenhum, para o próprio personagem novo; e a staff para os da sua crônica.
 
 ## Como chegar
 
@@ -40,6 +40,7 @@ Submission → Staff Review (o HST da crônica) → Coordinator Review, quando u
 ## Bom saber
 
 - Para um personagem que o registro ainda não tem, clique em **Create New Character**, abaixo de Character Name. Um jogador cria o próprio PC, em qualquer crônica, e o HST dela o aprova em Staff Review; a staff cria personagens para a própria crônica. Um PC precisa do nome e do email do jogador.
+- Ainda não é jogador em lugar nenhum? A Registration é o único formulário aberto para você. Clique em **Create New Character**, crie o seu próprio PC na crônica em que vai entrar e registre-o. Quando o HST, o CM ou a staff dessa crônica o aprovar em Staff Review, você vira jogador lá e os outros formulários se abrem para você. Você pode ter três Registrations abertas ao mesmo tempo.
 
 ## Solução de problemas
 
