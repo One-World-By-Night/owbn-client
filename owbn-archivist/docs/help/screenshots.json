@@ -54,6 +54,52 @@
 					"en": "Submit a Request with Character Lifecycle and R&U Request picked: the chronicle, the character picker with Create New Character, Character Status and the Regulation Rules picker.",
 					"pt_BR": "Fazer um Pedido com Character Lifecycle e R&U Request escolhidos: a crônica, o seletor de personagem com Create New Character, Character Status e o seletor de Regulation Rules."
 				}
+			},
+			{
+				"heading": "File several requests together, of any kind",
+				"path": "/oat-submit/",
+				"account": "loren",
+				"steps": [
+					{
+						"select": "#oat-domain-select",
+						"value": "character_lifecycle"
+					},
+					{
+						"select": "#oat-form-select",
+						"value": "cl_ru_request"
+					},
+					{
+						"fill": ".oat-character-search",
+						"value": "Marcus"
+					},
+					{
+						"click": "ul.ui-autocomplete li:visible"
+					},
+					{
+						"fill": ".oat-rule-search",
+						"value": "Brujah"
+					},
+					{
+						"click": "ul.ui-autocomplete li:visible"
+					},
+					{
+						"click": "#oat-add-to-list"
+					},
+					{
+						"fill": ".oat-rule-search",
+						"value": "Brujah"
+					},
+					{
+						"click": "ul.ui-autocomplete li:visible >> nth=1"
+					},
+					{
+						"click": "#oat-add-to-list"
+					}
+				],
+				"alt": {
+					"en": "Submit a Request with a list of two rows already added, each an R&U Request for the same character: Your list with Edit and Remove on each row and Submit all (2), above a fresh form with the character already picked and the Add to list button.",
+					"pt_BR": "Fazer um Pedido com uma lista de duas linhas já adicionadas, cada uma um R&U Request para o mesmo personagem: Your list com Edit e Remove em cada linha e Submit all (2), acima de um formulário novo com o personagem já escolhido e o botão Add to list."
+				}
 			}
 		],
 		"entry": [
