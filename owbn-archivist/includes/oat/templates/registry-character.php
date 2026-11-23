@@ -35,7 +35,7 @@ $wp_user_display = isset( $character['wp_user_label'] ) && '' !== (string) $char
 // Build the entity-picker value for chronicle_slug_typed. NPCs tied to a coordinator
 // use the "coordinator/<slug>" form; everything else uses "chronicle/<slug>".
 $chronicle_picker_value = '';
-if ( $npc_type === 'coordinator' && $npc_coordinator !== '' ) {
+if ( ( function_exists( 'owc_oat_npc_kind' ) ? owc_oat_npc_kind( $character ) : $npc_type ) === 'coordinator' && $npc_coordinator !== '' ) {
     $chronicle_picker_value = 'coordinator/' . $npc_coordinator;
 } elseif ( $chronicle !== '' ) {
     $chronicle_picker_value = 'chronicle/' . $chronicle;

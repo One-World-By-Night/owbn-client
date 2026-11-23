@@ -278,6 +278,34 @@ if ( ! function_exists( 'owc_oat_user_is_player' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_npc_kind' ) ) :
+	/**
+	 * Which kind of NPC a character record is: 'coordinator' (a Coordinator office's), 'chronicle' (a chronicle's), or '' when
+	 * it belongs to nobody yet. Records carry the standard types coordinator and chronicle and the older coord_owned and
+	 * chronicle_owned. A record with no type is a chronicle's when it has a chronicle and no office. Any other type, and an
+	 * untyped record with both an office and a chronicle, belongs to nobody until it is decided.
+	 *
+	 * @param array|object $character The character record.
+	 * @return string 'coordinator', 'chronicle' or ''.
+	 */
+	function owc_oat_npc_kind( $character ) {
+		$c    = (array) $character;
+		$type = strtolower( trim( (string) ( $c['npc_type'] ?? '' ) ) );
+		if ( in_array( $type, array( 'coordinator', 'coord_owned' ), true ) ) {
+			return 'coordinator';
+		}
+		if ( in_array( $type, array( 'chronicle', 'chronicle_owned' ), true ) ) {
+			return 'chronicle';
+		}
+		if ( '' !== $type ) {
+			return '';
+		}
+		$office    = strtolower( trim( (string) ( $c['npc_coordinator'] ?? '' ) ) );
+		$chronicle = strtolower( trim( (string) ( $c['chronicle_slug'] ?? '' ) ) );
+		return ( '' !== $chronicle && '' === $office ) ? 'chronicle' : '';
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_user_is_newcomer' ) ) :
 	/**
 	 * Whether a user is a newcomer: signed in, but a player nowhere and holding no office. A newcomer may create their own

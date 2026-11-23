@@ -157,16 +157,32 @@ function owc_oat_handle_grant_actions( $character_id ) {
             if ( isset( $_POST['chronicle_slug_typed'] ) && $_POST['chronicle_slug_typed'] !== '' ) {
                 $typed = sanitize_text_field( $_POST['chronicle_slug_typed'] );
                 if ( strpos( $typed, '/' ) !== false ) {
+                    // An office's NPC is tied to the office and a chronicle's NPC to the chronicle, each in its own field.
                     $parts = explode( '/', $typed, 2 );
-                    $_POST['chronicle_slug'] = $parts[1];
                     if ( $parts[0] === 'coordinator' ) {
+                        $_POST['chronicle_slug']  = '';
                         $_POST['npc_coordinator'] = $parts[1];
-                        $_POST['npc_type'] = 'coordinator';
+                        $_POST['npc_type']        = 'coordinator';
                     } else {
-                        $_POST['npc_type'] = 'chronicle';
+                        $_POST['chronicle_slug']  = $parts[1];
+                        $_POST['npc_coordinator'] = '';
+                        $_POST['npc_type']        = 'chronicle';
                     }
                 } else {
                     $_POST['chronicle_slug'] = $typed;
+                }
+            }
+
+            // The NPC Owner picker on the record page: the same rule.
+            if ( isset( $_POST['npc_owner_typed'] ) && false !== strpos( (string) $_POST['npc_owner_typed'], '/' ) ) {
+                $owner = explode( '/', sanitize_text_field( $_POST['npc_owner_typed'] ), 2 );
+                if ( 'coordinator' === $owner[0] && '' !== $owner[1] ) {
+                    $_POST['npc_type']        = 'coordinator';
+                    $_POST['npc_coordinator'] = $owner[1];
+                } elseif ( 'chronicle' === $owner[0] && '' !== $owner[1] ) {
+                    $_POST['npc_type']        = 'chronicle';
+                    $_POST['npc_coordinator'] = '';
+                    $_POST['chronicle_slug']  = $owner[1];
                 }
             }
         }
@@ -435,8 +451,10 @@ function owc_oat_get_character_edit_mode( $character ) {
     $linked_user_id  = isset( $character['wp_user_id'] ) ? (int) $character['wp_user_id'] : 0;
 
     $is_pc             = ( 'pc' === $pc_npc );
-    $is_chronicle_char = $is_pc || ( 'chronicle' === $npc_type );
-    $is_coord_npc      = ( 'coordinator' === $npc_type && '' !== $npc_coordinator );
+    // The standard types and the older coord_owned and chronicle_owned mean the same (owc_oat_npc_kind).
+    $npc_kind          = function_exists( 'owc_oat_npc_kind' ) ? owc_oat_npc_kind( $character ) : $npc_type;
+    $is_chronicle_char = $is_pc || ( 'chronicle' === $npc_kind );
+    $is_coord_npc      = ( 'coordinator' === $npc_kind && '' !== $npc_coordinator );
 
     foreach ( $roles as $role ) {
         // 2. Archivist / AHCs / Web can edit any character.

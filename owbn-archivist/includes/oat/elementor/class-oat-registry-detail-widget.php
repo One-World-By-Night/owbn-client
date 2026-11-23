@@ -348,7 +348,12 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					<td style="padding:4px 8px;">
 						<?php
 						$npc_typed = '';
-						if ( $npc_coordinator ) {
+						$npc_kind  = function_exists( 'owc_oat_npc_kind' ) ? owc_oat_npc_kind( $character ) : '';
+						if ( 'coordinator' === $npc_kind && $npc_coordinator ) {
+							$npc_typed = 'coordinator/' . strtolower( $npc_coordinator );
+						} elseif ( 'chronicle' === $npc_kind && $chronicle ) {
+							$npc_typed = 'chronicle/' . strtolower( $chronicle );
+						} elseif ( $npc_coordinator ) {
 							$npc_typed = 'coordinator/' . strtolower( $npc_coordinator );
 						} elseif ( $chronicle ) {
 							$npc_typed = 'chronicle/' . strtolower( $chronicle );
@@ -753,7 +758,7 @@ class OWC_OAT_Registry_Detail_Widget extends Widget_Base {
 					var parts = val.split('/');
 					if (parts.length === 2) {
 						npcType.value = parts[0];
-						npcCoord.value = parts[1];
+						npcCoord.value = parts[0] === 'coordinator' ? parts[1] : '';
 					}
 				};
 				npcOwner.addEventListener('change', syncNpc);

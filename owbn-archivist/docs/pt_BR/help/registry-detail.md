@@ -97,6 +97,7 @@ Quando só o Status e as duas caixas de email cabem a você, a ficha mostra os o
 - Incluir um acesso é permitido a administradores do site, ao Arquivista, aos AHCs, ao Coordenador de Web e ao HST, à staff, ao CM ou ao AST de qualquer crônica. Revogar um é permitido a administradores do site, ao Arquivista, aos AHCs e ao Coordenador de Web.
 - As listas de Creature trazem o que cada Seita pode escolher na criação do personagem. Um clã fora dessa lista é um Sect Defector pelos Character Bylaws, o que precisa da aprovação dos Coordenadores da Seita e do Clã; a ficha deixa você gravar depois que eles aprovarem.
 - Para voltar um personagem aposentado a ativo, o jogador precisa de um HST.
+- **Cada NPC tem um dono, uma crônica ou um escritório de Coordenador.** Só a staff ou os Coordenadores desse dono, e o Arquivista, podem abrir e editar. Um NPC que tem escritório e crônica ao mesmo tempo segue o tipo dele até o Arquivista decidir a qual pertence.
 
 ## Solução de problemas
 
