@@ -4,7 +4,7 @@ The steps a request goes through after you file it, who has each step, and what 
 
 ## Who can use this
 
-Everyone who files or reviews requests. This page explains what the **Step:** line and the Timeline on [A Request's Page](entry.md) mean.
+Everyone who files or reviews requests. This page explains what the **Step:** line and the History on [A Request's Page](entry.md) mean.
 
 ## How to get there
 
@@ -41,7 +41,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 ### Follow your request
 
 1. Open it from your Archivist Inbox or Dashboard.
-2. **Step:** says where it is, **Assignees** says who has it, and the **Timeline** (for its staff and up) shows what has happened.
+2. **Step:** says where it is, **Assignees** says who has it, and the **History** (for its staff and up) shows what has happened.
 
 ### Find what is waiting on you
 
@@ -56,12 +56,12 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 - **When a request reaches a step, everyone assigned to that step gets an email** with a link that signs them in and opens the request. Whoever moved it there isn't emailed. Your Inbox still lists everything waiting on you.
 - **Position mail goes to the position, by what the request is about.** Work for a Coordinator office goes to that office's address (for example, tremere@owbn.net). Work for a chronicle goes to its ST email: the HST's address on the chronicle's record, or the CM's {chronicle}-cm@owbn.net address. Work on your own character goes to your account email. The same rule decides where the result of something you filed goes: filed as a Coordinator or as Staff, or about something in your office or chronicle, it goes to that position's address. The subject names the position, so the mailbox keeps its history when the person changes. A position with no address on its record is emailed at the person's account email.
 - **Lines filed together move together.** Several rules on one R&U Request make several lines. Lines with the same approvers are grouped: the person reviewing gets one email for the group, can approve every line with one click, and can veto a single line. The filer gets one email when lines are approved and one when a line is vetoed.
-- **A Coordinator can bring in another.** At Coordinator Review, **Add a Coordinator** asks one more office to approve, and the request waits for them too. The Archivist can do the same before its own step. When nobody holds the office yet, the Timeline says so and the Archivist can approve for it.
+- **A Coordinator can bring in another.** At Coordinator Review, **Add a Coordinator** asks one more office to approve, and the request waits for them too. The Archivist can do the same before its own step. When nobody holds the office yet, the History says so and the Archivist can approve for it.
 - When a request is approved or denied, the person who filed it gets an email; a denial carries the reason. When it is sent back, whoever has it next gets an email.
 - An approved request shows under **Registry Entries** on the [Character Record](registry-detail.md). When the item belongs to a Coordinator office, the office gets access to the character.
 - **Hold** stops a request and its timer; **Resume** starts the timer again where it stopped.
 - A regulation rule marked **Elevated** stops a timed step from approving itself; a person has to act.
-- The Timeline shows each person what their part allows: the request's staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything. Players don't see the Timeline.
+- The History shows each person what their part allows: the request's staff see staff entries, Coordinators see theirs and staff's, and the Archivist sees everything. Players don't see the History.
 - A send-back goes to the step before, passing over any step that didn't apply to the request.
 
 ## Troubleshooting

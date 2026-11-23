@@ -62,8 +62,8 @@
 				"path": "/oat-entry/?oat_entry=11",
 				"account": "brucoord",
 				"alt": {
-					"en": "An R&U request at Coordinator Review, seen by the Brujah Coordinator: its status and step, who filed it, the chronicle, the character, the rule it falls under and its controlling Coordinator.",
-					"pt_BR": "Um pedido de R&U em Coordinator Review, visto pela Coordenadora Brujah: o status e a etapa, quem o registrou, a crônica, o personagem, a regra em que ele se encaixa e o Coordenador que o controla."
+					"en": "A request's page seen by the Brujah Coordinator: the summary at the top says who is asking for what, the bylaw it rests on and who it is waiting on, and the Actions come right under it.",
+					"pt_BR": "A página de um pedido vista pela Coordenadora Brujah: o resumo no topo diz quem pede o quê, em que regra o pedido se apoia e com quem ele está, e as Actions vêm logo abaixo."
 				}
 			}
 		],
@@ -147,8 +147,8 @@
 				"account": "archie",
 				"crop": ".oat-entry-section:has(.oat-timeline)",
 				"alt": {
-					"en": "The Timeline of an approved registration: filed, approved at Staff Review, approved by the Archivist, each with who, when and the note.",
-					"pt_BR": "A Timeline de um registro aprovado: registrado, aprovado em Staff Review, aprovado pelo Arquivista, cada passo com quem, quando e a nota."
+					"en": "The History of an approved registration: filed, approved at Staff Review, approved by the Archivist, each with who, when and the note.",
+					"pt_BR": "O History de um registro aprovado: registrado, aprovado em Staff Review, aprovado pelo Arquivista, cada passo com quem, quando e a nota."
 				}
 			}
 		],

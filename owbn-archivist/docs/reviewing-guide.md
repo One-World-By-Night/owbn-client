@@ -14,7 +14,7 @@ Open it and read, top to bottom:
 
 - **Details** - what the filer sent.
 - **Linked Regulation Rules** - what the item falls under, and whether a rule is Elevated.
-- **Timeline** - what has happened so far, with each note.
+- **History** - what has happened so far, with each note.
 - **Assignees** - who else has had it.
 
 ## Acting on it

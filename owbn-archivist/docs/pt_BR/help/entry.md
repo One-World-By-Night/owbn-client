@@ -23,17 +23,17 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 
 ## A tela
 
-- **Request submitted** (só logo depois de você registrar o pedido) - uma caixa verde com um botão **Submit another** para o mesmo formulário.
-- **Lines in this request** (só quando várias linhas foram registradas juntas) - uma linha para cada uma, com o assunto e em que etapa está. Uma linha vetada diz **Vetoed** e traz o motivo, quando há. Quem revisa ganha uma caixa **Veto** em cada linha aberta. Quando as linhas são sobre mais de um personagem, uma coluna **Character** diz qual.
+De cima para baixo:
+
 - **O cabeçalho** - o formulário e o número do pedido, o status (pending, held, approved, denied, cancelled, auto-approved ou auto-denied) e **Step:**, a etapa em que ele está. **Watch** acompanha o pedido: ele passa a aparecer no seu inbox, você recebe um email quando ele anda ou termina, e o botão mostra **Watching**.
-- **Originator**, **Chronicle**, **Coordinator Genre**, **Created** e **Updated**.
-- **Details** - tudo o que o formulário perguntou, como foi registrado.
-- **Linked Regulation Rules** - as regras em que o pedido se encaixa, com **ID**, **Genre**, **Category**, **Condition**, **PC Level** de cada regra e se ela é **Elevated**.
+- **O resumo** - a caixa sob o cabeçalho, em palavras simples: quem pede o quê, por exemplo "Marcus Vell (player: Sam Okafor · Lantern) is requesting R&U approval for Brujah 5+." O nome do personagem é um link que abre o registro do personagem em outra aba. Abaixo, **The bylaw in question is:** lista cada regra em que o pedido se encaixa, com o número da cláusula, o texto, a aprovação que ela pede e o Coordenador que decide. Depois vêm em que pé o pedido está e com quem ele está, e quem o registrou e quando. Um pedido sobre nenhum personagem (um Chronicle Report, um registro de governança) diz quem o está enviando, e um pedido que não se apoia em nenhuma regra não tem a linha da regra.
+- **Request submitted** (só logo depois de você registrar o pedido) - uma caixa verde com um botão **Submit another** para o mesmo formulário.
+- **Changes Requested** (só quando o pedido foi devolvido) - o que mudar, e quem pediu.
+- **Lines in this request** (só quando várias linhas foram registradas juntas) - uma linha para cada uma, com o assunto e em que etapa está. Uma linha vetada diz **Vetoed** e traz o motivo, quando há. Quem revisa ganha uma caixa **Veto** em cada linha aberta. Quando as linhas são sobre mais de um personagem, uma coluna **Character** diz qual.
 - **Active Timer** - quando a etapa se aprova ou se nega sozinha se ninguém agir, com a data em que **Expires**.
 - **Actions** - os botões que você tem, cada um com uma caixa de nota.
-- **Assignees** - quem teve cada etapa, e o status de cada um.
-- **Linked Entries** - o pedido **Parent:** e os pedidos registrados a partir deste.
-- **Timeline** - cada ação, com quem a tomou, quando, e a nota, para a staff do pedido, os Coordenadores e o Arquivista; um jogador vê o status e a etapa do pedido. **Show Timeline** e **Hide Timeline** recolhem a linha do tempo.
+- **History** - cada ação, com quem a tomou, quando, e a nota, para a staff do pedido, os Coordenadores e o Arquivista; um jogador vê o status e a etapa do pedido no cabeçalho e no resumo. **Show History** e **Hide History** recolhem o histórico.
+- **Details** - **Originator**, **Chronicle**, **Coordinator Genre**, **Created** e **Updated**, e depois tudo o que o formulário perguntou, como foi registrado. Abaixo: **Linked Regulation Rules**, as regras em que o pedido se encaixa, com **ID**, **Genre**, **Category**, **Condition**, **PC Level** de cada regra e se ela é **Elevated**; **Assignees**, quem teve cada etapa, e o status de cada um; e **Linked Entries**, o pedido **Parent:** e os pedidos registrados a partir deste.
 
 ## Tarefas comuns
 
@@ -65,7 +65,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 1. Abra o pedido enquanto ele está em Coordinator Review. O Arquivista também pode fazer isso em qualquer etapa antes de Archivist Review.
 2. Na caixa **Add a Coordinator**, marque os escritórios cujo poder, regra ou item o pedido usa. Os escritórios que já estão no pedido aparecem marcados e travados.
 3. Escreva uma nota dizendo o motivo e clique em **Add a Coordinator**.
-4. Os Coordenadores de cada escritório que você adicionar recebem email na hora, e o pedido espera a aprovação de todos os escritórios. Sua nota aparece na Timeline.
+4. Os Coordenadores de cada escritório que você adicionar recebem email na hora, e o pedido espera a aprovação de todos os escritórios. Sua nota aparece no History.
 
 ### Retirar o seu próprio pedido
 
@@ -75,7 +75,7 @@ Quem registrou o pedido; quem já o recebeu; quem tem o cargo que a etapa atual 
 
 - Toda ação, menos Bump, precisa de uma nota.
 - **Bump** conta para os bumps que algumas etapas com prazo precisam antes de aprovar ou negar sozinhas. Só funciona enquanto a etapa tem um prazo ativo, e não muda o prazo.
-- A Timeline mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem a Timeline.
+- O History mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem o History.
 - O que acontece depois que você aprova depende do formulário; veja [Como um Pedido Anda](approval-flow.md).
 
 ## Solução de problemas

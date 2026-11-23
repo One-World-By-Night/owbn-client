@@ -337,7 +337,10 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 							$date_col    = isset( $row['updated_at'] ) ? $row['updated_at'] : ( isset( $row['created_at'] ) ? $row['created_at'] : '' );
 							$entry_url   = trailingslashit( $detail_url ) . '?oat_entry=' . $entry_id;
 							$row_hidden  = ( $i >= $per_page ) ? ' style="display:none;"' : '';
-							$subject     = $orig_name ? $orig_name . ' &#8250; ' . $domain_lbl : '#' . $entry_id;
+							$row_title   = isset( $row['title'] ) ? trim( (string) $row['title'] ) : '';
+							$subject     = '' !== $row_title
+								? esc_html( $row_title )
+								: ( $orig_name ? esc_html( $orig_name ) . ' &#8250; ' . esc_html( $domain_lbl ) : '#' . $entry_id );
 						?>
 							<tr data-domain="<?php echo esc_attr( $domain_slug ); ?>"
 								data-status="<?php echo esc_attr( $status ); ?>"
@@ -348,6 +351,11 @@ class OWC_OAT_Inbox_Widget extends Widget_Base
 										<strong><?php echo $subject; ?></strong>
 									</a>
 									<span style="color:#999;font-size:11px;margin-left:6px;">#<?php echo esc_html( $entry_id ); ?></span>
+									<?php if ( '' !== $row_title && '' !== $orig_name ) : ?>
+										<span class="oat-inbox-filer" style="display:block;color:#646970;font-size:12px;">
+											<?php echo esc_html( sprintf( /* translators: %s: who filed the request */ __( 'Filed by %s', 'owbn-archivist' ), $orig_name ) ); ?>
+										</span>
+									<?php endif; ?>
 								</td>
 								<td data-label="<?php esc_attr_e( 'Domain', 'owbn-archivist' ); ?>"
 									data-sort-value="<?php echo esc_attr( $domain_lbl ); ?>">

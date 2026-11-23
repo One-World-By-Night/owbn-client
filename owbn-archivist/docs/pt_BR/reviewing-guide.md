@@ -14,7 +14,7 @@ Abra-o e leia, de cima para baixo:
 
 - **Details** - o que quem registrou enviou.
 - **Linked Regulation Rules** - em que o item se encaixa, e se alguma regra é Elevated.
-- **Timeline** - o que aconteceu até agora, com cada nota.
+- **History** - o que aconteceu até agora, com cada nota.
 - **Assignees** - quem mais já teve o pedido.
 
 ## Agindo nele

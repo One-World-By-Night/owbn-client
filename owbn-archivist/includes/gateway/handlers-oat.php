@@ -92,11 +92,7 @@ function owbn_gateway_oat_inbox( $request ) {
         $serialized = owbn_gateway_oat_serialize_entry( $entry );
         $serialized['assignment_step']   = $entry->current_step;
         $serialized['assignment_status'] = 'pending';
-        $serialized['title'] = '';
-        if ( class_exists( 'OAT_Entry_Meta' ) ) {
-            $title = OAT_Entry_Meta::get( $eid, 'title' );
-            $serialized['title'] = $title ?: '';
-        }
+        $serialized['title'] = owc_oat_entry_list_title( $entry );
         $assigned_entries[] = $serialized;
         $user_ids[] = (int) $entry->originator_id;
     }
@@ -113,7 +109,9 @@ function owbn_gateway_oat_inbox( $request ) {
         if ( $domain !== '' && $entry->domain !== $domain ) {
             continue;
         }
-        $watched_entries[] = owbn_gateway_oat_serialize_entry( $entry );
+        $watched_row          = owbn_gateway_oat_serialize_entry( $entry );
+        $watched_row['title'] = owc_oat_entry_list_title( $entry );
+        $watched_entries[]    = $watched_row;
         $user_ids[] = (int) $entry->originator_id;
     }
 
@@ -125,35 +123,13 @@ function owbn_gateway_oat_inbox( $request ) {
         if ( $domain !== '' && $entry->domain !== $domain ) {
             continue;
         }
-        $my_entries[] = owbn_gateway_oat_serialize_entry( $entry );
+        $my_row          = owbn_gateway_oat_serialize_entry( $entry );
+        $my_row['title'] = owc_oat_entry_list_title( $entry );
+        $my_entries[]    = $my_row;
     }
 
     $user_ids[] = $user_id;
     $user_map = owbn_gateway_oat_build_user_map( $user_ids );
-
-    // Add entry meta titles to all entries.
-    $all_entries = array_merge( $assigned_entries, $watched_entries, $my_entries );
-    $meta_map = array();
-    foreach ( $all_entries as $e ) {
-        if ( ! isset( $meta_map[ $e['id'] ] ) ) {
-            $title = OAT_Entry_Meta::get( $e['id'], 'title' );
-            $meta_map[ $e['id'] ] = $title ? $title : '';
-        }
-    }
-
-    // Attach titles.
-    foreach ( $assigned_entries as &$e ) {
-        $e['title'] = isset( $meta_map[ $e['id'] ] ) ? $meta_map[ $e['id'] ] : '';
-    }
-    unset( $e );
-    foreach ( $watched_entries as &$e ) {
-        $e['title'] = isset( $meta_map[ $e['id'] ] ) ? $meta_map[ $e['id'] ] : '';
-    }
-    unset( $e );
-    foreach ( $my_entries as &$e ) {
-        $e['title'] = isset( $meta_map[ $e['id'] ] ) ? $meta_map[ $e['id'] ] : '';
-    }
-    unset( $e );
 
     return owbn_gateway_respond( array(
         'assignments' => $assigned_entries,

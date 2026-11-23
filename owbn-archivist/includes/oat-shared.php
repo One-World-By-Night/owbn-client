@@ -625,6 +625,31 @@ if ( ! function_exists( 'owc_oat_entry_character' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'owc_oat_entry_list_title' ) ) :
+	/**
+	 * The title a list gives a request: "Domain - Form: Character", the one its emails use. A request given only by its
+	 * number is looked up. Where the toolkit is not installed it is the request's own stored title, or ''.
+	 *
+	 * @param object|int $entry The request row, or its number.
+	 * @return string
+	 */
+	function owc_oat_entry_list_title( $entry ) {
+		if ( is_numeric( $entry ) && class_exists( 'OAT_Entry' ) ) {
+			$entry = OAT_Entry::find( (int) $entry );
+		}
+		if ( ! is_object( $entry ) ) {
+			return '';
+		}
+		if ( class_exists( 'OAT_Request_Title' ) ) {
+			$title = OAT_Request_Title::for_entry( $entry );
+			if ( '' !== $title ) {
+				return $title;
+			}
+		}
+		return class_exists( 'OAT_Entry_Meta' ) && ! empty( $entry->id ) ? (string) OAT_Entry_Meta::get( (int) $entry->id, 'title' ) : '';
+	}
+endif;
+
 if ( ! function_exists( 'owc_oat_entry_character_map' ) ) :
 	/**
 	 * The characters a request's fields name, by uuid, so a site without OAT can show their names.

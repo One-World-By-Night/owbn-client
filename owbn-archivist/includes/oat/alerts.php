@@ -133,7 +133,7 @@ function owc_oat_render_alerts( $args = array() ) {
 			$ref  = trim( $i['label'] . ' #' . $i['id'] );
 			$ago  = $i['ts'] ? sprintf( /* translators: %s: how long ago */ __( '%s ago', 'owbn-archivist' ), human_time_diff( $i['ts'] ) ) : '';
 			$name = '' !== $i['title'] ? $i['title'] : $ref;
-			$meta = implode( ' · ', array_filter( array( '' !== $i['title'] ? $ref : '', $ago ) ) );
+			$meta = implode( ' · ', array_filter( array( '' !== $i['title'] ? '#' . $i['id'] : '', $ago ) ) );
 			$out .= '<li class="oat-alerts__item"><a href="' . esc_url( owc_oat_alerts_entry_url( $i['id'] ) ) . '">' . esc_html( $name ) . '</a> <span class="oat-alerts__meta">' . esc_html( $meta ) . '</span></li>';
 		}
 		return $out . '</ul>';

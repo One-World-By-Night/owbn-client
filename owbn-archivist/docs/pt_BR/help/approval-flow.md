@@ -4,7 +4,7 @@ As etapas por que um pedido passa depois que você o registra, com quem fica cad
 
 ## Quem pode usar
 
-Todos que registram ou revisam pedidos. Esta página explica o que a linha **Step:** e a Timeline significam na [A Página de um Pedido](entry.md).
+Todos que registram ou revisam pedidos. Esta página explica o que a linha **Step:** e o History significam na [A Página de um Pedido](entry.md).
 
 ## Como chegar
 
@@ -41,7 +41,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 ### Acompanhar o seu pedido
 
 1. Abra-o pelo seu Archivist Inbox ou Dashboard.
-2. **Step:** diz onde ele está, **Assignees** diz com quem ele está, e a **Timeline** (para a staff dele e acima) mostra o que já aconteceu.
+2. **Step:** diz onde ele está, **Assignees** diz com quem ele está, e o **History** (para a staff dele e acima) mostra o que já aconteceu.
 
 ### Encontrar o que está esperando por você
 
@@ -56,12 +56,12 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 - **Quando um pedido chega a uma etapa, todos os designados para ela recebem um email** com um link que faz o login e abre o pedido. Quem o levou até lá não recebe. O seu Inbox continua listando tudo o que espera por você.
 - **O email de uma posição vai para a posição, conforme o assunto do pedido.** O trabalho de um escritório de Coordenador vai para o endereço desse escritório (por exemplo, tremere@owbn.net). O trabalho de uma crônica vai para o seu email de ST: o endereço do HST no registro da crônica, ou o endereço do CM, {crônica}-cm@owbn.net. O trabalho sobre o seu próprio personagem vai para o email da sua conta. A mesma regra decide para onde vai o resultado do que você registrou: registrado como Coordenador ou como Staff, ou sobre algo do seu escritório ou da sua crônica, vai para o endereço dessa posição. O assunto cita a posição, de modo que a caixa guarda o histórico quando a pessoa muda. Uma posição sem endereço no registro recebe no email da conta da pessoa.
 - **Linhas registradas juntas andam juntas.** Várias regras num R&U Request viram várias linhas. As linhas com os mesmos aprovadores ficam agrupadas: quem revisa recebe um só email pelo grupo, aprova todas as linhas com um clique e pode vetar uma linha. Quem registrou recebe um email quando linhas são aprovadas e outro quando uma linha é vetada.
-- **Um Coordenador pode chamar outro.** Em Coordinator Review, **Add a Coordinator** pede que mais um escritório aprove, e o pedido espera por ele também. O Arquivista pode fazer o mesmo antes da etapa dele. Quando ninguém ocupa o escritório ainda, a Timeline avisa e o Arquivista pode aprovar por ele.
+- **Um Coordenador pode chamar outro.** Em Coordinator Review, **Add a Coordinator** pede que mais um escritório aprove, e o pedido espera por ele também. O Arquivista pode fazer o mesmo antes da etapa dele. Quando ninguém ocupa o escritório ainda, o History avisa e o Arquivista pode aprovar por ele.
 - Quando um pedido é aprovado ou negado, quem o registrou recebe um email; uma negação traz o motivo. Quando ele é devolvido, quem fica com ele em seguida recebe um email.
 - Um pedido aprovado aparece em **Registry Entries** na [Ficha do Personagem](registry-detail.md). Quando o item pertence a um escritório de Coordenador, o escritório ganha acesso ao personagem.
 - **Hold** para um pedido e o prazo dele; **Resume** retoma o prazo de onde parou.
 - Uma regra de regulamentação marcada como **Elevated** impede uma etapa com prazo de se aprovar sozinha; uma pessoa tem de agir.
-- A Timeline mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem a Timeline.
+- O History mostra a cada pessoa o que o papel dela permite: a staff do pedido vê as entradas da staff, os Coordenadores veem as deles e as da staff, e o Arquivista vê tudo. Jogadores não veem o History.
 - Uma devolução vai para a etapa anterior, passando por cima de qualquer etapa que não se aplicou ao pedido.
 
 ## Solução de problemas

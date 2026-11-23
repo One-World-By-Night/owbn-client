@@ -20,7 +20,7 @@ How to file a request with the Archivist and see it through, for players and chr
 ## After you file
 
 - **Follow it** from your [Archivist Inbox](help/inbox.md), under My Submissions. Its page shows the step it is at and who has it.
-- **If it comes back to you**, someone asked for changes. Read their note on the Timeline, fix what they asked, add a note and click **Resubmit**.
+- **If it comes back to you**, someone asked for changes. Read their note in the History, fix what they asked, add a note and click **Resubmit**.
 - **If you change your mind**, write a note and click **Cancel / Withdraw**.
 - **When it is approved or denied**, you get an email. An approved request shows on the character's record under Registry Entries.
 

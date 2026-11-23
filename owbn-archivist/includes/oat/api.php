@@ -535,7 +535,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
                 'originator_id' => (int) $we->originator_id,
                 'status'        => $we->status,
                 'current_step'  => $we->current_step,
-                'title'         => class_exists( 'OAT_Entry_Meta' ) ? (string) OAT_Entry_Meta::get( $eid, 'title' ) : '',
+                'title'         => owc_oat_entry_list_title( $we ),
                 'created_at'    => owc_oat_format_date( $we->created_at ),
             );
         }
@@ -551,7 +551,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
                 'originator_id' => isset( $w->originator_id ) ? (int) $w->originator_id : 0,
                 'status'        => $w->status,
                 'current_step'  => isset( $w->current_step ) ? $w->current_step : '',
-                'title'         => isset( $w->title ) ? $w->title : '',
+                'title'         => owc_oat_entry_list_title( (int) $w->entry_id ),
                 'updated_at'    => owc_oat_format_date( isset( $w->updated_at ) ? $w->updated_at : '' ),
                 'updated_ts'    => isset( $w->updated_at ) ? (int) $w->updated_at : 0,
             );
@@ -568,6 +568,7 @@ function owc_oat_get_inbox( $domain_filter = '' ) {
                 'originator_id' => (int) $e->originator_id,
                 'status'        => $e->status,
                 'current_step'  => $e->current_step,
+                'title'         => owc_oat_entry_list_title( $e ),
                 'created_at'    => owc_oat_format_date( $e->created_at ),
             );
         }

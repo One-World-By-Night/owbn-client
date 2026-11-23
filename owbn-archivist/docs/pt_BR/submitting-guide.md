@@ -20,7 +20,7 @@ Como registrar um pedido com o Arquivista e acompanhá-lo até o fim, para jogad
 ## Depois de registrar
 
 - **Acompanhe** pelo seu [Archivist Inbox](help/inbox.md), em My Submissions. A página do pedido mostra a etapa em que ele está e com quem está.
-- **Se ele voltar para você**, alguém pediu mudanças. Leia a nota na Timeline, corrija o que foi pedido, acrescente uma nota e clique em **Resubmit**.
+- **Se ele voltar para você**, alguém pediu mudanças. Leia a nota no History, corrija o que foi pedido, acrescente uma nota e clique em **Resubmit**.
 - **Se você mudar de ideia**, escreva uma nota e clique em **Cancel / Withdraw**.
 - **Quando ele for aprovado ou negado**, você recebe um email. Um pedido aprovado aparece na ficha do personagem, em Registry Entries.
 
