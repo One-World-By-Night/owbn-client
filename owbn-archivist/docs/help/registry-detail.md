@@ -97,7 +97,7 @@ When only Status and the two email boxes are yours to change, the record shows i
 - Adding a grant is open to site admins, the Archivist, the AHCs, the Web Coordinator and any chronicle's HST, staff, CM or AST. Revoking one is open to site admins, the Archivist, the AHCs and the Web Coordinator.
 - The Creature lists list what each Sect may take at character creation. A clan off that list is a Sect Defector under the Character Bylaws, which needs the Sect and Clan Coordinators' approval; the record lets you save it once they have.
 - To make a retired character active again, a player needs an HST.
-- **Each NPC has one owner, a chronicle or a Coordinator office.** Only that owner's staff or Coordinators, and the Archivist, can open and edit it. An NPC that carries both an office and a chronicle follows its type until the Archivist settles which one it belongs to.
+- **Each NPC has one owner, a chronicle or a Coordinator office.** Only that owner's staff or Coordinators, and the Archivist, can open and edit it. An NPC that carries both an office and a chronicle follows its type until the Archivist settles which one it belongs to. When an NPC moves to another office or to a chronicle, the office it left loses its access to it. A player character never belongs to an office, whatever its fields say.
 
 ## Troubleshooting
 

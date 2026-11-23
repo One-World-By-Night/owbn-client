@@ -454,7 +454,8 @@ function owc_oat_get_character_edit_mode( $character ) {
     // The standard types and the older coord_owned and chronicle_owned mean the same (owc_oat_npc_kind).
     $npc_kind          = function_exists( 'owc_oat_npc_kind' ) ? owc_oat_npc_kind( $character ) : $npc_type;
     $is_chronicle_char = $is_pc || ( 'chronicle' === $npc_kind );
-    $is_coord_npc      = ( 'coordinator' === $npc_kind && '' !== $npc_coordinator );
+    // Only an NPC belongs to an office; a player character that carries an office type does not.
+    $is_coord_npc      = ( ! $is_pc && 'coordinator' === $npc_kind && '' !== $npc_coordinator );
 
     foreach ( $roles as $role ) {
         // 2. Archivist / AHCs / Web can edit any character.

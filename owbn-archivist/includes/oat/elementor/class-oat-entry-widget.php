@@ -928,7 +928,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 		$hidden_keys = array(
 			'title', 'description', 'drupal_ru_id', 'drupal_subtype_id',
 			'drupal_cc_id', '_oat_record_snapshot', 'action_type',
-			'regulation_level', 'requires_coord',
+			'regulation_level', 'requires_coord', 'character_id',
 		);
 
 		// Friendly labels for meta keys shown in the extra table.
@@ -945,7 +945,19 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			'archival_date'    => 'Archival Date',
 			'source_hst'       => 'Source HST',
 			'new_or_existing'  => 'New or Existing',
+			'pc_npc'           => 'Character Type',
 		);
+
+		// How a stored value reads: a character's type as PC or NPC; everything else as it is.
+		$show = function ( $key, $value ) {
+			if ( is_array( $value ) ) {
+				return implode( ', ', $value );
+			}
+			if ( 'pc_npc' === $key && in_array( strtolower( trim( (string) $value ) ), array( 'pc', 'npc' ), true ) ) {
+				return strtoupper( trim( (string) $value ) );
+			}
+			return $value;
+		};
 		?>
 		<div class="oat-entry-section">
 			<div class="oat-entry-section-header"><?php esc_html_e( 'Details', 'owbn-archivist' ); ?></div>
@@ -976,7 +988,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						?>
 							<div class="oat-ro-field">
 								<div class="oat-ro-label"><?php echo esc_html( $lbl ); ?></div>
-								<div class="oat-ro-value"><?php echo esc_html( is_array( $value ) ? implode( ', ', $value ) : $value ); ?></div>
+								<div class="oat-ro-value"><?php echo esc_html( $show( $key, $value ) ); ?></div>
 							</div>
 						<?php endforeach; ?>
 					</div>
@@ -991,7 +1003,7 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 						?>
 							<div class="oat-ro-field">
 								<div class="oat-ro-label"><?php echo esc_html( $lbl ); ?></div>
-								<div class="oat-ro-value"><?php echo esc_html( is_array( $value ) ? implode( ', ', $value ) : $value ); ?></div>
+								<div class="oat-ro-value"><?php echo esc_html( $show( $key, $value ) ); ?></div>
 							</div>
 						<?php endforeach; ?>
 				</div>
