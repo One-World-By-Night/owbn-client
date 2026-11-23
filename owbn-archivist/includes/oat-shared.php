@@ -289,16 +289,90 @@ if ( ! function_exists( 'owc_oat_user_is_newcomer' ) ) :
 	 */
 	function owc_oat_user_is_newcomer( $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
-		if ( ! $user_id || ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) || owc_oat_user_is_player( $user_id ) ) {
+		if ( ! $user_id || ( function_exists( 'owc_oat_is_super_user' ) && owc_oat_is_super_user( $user_id ) ) ) {
 			return false;
 		}
 		$roles = function_exists( 'owc_oat_get_user_asc_roles' ) ? owc_oat_get_user_asc_roles( $user_id ) : array();
-		foreach ( (array) $roles as $role ) {
-			if ( preg_match( '#^(exec/[^/]+/coordinator|coordinator/[^/]+/(coordinator|sub-coordinator)|chronicle/[^/]+/(hst|cm|staff|st|ast))$#', strtolower( (string) $role ) ) ) {
+		if ( owc_oat_roles_make_a_member( $roles ) ) {
+			return false;
+		}
+		// The cached copy shows no such role. Only a current copy may say they hold none: a missing or old one is asked
+		// for once, and when no answer comes the person is not known to be a newcomer.
+		if ( ! owc_oat_asc_cache_is_current( $user_id ) ) {
+			$roles = owc_oat_refreshed_asc_roles( $user_id );
+			if ( null === $roles || owc_oat_roles_make_a_member( $roles ) ) {
 				return false;
 			}
 		}
 		return true;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_roles_make_a_member' ) ) :
+	/**
+	 * Whether any of these role paths makes someone a player, chronicle staff or an office holder.
+	 *
+	 * @param array $roles Role paths.
+	 * @return bool
+	 */
+	function owc_oat_roles_make_a_member( $roles ) {
+		foreach ( (array) $roles as $role ) {
+			if ( preg_match( '#^(player/approved|chronicle/[^/]+/(player|hst|cm|staff|st|ast)|exec/[^/]+/coordinator|coordinator/[^/]+/(coordinator|sub-coordinator))$#', strtolower( (string) $role ) ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_asc_cache_is_current' ) ) :
+	/**
+	 * Whether this site holds an answer about a user's roles that is still inside the cache's lifetime. An empty list
+	 * counts: it is what the accessSchema server answers for an account that holds no role.
+	 *
+	 * @param int $user_id User id.
+	 * @return bool
+	 */
+	function owc_oat_asc_cache_is_current( $user_id ) {
+		if ( ! defined( 'OWC_ASC_CACHE_KEY' ) || ! defined( 'OWC_ASC_CACHE_TS_KEY' ) ) {
+			return false;
+		}
+		if ( ! is_array( get_user_meta( $user_id, OWC_ASC_CACHE_KEY, true ) ) ) {
+			return false;
+		}
+		$stamp = (int) get_user_meta( $user_id, OWC_ASC_CACHE_TS_KEY, true );
+		$ttl   = ( function_exists( 'owc_option_name' ) && defined( 'OWC_ASC_CACHE_TTL' ) ) ? (int) get_option( owc_option_name( 'asc_cache_ttl' ), OWC_ASC_CACHE_TTL ) : 86400;
+		return $stamp > 0 && ( $ttl <= 0 || ( time() - $stamp ) <= $ttl );
+	}
+endif;
+
+if ( ! function_exists( 'owc_oat_refreshed_asc_roles' ) ) :
+	/**
+	 * Asks the accessSchema server for a user's roles; owbn-core keeps the answer for the next look.
+	 *
+	 * @param int $user_id User id.
+	 * @return string[]|null The role paths, or null when no usable answer came.
+	 */
+	function owc_oat_refreshed_asc_roles( $user_id ) {
+		$user = get_userdata( (int) $user_id );
+		if ( ! $user || ! $user->user_email || ! function_exists( 'owc_asc_get_user_roles' ) ) {
+			return null;
+		}
+		$response = owc_asc_get_user_roles( 'owc', $user->user_email );
+		if ( ! is_array( $response ) || ! isset( $response['roles'] ) || ! is_array( $response['roles'] ) ) {
+			return null;
+		}
+		$paths = array();
+		foreach ( $response['roles'] as $role ) {
+			if ( is_string( $role ) ) {
+				$paths[] = $role;
+			} elseif ( is_array( $role ) && isset( $role['role_path'] ) ) {
+				$paths[] = (string) $role['role_path'];
+			} elseif ( is_object( $role ) && isset( $role->role_path ) ) {
+				$paths[] = (string) $role->role_path;
+			}
+		}
+		return $paths;
 	}
 endif;
 
