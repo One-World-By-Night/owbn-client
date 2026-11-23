@@ -502,6 +502,11 @@
                 }
             }
 
+            // The submit page's list picks the same character again in the next row it opens.
+            $wrap.on('oat-set-character', function(e, uuid, name, pcNpc, chronicleSlug) {
+                selectCharacter(uuid, name, pcNpc, chronicleSlug);
+            });
+
             // ── Clear selection ──
             $wrap.on('click', '.oat-character-clear', function() {
                 $hidden.val('').trigger('change');

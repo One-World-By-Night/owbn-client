@@ -24,7 +24,9 @@ Qualquer pessoa com login. Quais personagens você pode escolher depende de quem
   - **Player Name** e **Player Email** - obrigatórios para um PC: o jogador que o joga, e o email da conta dele na OWbN. **This is my character** preenche o seu próprio nome e email.
   - **Create Character** grava o personagem e o escolhe para o pedido; **Cancel** fecha o painel.
 - **Submitting As** ou **Your Role** (alguns formulários) - se você registra como jogador, staff, Coordenador ou Arquivista. Decide de quem são os personagens que a busca oferece.
-- **Submit Request** - registra o pedido. Mostra "Submitting…" enquanto envia.
+- **Add to list** - põe de lado o formulário que você preencheu, como uma linha de **Your list**, e abre um formulário novo do mesmo tipo, com o mesmo personagem já escolhido (um formulário cuja lista de personagens depende de **Submitting As** pede que você o escolha de novo). Troque o **Form** ou o **Domain** para adicionar outro tipo de pedido.
+- **Your list** (acima do formulário, quando já tem uma linha) - cada linha é um pedido com número próprio. **Edit** traz de volta o formulário da linha, **Remove** a descarta e **Submit all** registra todas.
+- **Submit Request** - registra o pedido. Mostra "Submitting…" enquanto envia. Com linhas na lista, o botão diz **Submit this form with the list (N)** e registra o formulário aberto junto com as linhas.
 
 Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Ela começa com uma caixa verde, **Request #N submitted**, e um botão, **Submit another** com o nome do formulário (por exemplo **Submit another R&U Request**), que abre esta página de novo no mesmo formulário. Quando você escolhe várias regras num R&U Request, cada regra é registrada como uma linha: as linhas com os mesmos aprovadores abrem juntas como uma só página de pedido, e uma linha que vai para outra pessoa aparece separada. Num R&U Request, **Add another character** registra para vários personagens de uma vez.
 
@@ -42,6 +44,13 @@ Quando o pedido é registrado, a página dele abre, e ali você o acompanha. Ela
 1. Registre o primeiro com **Submit Request**.
 2. Na página que abre, clique em **Submit another R&U Request** (o botão traz o nome do formulário que você acabou de usar).
 3. A página de envio abre com o Domain e o Form já escolhidos. Preencha o próximo pedido e clique em **Submit Request**.
+
+### Registrar vários pedidos juntos, de qualquer tipo
+
+1. Escolha o Domain e o Form, preencha o primeiro pedido e clique em **Add to list**.
+2. Abre um formulário novo do mesmo tipo. Preencha-o para o próximo item, ou troque o **Form** ou o **Domain** para adicionar outro tipo: R&U, Learn Custom Content ou Create Custom Content.
+3. Use **Edit** numa linha para mudá-la (depois **Put back in the list**), ou **Remove** para descartá-la.
+4. Clique em **Submit all**. Cada linha é registrada como um pedido próprio, com número próprio, e quem revisa os vê como um só grupo. Uma linha que o Arquivista recusa fica na sua lista com o motivo, e as outras são registradas.
 
 ### Registrar um pedido para um personagem que o registro não tem (staff)
 

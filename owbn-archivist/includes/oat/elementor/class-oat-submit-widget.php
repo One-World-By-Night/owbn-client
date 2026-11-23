@@ -214,6 +214,16 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 		<div class="oat-submit-widget">
 			<div id="oat-submit-feedback"></div>
 
+			<div id="oat-list-panel" class="oat-list-panel" style="display:none;">
+				<div class="oat-list-head"><strong><?php esc_html_e( 'Your list', 'owbn-archivist' ); ?></strong></div>
+				<p class="oat-list-note"><?php esc_html_e( 'Each row is its own request with its own number. Submit them together and the reviewers see them as one group, each acting on the lines assigned to them.', 'owbn-archivist' ); ?></p>
+				<ol id="oat-list-rows" class="oat-list-rows"></ol>
+				<p class="oat-list-actions">
+					<button type="button" class="oat-submit-btn" id="oat-list-submit-all"></button>
+					<button type="button" class="button-link" id="oat-list-clear"><?php esc_html_e( 'Clear the list', 'owbn-archivist' ); ?></button>
+				</p>
+			</div>
+
 			<form id="oat-frontend-submit-form"
 				class="oat-frontend-form"
 				data-redirect="<?php echo esc_attr( $redirect ); ?>">
@@ -254,20 +264,332 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				</div>
 
 					<!-- Submit -->
-				<div class="oat-field-row">
+				<div class="oat-field-row oat-submit-row">
 					<button type="submit" class="oat-submit-btn" id="oat-submit-btn">
 						<?php echo esc_html( $btn_text ); ?>
 					</button>
+					<button type="button" class="button button-secondary oat-add-to-list" id="oat-add-to-list" style="display:none;"></button>
 				</div>
 
 			</form>
 		</div>
 
+		<style>
+			.oat-list-panel { border: 1px solid #c3c4c7; border-radius: 4px; padding: 12px 16px; margin: 0 0 16px; background: #f6f7f7; }
+			.oat-list-note { margin: 4px 0 8px; color: #50575e; }
+			.oat-list-rows { margin: 0 0 8px 20px; padding: 0; }
+			.oat-list-row { margin: 4px 0; }
+			.oat-list-error { color: #8b0000; margin: 2px 0 4px; }
+			.oat-list-row .button-link { margin-left: 6px; }
+			.oat-list-actions { margin: 8px 0 0; }
+			.oat-list-actions .button-link { margin-left: 12px; }
+			.oat-submit-row .oat-add-to-list { margin-left: 8px; }
+			.oat-list-editing #oat-domain-select, .oat-list-editing #oat-form-select { pointer-events: none; opacity: .6; }
+		</style>
 		<script type="text/javascript">
 		(function($) {
 			'use strict';
 
 			var preselect = <?php echo wp_json_encode( $preselect ); ?>;
+
+			// ── A list of rows: fill a form, add it to the list, fill another, then file them together. ─────────────────
+			// Each row is the real form. A row that is set aside keeps its fields (and their pickers) out of the page, so only one form
+			// is ever live; Edit puts it back. Submit all files the rows in order, and every request after the first joins the group of
+			// the ones before it.
+			var listRows   = [];
+			var listFiled  = [];
+			var listCarry  = null;
+			var listEditAt = -1;
+			var listPristine = '';
+			var listSending = false;
+			var listBtnText = <?php echo wp_json_encode( $btn_text ); ?>;
+			var LT = {
+				add:        <?php echo wp_json_encode( __( 'Add to list', 'owbn-archivist' ) ); ?>,
+				putBack:    <?php echo wp_json_encode( __( 'Put back in the list', 'owbn-archivist' ) ); ?>,
+				edit:       <?php echo wp_json_encode( __( 'Edit', 'owbn-archivist' ) ); ?>,
+				remove:     <?php echo wp_json_encode( __( 'Remove', 'owbn-archivist' ) ); ?>,
+				submitAll:  <?php echo wp_json_encode( __( 'Submit all (%d)', 'owbn-archivist' ) ); ?>,
+				submitWith: <?php echo wp_json_encode( __( 'Submit this form with the list (%d)', 'owbn-archivist' ) ); ?>,
+				submitting: <?php echo wp_json_encode( __( 'Submitting…', 'owbn-archivist' ) ); ?>,
+				clearAsk:   <?php echo wp_json_encode( __( 'Remove every row from the list?', 'owbn-archivist' ) ); ?>,
+				discardAsk: <?php echo wp_json_encode( __( 'Discard the form you are filling in and edit this row instead?', 'owbn-archivist' ) ); ?>,
+				leaveAsk:   <?php echo wp_json_encode( __( 'Rows in your list have not been submitted.', 'owbn-archivist' ) ); ?>,
+				failed:     <?php echo wp_json_encode( __( 'This row could not be filed.', 'owbn-archivist' ) ); ?>,
+				netFailed:  <?php echo wp_json_encode( __( 'Request failed. Please try again.', 'owbn-archivist' ) ); ?>,
+				filedHead:  <?php echo wp_json_encode( __( 'Filed together:', 'owbn-archivist' ) ); ?>,
+				leftHead:   <?php echo wp_json_encode( __( 'These rows were not filed and are still in your list:', 'owbn-archivist' ) ); ?>,
+				editing:    <?php echo wp_json_encode( __( '(being edited below)', 'owbn-archivist' ) ); ?>
+			};
+
+			function listFieldsPresent() {
+				return $('#oat-domain-fields-container .oat-form-fields').length > 0;
+			}
+
+			function listSyncAdd() {
+				var on = listFieldsPresent();
+				$('#oat-add-to-list').toggle(on).text(listEditAt >= 0 ? LT.putBack : LT.add);
+				$('#oat-frontend-submit-form').toggleClass('oat-list-editing', listEditAt >= 0);
+			}
+
+			function listKind() {
+				var f = $.trim($('#oat-form-select option:selected').text());
+				if (f && $('#oat-form-select').val()) { return f; }
+				var d = $.trim($('#oat-domain-select option:selected').text());
+				return d || <?php echo wp_json_encode( __( 'Request', 'owbn-archivist' ) ); ?>;
+			}
+
+			function listSummary($scope, kind) {
+				var bits = [];
+				$scope.find('.oat-character-selected-name').each(function() {
+					var t = $.trim($(this).text());
+					if (t && $(this).closest('.oat-character-selected').is(':visible')) { bits.push(t); }
+				});
+				$scope.find('.oat-cchub-selected .oat-rule-tag, .oat-rule-selected .oat-rule-tag').each(function() {
+					var t = $.trim($(this).clone().children().remove().end().text());
+					if (t) { bits.push(t); }
+				});
+				var name = $.trim($scope.find('[name="oat_meta_content_name"]').val() || '');
+				if (name) { bits.push(name); }
+				var text = kind + (bits.length ? ': ' + bits.join(' - ') : '');
+				return text.length > 160 ? text.substring(0, 157) + '...' : text;
+			}
+
+			function listCaptureCarry($c) {
+				var $uuid = $c.find('input.oat-character-uuid[name="oat_meta_character_name"], input.oat-character-uuid[name="oat_meta_character"]').first();
+				var uuid  = $.trim($uuid.val() || '');
+				if (!uuid) { return listCarry; }
+				var $wrap = $uuid.closest('.oat-character-picker-wrap');
+				return {
+					uuid:      uuid,
+					name:      $.trim($wrap.find('.oat-character-selected-name').text()),
+					pcNpc:     $wrap.find('.oat-cc-pc-npc-val').val() || '',
+					chronicle: $c.find('[name="oat_meta_chronicle_slug"]').val() || '',
+					status:    $c.find('[name="oat_meta_ru_sub_status"]').val() || ''
+				};
+			}
+
+			function listApplyCarry($c) {
+				if (!listCarry || !listRows.length) { return; }
+				var $uuid = $c.find('input.oat-character-uuid[name="oat_meta_character_name"], input.oat-character-uuid[name="oat_meta_character"]').first();
+				if (!$uuid.length || $.trim($uuid.val() || '')) { return; }
+				// A picker scoped by another field (Submitting As) is cleared when that field changes, so it is left for the filer to pick.
+				if ($uuid.closest('.oat-character-picker-wrap').data('filter-by')) { return; }
+				$uuid.closest('.oat-character-picker-wrap').trigger('oat-set-character', [listCarry.uuid, listCarry.name, listCarry.pcNpc, listCarry.chronicle]);
+				if (listCarry.status) {
+					var $st = $c.find('[name="oat_meta_ru_sub_status"]');
+					if ($st.length && $st.find('option').filter(function() { return this.value === listCarry.status; }).length) { $st.val(listCarry.status); }
+				}
+			}
+
+			// The picker scripts run on the same event, so the carry-over waits until they have finished.
+			function listFieldsLoaded($c) {
+				listSyncAdd();
+				Promise.resolve().then(function() {
+					listApplyCarry($c);
+					listPristine = $('#oat-frontend-submit-form').serialize();
+				});
+			}
+
+			function listReinitEditors(ids) {
+				if (!window.tinyMCE || typeof tinyMCEPreInit === 'undefined') { return; }
+				$.each(ids, function(i, id) {
+					var base = tinyMCEPreInit.mceInit && tinyMCEPreInit.mceInit[id];
+					if (!base) { return; }
+					var settings = $.extend({}, base);
+					settings.selector = '#' + id;
+					tinyMCE.init(settings);
+					if (typeof quicktags !== 'undefined' && tinyMCEPreInit.qtInit && tinyMCEPreInit.qtInit[id]) { quicktags(tinyMCEPreInit.qtInit[id]); }
+				});
+			}
+
+			function listDropEditors($c) {
+				var ids = [];
+				if (window.tinyMCE) {
+					$c.find('.wp-editor-area').each(function() {
+						var ed = tinyMCE.get(this.id);
+						if (ed) { ed.remove(); }
+						ids.push(this.id);
+					});
+				}
+				return ids;
+			}
+
+			// Sets the form being filled aside as a row.
+			function listStash() {
+				var $c   = $('#oat-domain-fields-container');
+				var form = document.getElementById('oat-frontend-submit-form');
+				if (window.tinyMCE) { try { tinyMCE.triggerSave(); } catch (err) {} }
+				var kind = listKind();
+				var row  = {
+					kind:      kind,
+					summary:   listSummary($c, kind),
+					data:      $(form).serializeArray(),
+					domain:    $('#oat-domain-select').val() || $('input[name="oat_domain"]').val() || '',
+					formSlug:  $('#oat-form-select').val() || '',
+					formHtml:  $('#oat-form-select').html(),
+					pickerRow: $('#oat-form-picker-row').is(':visible'),
+					error:     '',
+					ids:       []
+				};
+				listCarry = listCaptureCarry($c);
+				row.editors = listDropEditors($c);
+				row.$nodes  = $c.contents().detach();
+				return row;
+			}
+
+			// Adds the form being filled to the list (back at its place when it was being edited), then opens a fresh one of the same kind.
+			function listAddCurrent(validated) {
+				var form = document.getElementById('oat-frontend-submit-form');
+				if (!listFieldsPresent()) { return false; }
+				if (!validated && form.reportValidity && !form.reportValidity()) { return false; }
+				var row = listStash();
+				if (listEditAt >= 0) { listRows.splice(listEditAt, 0, row); listEditAt = -1; } else { listRows.push(row); }
+				listRender();
+				if (row.formSlug || row.domain) {
+					var params = { domain: row.domain };
+					if (row.formSlug) { params.form_slug = row.formSlug; }
+					loadFields(params);
+				} else {
+					listSyncAdd();
+				}
+				return true;
+			}
+
+			function listRender() {
+				var $ol = $('#oat-list-rows').empty();
+				$.each(listRows, function(i, r) {
+					var $li = $('<li class="oat-list-row"/>');
+					$li.append($('<span class="oat-list-text"/>').text(r.summary));
+					$li.append(' ');
+					$li.append($('<button type="button" class="button-link oat-list-edit"/>').attr('data-i', i).text(LT.edit));
+					$li.append(' ');
+					$li.append($('<button type="button" class="button-link oat-list-remove"/>').attr('data-i', i).text(LT.remove));
+					if (r.error) { $li.append($('<div class="oat-list-error"/>').text(r.error)); }
+					$ol.append($li);
+				});
+				var n = listRows.length;
+				$('#oat-list-panel').toggle(n > 0 || listEditAt >= 0);
+				$('#oat-list-submit-all').text(LT.submitAll.replace('%d', n)).prop('disabled', n === 0 || listEditAt >= 0);
+				$('#oat-submit-btn').text(n > 0 || listEditAt >= 0 ? LT.submitWith.replace('%d', n) : listBtnText);
+			}
+
+			function listBusy(on) {
+				$('#oat-list-submit-all, #oat-submit-btn, #oat-add-to-list, #oat-list-clear, .oat-list-edit, .oat-list-remove').prop('disabled', on);
+				if (on) { $('#oat-list-submit-all, #oat-submit-btn').text(LT.submitting); } else { listRender(); }
+			}
+
+			function listSubmitAll() {
+				var rows = listRows.slice();
+				if (!rows.length || listSending) { return; }
+				listSending = true;
+				var $feedback = $('#oat-submit-feedback').empty();
+				var redirect  = $('#oat-frontend-submit-form').data('redirect') || '/oat-entry/';
+				var filed     = [];
+				var at        = 0;
+				listBusy(true);
+
+				function next() {
+					if (at >= rows.length) { return finish(); }
+					var r = rows[at++];
+					r.error = '';
+					var payload = r.data.slice();
+					payload.push({ name: 'action', value: 'owc_oat_submit_entry_frontend' });
+					payload.push({ name: 'nonce',  value: owc_oat_ajax.nonce });
+					payload.push({ name: 'oat_batch_mode', value: 'list' });
+					$.each(listFiled, function(k, id) { payload.push({ name: 'oat_batch_prior[]', value: id }); });
+					$.post(owc_oat_ajax.url, payload, function(resp) {
+						if (resp && resp.success && resp.data && resp.data.entry_id) {
+							r.ids = resp.data.ids && resp.data.ids.length ? resp.data.ids : [resp.data.entry_id];
+							listFiled = listFiled.concat(r.ids);
+							filed.push(r);
+						} else {
+							r.error = (resp && typeof resp.data === 'string' && resp.data) ? resp.data : LT.failed;
+						}
+						next();
+					}).fail(function() {
+						r.error = LT.netFailed;
+						next();
+					});
+				}
+
+				function finish() {
+					var left = [];
+					$.each(listRows, function(i, r) {
+						if (r.ids && r.ids.length) { if (r.$nodes) { r.$nodes.remove(); } } else { left.push(r); }
+					});
+					listRows = left;
+					var total = 0;
+					$.each(filed, function(i, r) { total += r.ids.length; });
+					if (!left.length && total === 1) {
+						window.location.href = redirect + '?oat_entry=' + filed[0].ids[0] + '&created=1';
+						return;
+					}
+					if (filed.length) {
+						var $ok = $('<div style="background:#d7f0d7;border:1px solid #006505;border-radius:4px;padding:16px;margin:12px 0;"/>');
+						$ok.append($('<strong style="color:#006505;"/>').text(LT.filedHead));
+						var $ul = $('<ul style="margin:8px 0 0 16px;"/>');
+						$.each(filed, function(i, r) {
+							var $li = $('<li/>').text(r.summary + ' ');
+							$.each(r.ids, function(k, id) {
+								$li.append($('<a target="_blank"/>').attr('href', redirect + '?oat_entry=' + id).text('#' + id + ' '));
+							});
+							$ul.append($li);
+						});
+						$ok.append($ul);
+						$feedback.append($ok);
+					}
+					if (left.length) {
+						var $bad = $('<div class="oat-submit-error"/>').text(LT.leftHead);
+						$feedback.append($bad);
+					} else {
+						listFiled = [];
+						listCarry = null;
+					}
+					listSending = false;
+					listBusy(false);
+					listSyncAdd();
+					window.scrollTo(0, 0);
+				}
+
+				next();
+			}
+
+			$(document).on('click', '#oat-add-to-list', function() { listAddCurrent(false); });
+			$(document).on('click', '#oat-list-submit-all', function() { listSubmitAll(); });
+			$(document).on('click', '#oat-list-clear', function() {
+				if (!window.confirm(LT.clearAsk)) { return; }
+				$.each(listRows, function(i, r) { if (r.$nodes) { r.$nodes.remove(); } });
+				listRows = []; listFiled = []; listCarry = null;
+				listRender();
+			});
+			$(document).on('click', '.oat-list-remove', function() {
+				var r = listRows.splice(parseInt($(this).attr('data-i'), 10), 1)[0];
+				if (r && r.$nodes) { r.$nodes.remove(); }
+				listRender();
+			});
+			$(document).on('click', '.oat-list-edit', function() {
+				var i = parseInt($(this).attr('data-i'), 10);
+				var row = listRows[i];
+				if (!row || listEditAt >= 0) { return; }
+				if (listFieldsPresent() && $('#oat-frontend-submit-form').serialize() !== listPristine && !window.confirm(LT.discardAsk)) { return; }
+				var $c = $('#oat-domain-fields-container');
+				listDropEditors($c);
+				$c.empty();
+				listRows.splice(i, 1);
+				listEditAt = i;
+				if ($('#oat-domain-select').length) { $('#oat-domain-select').val(row.domain); }
+				$('#oat-form-select').html(row.formHtml).val(row.formSlug);
+				$('#oat-form-picker-row').toggle(row.pickerRow);
+				$c.append(row.$nodes);
+				listReinitEditors(row.editors);
+				listRender();
+				listSyncAdd();
+			});
+			$(window).on('beforeunload', function() {
+				if (listRows.length || listEditAt >= 0) { return LT.leaveAsk; }
+			});
+			listRender();
+			listSyncAdd();
 
 			function loadFields(params) {
 				var $container = $('#oat-domain-fields-container');
@@ -278,17 +600,21 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 					if (response.success && response.data && response.data.html) {
 						$container.html(response.data.html);
 						$(document).trigger('oat-fields-loaded', [$container]);
+						listFieldsLoaded($container);
 					} else {
 						$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Could not load fields for this domain.', 'owbn-archivist' ) ); ?></p>');
+						listSyncAdd();
 					}
 				}).fail(function() {
 					$container.html('<p style="color:#8b0000;"><?php echo esc_js( __( 'Request failed. Please try again.', 'owbn-archivist' ) ); ?></p>');
+					listSyncAdd();
 				});
 			}
 
 			$('#oat-domain-select').on('change', function() {
 				var domain = $(this).val();
 				$('#oat-domain-fields-container').empty();
+				listSyncAdd();
 				$('#oat-form-picker-row').hide();
 				$('#oat-form-select').html('<option value=""><?php echo esc_js( __( 'Select a form…', 'owbn-archivist' ) ); ?></option>');
 
@@ -328,12 +654,20 @@ class OWC_OAT_Submit_Widget extends Widget_Base
 				var formSlug = $(this).val();
 				var domain   = $('#oat-domain-select').val() || $('input[name="oat_domain"]').val();
 				$('#oat-domain-fields-container').empty();
+				listSyncAdd();
 				if (!formSlug) { return; }
 				loadFields({ form_slug: formSlug, domain: domain });
 			});
 
 			$('#oat-frontend-submit-form').on('submit', function(e) {
 				e.preventDefault();
+				// With rows in the list, the form being filled joins them and everything is filed together.
+				if (listRows.length || listEditAt >= 0) {
+					if (listSending) { return; }
+					if (listFieldsPresent()) { listAddCurrent(true); }
+					listSubmitAll();
+					return;
+				}
 				var $form = $(this);
 				var $btn  = $('#oat-submit-btn');
 				var $feedback = $('#oat-submit-feedback');

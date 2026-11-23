@@ -521,17 +521,28 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 			}
 		}
 		$show_char = count( $characters ) > 1;
+		// A Kind column only when the group mixes kinds of request (R&U, Learn Custom Content, Create Custom Content).
+		$kinds = array();
+		foreach ( $batch['lines'] as $line ) {
+			if ( ! empty( $line['kind'] ) ) {
+				$kinds[ $line['kind'] ] = true;
+			}
+		}
+		$show_kind = count( $kinds ) > 1;
 		$terminal = array( 'approved' => __( 'Approved', 'owbn-archivist' ), 'auto_approved' => __( 'Approved', 'owbn-archivist' ), 'denied' => __( 'Not accepted', 'owbn-archivist' ), 'auto_denied' => __( 'Not accepted', 'owbn-archivist' ), 'cancelled' => __( 'Cancelled', 'owbn-archivist' ) );
 
 		ob_start();
 		?>
 		<div class="oat-entry-section oat-batch-card">
 			<div class="oat-entry-section-header"><?php esc_html_e( 'Lines in this request', 'owbn-archivist' ); ?></div>
-			<p class="oat-batch-note"><?php esc_html_e( 'These were filed together and have the same approvers. A reviewer can approve every line at once, or veto a single line and let the others go on.', 'owbn-archivist' ); ?></p>
+			<p class="oat-batch-note"><?php esc_html_e( 'These were filed together. Each line is its own request with its own number, and each reviewer acts on the lines assigned to them: approve, deny or ask for changes on one line, approve every line waiting on you at once, or veto a single line and let the others go on.', 'owbn-archivist' ); ?></p>
 			<table class="oat-batch-lines">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Line', 'owbn-archivist' ); ?></th>
+						<?php if ( $show_kind ) : ?>
+							<th><?php esc_html_e( 'Kind', 'owbn-archivist' ); ?></th>
+						<?php endif; ?>
 						<?php if ( $show_char ) : ?>
 							<th><?php esc_html_e( 'Character', 'owbn-archivist' ); ?></th>
 						<?php endif; ?>
@@ -555,11 +566,18 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 					?>
 					<tr class="oat-batch-line<?php echo ! empty( $line['current'] ) ? ' oat-batch-line-current' : ''; ?><?php echo $vetoed ? ' oat-batch-line-vetoed' : ''; ?>">
 						<td>
-							<a href="<?php echo esc_url( add_query_arg( $param, (int) $line['id'], $base_url ) ); ?>">#<?php echo esc_html( (int) $line['id'] ); ?></a>
+							<?php if ( ! isset( $line['viewable'] ) || ! empty( $line['viewable'] ) ) : ?>
+								<a href="<?php echo esc_url( add_query_arg( $param, (int) $line['id'], $base_url ) ); ?>">#<?php echo esc_html( (int) $line['id'] ); ?></a>
+							<?php else : ?>
+								<span class="oat-batch-id">#<?php echo esc_html( (int) $line['id'] ); ?></span>
+							<?php endif; ?>
 							<?php if ( ! empty( $line['current'] ) ) : ?>
 								<span class="oat-batch-here"><?php esc_html_e( '(this page)', 'owbn-archivist' ); ?></span>
 							<?php endif; ?>
 						</td>
+						<?php if ( $show_kind ) : ?>
+							<td><?php echo esc_html( isset( $line['kind'] ) ? $line['kind'] : '' ); ?></td>
+						<?php endif; ?>
 						<?php if ( $show_char ) : ?>
 							<td><?php echo esc_html( isset( $line['character'] ) ? $line['character'] : '' ); ?></td>
 						<?php endif; ?>

@@ -565,7 +565,15 @@ function owc_oat_ajax_submit_entry_frontend() {
         wp_send_json_error( __( 'Please select a domain.', 'owbn-archivist' ) );
     }
 
-    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug' );
+    $skip = array( 'action', 'nonce', '_wpnonce', 'oat_domain', 'oat_form_slug', 'oat_batch_mode', 'oat_batch_prior' );
+
+    // A row of a list the filer is submitting together: its lines join the group of the rows filed before it.
+    $list_mode  = isset( $_POST['oat_batch_mode'] ) && 'list' === sanitize_key( wp_unslash( $_POST['oat_batch_mode'] ) );
+    $list_prior = array();
+    if ( $list_mode && ! empty( $_POST['oat_batch_prior'] ) ) {
+        $list_prior = array_slice( array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['oat_batch_prior'] ) ) ) ) ), 0, 50 );
+    }
+
     $meta = array();
     foreach ( $_POST as $key => $value ) {
         if ( in_array( $key, $skip, true ) ) {
@@ -657,9 +665,14 @@ function owc_oat_ajax_submit_entry_frontend() {
         if ( ! empty( $batch['meta']['coordinator_genre'] ) ) {
             $data['coordinator_genre'] = $batch['meta']['coordinator_genre'];
         }
-        // Later lines are told which lines came before, so those with the same approvers join one group.
-        if ( $created_ids ) {
-            $data['batch'] = array( 'prior' => $created_ids );
+        // Later lines are told which lines came before, so those with the same approvers join one group; the rows of a list join
+        // the group of the rows filed before them whatever their approvers.
+        $prior_lines = array_merge( $list_prior, $created_ids );
+        if ( $prior_lines ) {
+            $data['batch'] = array( 'prior' => $prior_lines );
+            if ( $list_mode ) {
+                $data['batch']['mode'] = 'list';
+            }
         }
 
         $result = owc_oat_submit( $data );
@@ -677,7 +690,7 @@ function owc_oat_ajax_submit_entry_frontend() {
     $grouped      = is_array( $first_bundle ) && ! empty( $first_bundle['batch']['lines'] ) ? count( $first_bundle['batch']['lines'] ) : 0;
 
     if ( count( $created_ids ) === 1 || ( $grouped && $grouped === count( $created_ids ) ) ) {
-        wp_send_json_success( array( 'entry_id' => $created_ids[0] ) );
+        wp_send_json_success( array( 'entry_id' => $created_ids[0], 'ids' => $created_ids ) );
     } else {
         wp_send_json_success( array(
             'entry_id' => $created_ids[0],

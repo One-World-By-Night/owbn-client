@@ -29,7 +29,7 @@ De cima para baixo:
 - **O resumo** - a caixa sob o cabeçalho, em palavras simples: quem pede o quê, por exemplo "Marcus Vell (player: Sam Okafor · Lantern) is requesting R&U approval for Brujah 5+." O nome do personagem é um link que abre o registro do personagem em outra aba. Abaixo, **The bylaw in question is:** lista cada regra em que o pedido se encaixa, com o número da cláusula, o texto, a aprovação que ela pede e o Coordenador que decide. Depois vêm em que pé o pedido está e com quem ele está, e quem o registrou e quando. Um pedido sobre nenhum personagem (um Chronicle Report, um registro de governança) diz quem o está enviando, e um pedido que não se apoia em nenhuma regra não tem a linha da regra.
 - **Request submitted** (só logo depois de você registrar o pedido) - uma caixa verde com um botão **Submit another** para o mesmo formulário.
 - **Changes Requested** (só quando o pedido foi devolvido) - o que mudar, e quem pediu.
-- **Lines in this request** (só quando várias linhas foram registradas juntas) - uma linha para cada uma, com o assunto e em que etapa está. Uma linha vetada diz **Vetoed** e traz o motivo, quando há. Quem revisa ganha uma caixa **Veto** em cada linha aberta. Quando as linhas são sobre mais de um personagem, uma coluna **Character** diz qual.
+- **Lines in this request** (só quando várias linhas foram registradas juntas) - uma linha para cada uma, com o número, o assunto e em que etapa está. Você vê todas as linhas do grupo, mas só abre e age nas linhas que foram atribuídas a você. Uma linha vetada diz **Vetoed** e traz o motivo, quando há. Quem revisa ganha uma caixa **Veto** em cada linha aberta em que pode agir. Quando as linhas são de mais de um tipo de pedido, uma coluna **Kind** diz qual, e quando são sobre mais de um personagem, uma coluna **Character** diz qual.
 - **Active Timer** - quando a etapa se aprova ou se nega sozinha se ninguém agir, com a data em que **Expires**.
 - **Actions** - os botões que você tem, cada um com uma caixa de nota.
 - **History** - cada ação, com quem a tomou, quando, e a nota, para a staff do pedido, os Coordenadores e o Arquivista; um jogador vê o status e a etapa do pedido no cabeçalho e no resumo. **Show History** e **Hide History** recolhem o histórico.
@@ -58,7 +58,7 @@ De cima para baixo:
 
 1. Abra qualquer linha do pedido. **Lines in this request** lista todas.
 2. Para deixar uma linha de fora, clique em **Veto** na linha dela, escreva um motivo se quiser (é opcional, e quem registrou o pedido o vê ao lado da linha) e clique em **Veto this line**. Só essa linha é encerrada; as outras seguem.
-3. Em **Approve All Lines**, escreva uma nota e clique no botão. Todas as linhas que esperam nesta etapa e que você pode aprovar seguem juntas.
+3. Em **Approve All Lines**, escreva uma nota e clique no botão. Todas as linhas que esperam nesta etapa e que você pode aprovar seguem juntas; uma linha atribuída a outra pessoa fica para ela.
 
 ### Chamar outro Coordenador
 

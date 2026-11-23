@@ -400,14 +400,21 @@ function owc_oat_attach_character_to_entry( $entry_id, array &$meta, array $entr
  *
  * @param int      $entry_id The line's request id.
  * @param int      $user_id  Who is filing it.
- * @param array    $batch    array( 'prior' => ids of the lines already filed in this submission ).
+ * A line of a list ('mode' => 'list': the rows the filer put in one list) joins the group of an earlier line whatever its
+ * form and approvers, and emails only the approvers no earlier line already told.
+ *
+ * @param array    $batch    array( 'prior' => ids of the lines already filed in this submission, 'mode' => '' or 'list' ).
  * @param callable $run      Does the filing (the engine's submit action); returns true or a WP_Error.
  * @return true|WP_Error What $run returned.
  */
 function owc_oat_run_batch_line( $entry_id, $user_id, $batch, $run ) {
     $prior = array();
+    $mode  = '';
     if ( is_array( $batch ) && ! empty( $batch['prior'] ) ) {
         $prior = array_values( array_filter( array_map( 'absint', (array) $batch['prior'] ) ) );
+    }
+    if ( is_array( $batch ) && isset( $batch['mode'] ) && 'list' === $batch['mode'] ) {
+        $mode = 'list';
     }
     if ( ! $prior || ! class_exists( 'OAT_Batch' ) ) {
         return $run();
@@ -418,8 +425,13 @@ function owc_oat_run_batch_line( $entry_id, $user_id, $batch, $run ) {
     } finally {
         OAT_Batch::unmute();
     }
-    if ( ! is_wp_error( $result ) && ! OAT_Batch::attach( (int) $entry_id, (int) $user_id, $prior ) ) {
+    if ( is_wp_error( $result ) ) {
+        return $result;
+    }
+    if ( ! OAT_Batch::attach( (int) $entry_id, (int) $user_id, $prior, $mode ) ) {
         OAT_Batch::mail_assignment( (int) $entry_id );
+    } elseif ( 'list' === $mode && method_exists( 'OAT_Batch', 'mail_new_assignees' ) ) {
+        OAT_Batch::mail_new_assignees( (int) $entry_id );
     }
     return $result;
 }
@@ -443,19 +455,23 @@ function owc_oat_entry_batch_card( $entry, $user_id ) {
     $lines = array();
     foreach ( $ids as $line_id ) {
         $line = (int) $line_id === (int) $entry->id ? $entry : OAT_Entry::find( (int) $line_id );
-        if ( ! $line || ! owc_oat_user_can_view_entry( $line, $user_id ) ) {
+        if ( ! $line ) {
             continue;
         }
+        // Everyone who can open one line of a group sees every line's summary; a line they cannot open is shown without a link.
+        $viewable = (int) $line_id === (int) $entry->id || owc_oat_user_can_view_entry( $line, $user_id );
         $cfg      = OAT_Workflow_Engine::get_step_config( $line );
         $denied   = OAT_Constants::STATUS_DENIED === $line->status;
         $char     = ! empty( $line->character_id ) && class_exists( 'OAT_Character' ) ? OAT_Character::find( (int) $line->character_id ) : null;
         $lines[]  = array(
             'id'          => (int) $line->id,
+            'viewable'    => (bool) $viewable,
+            'kind'        => class_exists( 'OAT_Request_Title' ) && method_exists( 'OAT_Request_Title', 'kind_for_entry' ) ? (string) OAT_Request_Title::kind_for_entry( $line ) : '',
             'character'   => $char ? (string) $char->character_name : '',
             'status'      => (string) $line->status,
             'step'        => (string) $line->current_step,
             'step_label'  => is_array( $cfg ) && ! empty( $cfg['label'] ) ? (string) $cfg['label'] : (string) $line->current_step,
-            'item'        => trim( wp_strip_all_tags( (string) OAT_Entry_Meta::get( (int) $line->id, 'item_description' ) ) ),
+            'item'        => trim( wp_strip_all_tags( (string) ( OAT_Entry_Meta::get( (int) $line->id, 'item_description' ) ?: OAT_Entry_Meta::get( (int) $line->id, 'content_name' ) ) ) ),
             'current'     => (int) $line->id === (int) $entry->id,
             'vetoed'      => $denied && '' !== (string) OAT_Entry_Meta::get( (int) $line->id, 'vetoed_by' ),
             'veto_reason' => $denied ? trim( wp_strip_all_tags( (string) OAT_Entry_Meta::get( (int) $line->id, 'veto_reason' ) ) ) : '',

@@ -41,6 +41,12 @@ Submission → Staff Review (o HST da crônica) → Teacher Chronicle Review (o 
 2. Preencha os campos acima; o formulário marca com estrela os que têm Sim.
 3. Clique em **Submit Request** e acompanhe pela página do pedido.
 
+### Aprender vários itens de uma vez
+
+1. Preencha o formulário do primeiro item e clique em **Add to list** em vez de **Submit Request**.
+2. Abre um formulário novo de Learn Custom Content com o mesmo personagem já escolhido. Escolha o próximo item e preencha o professor dele, depois clique em **Add to list** de novo.
+3. Clique em **Submit all**. Cada item é um pedido próprio, com número próprio, e quem revisa os vê como um só grupo. A lista também pode ter outros tipos de pedido; veja [Fazer um Pedido](submit.md).
+
 ## Bom saber
 
 - Você digita o nome do professor e escolhe a crônica de origem dele. O HST dessa crônica então confirma que o personagem pode ensinar isso e permite. Quando o professor é da sua própria crônica, a revisão do seu HST já cobre isso e não há etapa extra.

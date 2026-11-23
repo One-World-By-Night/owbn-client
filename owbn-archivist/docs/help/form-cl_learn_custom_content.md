@@ -41,6 +41,12 @@ Submission → Staff Review (the chronicle's HST) → Teacher Chronicle Review (
 2. Fill in the fields above; the form stars the ones marked Yes.
 3. Click **Submit Request** and follow it from its page.
 
+### Learn several items in one go
+
+1. Fill in the form for the first item and click **Add to list** instead of **Submit Request**.
+2. A fresh Learn Custom Content form opens with the same character already picked. Pick the next item and fill in its teacher, then click **Add to list** again.
+3. Click **Submit all**. Each item is its own request with its own number, and the reviewers see them as one group. The list can also hold other kinds of request; see [Submit a Request](submit.md).
+
 ## Things to know
 
 - Only approved custom content can be learned; find it on the [ccHub](cchub.md) first.

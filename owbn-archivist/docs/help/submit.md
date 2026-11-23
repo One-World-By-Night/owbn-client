@@ -24,7 +24,9 @@ Anyone signed in. Which characters you can pick depends on who you are: a player
   - **Player Name** and **Player Email** - required for a PC: the player who plays it, and the email of their OWbN account. **This is my character** fills in your own name and email.
   - **Create Character** saves the character and picks it for the request; **Cancel** closes the panel.
 - **Submitting As** or **Your Role** (some forms) - whether you file as a player, staff, Coordinator or the Archivist. It decides whose characters the character search offers.
-- **Submit Request** - files the request. It reads "Submitting…" while it sends.
+- **Add to list** - sets the form you filled in aside as a row of **Your list** and opens a fresh form of the same kind, with the same character already picked (a form whose character list depends on **Submitting As** asks you to pick it again). Change the **Form** or the **Domain** to add a different kind of request.
+- **Your list** (above the form, once it has a row) - each row is one request with its own number. **Edit** brings a row's form back, **Remove** drops it, and **Submit all** files every row.
+- **Submit Request** - files the request. It reads "Submitting…" while it sends. With rows in your list it reads **Submit this form with the list (N)** and files the form you have open together with the rows.
 
 When the request is filed, its own page opens, where you can follow it. It starts with a green box, **Request #N submitted**, and a button, **Submit another** with the form's name (for example **Submit another R&U Request**), that opens this page again on the same form. When you pick several rules on an R&U Request, each rule is filed as its own line: lines with the same approvers open together as one request page, and any line that goes to someone else is listed separately. On an R&U Request, **Add another character** files for several characters in one go.
 
@@ -42,6 +44,13 @@ When the request is filed, its own page opens, where you can follow it. It start
 1. File the first one with **Submit Request**.
 2. On the page that opens, click **Submit another R&U Request** (the button carries the name of the form you just used).
 3. The submit page opens with the Domain and the Form already chosen. Fill in the next request and click **Submit Request**.
+
+### File several requests together, of any kind
+
+1. Pick the Domain and the Form, fill in the first request, and click **Add to list**.
+2. A fresh form of the same kind opens. Fill it in for the next item, or change the **Form** or the **Domain** to add another kind: R&U, Learn Custom Content or Create Custom Content.
+3. Use **Edit** on a row to change it (then **Put back in the list**), or **Remove** to drop it.
+4. Click **Submit all**. Every row is filed as its own request with its own number, and the reviewers see them as one group. A row the Archivist refuses stays in your list with the reason, and the others are filed.
 
 ### File a request for a character the registry doesn't have (staff)
 

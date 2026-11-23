@@ -29,7 +29,7 @@ From the top down:
 - **The summary** - the box under the header, in plain words: who is asking for what, for example "Marcus Vell (player: Sam Okafor · Lantern) is requesting R&U approval for Brujah 5+." The character's name is a link that opens the character's record in a new tab. Under it, **The bylaw in question is:** lists each rule the request falls under, with its clause number, its wording, the approval it needs and the Coordinator who decides. Then comes where the request stands and who it is waiting on, and who filed it and when. A request about no character (a Chronicle Report, a governance record) says who is submitting it, and a request that rests on no bylaw has no bylaw line.
 - **Request submitted** (only right after you file the request) - a green box with a **Submit another** button for the same form.
 - **Changes Requested** (only when the request was sent back) - what to change, and who asked.
-- **Lines in this request** (only when several lines were filed together) - a row for each line, with what it is about and where it stands. A vetoed line says **Vetoed** and gives the reason, when there is one. Reviewers get a **Veto** box on each open line. When the lines are about more than one character, a **Character** column says which.
+- **Lines in this request** (only when several lines were filed together) - a row for each line, with its number, what it is about and where it stands. You see every line of the group, but you can open, and act on, only the lines assigned to you. A vetoed line says **Vetoed** and gives the reason, when there is one. Reviewers get a **Veto** box on each open line they can act on. When the lines are about more than one kind of request, a **Kind** column says which, and when they are about more than one character, a **Character** column says which.
 - **Active Timer** - when the step approves or denies itself if nobody acts, with the date it **Expires**.
 - **Actions** - the buttons you have, each with a note box.
 - **History** - every action, with who took it, when, and the note, for the request's staff, Coordinators and the Archivist; a player sees the request's status and step in the header and the summary instead. **Show History** and **Hide History** fold it.
@@ -58,7 +58,7 @@ From the top down:
 
 1. Open any line of the request. **Lines in this request** lists every line.
 2. To leave a line out, click **Veto** on its row, add a reason if you want to (it is optional, and the person who filed the request sees it beside the line), and click **Veto this line**. Only that line is closed; the others carry on.
-3. In **Approve All Lines**, write a note and click the button. Every line waiting at this step that you can approve moves on together.
+3. In **Approve All Lines**, write a note and click the button. Every line waiting at this step that you can approve moves on together; a line assigned to someone else is left for them.
 
 ### Bring in another Coordinator
 
