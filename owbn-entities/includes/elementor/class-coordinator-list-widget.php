@@ -501,7 +501,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 			usort($group, function ($a, $b) {
 				$titleA = $a['title'] ?? $a['coordinator_title'] ?? '';
 				$titleB = $b['title'] ?? $b['coordinator_title'] ?? '';
-				return strcasecmp($titleA, $titleB);
+				return owc_compare_titles($titleA, $titleB);
 			});
 		}
 		unset($group);
@@ -564,7 +564,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 			<div class="owc-col-office">
 				<a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
 			</div>
-			<div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-entities'); ?>">
+			<div class="owc-col-coordinator" data-label="<?php esc_attr_e('Coordinator', 'owbn-entities'); ?>"<?php echo $name ? owc_no_translate_attrs() : ''; ?>>
 				<?php echo esc_html($name ?: __('Vacant', 'owbn-entities')); ?>
 			</div>
 			<div class="owc-col-email<?php echo $email ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">

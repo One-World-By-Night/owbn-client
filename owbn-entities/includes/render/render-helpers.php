@@ -500,3 +500,45 @@ function owc_language_label(string $language): string
     $key = strtolower(trim($language));
     return $labels[$key] ?? ucwords($key);
 }
+
+
+/**
+ * Attributes that keep a translation plugin and a browser translator away from a proper name.
+ *
+ * @return string Attributes with a leading space.
+ */
+function owc_no_translate_attrs(): string
+{
+    return ' data-no-translation translate="no"';
+}
+
+/**
+ * Compare two titles the way a reader expects: accents and case ignored, numbers by value.
+ *
+ * @param mixed $a First title.
+ * @param mixed $b Second title.
+ * @return int Negative, zero or positive, for usort.
+ */
+function owc_compare_titles($a, $b): int
+{
+    return strnatcasecmp(remove_accents((string) $a), remove_accents((string) $b));
+}
+
+/**
+ * A chronicle's genres, each in its own span, so a translation plugin sees every genre as a string of its own.
+ *
+ * @param array|string $genres The genres, or a comma-separated list.
+ * @return string HTML.
+ */
+function owc_genres_html($genres): string
+{
+    $items = is_array($genres) ? $genres : explode(',', (string) $genres);
+    $out   = [];
+    foreach ($items as $genre) {
+        $genre = trim((string) $genre);
+        if ('' !== $genre) {
+            $out[] = '<span class="owc-genre">' . esc_html($genre) . '</span>';
+        }
+    }
+    return implode(', ', $out);
+}
