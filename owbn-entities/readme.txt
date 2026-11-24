@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.6 =
+* When the Coordinators list is put in order on a translated page, the translation plugin's own browser script no longer re-translates the rows that were moved: they showed empty for a moment and each page view made an extra request.
 
 = 1.1.5 =
 * On a translated page, chronicle names, cities and the names of coordinators are left as they are, so a translation plugin no longer turns "Amazon By Night" into "Amazon à noite" or a person's name into words. A chronicle's genres are separate items, so each one is translated the same way everywhere instead of every combination being its own string.

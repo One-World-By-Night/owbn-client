@@ -30,8 +30,11 @@
             });
             var changed = keyed.some(function(k, idx) { return k.row !== rows[idx]; });
             if (!changed) return;
+            // A translation plugin's own script must not re-translate rows that were only moved.
             var after = rows[rows.length - 1].nextSibling;
+            group.setAttribute('data-no-dynamic-translation', '');
             keyed.forEach(function(k) {
+                k.row.setAttribute('data-no-dynamic-translation', '');
                 group.insertBefore(k.row, after);
             });
         });
