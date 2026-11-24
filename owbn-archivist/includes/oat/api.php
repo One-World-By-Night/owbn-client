@@ -785,11 +785,8 @@ function owc_oat_get_entry( $entry_id ) {
             );
         }
 
-        // BBP eligible.
-        $bbp_eligible = false;
-        if ( (int) $entry->originator_id === $user_id ) {
-            $bbp_eligible = OAT_Timer_Engine::check_bbp_eligible( $entry_id );
-        }
+        // Bump Bump Pass: the request has waited out its timer and will be approved at the next hourly check.
+        $bbp_eligible = OAT_Timer_Engine::check_bbp_eligible( $entry_id );
 
         // Available actions.
         $available_actions = owc_oat_compute_available_actions( $entry, $user_id, $assignees_raw );

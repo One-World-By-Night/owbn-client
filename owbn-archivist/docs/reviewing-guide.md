@@ -32,7 +32,7 @@ Every action except Bump needs a note.
 
 ## Timers
 
-Coordinator Review approves itself after 14 days once the request has had two bumps, unless one of its rules is Elevated. Hold stops the clock and Resume starts it again.
+Coordinator Review approves itself at the first hourly check after 14 days, once the request has had two bumps, unless one of its rules is Elevated. Hold stops the clock and Resume starts it again.
 
 ## For Coordinators
 

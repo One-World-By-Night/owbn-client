@@ -36,6 +36,9 @@ defined( 'ABSPATH' ) || exit;
  */
 function owc_oat_user_name( $uid, $map ) {
     $uid = (int) $uid;
+    if ( $uid <= 0 ) {
+        return 'System';
+    }
     return isset( $map[ $uid ] ) ? $map[ $uid ] : '#' . $uid;
 }
 ?>
@@ -161,15 +164,8 @@ function owc_oat_user_name( $uid, $map ) {
         <div class="oat-actions">
             <?php if ( $bbp_eligible ) : ?>
                 <div class="oat-action-card oat-bbp-card">
-                    <h3>Auto-Approve (BBP)</h3>
-                    <p>This entry is eligible for Bump Bump Pass auto-approval.</p>
-                    <form method="post" class="owc-oat-action-form">
-                        <?php wp_nonce_field( 'owc_oat_entry_action' ); ?>
-                        <input type="hidden" name="oat_action" value="auto_approve">
-                        <input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry['id'] ); ?>">
-                        <textarea name="oat_note" placeholder="Note (optional)" rows="2" class="large-text"></textarea>
-                        <button type="submit" class="button button-primary">Invoke Auto-Approve</button>
-                    </form>
+                    <h3>Bump Bump Pass</h3>
+                    <p>This request has waited out its time with enough bumps. It is approved automatically at the next hourly check.</p>
                 </div>
             <?php endif; ?>
 

@@ -1110,17 +1110,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 				<?php if ( $bbp_eligible ) : ?>
 					<div class="oat-action-card oat-bbp-card">
 						<strong style="display:block;margin-bottom:8px;color:#2271b1;">
-							<?php esc_html_e( 'Auto-Approve (BBP)', 'owbn-archivist' ); ?>
+							<?php esc_html_e( 'Bump Bump Pass', 'owbn-archivist' ); ?>
 						</strong>
-						<p style="margin:0 0 8px;font-size:13px;"><?php esc_html_e( 'This entry is eligible for Bump Bump Pass auto-approval.', 'owbn-archivist' ); ?></p>
-						<form class="oat-action-form">
-							<input type="hidden" name="entry_id" value="<?php echo esc_attr( $entry_id ); ?>">
-							<input type="hidden" name="action_type" value="auto_approve">
-							<textarea name="note" placeholder="<?php esc_attr_e( 'Note (optional)', 'owbn-archivist' ); ?>" rows="2" style="width:100%;box-sizing:border-box;margin:6px 0;"></textarea>
-							<button type="submit" class="oat-action-btn oat-action-btn-approve">
-								<?php esc_html_e( 'Invoke Auto-Approve', 'owbn-archivist' ); ?>
-							</button>
-						</form>
+						<p style="margin:0;font-size:13px;"><?php esc_html_e( 'This request has waited out its time with enough bumps. It is approved automatically at the next hourly check.', 'owbn-archivist' ); ?></p>
 					</div>
 				<?php endif; ?>
 
@@ -1460,6 +1452,9 @@ class OWC_OAT_Entry_Widget extends Widget_Base
 	private function resolve_user( $uid, $map )
 	{
 		$uid = (int) $uid;
+		if ( $uid <= 0 ) {
+			return __( 'System', 'owbn-archivist' );
+		}
 		return isset( $map[ $uid ] ) ? $map[ $uid ] : '#' . $uid;
 	}
 }

@@ -49,7 +49,7 @@ A step that doesn't apply to a request is skipped. Each domain runs these steps 
 
 ### Move a timed Coordinator Review along
 
-1. Open the request and click **Bump**. A Coordinator Review approves itself after 14 days once it has had two bumps, unless a rule on it is Elevated.
+1. Open the request and click **Bump**. A Coordinator Review approves itself at the first hourly check after 14 days once it has had two bumps, unless a rule on it is Elevated. Only the person who filed the request can bump it.
 
 ## Things to know
 

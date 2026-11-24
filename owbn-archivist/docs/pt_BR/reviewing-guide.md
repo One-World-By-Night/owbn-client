@@ -32,7 +32,7 @@ Toda ação, menos Bump, precisa de uma nota.
 
 ## Prazos
 
-A Coordinator Review se aprova sozinha depois de 14 dias quando o pedido já teve dois bumps, a não ser que uma das regras dele seja Elevated. Hold para o relógio e Resume o retoma.
+A Coordinator Review se aprova sozinha na primeira verificação por hora depois de 14 dias, quando o pedido já teve dois bumps, a não ser que uma das regras dele seja Elevated. Hold para o relógio e Resume o retoma.
 
 ## Para Coordenadores
 

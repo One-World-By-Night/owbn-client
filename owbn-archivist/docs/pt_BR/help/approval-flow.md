@@ -49,7 +49,7 @@ Uma etapa que não se aplica a um pedido é pulada. Cada domínio segue estas et
 
 ### Andar com uma Coordinator Review com prazo
 
-1. Abra o pedido e clique em **Bump**. Uma Coordinator Review se aprova sozinha depois de 14 dias quando já teve dois bumps, a não ser que uma regra nela seja Elevated.
+1. Abra o pedido e clique em **Bump**. Uma Coordinator Review se aprova sozinha na primeira verificação por hora depois de 14 dias, quando já teve dois bumps, a não ser que uma regra nela seja Elevated. Só quem registrou o pedido pode dar Bump.
 
 ## Bom saber
 
