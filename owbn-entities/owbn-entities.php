@@ -4,7 +4,7 @@
  * Plugin Name: OWBN Entities
  * Plugin URI: https://github.com/One-World-By-Night/owbn-client
  * Description: Chronicles, coordinators, territories, and vote history for OWBN WordPress sites.
- * Version: 1.0.14
+ * Version: 1.0.15
  * Author: greghacke
  * Author URI: https://www.owbn.net
  * Text Domain: owbn-entities
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'OWC_ENTITIES_VERSION', '1.0.14' );
+define( 'OWC_ENTITIES_VERSION', '1.0.15' );
 define( 'OWC_ENTITIES_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OWC_ENTITIES_URL', plugin_dir_url( __FILE__ ) );
 

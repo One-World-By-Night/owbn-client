@@ -683,7 +683,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 
 		// Genres
 		$genres = $chronicle['genres'] ?? [];
-		$genres_display = is_array($genres) ? implode(', ', $genres) : $genres;
+		$genres_html = owc_genres_html($genres);
 
 		// Type
 		$game_type = $chronicle['game_type'] ?? '';
@@ -695,13 +695,13 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 		?>
 		<div class="owc-list-row">
 			<?php if (in_array('title', $columns, true)) : ?>
-				<div class="owc-col-title">
+				<div class="owc-col-title"<?php echo owc_no_translate_attrs(); ?>>
 					<a href="<?php echo esc_url($url); ?>"><?php echo esc_html($title); ?></a>
 				</div>
 			<?php endif; ?>
 			<?php if (in_array('genres', $columns, true)) : ?>
-				<div class="owc-col-genres<?php echo $genres_display ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Genres', 'owbn-entities'); ?>">
-					<?php echo esc_html($genres_display); ?>
+				<div class="owc-col-genres<?php echo $genres_html ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Genres', 'owbn-entities'); ?>">
+					<?php echo $genres_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where it is built. ?>
 				</div>
 			<?php endif; ?>
 			<?php if (in_array('region', $columns, true)) : ?>
@@ -715,7 +715,7 @@ class OWC_Chronicle_List_Widget extends Widget_Base
 				</div>
 			<?php endif; ?>
 			<?php if (in_array('city', $columns, true)) : ?>
-				<div class="owc-col-city<?php echo $city ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>">
+				<div class="owc-col-city<?php echo $city ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('City', 'owbn-entities'); ?>"<?php echo $city ? owc_no_translate_attrs() : ''; ?>>
 					<?php echo esc_html($city); ?>
 				</div>
 			<?php endif; ?>

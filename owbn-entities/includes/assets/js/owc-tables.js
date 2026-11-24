@@ -3,9 +3,39 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         initSortableTables();
+        initOfficeOrder();
         initFilters();
         applyUrlFilters();
     });
+
+    // Offices read in alphabetical order of the titles the visitor sees, in the language the page is shown in.
+    function initOfficeOrder() {
+        var collator;
+        try {
+            collator = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true });
+        } catch (e) {
+            collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
+        }
+        document.querySelectorAll('.owc-coord-group').forEach(function(group) {
+            var rows = Array.prototype.filter.call(group.children, function(el) {
+                return el.classList.contains('owc-list-row');
+            });
+            if (rows.length < 2) return;
+            var keyed = rows.map(function(row, i) {
+                var cell = row.querySelector('.owc-col-office');
+                return { row: row, i: i, key: cell ? (cell.textContent || '').trim() : '' };
+            });
+            keyed.sort(function(a, b) {
+                return collator.compare(a.key, b.key) || a.i - b.i;
+            });
+            var changed = keyed.some(function(k, idx) { return k.row !== rows[idx]; });
+            if (!changed) return;
+            var after = rows[rows.length - 1].nextSibling;
+            keyed.forEach(function(k) {
+                group.insertBefore(k.row, after);
+            });
+        });
+    }
 
     // Pre-fill + apply filters from URL query params so other pages can deep-link
     // into a pre-filtered list, e.g. /find-a-game/?genre=Camarilla. Param names
