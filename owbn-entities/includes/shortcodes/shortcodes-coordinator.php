@@ -199,13 +199,13 @@ function owc_coord_field_simple(array $c, string $f): string
 
 function owc_coord_field_content(array $c, string $f): string
 {
-    return wp_kses_post($c['content'] ?? '');
+    return owc_format_rich_text($c['content'] ?? '');
 }
 
 function owc_coord_field_wysiwyg(array $c, string $f): string
 {
     $val = $c[$f] ?? '';
-    return wp_kses_post($val);
+    return owc_format_rich_text($val);
 }
 
 function owc_coord_field_url(array $c, string $f): string

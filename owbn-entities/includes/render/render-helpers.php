@@ -10,6 +10,26 @@ defined('ABSPATH') || exit;
 
 
 /**
+ * Format stored description text for display: blank lines become paragraphs, single line breaks stay line breaks,
+ * bare web and email addresses become links, editor HTML is left as it is and unsafe markup is removed.
+ *
+ * @param string $text Stored text (plain text with line breaks, or HTML from an editor)
+ * @return string HTML output
+ */
+function owc_format_rich_text(string $text): string
+{
+    $text = trim($text);
+    if ('' === $text) {
+        return '';
+    }
+
+    $html = wpautop(make_clickable(wp_kses_post($text)));
+
+    return trim(preg_replace('#<p>(?:\s|&nbsp;|&\#160;|\xC2\xA0)*</p>\s*#i', '', $html));
+}
+
+
+/**
  * Render a staff member block.
  *
  * @param array  $user  User data with display_name, display_email
