@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.0.17 =
+* A coordinator's description keeps its paragraphs and line breaks, and web and email addresses in it are links. Before, the stored text was printed as one run-together block on coordinator pages and on every coordinator site.
 
 = 1.0.16 =
 * When the Coordinators list is put in order on a translated page, the translation plugin's own browser script no longer re-translates the rows that were moved: they showed empty for a moment and each page view made an extra request.

@@ -99,12 +99,12 @@ function owc_render_coordinator_description(array $coordinator): string
 ?>
     <div class="owc-coordinator-description">
         <?php if (!empty(trim($content))) : ?>
-            <div class="owc-content"><?php echo wp_kses_post($content); ?></div>
+            <div class="owc-content"><?php echo owc_format_rich_text($content); ?></div>
         <?php endif; ?>
         <?php if (!empty(trim($office))) : ?>
             <div class="owc-office-description">
                 <h4><?php esc_html_e('Office Description', 'owbn-entities'); ?></h4>
-                <div class="owc-content"><?php echo wp_kses_post($office); ?></div>
+                <div class="owc-content"><?php echo owc_format_rich_text($office); ?></div>
             </div>
         <?php endif; ?>
     </div>
