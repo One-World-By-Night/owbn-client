@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.9 =
+* A chronicle's About text, its narrative sections (Premise, Information for Travelers and the others) and the chronicle shortcode fields keep their paragraphs and line breaks, and web and email addresses in them are links. Before, multi-paragraph text was printed as one run-together block.
 
 = 1.1.8 =
 * A web or email address in a coordinator's description is a link even when it was pasted after a non-breaking space.

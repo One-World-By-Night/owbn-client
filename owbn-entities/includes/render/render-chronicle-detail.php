@@ -134,7 +134,7 @@ function owc_render_chronicle_about(array $chronicle): string
 ?>
     <div id="owc-chronicle-about" class="owc-chronicle-about">
         <h2><?php esc_html_e('About', 'owbn-entities'); ?></h2>
-        <div class="owc-content"><?php echo wp_kses_post($content); ?></div>
+        <div class="owc-content"><?php echo owc_format_rich_text($content); ?></div>
     </div>
 <?php
     return ob_get_clean();
@@ -175,7 +175,7 @@ function owc_render_narrative_section(string $title, string $content): string
 ?>
     <div class="owc-narrative-section">
         <h3><?php echo esc_html($title); ?></h3>
-        <div class="owc-content"><?php echo wp_kses_post($content); ?></div>
+        <div class="owc-content"><?php echo owc_format_rich_text($content); ?></div>
     </div>
 <?php
     return ob_get_clean();
