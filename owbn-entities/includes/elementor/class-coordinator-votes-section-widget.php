@@ -10,7 +10,7 @@ class OWC_Coordinator_Votes_Section_Widget extends Widget_Base {
     public function get_title() { return __( 'Coordinator Vote History', 'owbn-entities' ); }
     public function get_icon() { return 'eicon-check-circle'; }
     public function get_categories() { return array( 'owbn-entities' ); }
-    public function get_style_depends() { return array( 'owc-tables', 'owc-client' ); }
+    public function get_style_depends() { return array( 'owc-tables', 'owc-client', 'owc-vote-history' ); }
 
     protected function register_controls() {
         $this->start_controls_section( 'content', array(

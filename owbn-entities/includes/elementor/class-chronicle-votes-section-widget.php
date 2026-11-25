@@ -10,7 +10,7 @@ class OWC_Chronicle_Votes_Section_Widget extends Widget_Base {
     public function get_title() { return __( 'Chronicle Vote History', 'owbn-entities' ); }
     public function get_icon() { return 'eicon-check-circle'; }
     public function get_categories() { return array( 'owbn-entities' ); }
-    public function get_style_depends() { return array( 'owc-tables' ); }
+    public function get_style_depends() { return array( 'owc-tables', 'owc-vote-history' ); }
 
     protected function register_controls() {
         $this->start_controls_section( 'content', array(

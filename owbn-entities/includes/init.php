@@ -48,6 +48,9 @@ add_action( 'wp_enqueue_scripts', function () {
         wp_register_style( 'owc-territory', $css . 'owc-territory.css', array(), $ver );
         wp_register_style( 'owc-vote-history', $css . 'owc-vote-history.css', array(), $ver );
         wp_register_style( 'owc-shortcodes', $css . 'owc-shortcodes.css', array(), $ver );
+        if ( is_page( array( 'chronicle-detail', 'coordinator-detail' ) ) ) {
+            wp_enqueue_style( 'owc-vote-history' );
+        }
     }
     if ( $js ) {
         wp_register_script( 'owc-tables', $js . 'owc-tables.js', array( 'jquery' ), $ver, true );
