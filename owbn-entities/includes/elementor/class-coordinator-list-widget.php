@@ -569,7 +569,7 @@ class OWC_Coordinator_List_Widget extends Widget_Base
 			</div>
 			<div class="owc-col-email<?php echo $email ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
 				<?php if ($email) : ?>
-					<a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
+					<?php echo owc_email_link($email); ?>
 				<?php endif; ?>
 			</div>
 		</div>

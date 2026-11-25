@@ -194,6 +194,13 @@ body:has(.owc-coordinator-detail) {
   flex: 1;
 }
 
+.owc-inline-name,
+.owc-inline-role,
+.owc-inline-email {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Player list table */
 .owc-player-list-table {
   margin-top: 0.5em;
@@ -223,10 +230,59 @@ body:has(.owc-coordinator-detail) {
   text-align: right;
 }
 
+.owc-pl-name,
+.owc-pl-access,
+.owc-pl-type,
+.owc-pl-moderator {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Responsive */
 @media (max-width: 700px) {
   .owc-coord-row {
     flex-direction: column;
+  }
+
+  .owc-inline-row {
+    flex-wrap: wrap;
+    gap: 0 1em;
+    padding: 0.6em 0;
+  }
+
+  .owc-inline-name,
+  .owc-inline-role,
+  .owc-inline-email {
+    flex: 1 1 100%;
+  }
+
+  .owc-inline-header {
+    display: none;
+  }
+
+  .owc-player-list-row {
+    flex-wrap: wrap;
+    gap: 0 1em;
+    padding: 0.6em 0;
+  }
+
+  .owc-pl-name,
+  .owc-pl-moderator {
+    flex: 1 1 100%;
+  }
+
+  .owc-pl-access,
+  .owc-pl-type {
+    flex: 0 1 auto;
+  }
+
+  .owc-pl-link {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+
+  .owc-player-list-header {
+    display: none;
   }
 }
 

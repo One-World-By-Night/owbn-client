@@ -133,7 +133,7 @@ function owc_render_coordinator_info(array $coordinator): string
             <div class="owc-inline-row">
                 <span class="owc-inline-name"><?php echo esc_html($name); ?></span>
                 <?php if ($email) : ?>
-                    <a class="owc-inline-email" href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
+                    <?php echo owc_email_link($email, 'owc-inline-email'); ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -170,7 +170,7 @@ function owc_render_coordinator_subcoords(array $coordinator): string
                     <span class="owc-inline-role"><?php echo esc_html($subcoord['role'] ?? ''); ?></span>
                     <span class="owc-inline-email">
                         <?php if (!empty($subcoord['display_email'])) : ?>
-                            <a href="mailto:<?php echo esc_attr($subcoord['display_email']); ?>"><?php echo esc_html($subcoord['display_email']); ?></a>
+                            <?php echo owc_email_link($subcoord['display_email']); ?>
                         <?php endif; ?>
                     </span>
                 </div>
@@ -266,7 +266,7 @@ function owc_render_coordinator_player_lists(array $coordinator): string
                     <span class="owc-pl-type"><?php echo esc_html($list['ic_ooc'] ?? ''); ?></span>
                     <span class="owc-pl-moderator">
                         <?php if (!empty($list['moderate_address'])) : ?>
-                            <a href="mailto:<?php echo esc_attr($list['moderate_address']); ?>"><?php echo esc_html($list['moderate_address']); ?></a>
+                            <?php echo owc_email_link($list['moderate_address']); ?>
                         <?php endif; ?>
                     </span>
                     <span class="owc-pl-link">
@@ -301,7 +301,8 @@ function owc_render_coordinator_contact_lists(array $coordinator): string
         <?php foreach ($lists as $list) : ?>
             <div class="owc-contact-item">
                 <?php if (!empty($list['email_address'])) : ?>
-                    <a href="mailto:<?php echo esc_attr($list['email_address']); ?>"><?php echo esc_html($list['list_name'] ?: $list['email_address']); ?></a>
+                    <?php if (!empty($list['list_name'])) : ?><a href="mailto:<?php echo esc_attr($list['email_address']); ?>"><?php echo esc_html($list['list_name']); ?></a>
+                    <?php else : ?><?php echo owc_email_link($list['email_address']); ?><?php endif; ?>
                 <?php else : ?>
                     <?php echo esc_html($list['list_name']); ?>
                 <?php endif; ?>
