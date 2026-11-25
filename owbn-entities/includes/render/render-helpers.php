@@ -23,6 +23,9 @@ function owc_format_rich_text(string $text): string
         return '';
     }
 
+    // A pasted non-breaking space before an address would hide it from the link finder, which needs an ordinary space.
+    $text = str_replace("\xC2\xA0", ' ', $text);
+
     $html = wpautop(make_clickable(wp_kses_post($text)));
 
     return trim(preg_replace('#<p>(?:\s|&nbsp;|&\#160;|\xC2\xA0)*</p>\s*#i', '', $html));
