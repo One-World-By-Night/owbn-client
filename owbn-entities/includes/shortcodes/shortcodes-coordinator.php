@@ -239,7 +239,7 @@ function owc_coord_field_coord_info(array $c, string $f): string
 
     $out = esc_html($name);
     if ($email) {
-        $out .= ' <a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+        $out .= ' ' . owc_email_link($email);
     }
     return $out;
 }
@@ -263,7 +263,7 @@ function owc_coord_field_subcoords(array $c, string $f): string
                 <span class="owc-subcoord-role"><?php echo esc_html($sub['role'] ?? ''); ?></span>
                 <span class="owc-subcoord-email">
                     <?php if (!empty($sub['display_email'])) : ?>
-                        <a href="mailto:<?php echo esc_attr($sub['display_email']); ?>"><?php echo esc_html($sub['display_email']); ?></a>
+                        <?php echo owc_email_link($sub['display_email']); ?>
                     <?php endif; ?>
                 </span>
             </div>
@@ -301,7 +301,7 @@ function owc_coord_field_email_lists(array $c, string $f): string
         $email = $ml['email_address'] ?? $ml['address'] ?? '';
 
         if ($email) {
-            $items[] = ($name ? esc_html($name) . ': ' : '') . '<a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+            $items[] = ($name ? esc_html($name) . ': ' : '') . owc_email_link($email);
         } else {
             $items[] = esc_html($name);
         }

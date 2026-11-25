@@ -10,6 +10,28 @@ defined('ABSPATH') || exit;
 
 
 /**
+ * An email address as a link: the text is the part before the @, the link is the whole mailto: address (also its tooltip).
+ * Text that is not one plain address (several addresses, no @) is shown as it is.
+ *
+ * @param mixed  $email Address as stored.
+ * @param string $class Optional class for the link.
+ * @return string HTML output, or an empty string when there is nothing to link
+ */
+function owc_email_link($email, string $class = ''): string
+{
+    $email = trim((string) $email);
+    if ('' === $email) {
+        return '';
+    }
+
+    $plain = 1 === preg_match('/^[^@\s,;<>"]+@[^@\s,;<>"]+$/', $email);
+    $text  = $plain ? substr($email, 0, (int) strpos($email, '@')) : $email;
+
+    return '<a' . ('' !== $class ? ' class="' . esc_attr($class) . '"' : '') . ' href="mailto:' . esc_attr($email) . '" title="' . esc_attr($email) . '" data-no-translation>' . esc_html($text) . '</a>';
+}
+
+
+/**
  * Format stored description text for display: blank lines become paragraphs, single line breaks stay line breaks,
  * bare web and email addresses become links, editor HTML is left as it is and unsafe markup is removed.
  *
@@ -54,9 +76,7 @@ function owc_render_staff_block(array $user, string $role, string $id = ''): str
         <span class="owc-staff-role"><?php echo esc_html($role); ?></span>
         <span class="owc-staff-name"><?php echo esc_html($user['display_name']); ?></span>
         <?php if (!empty($user['display_email'])) : ?>
-            <a class="owc-staff-email" href="mailto:<?php echo esc_attr($user['display_email']); ?>">
-                <?php echo esc_html($user['display_email']); ?>
-            </a>
+            <?php echo owc_email_link($user['display_email'], 'owc-staff-email'); ?>
         <?php endif; ?>
     </div>
 <?php
@@ -89,9 +109,7 @@ function owc_render_ast_list(array $ast_list): string
                         <span class="owc-ast-role">(<?php echo esc_html($ast['role']); ?>)</span>
                     <?php endif; ?>
                     <?php if (!empty($ast['display_email'])) : ?>
-                        <a class="owc-ast-email" href="mailto:<?php echo esc_attr($ast['display_email']); ?>">
-                            <?php echo esc_html($ast['display_email']); ?>
-                        </a>
+                        <?php echo owc_email_link($ast['display_email'], 'owc-ast-email'); ?>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
@@ -292,9 +310,7 @@ function owc_render_email_lists(array $lists): string
                     <span class="owc-list-name"><?php echo esc_html($list['list_name']); ?></span>
                 <?php endif; ?>
                 <?php if (!empty($list['email_address'])) : ?>
-                    <a href="mailto:<?php echo esc_attr($list['email_address']); ?>">
-                        <?php echo esc_html($list['email_address']); ?>
-                    </a>
+                    <?php echo owc_email_link($list['email_address']); ?>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>
@@ -385,7 +401,7 @@ function owc_render_player_lists(array $lists): string
                     <?php endif; ?>
                 </div>
                 <?php if (!empty($list['address'])) : ?>
-                    <a class="owc-player-list-email" href="mailto:<?php echo esc_attr($list['address']); ?>"><?php echo esc_html($list['address']); ?></a>
+                    <?php echo owc_email_link($list['address'], 'owc-player-list-email'); ?>
                 <?php endif; ?>
                 <?php if (!empty($list['signup_url'])) : ?>
                     <a class="owc-player-list-signup" href="<?php echo esc_url($list['signup_url']); ?>" target="_blank" rel="noopener"><?php esc_html_e('Sign Up', 'owbn-entities'); ?></a>

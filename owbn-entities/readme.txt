@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.10
+Stable tag: 1.1.11
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.1.11 =
+* An email address is shown as the part before the @ and links to the whole address (the full address is its tooltip). On a phone, the name, role and contact in a coordinator's rows each take a line and a long word breaks, so the Team page and the coordinator pages no longer scroll sideways.
 
 = 1.1.10 =
 * A chronicle page's Vote History no longer makes the page scroll sideways on a phone: the vote table's styles, including its stacked phone layout, now load wherever a vote history is shown. They had only been loaded on pages drawn by shortcodes.

@@ -110,7 +110,7 @@ function owc_render_coordinator_row(array $coordinator, string $base_url): strin
         </div>
         <div class="owc-col-email<?php echo $email ? '' : ' owc-cell-empty'; ?>" data-label="<?php esc_attr_e('Contact', 'owbn-entities'); ?>">
             <?php if ($email) : ?>
-                <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
+                <?php echo owc_email_link($email); ?>
             <?php endif; ?>
         </div>
     </div>

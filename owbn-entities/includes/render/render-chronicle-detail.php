@@ -228,7 +228,7 @@ function owc_render_staff_line(string $role, array $info): string
         <span class="owc-staff-role"><?php echo esc_html($role); ?>:</span>
         <span class="owc-staff-name"><?php echo esc_html($info['display_name']); ?></span>
         <?php if (!empty($info['display_email'])) : ?>
-            <a class="owc-staff-email" href="mailto:<?php echo esc_attr($info['display_email']); ?>"><?php echo esc_html($info['display_email']); ?></a>
+            <?php echo owc_email_link($info['display_email'], 'owc-staff-email'); ?>
         <?php endif; ?>
     </div>
 <?php

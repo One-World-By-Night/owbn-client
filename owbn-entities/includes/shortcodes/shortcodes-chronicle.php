@@ -288,7 +288,7 @@ function owc_chron_field_hst_info(array $c, string $f): string
 
     $out = esc_html($name);
     if ($email) {
-        $out .= ' <a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+        $out .= ' ' . owc_email_link($email);
     }
     return $out;
 }
@@ -303,7 +303,7 @@ function owc_chron_field_cm_info(array $c, string $f): string
 
     $out = esc_html($name);
     if ($email) {
-        $out .= ' <a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+        $out .= ' ' . owc_email_link($email);
     }
     return $out;
 }
@@ -321,7 +321,7 @@ function owc_chron_field_ast_list(array $c, string $f): string
 
         $item = $name . $role;
         if ($email) {
-            $item .= ' <a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+            $item .= ' ' . owc_email_link($email);
         }
         $items[] = $item;
     }
@@ -471,7 +471,7 @@ function owc_chron_field_email_lists(array $c, string $f): string
         $email = $ml['email_address'] ?? $ml['address'] ?? '';
 
         if ($email) {
-            $items[] = ($name ? esc_html($name) . ': ' : '') . '<a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
+            $items[] = ($name ? esc_html($name) . ': ' : '') . owc_email_link($email);
         } else {
             $items[] = esc_html($name);
         }
