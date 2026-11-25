@@ -4,7 +4,7 @@ Tags: owbn, vampire, larp, chronicles, coordinators, territories
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ Provides entity display and management for One World by Night sites:
 Requires the OWBN Core plugin.
 
 == Changelog ==
+
+= 1.0.20 =
+* A chronicle page's Vote History no longer makes the page scroll sideways on a phone: the vote table's styles, including its stacked phone layout, now load wherever a vote history is shown. They had only been loaded on pages drawn by shortcodes.
 
 = 1.0.19 =
 * A chronicle's About text, its narrative sections (Premise, Information for Travelers and the others) and the chronicle shortcode fields keep their paragraphs and line breaks, and web and email addresses in them are links. Before, multi-paragraph text was printed as one run-together block.

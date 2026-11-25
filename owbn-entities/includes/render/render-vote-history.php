@@ -11,6 +11,24 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Load the vote history's stylesheet: in the page head when that is still open, otherwise where the section is drawn.
+ */
+function owc_enqueue_vote_history_style(): void
+{
+    if (!wp_style_is('owc-vote-history', 'registered')) {
+        $css = defined('OWC_ENTITIES_CSS_URL') ? OWC_ENTITIES_CSS_URL : '';
+        if ('' === $css) {
+            return;
+        }
+        wp_register_style('owc-vote-history', $css . 'owc-vote-history.css', array(), defined('OWC_ENTITIES_VERSION') ? OWC_ENTITIES_VERSION : false);
+    }
+    wp_enqueue_style('owc-vote-history');
+    if (did_action('wp_head')) {
+        wp_print_styles('owc-vote-history');
+    }
+}
+
+/**
  * Render vote history section for a chronicle or coordinator detail page.
  *
  * Fetches vote data via owc_get_entity_votes() (which handles local/remote
@@ -31,6 +49,8 @@ function owc_render_entity_vote_history($entity_type, $entity_slug)
     if (is_wp_error($data) || empty($data['votes'])) {
         return '';
     }
+
+    owc_enqueue_vote_history_style();
 
     $votes           = $data['votes'];
     $vote_record_url = !empty($data['vote_record_url']) ? $data['vote_record_url'] : '';
