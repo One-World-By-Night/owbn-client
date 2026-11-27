@@ -25,11 +25,11 @@ if ( ! defined( 'OWC_ASC_CACHE_TS_KEY' ) ) {
 }
 
 /**
- * Default cache TTL in seconds (24 hours). Role changes reach member sites sooner through the change feed
+ * Default cache TTL in seconds (7 days). Role changes reach member sites sooner through the change feed
  * (reconcile.php), and login and "Refresh my Roles" clear a member's cache.
  */
 if ( ! defined( 'OWC_ASC_CACHE_TTL' ) ) {
-	define( 'OWC_ASC_CACHE_TTL', 86400 );
+	define( 'OWC_ASC_CACHE_TTL', 604800 );
 }
 
 /**
