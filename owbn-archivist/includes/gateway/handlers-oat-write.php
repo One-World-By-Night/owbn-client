@@ -27,8 +27,14 @@ defined('ABSPATH') || exit;
  *     "character_id": 0,
  *     "coordinator_genre": "",
  *     "rules": [1, 5, 12],
- *     "meta": { "key": "value", ... }
+ *     "meta": { "key": "value", ... },
+ *     "idempotency_key": "9b1f...",
+ *     "full_chain": true
  *   }
+ *
+ * `idempotency_key` makes a resend safe: the same filer sending the same key again gets the request already filed
+ * for it instead of a second one. `full_chain` takes this submission through every step of its workflow even when
+ * the filer holds the Archivist's office.
  *
  * @param WP_REST_Request $request
  * @return WP_REST_Response
@@ -55,6 +61,27 @@ function owbn_gateway_oat_submit( $request ) {
                 'oat_invalid_domain',
                 'Invalid domain: ' . $domain,
                 array( 'status' => 400 )
+            ) );
+        }
+    }
+
+    $key = isset( $body['idempotency_key'] ) ? trim( (string) $body['idempotency_key'] ) : '';
+    if ( $key !== '' ) {
+        if ( ! preg_match( '/^[A-Za-z0-9._:\-]{8,64}$/', $key ) ) {
+            return owbn_gateway_respond( new WP_Error(
+                'oat_bad_key',
+                'idempotency_key must be 8 to 64 letters, digits, dots, dashes, colons or underscores.',
+                array( 'status' => 400 )
+            ) );
+        }
+        $filed = owbn_gateway_oat_find_by_key( $key, $user_id );
+        if ( $filed ) {
+            return owbn_gateway_respond( array(
+                'entry_id'     => (int) $filed->id,
+                'status'       => $filed->status,
+                'current_step' => $filed->current_step,
+                'created'      => false,
+                'message'      => 'Entry already filed.',
             ) );
         }
     }
@@ -87,6 +114,10 @@ function owbn_gateway_oat_submit( $request ) {
             'Failed to create entry.',
             array( 'status' => 500 )
         ) );
+    }
+
+    if ( $key !== '' ) {
+        OAT_Entry_Meta::set( $entry_id, '_source_key', $key );
     }
 
     // Build meta: use field-aware sanitization when field definitions available.
@@ -169,20 +200,32 @@ function owbn_gateway_oat_submit( $request ) {
     $named_result = owc_oat_apply_involved_coordinators( $entry_id, $meta, isset( $body['form_slug'] ) ? sanitize_text_field( $body['form_slug'] ) : '' );
     if ( is_wp_error( $named_result ) ) {
         owc_oat_cancel_refused_submission( $entry_id, $user_id, $named_result );
+        owbn_gateway_oat_release_key( $entry_id, $key );
         return owbn_gateway_respond( $named_result );
     }
 
     // Fire the submit action through the workflow engine.
     // Meta is passed via $data so the action handler can validate and persist it.
-    $result = owc_oat_run_batch_line( $entry_id, $user_id, isset( $body['batch'] ) ? $body['batch'] : array(), function () use ( $entry_id, $user_id, $body, $meta ) {
-        return OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
-            'note' => isset( $body['note'] ) ? sanitize_textarea_field( $body['note'] ) : '',
-            'meta' => $meta,
-        ) );
-    } );
+    $full_chain = ! empty( $body['full_chain'] );
+    if ( $full_chain ) {
+        add_filter( 'oat_allow_fast_track', '__return_false', 99 );
+    }
+    try {
+        $result = owc_oat_run_batch_line( $entry_id, $user_id, isset( $body['batch'] ) ? $body['batch'] : array(), function () use ( $entry_id, $user_id, $body, $meta ) {
+            return OAT_Workflow_Engine::process_action( $entry_id, 'submit', $user_id, array(
+                'note' => isset( $body['note'] ) ? sanitize_textarea_field( $body['note'] ) : '',
+                'meta' => $meta,
+            ) );
+        } );
+    } finally {
+        if ( $full_chain ) {
+            remove_filter( 'oat_allow_fast_track', '__return_false', 99 );
+        }
+    }
 
     if ( is_wp_error( $result ) ) {
         owc_oat_cancel_refused_submission( $entry_id, $user_id, $result );
+        owbn_gateway_oat_release_key( $entry_id, $key );
         return owbn_gateway_respond( $result );
     }
 
@@ -193,10 +236,45 @@ function owbn_gateway_oat_submit( $request ) {
     $entry = OAT_Entry::find( $entry_id );
 
     return owbn_gateway_respond( array(
-        'entry_id' => $entry_id,
-        'status'   => $entry ? $entry->status : 'submitted',
-        'message'  => 'Entry created successfully.',
+        'entry_id'     => $entry_id,
+        'status'       => $entry ? $entry->status : 'submitted',
+        'current_step' => $entry ? $entry->current_step : '',
+        'created'      => true,
+        'message'      => 'Entry created successfully.',
     ) );
+}
+
+/**
+ * The request a filer already filed under an idempotency key, or null. Another filer's request with the same key is not
+ * found.
+ *
+ * @param string $key     The key sent with the submission.
+ * @param int    $user_id The filer.
+ * @return object|null
+ */
+function owbn_gateway_oat_find_by_key( $key, $user_id ) {
+    global $wpdb;
+    $p  = $wpdb->prefix;
+    $id = $wpdb->get_var( $wpdb->prepare(
+        "SELECT m.entry_id FROM {$p}oat_entry_meta m INNER JOIN {$p}oat_entries e ON e.id = m.entry_id WHERE m.meta_key = %s AND m.meta_value = %s AND e.originator_id = %d ORDER BY m.id ASC LIMIT 1",
+        '_source_key',
+        (string) $key,
+        (int) $user_id
+    ) );
+    return $id ? OAT_Entry::find( (int) $id ) : null;
+}
+
+/**
+ * Frees an idempotency key whose submission the Toolkit refused, so the same key sent again after the cause is put right
+ * files a new request instead of finding the refused one.
+ *
+ * @param int    $entry_id The refused request.
+ * @param string $key      The key it was filed under; '' when it had none.
+ */
+function owbn_gateway_oat_release_key( $entry_id, $key ) {
+    if ( '' !== (string) $key ) {
+        OAT_Entry_Meta::set( (int) $entry_id, '_source_key', '' );
+    }
 }
 
 
